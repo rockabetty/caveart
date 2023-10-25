@@ -5,7 +5,7 @@ const pgConfig = {
   idleTimeoutMillis: 30000,
   user: process.env.PG_USERNAME,
   host: 'localhost',
-  database: procss.env.PG_DATABASE || 'caveart',
+  database: process.env.PG_DATABASE || 'caveart',
   password: process.env.PG_PASSWORD,
   port: 5432,
 };
