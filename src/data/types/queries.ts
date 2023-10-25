@@ -1,0 +1,1 @@
+export type QueryFunction = (client: PoolClient) => Promise<QueryResult>;
