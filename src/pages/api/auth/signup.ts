@@ -1,7 +1,7 @@
 import { NextApiHandler } from 'next';
 import { createHash, createRandom } from '../../../auth/hash';
 import { createUser } from '../../../data/users';
-import { encrypt } from '../../../encrypt';
+import { encrypt } from '../../../auth/encrypt';
 
 const handler: NextApiHandler = async (req, res) => {
   if (req.method !== 'POST') {

@@ -31,19 +31,34 @@ export async function getUserById(
     return await queryDbConnection(query, values)
 };
 
-export async function validateUserCredentials(
+export async function getUsersWithMatchingAuthCredentials(
     identificationFormat: 'email' | 'username',
     identificationString: string,
     hashedPassword: string
 ): Promise<QueryResult | Error> {
-    
-    const baseQuery = `SELECT 1 FROM users WHERE password = $2 `;
+    const baseQuery = `SELECT id FROM users WHERE password = $2 `;
     const condition = identificationFormat === 'email'
       ? 'AND email = $1'
       : 'AND username = $1';
     const query = baseQuery + condition;
     const values = [identificationString, hashedPassword]
-    return await queryDbConnection(query, values)
+    return await queryDbConnection(query, values);
+};
+
+export async function createUserSession(
+    userId: string,
+    token: string,
+    expirationDate: Date
+): Promise<QueryResult | Error> {
+    const query = `
+      INSERT INTO users_sessions
+      (user_id, session_token, expiration_date)
+      VALUES
+      ($1, $2, $3)
+      RETURNING user_id, id, session_token
+    `;
+    const values = [userId, token, expirationDate];
+    return await queryDbConnection(query, values);
 };
 
 export async function editUser(
