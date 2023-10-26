@@ -61,6 +61,23 @@ export async function createUserSession(
     return await queryDbConnection(query, values);
 };
 
+export async function getUserSession(
+    token: string
+): Promise<QueryResult | Error> {
+    const query = `
+      SELECT * FROM user_sessions WHERE session_token = $1
+    `;
+
+    const values = [token];
+    const result = await queryDbConnection(query, values);
+
+    if (result.rows && result.rows.length > 0) {
+        return result.rows[0];
+    }
+
+    return null;
+};
+
 export async function editUser(
     userId: number,
     update: UserModel
