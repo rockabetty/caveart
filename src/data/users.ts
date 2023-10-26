@@ -15,7 +15,7 @@ export async function createUser(
     `;
     const values = [username, email, password];
     return await queryDbConnection(query, values);
-}
+};
 
 export async function getUserById(
     identifier: number,
@@ -41,4 +41,4 @@ export async function editUser(
         userId,
         update
     )
-}
+};

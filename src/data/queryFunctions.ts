@@ -49,4 +49,4 @@ export async function editTable(
     `;
 
     return await queryDbConnection(query, values)
-}
+};

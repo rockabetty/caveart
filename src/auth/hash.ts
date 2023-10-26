@@ -7,8 +7,8 @@ const SALT_ROUNDS = process.node.salt_rounds || 10;
  * @param {string} password - The plaintext password.
  * @returns {Promise<string>} - The hashed password.
  */
-export async function hashPassword(password: string): Promise<string> {
-    return bcrypt.hash(password, SALT_ROUNDS);
+export async function createHash(stringToHash: string): Promise<string> {
+    return bcrypt.hash(stringToHash, SALT_ROUNDS);
 }
 
 /**
@@ -17,8 +17,8 @@ export async function hashPassword(password: string): Promise<string> {
  * @param {string} hashedPassword - The hashed password.
  * @returns {Promise<boolean>} - True if the password matches, false otherwise.
  */
-export async function comparePassword(password: string, hashedPassword: string): Promise<boolean> {
-    return bcrypt.compare(password, hashedPassword);
+export async function compareHash(originalString: string, hashedString: string): Promise<boolean> {
+    return bcrypt.compare(originalString, hashedString);
 }
 
 /**
