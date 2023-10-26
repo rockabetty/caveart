@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse, NextApiHandler } from 'next';
 import jwt from 'jsonwebtoken';
+import { getUserSession } from '../data/users';
 
 const SECRET_KEY_JWT = process.env.SECRET_KEY_JWT;
 
@@ -7,7 +8,7 @@ const withAuth = (fn: NextApiHandler) => async (req: NextApiRequest, res: NextAp
   const tokenName = process.env.UNIQUE_AUTH_TOKEN_NAME;
 
   if (!tokenName) {
-    throw new Error('Misconfiguration');
+    return res.status(500).json({ error: 'Misconfiguration' });
   }
 
   const token = req.cookies[tokenName];
@@ -16,8 +17,16 @@ const withAuth = (fn: NextApiHandler) => async (req: NextApiRequest, res: NextAp
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
+  // TODO: add expiry, and if close to expiry but not expired, renew expiry
+
   try {
-    const decoded = jwt.verify(token, SECRET_KEY_JWT);
+    const decodedRequestToken = jwt.verify(token, SECRET_KEY_JWT);
+    const userSession = await getUserSession(token);
+    
+    if (!userSession || decodedRequestToken.sub !== userSession['user_id']) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
   } catch (err) {
     return res.status(401).json({ error: 'Invalid token' });
   }
