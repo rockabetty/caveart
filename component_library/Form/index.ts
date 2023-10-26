@@ -1,7 +1,7 @@
 import Form from './Form';
-
-const { Text, TextArea } = TextInputFields;
+import TextInput from './TextInput';
 
 export default {
-  Form
+  Form,
+  TextInput
 };
