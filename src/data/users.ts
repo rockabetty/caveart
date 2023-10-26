@@ -78,10 +78,11 @@ export async function getUserSession(
 };
 
 export async function clearUserSession(
+    userId: string,
     token: string
 ): Promise<QueryResult | Error> {
-    const query = `DELETE FROM user_sessions WHERE session_token = $1`;
-    const values = [token];
+    const query = `DELETE FROM user_sessions WHERE user_id = $1 and session_token = $2`;
+    const values = [userId, token];
     const result = await queryDbConnection(query, values);
     if (result.rowCount > 0) {
       return true;  // Session was cleared

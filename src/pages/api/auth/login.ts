@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken';
 import { NextApiHandler } from 'next';
 import { encrypt } from '../../../auth/encrypt';
 import { generateToken } from '../../../auth/jwt';
