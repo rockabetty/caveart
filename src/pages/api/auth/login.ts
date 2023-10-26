@@ -1,19 +1,30 @@
 import { NextApiHandler } from "next"
-import { createHash, createRandom } from '../../../auth/hash';
-import { createUser } from '../../../data/users';
+import { encrypt } from '../../../auth/encrypt';
+import { validateUserCredentials } from '../../../data/users';
 
 const handler: NextApiHandler = async (req, res) => {
   try {
-    const {password, username} = req.body;
-    const email = req.body.email.replace(/[^a-zA-Z0-9@._-]/gi, '');
+    const {password, username, email} = req.body;
+
+    if (!password || (!username && !email)) {
+      return res.status(400).send("Required fields are missing.");
+    }
+
     const hashedPassword = createHash(password);
-    const hashedEmail = createHash(email);
-    const newUser = await createUser(
-      username,
-      hashedEmail,
+    const identificationFormat = email
+      ? 'email'
+      : 'username'
+
+    const identificationString = email
+    ? .email.replace(/[^a-zA-Z0-9@._-]/gi, '');
+    : username
+
+    const authenticationData = await validateUserCredentials(
+      identificationFormat,
+      identificationString,
       hashedPassword
     );
-    res.status(200).send(data);
+  
   }
   catch (error) {
     res.status(500).send(err)

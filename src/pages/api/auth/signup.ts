@@ -5,7 +5,7 @@ import { encrypt } from '../../../encrypt';
 
 const handler: NextApiHandler = async (req, res) => {
   if (req.method !== 'POST') {
-    return res.status(405).end(); // Method Not Allowed
+    return res.status(405).end();
   }
 
   try {
@@ -14,6 +14,11 @@ const handler: NextApiHandler = async (req, res) => {
 
     if (!password || !username || !email) {
       return res.status(400).send("Required fields are missing.");
+    }
+
+    const validUsername = /^[a-zA-Z0-9_-]+$/;
+    if (!validUsername.test(username)) {
+      return res.status(400).send("Usernames can only be letters, numbers, dashes and underscores.")
     }
 
     const encryptedEmail = encrypt(sanitizedEmail);

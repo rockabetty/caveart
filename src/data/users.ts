@@ -31,6 +31,21 @@ export async function getUserById(
     return await queryDbConnection(query, values)
 };
 
+export async function validateUserCredentials(
+    identificationFormat: 'email' | 'username',
+    identificationString: string,
+    hashedPassword: string
+): Promise<QueryResult | Error> {
+    
+    const baseQuery = `SELECT 1 FROM users WHERE password = $2 `;
+    const condition = identificationFormat === 'email'
+      ? 'AND email = $1'
+      : 'AND username = $1';
+    const query = baseQuery + condition;
+    const values = [identificationString, hashedPassword]
+    return await queryDbConnection(query, values)
+};
+
 export async function editUser(
     userId: number,
     update: UserModel
