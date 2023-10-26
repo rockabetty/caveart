@@ -74,9 +74,21 @@ export async function getUserSession(
     if (result.rows && result.rows.length > 0) {
         return result.rows[0];
     }
-
     return null;
 };
+
+export async function clearUserSession(
+    token: string
+): Promise<QueryResult | Error> {
+    const query = `DELETE FROM user_sessions WHERE session_token = $1`;
+    const values = [token];
+    const result = await queryDbConnection(query, values);
+    if (result.rowCount > 0) {
+      return true;  // Session was cleared
+    } else {
+      return false; // No session found for given token
+    }
+}
 
 export async function editUser(
     userId: number,
