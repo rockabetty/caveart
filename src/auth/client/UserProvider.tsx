@@ -1,6 +1,5 @@
 import {ReactNode, useReducer, useEffect, useMemo, Dispatch} from "react";
 import {User, UserAuthenticationState, UserAction, ActionType} from "./types/UserTypes";
-import { logger } from "../logger"
 import UserContext from "./UserContext";
 import userReducer from "./hooks/userReducer";
 import {dev, logActions, loggerMap} from './hooks/userLogger';
@@ -24,13 +23,13 @@ const UserProvider = function({children}: UserProviderProps) {
         if (logFunction & "payload" in action) {
             logFunction(action.payload)
         } else if (dev) {
-           logger.warn(`Unknown action type: ${action.type}`);
+           console.log(`Unknown action type: ${action.type}`);
         }
         dispatch(action);
     }
 
     const contextValue = useMemo(
-        () => [state, dispatch] as [UserAuthenticationState, Dispatch<UserAction],
+        () => [state, dispatch] as [UserAuthenticationState, Dispatch<UserAction>],
         [state, dispatch]
     );
 

@@ -3,8 +3,7 @@ import classNames from 'classnames'
 import '../design/style.css'
 import './Modal.css'
 import Icon from '../Icon'
-import Button from '../Button'
-import ButtonSet from '../Button/ButtonSet'
+import { Button, ButtonSet } from '../Button'
 
 export interface ModalProps {
   /**
@@ -170,7 +169,7 @@ const Modal = ({
               onClick={() => {onClose()}}
               aria-label={closeButtonLabel}
             >
-              <Icon id={`${id}-close-icon`} width={24} height={24} name="close" />
+              <Icon id={`${id}-close-icon`} width={24} height={24} viewbox={'0 0 16 16'} name="close" />
             </button>
           </div>
           <div className="modal_body">

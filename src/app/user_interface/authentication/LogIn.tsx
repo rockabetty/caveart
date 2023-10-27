@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { TextInput } from '../../../../component_library/Form';
-import { Button } from '../../../../component_library/Button';
+import { TextInput } from '../../../../component_library';
+import { Button } from '../../../../component_library';
 
 interface AuthProps {
   onLogin: (data: Record<string, unknown>) => void;
@@ -23,7 +23,7 @@ const LogIn: React.FC<AuthProps> = ({ onSignup }) => {
   const [nameError, setNameError] = useState<string>("");
 
   const [serverError, setServerError] = useState<string>("");
-  
+
   const onInputName = function (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setName(e.target.value)
   }

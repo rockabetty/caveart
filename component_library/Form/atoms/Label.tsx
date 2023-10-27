@@ -1,7 +1,7 @@
 import React from 'react'
 import classNames from 'classnames'
 import Icon from '../../Icon'
-import {InteractiveProps, InteractiveDefaults} from '../../types/universal'
+import {InteractiveProps, InteractiveDefaults} from '../../types/interactive'
 
 export interface LabelProps extends InteractiveProps {
   htmlFor: string;

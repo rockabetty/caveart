@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { TextInput } from '../../../../component_library/Form';
-import { Button } from '../../../../component_library/Button';
+import { TextInput, Button } from '../../../../component_library';
 
 interface AuthProps {
   onSignup: (data: Record<string, unknown>) => void;
@@ -85,14 +84,15 @@ const SignUp: React.FC<AuthProps> = ({ onSignup }) => {
         })
         .catch((err) => {
           const { data } = err?.response;
-          if (data.includes("name")) {
-            setNameState("error");
-            setNameError(t('authenticationForm.userErrorMessages.userNameTaken'));
-          }
-          if (data.includes("email")) {
-            setEmailState("error");
-            setEmailError(t('authenticationForm.userErrorMessages.emailTaken'));
-          }
+          console.log(data);
+            // if (data.includes("name")) {
+            //   setNameState("error");
+            //   setNameError(t('authenticationForm.userErrorMessages.userNameTaken'));
+            // }
+            // if (data.includes("email")) {
+            //   setEmailState("error");
+            //   setEmailError(t('authenticationForm.userErrorMessages.emailTaken'));
+            // }
           setServerError(err.response.data);
         });
     }

@@ -1,6 +1,6 @@
 import logs from '../../logs';
-import * as UserLoggerTypes from '../types/UserLoggerTypes';
-import {ActionType} from "../types/UserTypes"
+import * as UserLoggerTypes from '../../types/userlogger';
+import {ActionType} from "../../types/user.d.ts"
 
 export const dev = process.env.NODE_ENV === 'development';
 
@@ -40,7 +40,7 @@ type LoggerActionsMap = {
 export const loggerMap: LoggerActionsMap = {
     [ActionType.LoginSuccess]: logActions.LOGIN,
     [ActionType.Logout]: logActions.LOGOUT,
-    [ActionType.ViewProfile]: logActions:VIEW_PROFILE,
+    [ActionType.ViewProfile]: logActions.VIEW_PROFILE,
     [ActionType.UpdateProfile]: logActions.UPDATE_PROFILE,
     [ActionType.Error]: logActions.ERROR,
     [ActionType.Loading]: logActions.LOADING
