@@ -73,7 +73,7 @@ Note the quotes are in the command.
 
 There are more 'refined' ways to make commits but for the purposes of a tutorial for babby's first commit `git commit -m "short message here"` will do!
 
-Once that commit is saved, you can type `git log` and see it in the history of the code! 
+Once that commit is saved, you can type `git log` and see it in the history of the code!  If you do that from the terminal, you exit out of the log with 'q'.  Otherwise you can use the up and down arrows to read therough the log.
 
 Then, you can upload it to the repository to submit your changes to the project:
 `git push origin name-of-branch`
