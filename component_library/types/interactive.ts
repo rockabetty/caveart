@@ -27,8 +27,7 @@ export interface InteractiveProps extends UniversalProps {
     * Determine behavior when the user focuses on the element
     */
     onFocus: (...params: any) => any;
-
-}
+};
 
 export const InteractiveDefaults = {
   ...UniversalDefaults,
@@ -41,6 +40,4 @@ export const InteractiveDefaults = {
   onClick: () => {},
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onFocus: () => {},
-} as InteractiveProps
-
-
+} as InteractiveProps;

@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import axios from 'axios'
 import './Form.css'
-import {InteractiveProps, InteractiveDefaults} from '../types/universal'
+import {InteractiveProps, InteractiveDefaults} from '../types/interactive'
 
 export interface FormProps extends InteractiveProps {  
   /**

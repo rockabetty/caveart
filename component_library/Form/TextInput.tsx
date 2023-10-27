@@ -1,9 +1,9 @@
 import React, {useState, useRef} from 'react'
 import classNames from 'classnames'
-import '../../design/style.css'
-import FormField from '../atoms/FormField'
-import Label, {LabelProps, labelDefaults} from '../atoms/Label'
-import WriteInField, {WriteInFieldProps, writeInDefaults} from '../atoms/WriteInField'
+import '../design/style.css'
+import FormField from './atoms/FormField'
+import Label, {LabelProps, labelDefaults} from './atoms/Label'
+import WriteInField, {WriteInFieldProps, writeInDefaults} from './atoms/WriteInField'
 
 export interface TextInputProps extends WriteInFieldProps, LabelProps {
   /**

@@ -75,3 +75,19 @@
   color: var(--col-text-on-70-to-100);
   pointer-events: none;
 }
+
+.buttonset {
+  display:  flex;
+  width: 100%;
+}
+
+.buttonset .button {
+  border-radius: 0;
+}
+
+.buttonset .button:first-of-type {
+  border-radius: var(--size-border-radius) 0 0 var(--size-border-radius);
+}
+.buttonset .button:last-of-type {
+  border-radius: 0 var(--size-border-radius) var(--size-border-radius) 0;
+}
