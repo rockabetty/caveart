@@ -1,6 +1,6 @@
 import { NextApiHandler } from 'next';
-import { encrypt } from '../../../auth/encrypt';
-import { generateToken } from '../../../auth/jwt';
+import { encrypt } from '../../../auth/server/encrypt';
+import { generateToken } from '../../../auth/server/jwt';
 import { getUsersWithMatchingAuthCredentials } from '../../../data/users';
 
 const handler: NextApiHandler = async (req, res) => {
