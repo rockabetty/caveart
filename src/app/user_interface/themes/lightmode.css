@@ -1,63 +1,69 @@
+/*
+  To see this theme in action during development at this point 
+  you can just edit CaveartLayout.tsx to import './themes/lightmode.css' 
+  instead of './themes/main.css'.
+*/
+
 :root {
   --border-radius: 4px;
 
-  --swatch-black: #101010;
-  --swatch-white: #FEFEFE;
+  --swatch-black: #FEFEFE;
+  --swatch-white: #101010;
 
-  --swatch-gray-100: #262626;
-  --swatch-gray-90: #424242;
-  --swatch-gray-80: #505050;
-  --swatch-gray-70: #636363;
-  --swatch-gray-60: #767775;
-  --swatch-gray-50: #959595;
-  --swatch-gray-40: #a3a3a3;
-  --swatch-gray-30: #c3c3c3;
-  --swatch-gray-20: #e1e1e1;
-  --swatch-gray-10: #f3f3f3;
+  --swatch-gray-10: #262626;
+  --swatch-gray-20: #424242;
+  --swatch-gray-30: #505050;
+  --swatch-gray-40: #636363;
+  --swatch-gray-50: #767775;
+  --swatch-gray-60: #959595;
+  --swatch-gray-70: #a3a3a3;
+  --swatch-gray-80: #c3c3c3;
+  --swatch-gray-90: #e1e1e1;
+  --swatch-gray-100: #f3f3f3;
 
-  --swatch-red-100: #4e0e11;
-  --swatch-red-90: #82181d;
-  --swatch-red-80: #9d1c23;
-  --swatch-red-70: #ba2b32;
-  --swatch-red-60: #D53F46;
-  --swatch-red-50: #e77075;
-  --swatch-red-40: #eb878c;
-  --swatch-red-30: #f3b4b7;
-  --swatch-red-20: #f9dbdd;
-  --swatch-red-10: #fcf0f0;
+  --swatch-red-10: #4e0e11;
+  --swatch-red-20: #82181d;
+  --swatch-red-30: #9d1c23;
+  --swatch-red-40: #ba2b32;
+  --swatch-red-50: #D53F46;
+  --swatch-red-60: #e77075;
+  --swatch-red-70: #eb878c;
+  --swatch-red-80: #f3b4b7;
+  --swatch-red-90: #f9dbdd;
+  --swatch-red-100: #fcf0f0;
 
-  --swatch-ochre-100: #281000;
-  --swatch-ochre-90: #552200;
-  --swatch-ochre-80: #722D00;
-  --swatch-ochre-70: #8B3600;
-  --swatch-ochre-60: #A74509;
-  --swatch-ochre-50: #C35619;
-  --swatch-ochre-40: #DE7A40;
-  --swatch-ochre-30: #ECA87E;
-  --swatch-ochre-20: #F4CBB1;
-  --swatch-ochre-10: #FAE6DB;
+  --swatch-ochre-10: #281000;
+  --swatch-ochre-20: #552200;
+  --swatch-ochre-30: #722D00;
+  --swatch-ochre-40: #8B3600;
+  --swatch-ochre-50: #A74509;
+  --swatch-ochre-60: #C35619;
+  --swatch-ochre-70: #DE7A40;
+  --swatch-ochre-80: #ECA87E;
+  --swatch-ochre-90: #F4CBB1;
+  --swatch-ochre-100: #FAE6DB;
 
-  --swatch--100: #082b29;
-  --swatch-cyan-90: #0e4a46;
-  --swatch-cyan-80: #115a55;
-  --swatch-cyan-70: #146e68;
-  --swatch-cyan-60: #17856D;
-  --swatch-cyan-50: #1da69e;
-  --swatch-cyan-40: #24b6ae;
-  --swatch-cyan-30: #4bd7cf;
-  --swatch-cyan-20: #a0f0eb;
-  --swatch-cyan-10: #dffaf8;
+  --swatch-cyab-10: #082b29;
+  --swatch-cyan-20: #0e4a46;
+  --swatch-cyan-30: #115a55;
+  --swatch-cyan-40: #146e68;
+  --swatch-cyan-50: #17856D;
+  --swatch-cyan-60: #1da69e;
+  --swatch-cyan-70: #24b6ae;
+  --swatch-cyan-80: #4bd7cf;
+  --swatch-cyan-90: #a0f0eb;
+  --swatch-cyan-100: #dffaf8;
 
-  --swatch-lime-100: #0b2d09;
-  --swatch-lime-90: #124d0f;
-  --swatch-lime-80: #165d12;
-  --swatch-lime-70: #1b7316;
-  --swatch-lime-60: #22881B;
-  --swatch-lime-50: #2dab24;
-  --swatch-lime-40: #34bc2b;
-  --swatch-lime-30: #49df41;
-  --swatch-lime-20: #abf3a7;
-  --swatch-lime-10: #e1fbe0;
+  --swatch-lime-10: #0b2d09;
+  --swatch-lime-20: #124d0f;
+  --swatch-lime-30: #165d12;
+  --swatch-lime-40: #1b7316;
+  --swatch-lime-50: #22881B;
+  --swatch-lime-60: #2dab24;
+  --swatch-lime-70: #34bc2b;
+  --swatch-lime-80: #49df41;
+  --swatch-lime-90: #abf3a7;
+  --swatch-lime-100: #e1fbe0;
 
   --theme-interface-00: var(--swatch-black);
   --theme-interface-10: var(--swatch-gray-100);
