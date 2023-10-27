@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import SiteHeader from './navigation/SiteHeader';
 import  './../../../component_library/design/style.css'
+import '../../i18n';
 
 export default function CaveartLayout({ children }) {
 
