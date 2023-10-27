@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { requireEnvVar } from '../../errors/envcheck'
 
-ENCRYPTION_KEY_32_BYTE = requireEnvVar('ENCRYPTION_KEY_32_BYTE');
+const ENCRYPTION_KEY_32_BYTE = requireEnvVar('ENCRYPTION_KEY_32_BYTE');
 
 function getEncryptionKey() {
   return Buffer.from(ENCRYPTION_KEY_32_BYTE as string, 'hex');

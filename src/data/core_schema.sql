@@ -3,7 +3,8 @@ CREATE TYPE user_role AS ENUM ('Member', 'Creator', 'Moderator');
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
   username VARCHAR(250) UNIQUE NOT NULL,
-  email VARCHAR(250) UNIQUE NOT NULL,
+  email VARCHAR(250) UNIQUE NOT NULL,        -- Emails are encypted non-deterministicaly.
+  hashed_email VARCHAR(250) UNIQUE NOT NULL, -- Hashes used to check for existing emails.
   password VARCHAR(512) NOT NULL,
   password_reset_token VARCHAR(250),
   password_reset_expiry TIMESTAMP,

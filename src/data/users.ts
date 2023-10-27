@@ -4,16 +4,17 @@ import {UserModel} from './types/models';
 export async function createUser(
     username: string,
     email: string,
+    hashedEmail: string,
     password: string
 ): Promise<QueryResult | Error> {
     const query = `
       INSERT INTO users
-      (username, email, password)
+      (username, email, hashed_email, password)
       VALUES
-      ($1, $2, $3)
+      ($1, $2, $3, $4)
       RETURNING id
     `;
-    const values = [username, email, password];
+    const values = [username, email, hashedEmail, password];
     const response = await queryDbConnection(query, values);
     return response
 };

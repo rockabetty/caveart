@@ -34,29 +34,28 @@ const LogIn: React.FC<AuthProps> = () => {
     setPassword(e.target.value)
   }
 
-  const validateName = () => {
-    const isValid = name.length > 0;
-    setNameState(isValid ? 'default' : 'error');
-    setNameError(isValid ? '' : t('authenticationForm.instructions.username'));
-    setValidName(isValid);
-  };
-
-  const validatePassword = () => {
-    const isValid = password.length > 0;
-    setPasswordState(isValid ? 'default' : 'error');
-    setValidPassword(isValid);
-  };
-
   const validateLogin = () => {
-    validateName();
-    validatePassword();
+    const isValidName = name.length > 0;
+    const isValidPassword = password.length > 0;
+    if (isValidName && isValidPassword) {
+      console.log("valid")
+      return true
+    }
+
+    setNameState(isValidName ? 'default' : 'error');
+    setNameError(isValidName ? '' : t('authenticationForm.instructions.username'));
+    setValidName(isValidName);
+
+    setPasswordState(isValidPassword ? 'default' : 'error');
+    setValidPassword(isValidPassword);
+
+    return false;
   };
 
   const handleLogin = () => {
-    validateLogin();
+    const isValid = validateLogin();
     const userData = { name, password };
-    if (validName && validPassword) {
-      console.log("valid id")
+    if (isValid) {
       axios.post('/api/auth/signup', userData)
         .then((res) => {
           setName("");

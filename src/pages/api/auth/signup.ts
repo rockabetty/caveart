@@ -2,6 +2,10 @@ import { NextApiHandler } from 'next';
 import { createHash, createRandom } from '../../../auth/server/hash';
 import { createUser } from '../../../data/users';
 import { encrypt } from '../../../auth/server/encrypt';
+import { requireEnvVar } from '../../../errors/envcheck'
+
+const passwordRounds = requireEnvVar('SALT_ROUNDS_PASSWORD');
+const emailRounds = requireEnvVar('SALT_ROUNDS_EMAIL');
 
 const handler: NextApiHandler = async (req, res) => {
   console.log("signup route hit")
@@ -25,13 +29,13 @@ const handler: NextApiHandler = async (req, res) => {
     }
  
     const encryptedEmail = encrypt(sanitizedEmail);
-    const hashedEmail = await createHash(email, )
-
-    const hashedPassword = await createHash(password, process.env.SALT_ROUNDS_PASSWORD);
+    const hashedEmail = await createHash(email, emailRounds);
+    const hashedPassword = await createHash(password, passwordRounds);
     const newUser = await createUser(
       name,
       encryptedEmail,
-      hashedPassword
+      hashedEmail,
+      hashedPassword,
     );
 
     console.log(newUser);

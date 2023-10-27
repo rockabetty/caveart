@@ -4,9 +4,11 @@ export const NODE_ENV = requireEnvVar("NODE_ENV", process.env.NODE_ENV) as
   | "staging"
   | "production";
 
-export function requireEnvVar(name: string, val: string | undefined): string {
-    if (val === undefined || val == null) {
-        throw new Error(NODE_ENV === 'development' ? `Missing env variable: ${name}` : 'Service unavailable.');
+export function requireEnvVar(name: string): string {
+    const envVar = process.env[name];
+    const currentEnv = process.env["NODE_ENV"] || 'development';
+    if (envVar === undefined || envVar == null) {
+        throw new Error(currentEnv === 'development' ? `Missing env variable: ${name}` : 'Service unavailable.');
     }
-    return val
+    return envVar;
 }
