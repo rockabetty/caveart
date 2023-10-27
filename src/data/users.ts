@@ -19,7 +19,7 @@ export async function createUser(
 
 export async function getUserById(
     identifier: number,
-    columns?: string[] | null = null
+    columns?: string[] | null
 ): Promise<QueryResult | Error> {
     const query = `
         SELECT ${columns ? columns.join(",") : "*"}

@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt';
 
-const SALT_ROUNDS = process.node.salt_rounds || 10;
+const SALT_ROUNDS = process.env.SALT_ROUNDS || 10;
 
 /**
  * Hash a password.

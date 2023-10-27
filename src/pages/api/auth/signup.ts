@@ -4,6 +4,7 @@ import { createUser } from '../../../data/users';
 import { encrypt } from '../../../auth/server/encrypt';
 
 const handler: NextApiHandler = async (req, res) => {
+  console.log("signup route hit")
   if (req.method !== 'POST') {
     return res.status(405).end();
   }

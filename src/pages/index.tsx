@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import CaveartLayout from '../app/user_interface/CaveartLayout'
-import SignUp from '../app/user_interface/authentication/SignUp'
+import LogIn from '../app/user_interface/authentication/LogIn'
 export default function Home() {
   return (
     <>
@@ -12,7 +12,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <CaveartLayout>
-        <SignUp onSignup={() =>{}} />
+        <LogIn onLogin={() =>{}} />
         <main>
           henlo welcome 2 chilis
         </main>
