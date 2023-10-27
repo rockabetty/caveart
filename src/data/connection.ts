@@ -1,13 +1,19 @@
 import { Pool } from 'pg'
+import { requireEnvVar } from '../../errors/envCheck'
+
+const user = requireEnvVar('PG_USERNAME');
+const database = requireEnvVar('PG_DATABASE'); 
+const password = requireEnvVar('PG_PASSWORD');
+const host = requireEnvVar('PG_HOST')
 
 const pgConfig = {
   max: 20,
   idleTimeoutMillis: 30000,
-  user: process.env.PG_USERNAME,
-  host: 'localhost',
-  database: process.env.PG_DATABASE || 'caveart',
-  password: process.env.PG_PASSWORD,
-  port: 5432,
+  user,
+  host,
+  database,
+  password,
+  port: process.env.PG_PORT || 5432
 };
 
 export class PoolConnection {
@@ -19,12 +25,26 @@ export class PoolConnection {
     if (!this.instance) {
       this.instance = new Pool(pgConfig);
 
-      // Optional: Add error listener for debugging
       this.instance.on('error', (err, client) => {
         console.error('Unexpected error on idle client', err);
+        throw new Error(err);
+      });
+
+      // Connection check
+      this.instance.connect((err, client, done) => {
+        done();  // release the client back to the pool
+        if (err) {
+          if (err.code === 'ETIMEDOUT') {
+            throw new Error('Database connection timed out.');
+          } else if (err.code === 'ECONNREFUSED') {
+            throw new Error('Database connection was refused.');
+          } else {
+            throw err;
+          }
+        }
       });
     }
-    return this.instance
+    return this.instance;
   }
 }
 

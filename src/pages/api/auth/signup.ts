@@ -9,8 +9,6 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(405).end();
   }
 
-  console.log("it's a post")
-
   try {
     const {password, name} = req.body;
     const sanitizedEmail = req.body.email.replace(/[^a-zA-Z0-9@._-]/gi, '');
@@ -27,8 +25,9 @@ const handler: NextApiHandler = async (req, res) => {
     }
  
     const encryptedEmail = encrypt(sanitizedEmail);
+    const hashedEmail = await createHash(email, )
 
-    const hashedPassword = await createHash(password);
+    const hashedPassword = await createHash(password, process.env.SALT_ROUNDS_PASSWORD);
     const newUser = await createUser(
       name,
       encryptedEmail,

@@ -29,6 +29,7 @@ export default function CaveartLayout({ children }) {
     <SiteHeader
       onSignup={() => {openAuth()}}
       onLogIn={()=> {openAuth()}}
+      initial={authMode}
       loggedIn={loggedIn}
       onLogout={logOut}
     />

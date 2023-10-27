@@ -1,10 +1,10 @@
 import crypto from 'crypto';
+import { requireEnvVar } from '../../errors/envcheck'
+
+ENCRYPTION_KEY_32_BYTE = requireEnvVar('ENCRYPTION_KEY_32_BYTE');
 
 function getEncryptionKey() {
-  if (!process.env.ENCRYPTION_KEY_32_BYTE) {
-    throw new Error('ENCRYPTION_KEY_32_BYTE is not defined');
-  }
-  return Buffer.from(process.env.ENCRYPTION_KEY_32_BYTE as string, 'hex');
+  return Buffer.from(ENCRYPTION_KEY_32_BYTE as string, 'hex');
 }
 
 const IV_LENGTH = 16;

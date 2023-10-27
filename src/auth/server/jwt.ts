@@ -1,8 +1,6 @@
-const SECRET_KEY_JWT = process.env.SECRET_KEY_JWT;
+import { requireEnvVar } from '../../errors/envcheck'
 
-if (!SECRET_KEY_JWT) {
-  throw new Error("JWT secret key is missing from environment variables!");
-}
+const SECRET_KEY_JWT = requireEnvVar('SECRET_KEY_JWT');
 
 export function generateToken(userId: string, durationInMilliseconds: number = 1209600 * 1000) {
   const expirationDate = new Date(Date.now() + durationInMilliseconds);

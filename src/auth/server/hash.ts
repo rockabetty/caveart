@@ -1,14 +1,12 @@
 import * as bcrypt from 'bcrypt';
 
-const SALT_ROUNDS = process.env.SALT_ROUNDS || 10;
-
 /**
  * Hash a password.
  * @param {string} password - The plaintext password.
  * @returns {Promise<string>} - The hashed password.
  */
-export async function createHash(stringToHash: string): Promise<string> {
-    return bcrypt.hash(stringToHash, SALT_ROUNDS);
+export async function createHash(stringToHash: string, saltRounds: number): Promise<string> {
+    return bcrypt.hash(stringToHash, saltRounds);
 }
 
 /**
