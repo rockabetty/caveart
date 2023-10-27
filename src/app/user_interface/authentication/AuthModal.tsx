@@ -18,6 +18,10 @@ const AuthModal: React.FC<AuthProps> = ({ isOpen, initial, onClose, onAuth }) =>
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
   useEffect(() => {
+    setAuthMode(initial)
+  }, [initial]);
+
+  useEffect(() => {
     const message = authMode === 'Log In' ? t('authenticationForm.logInSuccessful') : t('authenticationForm.signUpSuccessful');
     setConfirmationMessage(message);
   }, [authMode]);

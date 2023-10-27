@@ -19,6 +19,8 @@
 
 .modal.Closed {
   opacity: 0;
+  height: 0;
+  transition: all 0.3s ease-in;
 }
 
 .modal.Open {
@@ -26,6 +28,7 @@
   opacity: 1;
   overflow: visible;
   z-index: 500;
+  transition: all 0.3s ease-in;
 }
 
 .modal_content {

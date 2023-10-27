@@ -89,7 +89,6 @@ const LogIn: React.FC<AuthProps> = () => {
           />
           <TextInput
             labelText={t('authenticationForm.labels.password')}
-            helperText={t('authenticationForm.instructions.password')}
             value={password}
             placeholderText=""
             errorText={t('authenticationForm.userErrorMessages.passwordTooShort')}

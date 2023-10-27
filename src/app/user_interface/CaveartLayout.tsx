@@ -10,34 +10,34 @@ export default function CaveartLayout({ children }) {
 
   const [loggedIn, setLoggedIn] = useState<boolean>(false)
   const [authModalOpen, setAuthModalOpen] = useState<boolean>(false)
-  const [authMode, setAuthMode] = useState<'Sign Up' | 'Log In' | ''>('')
+  const [authMode, setAuthMode] = useState<'Sign Up' | 'Log In'>('Sign Up');
 
+  const closeAuthModal = function () {
+    setAuthModalOpen(false);
+  }
 
-  const logOut = () => {};
-  const closeModal = () => {
-    setAuthModalOpen(false)
-  };
-
-  const openAuth = function () {
+  const openAuthModal = function (whichMode: string) {
+    setAuthMode(whichMode);
     setAuthModalOpen(true);
   }
+
+   const logOut = () => {};
+ 
 
   const logIn = () => {};
   
   return (
   <UserProvider>
     <SiteHeader
-      onSignup={() => {openAuth()}}
-      onLogIn={()=> {openAuth()}}
-      initial={authMode}
+      onSignup={() => {openAuthModal('Sign Up')}}
+      onLogIn={()=> {openAuthModal('Log In')}}
       loggedIn={loggedIn}
       onLogout={logOut}
     />
     <AuthModal
       isOpen={authModalOpen}
-      onClose={closeModal}
+      onClose={closeAuthModal}
       onAuth={logIn}
-      loggedIn={loggedIn}
       initial={authMode}
     />
 
