@@ -3,12 +3,14 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { TextInput } from '../../../../component_library';
 import { Button } from '../../../../component_library';
+import { useUser } from '../../../auth/client/hooks/useUser';
+import { ActionType } from '../../../auth/types/user.d.ts'
 
-interface AuthProps {
-  onLogin: (data: Record<string, unknown>) => void;
-}
 
-const LogIn: React.FC<AuthProps> = ({ onSignup }) => {
+const LogIn: React.FC<AuthProps> = () => {
+
+  const [state, dispatch] = useUser();
+
   const { t } = useTranslation();
   
   const [name, setName] = useState<string>("");
@@ -52,16 +54,17 @@ const LogIn: React.FC<AuthProps> = ({ onSignup }) => {
 
   const handleLogin = () => {
     validateLogin();
+    const userData = { name, password };
     if (validName && validPassword) {
       console.log("valid id")
-      axios.post('/api/auth/signup', {
-        name,
-        password
-      })
+      axios.post('/api/auth/signup', userData)
         .then((res) => {
           setName("");
           setPassword("");
-          onLogin(res.data);
+          dispatch({
+            type: ActionType.Login,
+            payload: userData
+          })
         })
         .catch((err) => {
           const { data } = err?.response;
@@ -69,8 +72,6 @@ const LogIn: React.FC<AuthProps> = ({ onSignup }) => {
         });
     }
   };
-
-  useEffect(handleLogin, [name, password]);
 
   return (
     <div>

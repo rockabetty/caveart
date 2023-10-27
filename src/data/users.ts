@@ -6,7 +6,6 @@ export async function createUser(
     email: string,
     password: string
 ): Promise<QueryResult | Error> {
-    console.log("create user running")
     const query = `
       INSERT INTO users
       (username, email, password)
@@ -15,12 +14,7 @@ export async function createUser(
       RETURNING id
     `;
     const values = [username, email, password];
-    console.log(query)
-    console.log(username)
-    console.log(email)
-    console.log("password:" + password)
     const response = await queryDbConnection(query, values);
-    console.log(response)
     return response
 };
 

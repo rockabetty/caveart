@@ -8,8 +8,7 @@ export async function queryDbConnection(queryString: string, values: any[] = [])
     try {
         return await client.query(queryString, values);
     } catch (err) {
-        console.log(err)
-        return new Error('Database operation failed');
+        throw err;
     } finally {
         client.release();
     }

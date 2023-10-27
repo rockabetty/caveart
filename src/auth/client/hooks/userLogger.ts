@@ -5,7 +5,7 @@ import {ActionType} from "../../types/user.d.ts"
 export const dev = process.env.NODE_ENV === 'development';
 
 export const logActions = {
-  LOGIN_SUCCESS: (payload: UserLoggerTypes.LoginLoggerPayload) => {
+  LOGIN: (payload: UserLoggerTypes.LoginLoggerPayload) => {
     logger.info(`${dev ? `User [ID: ${payload.id}] logged in from ${payload.source}` : 'User logged in'}`)
   },
   LOGOUT: (payload: UserLoggerTypes.LogoutLoggerPayload) => {
@@ -38,7 +38,7 @@ type LoggerActionsMap = {
 };
 
 export const loggerMap: LoggerActionsMap = {
-    [ActionType.LoginSuccess]: logActions.LOGIN,
+    [ActionType.Login]: logActions.LOGIN,
     [ActionType.Logout]: logActions.LOGOUT,
     [ActionType.ViewProfile]: logActions.VIEW_PROFILE,
     [ActionType.UpdateProfile]: logActions.UPDATE_PROFILE,

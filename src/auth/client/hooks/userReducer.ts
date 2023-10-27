@@ -2,7 +2,7 @@ import {UserAuthenticationState, UserAction} from "../types/UserTypes";
 
 const userReducer = (state: UserAuthState, action: UserAction): UserAuthState => {
     switch (action.type) {
-      case ActionType.LoginSuccess:
+      case ActionType.Login:
         return { ...state, user: action.payload, authenticated: true, loading: false }
       case ActionType.Logout:
         return { ...state, user: null, authenticated: false, loading: false }  

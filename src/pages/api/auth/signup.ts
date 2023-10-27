@@ -18,21 +18,17 @@ const handler: NextApiHandler = async (req, res) => {
     console.log(sanitizedEmail);
 
     if (!password || !name || !sanitizedEmail) {
-      console.log("Missing requried fields");
       return res.status(400).send("Required fields are missing.");
     }
 
     const validUsername = /^[a-zA-Z0-9_-]+$/;
     if (!validUsername.test(name)) {
-      console.log("bad username");
-      return res.status(400).send("Usernames can only be letters, numbers, dashes and underscores.")
+       return res.status(400).send("Usernames can only be letters, numbers, dashes and underscores.")
     }
-    console.log("got past tests")
-
+ 
     const encryptedEmail = encrypt(sanitizedEmail);
 
     const hashedPassword = await createHash(password);
-    console.log(encryptedEmail);
     const newUser = await createUser(
       name,
       encryptedEmail,

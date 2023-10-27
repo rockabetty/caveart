@@ -11,7 +11,7 @@ export type UserAuthState = {
 };
 
 export enum ActionType {
-    LoginSuccess = "LOGIN",
+    Login = "LOGIN",
     Logout = "LOGOUT",
     Error = "ERROR",
     Loading = "LOADING",

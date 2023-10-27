@@ -32,7 +32,7 @@
   --swatch-ochre-20: #F4CBB1;
   --swatch-ochre-10: #FAE6DB;
 
-  --swatch--100: #082b29;
+  --swatch-cyan-100: #082b29;
   --swatch-cyan-90: #0e4a46;
   --swatch-cyan-80: #115a55;
   --swatch-cyan-70: #146e68;
@@ -54,8 +54,8 @@
   --swatch-lime-20: #abf3a7;
   --swatch-lime-10: #e1fbe0;
 
-  --swatch-white: #fff;
-  --swatch-black: #050505;
+  --swatch-white: #FEFEFE;
+  --swatch-black: #222222;
 
   --base-size: 1.16rem;
   --base-scaler: 1.6;
@@ -149,14 +149,12 @@
   --theme-success-100: var(--color-success-100, var(--swatch-lime-10));
 
   --col-text: var(--color-text, var(--theme-interface-100));
-  --col-text-secondary: var(--color-text-secondary, var(--theme-interface-60));
-
-  --col-text: var(--color-text, var(--theme-interface-100));
+  --col-text-secondary: var(--color-text-secondary, var(--theme-interface-80));
   --col-text-inverse: var(--color-text-inverse, var(--theme-interface-00));
 
-  --col-background: var(--color-background, var(--theme-interface-00));
-  --col-backdrop: var(--color-background, var(--theme-interface-20));
-  --col-border: var(--color-border, var(--theme-interface-30));
+  --col-background: var(--color-background, var(--theme-interface-10));
+  --col-backdrop: var(--color-background, var(--theme-interface-00));
+  --col-border: var(--color-border, var(--theme-interface-40));
 
   --col-button: var(--color-button, var(--theme-secondary-20));
   --col-button-hover: var(--color-button-hover, var(--theme-secondary-30));
@@ -174,8 +172,8 @@
   --col-button-warning-label: var(--color-button-warning-label, var(--col-text-inverse));
 
   --col-focus: var(--color-interactive-01-hover, var(--theme-primary-70));
-  --col-interactive-01: var(--color-interactive-01, var(--theme-primary-60)); /* 4.5:1 ratio */
-  --col-interactive-01-hover: var(--color-interactive-01-hover, var(--theme-primary-70)); /* 4.5:1 ratio */
+  --col-interactive-01: var(--color-interactive-01, var(--theme-primary-70)); /* 4.5:1 ratio */
+  --col-interactive-01-hover: var(--color-interactive-01-hover, var(--theme-primary-80)); /* 4.5:1 ratio */
   --col-interactive-02: var(--color-interactive-02, var(--theme-secondary-50)); /*   3:1 ratio */
   --col-disabled: var(--color-disabled, var(--theme-interface-30));
   --col-error: var(--color-error, var(--theme-tertiary-60));
@@ -190,7 +188,7 @@
 }
 
 body {
-  background: var(--col-background);
+  background: var(--col-backdrop);
 }
 
 .wrapper--text {

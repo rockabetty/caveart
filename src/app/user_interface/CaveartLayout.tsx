@@ -4,6 +4,7 @@ import AuthModal from './authentication/AuthModal';
 import UserProvider from '../../auth/client/UserProvider';
 import  './../../../component_library/design/style.css'
 import '../../i18n';
+import './brand.css'
 
 export default function CaveartLayout({ children }) {
 

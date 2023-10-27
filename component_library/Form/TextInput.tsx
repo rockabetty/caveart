@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import classNames from 'classnames'
 import '../design/style.css'
 import FormField from './atoms/FormField'
@@ -82,6 +82,11 @@ const TextInput: React.FC<WriteInFieldProps> = (props) => {
     }
     setError(false)
   }
+  
+  useEffect( () => {
+    setError(!!errorText && dirty)
+  },
+  [errorText])
 
   return(
     <FormField

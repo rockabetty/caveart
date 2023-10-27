@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Login from './LogIn';
 import Signup from './SignUp';
+import { useUser } from '../../../auth/client/hooks/useUser';
+import { ActionType } from '../../../auth/client/types/user.d.ts'
 import { Button, Modal } from '../../../../component_library';
 
 interface AuthProps {

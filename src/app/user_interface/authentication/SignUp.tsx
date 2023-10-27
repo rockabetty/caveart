@@ -3,11 +3,8 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { TextInput, Button } from '../../../../component_library';
 
-interface AuthProps {
-  onSignup: (data: Record<string, unknown>) => void;
-}
 
-const SignUp: React.FC<AuthProps> = ({ onSignup }) => {
+const SignUp: React.FC<AuthProps> = () => {
   const { t } = useTranslation();
   
   const [name, setName] = useState<string>("");
@@ -83,22 +80,21 @@ const SignUp: React.FC<AuthProps> = ({ onSignup }) => {
           onSignup(res.data);
         })
         .catch((err) => {
-          const { data } = err?.response;
-          console.log(data);
-            // if (data.includes("name")) {
-            //   setNameState("error");
-            //   setNameError(t('authenticationForm.userErrorMessages.userNameTaken'));
-            // }
-            // if (data.includes("email")) {
-            //   setEmailState("error");
-            //   setEmailError(t('authenticationForm.userErrorMessages.emailTaken'));
-            // }
-          setServerError(err.response.data);
+          console.log(err);
+          const {detail} = err?.response?.data;
+          console.log(detail);
+          if (detail.includes("name")) {
+            setNameError(t('authenticationForm.userErrorMessages.userNameTaken'));
+            setNameState('error')
+          }
+          if (detail.includes("email")) {
+            setEmailError(t('authenticationForm.userErrorMessages.emailTaken'));
+            setEmailState('error')
+          }
+          // setServerError(err.response.data);
         });
     }
   };
-
-  useEffect(handleSignup, [name, email, password, passwordVerification]);
 
   return (
     <div>

@@ -1,7 +1,7 @@
 .horizontal-nav {
   width: 100%;
   padding:  var(--spacing-md);
-  background-image: linear-gradient(to top, var(--col-background), transparent),
+  background-image: linear-gradient(to top, var(--col-backdrop), transparent),
      url('/img/brand/tiling_hands.jpg');
 }
 
