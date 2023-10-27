@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import SiteHeader from './navigation/SiteHeader';
+import  './../../../component_library/design/style.css'
 
 export default function CaveartLayout({ children }) {
 
@@ -14,8 +15,9 @@ export default function CaveartLayout({ children }) {
       loggedIn={loggedIn}
       onLogout={logOut}
     />
-
-    <main>{children}</main>
+    <div className="wrapper--text">
+      <main>{children}</main>
+    </div>
   </>
   )
 }

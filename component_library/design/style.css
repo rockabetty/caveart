@@ -189,10 +189,25 @@
   box-sizing: border-box;
 }
 
+body {
+  background: var(--col-background);
+}
+
+.wrapper--text {
+  padding:  0 var(--spacing-md);
+  margin: 0 auto;
+  max-width:  1400px;
+}
+
 div, p, span, a, rt, rp, dfn, abbr, q, cite, em, time, var,
 samp, i, b, sub, sup, small, strong, mark, ruby, ins, del,
 bdi, bdo, s, kbd, wbr {
   font-family: Tahoma,Verdana,Segoe,sans-serif; 
+}
+
+p {
+  margin-block-end:  var(--spacing-md);
+  margin-block-start:  var(--spacing-sm);
 }
 
 h1 {
@@ -204,6 +219,16 @@ h2 {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: Tahoma,Verdana,Segoe,sans-serif;
+  margin-block-start:  var(--spacing-lg);
+}
+
+ul {
+  margin-inline-start: var(--spacing-md);
+  list-style-type: square;
+}
+
+li {
+  padding-block-end: var(--spacing-xs);
 }
 
 /* width */
