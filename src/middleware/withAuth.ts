@@ -4,8 +4,9 @@ import { getUserSession } from '../data/users';
 import { requireEnvVar} from '../errors/envcheck';
 
 const SECRET_KEY_JWT = requireEnvVar('SECRET_KEY_JWT');
-const TOKEN_NAME = requireEnvVar('UNIQUE_AUTH_TOKEN_NAME');
-const withAuth = (fn: NextApiHandler) => async (req: NextApiRequest, res: NextApiResponse) => {
+const TOKEN_NAME = requireEnvVar('USER_AUTH_TOKEN_NAME');
+
+export const withAuth = (fn: NextApiHandler) => async (req: NextApiRequest, res: NextApiResponse) => {
   
   if (!TOKEN_NAME) {
     return res.status(500).json({ error: 'Misconfiguration' });
