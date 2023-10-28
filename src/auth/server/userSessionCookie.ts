@@ -2,14 +2,21 @@ import { generateToken } from './jwt';
 import { createUserSession } from '../../data/users';
 import { requireEnvVar } from '../../errors/envcheck';
 
-const AuthTokenName = requireEnvVar('USER_AUTH_TOKEN_NAME');
+const authTokenName = requireEnvVar('USER_AUTH_TOKEN_NAME');
 
 export const createUserSessionCookie = async ( userId: number ) => {
+  console.log("Create user session cookie called");
   const {token, expirationDate} = generateToken(userId);
-  const newUserSession = await createUserSession(
-    userId,
-    token,
-    expirationDate
-  );
-  return `${tokenName}=${token}; HttpOnly; Path=/;  Secure; SameSite=Lax; Expires=${expirationDate.toUTCString()};`;
+  console.log("Token generated");
+  console.log(token);
+  try {
+    await createUserSession(
+      userId,
+      token,
+      expirationDate
+    );
+    return `${authTokenName}=${token}; HttpOnly; Path=/;  Secure; SameSite=Lax; Expires=${expirationDate.toUTCString()};`;
+  } catch (err) {
+    throw err
+  }
 }

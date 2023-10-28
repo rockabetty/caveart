@@ -1,4 +1,5 @@
 import { requireEnvVar } from '../../errors/envcheck'
+import jwt from 'jsonwebtoken';
 
 const SECRET_KEY_JWT = requireEnvVar('SECRET_KEY_JWT');
 

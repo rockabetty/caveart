@@ -16,6 +16,7 @@ const english = {
         "userNameTaken": "Please pick a different username",
         "emailTaken": "Please pick a different email address",  
         "passwordTooShort": "This password is not long enough",
+        "passwordMissing": "Please provide a password",
         "passwordsDontMatch": "Passwords do not match",
         // This message is for when a user's email or password is not correct
         // It is not advised to specify which one is the case, so be vague.

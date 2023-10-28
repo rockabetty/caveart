@@ -83,8 +83,8 @@ const TextInput: React.FC<WriteInFieldProps> = (props) => {
     setError(false)
   }
   
-  useEffect( () => {
-    setError(!!errorText && dirty)
+  useEffect(() => {
+    setError(errorText)
   },
   [errorText])
 

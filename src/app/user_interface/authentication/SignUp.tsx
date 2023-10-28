@@ -2,26 +2,26 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { TextInput, Button } from '../../../../component_library';
-
+import { useUser } from '../../../auth/client/hooks/useUser';
+import { ActionType } from '../../../auth/types/user.d.ts';
+import { ErrorKeys } from '../../../auth/types/errors';
 
 const SignUp: React.FC<AuthProps> = () => {
   const { t } = useTranslation();
+
+  const [state, dispatch] = useUser();
   
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [passwordVerification, setPasswordVerification] = useState<string>("");
 
-  const [nameState, setNameState] = useState<"default"|"error"|"valid">('default');
-  const [emailState, setEmailState] = useState<"default"|"error"|"valid">('default');
-  const [passwordState, setPasswordState] = useState<"default"|"error"|"valid">('default');
-  const [passwordVerificationState, setPasswordVerificationState] = useState<"default"|"error"|"valid">('default');
-
   const [nameError, setNameError] = useState<string>("");
   const [emailError, setEmailError] = useState<string>("");
-  const [serverError, setServerError] = useState<string>("");
+  const [passwordError, setPasswordError] = useState<string>("");
+  const [passwordVerificationError, setPasswordVerificationError] = useState<string>("");
 
-  const isEmailValid = (email: string) => /^([\w.%+-]+)@([\w-]+).([\w]{2,})$/i.test(email);
+  const isEmailValid = () => /^([\w.%+-]+)@([\w-]+).([\w]{2,})$/i.test(email);
 
   const onInputName = function (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setName(e.target.value)
@@ -39,58 +39,55 @@ const SignUp: React.FC<AuthProps> = () => {
     setPasswordVerification(e.target.value)
   }
 
-  const validateName = () => {
-    const isValid = name.length > 0;
-    setNameState(isValid ? 'default' : 'error');
-    setNameError(isValid ? '' : t('authenticationForm.instructions.username'));
-  };
 
-  const validateEmail = () => {
-    const isValid = isEmailValid(email);
-    setEmailState(isValid ? 'default' : 'error');
-    setEmailError(isValid ? '' : t('authenticationForm.instructions.email'));
-  };
-
-  const validatePassword = () => {
-    const isValid = password.length > 7;
-    setPasswordState(isValid ? 'default' : 'error');
-  };
-
-  const validatePasswordVerification = () => {
-    const isValid = password === passwordVerification;
-    setPasswordVerificationState(isValid ? 'default' : 'error');
-  };
 
   const validateSignup = () => {
-    validateName();
-    validateEmail();
-    validatePassword();
-    validatePasswordVerification();
+    if (name.length === 0) {
+      setNameError(t(ErrorKeys.USERNAME_MISSING));
+      return false;
+    }
+    if (!isEmailValid()) {
+      console.log("Not valid")
+      setEmailError(t(ErrorKeys.EMAIL_INVALID));
+      return false;
+    }
+    if (password.length < 8) {
+      setPasswordError(t(ErrorKeys.PASSWORD_SHORT));
+      return false;
+    }
+    if (password !== passwordVerification) {
+      setPasswordVerificationError(t(ErrorKeys.PASSWORD_MISMATCH));
+      return false;
+    }
+    return true;
   };
 
   const handleSignup = () => {
-    validateSignup();
+    const isValid = validateSignup();
  
-    if (isEmailValid(email) && name.length > 0 && password.length > 7 && password === passwordVerification) {
-      axios.post('/api/auth/signup', { name, email, password })
+    if (isValid) {
+      dispatch({
+        type: ActionType.Loading,
+      });
+
+      const userData = {name, email, password}
+
+      axios.post('/api/auth/signup', userData)
         .then((res) => {
-          setName("");
-          setEmail("");
-          setPassword("");
-          onSignup(res.data);
+          dispatch({
+            type: ActionType.Login,
+            payload: userData
+          });
         })
         .catch((err) => {
           console.log(err);
           const {detail} = err?.response?.data;
           if (detail && detail.includes("name")) {
-            setNameError(t('authenticationForm.userErrorMessages.userNameTaken'));
-            setNameState('error')
+            setNameError(t(ErrorKeys.USERNAME_TAKEN));
           }
           if (detail && detail.includes("email")) {
-            setEmailError(t('authenticationForm.userErrorMessages.emailTaken'));
-            setEmailState('error')
+            setEmailError(t(ErrorKeys.EMAIL_TAKEN));
           }
-          // setServerError(err.response.data);
         });
     }
   };
@@ -103,7 +100,6 @@ const SignUp: React.FC<AuthProps> = () => {
             labelText={t('authenticationForm.labels.username')}
             id="signup_name"
             onChange={(e) => {onInputName(e)}}
-            status={nameState}
             type="text"
             placeholderText="Captain Caveman"
             errorText={nameError}
@@ -113,7 +109,6 @@ const SignUp: React.FC<AuthProps> = () => {
             labelText={t('authenticationForm.labels.email')}
             id="signup_email"
             onChange={(e) => {onInputEmail(e)}}
-            status={emailState}
             placeholderText="unga@bunga.com"
             type="email"
             errorText={emailError}
@@ -124,24 +119,21 @@ const SignUp: React.FC<AuthProps> = () => {
             helperText={t('authenticationForm.instructions.password')}
             value={password}
             placeholderText=""
-            errorText={t('authenticationForm.userErrorMessages.passwordTooShort')}
-            status={passwordState}
+            errorText={passwordError}
             id="signup_password"
             onChange={(e) => {onInputPassword(e)}}
             type="password"
           />
           <TextInput
             labelText={t('authenticationForm.labels.password2')}
-            errorText={t('authenticationForm.userErrorMessages.passwordsDontMatch')}
+            errorText={passwordVerificationError}
             value={passwordVerification}
             placeholderText=""
-            status={passwordVerificationState}
             id="signup_password_verification"
             onChange={(e) => {onInputPasswordVerification(e)}}
             type="password"
           />
         </fieldset>
-        { serverError && <span className="form_server-message Error">{serverError}</span> }
         <Button id="authenticate_signup" type="button" onClick={handleSignup} look="primary">
           {t('authenticationForm.buttonLabels.signUp')}
         </Button>

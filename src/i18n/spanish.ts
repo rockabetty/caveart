@@ -17,6 +17,7 @@ const spanish = {
         "emailTaken": "Este correo electrónico no está disponible",  
         "passwordTooShort": "Esta contraseña es demasiado corta",
         "passwordsDontMatch": "Las contraseñas deben ser exactamente iguales",
+        "passwordMissing": "Por favor, introduzca una contraseña",
         // This message is for when a user's email or password is not correct
         // It is not advised to specify which one is the case, so be vague.
         "badLoginInfo": "Este inicio de sesión no es válido"

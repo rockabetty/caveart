@@ -17,6 +17,7 @@ const arabic = {
         "emailTaken": "يرجى اختيار عنوان بريد إلكتروني آخر",
         "passwordTooShort": "كلمة المرور قصيرة جداً",
         "passwordsDontMatch": "كلمتا المرور غير متطابقتان",
+        "passwordMissing": " من فضلك، أدخل كلمة المرور.",
         "badLoginInfo": "لا يمكن الدخول باستخدام هذه البيانات"
       },
       "buttonLabels": {

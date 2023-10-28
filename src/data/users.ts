@@ -14,11 +14,8 @@ export async function createUser(
       ($1, $2, $3, $4)
       RETURNING id
     `;
-    console.log(query);
     const values = [username, email, hashedEmail, password];
-    console.log(values);
-    const response = await queryDbConnection(query, values);
-    return response
+    return await queryDbConnection(query, values);
 };
 
 export async function getUserById(

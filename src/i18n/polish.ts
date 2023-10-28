@@ -16,6 +16,7 @@ const polish = {
         "userNameTaken": "Wybierz inną nazwę użytkownika",
         "emailTaken": "Wybierz inny adres e-mail",  
         "passwordTooShort": "To hasło jest zbyt krótkie",
+        "passwordMissing": "Proszę wprowadzić hasło",
         "passwordsDontMatch": "Hasła nie pokrywają się",
         // This message is for when a user's email or password is not correct
         // It is not advised to specify which one is the case, so be vague.

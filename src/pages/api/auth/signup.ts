@@ -39,7 +39,9 @@ const handler: NextApiHandler = async (req, res) => {
     );
 
     const userId = newUser.rows[0].id;
+    console.log(`Got a user ID: ${userId}`);
     const userSessionCookie = await createUserSessionCookie(userId);
+    console.log("Got a session cookie" + userSessionCookie);
     res.setHeader('Set-Cookie', userSessionCookie);
     res.status(200).send();
 

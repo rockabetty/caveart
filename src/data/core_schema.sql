@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS users_sessions (
   id SERIAL PRIMARY KEY,
   user_id INT REFERENCES users(id),
-  session_id INT UNIQUE NOT NULL,
+  session_token VARCHAR(250) UNIQUE NOT NULL,
   expiration_date TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
