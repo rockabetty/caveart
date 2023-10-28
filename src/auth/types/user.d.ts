@@ -19,6 +19,12 @@ export enum ActionType {
     UpdateProfile = "UPDATE_PROFILE"
 }
 
+export type UserProfile = {
+    username?: string;
+    email?: string;
+    role?: 'Member' | 'Creator' | 'Moderator';
+};
+
 export type UserAction =
     | { type: ActionType.Login; payload: User }
     | { type: ActionType.Logout }
