@@ -76,6 +76,7 @@ const UserProvider = function({children}: UserProviderProps) {
                 type: ActionType.ViewProfile,
                 payload: response.data
             });
+            return response.data;
         }
         catch (error) {
           const errorMessage = error.response && error.response.data.message

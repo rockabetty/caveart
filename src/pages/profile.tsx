@@ -1,44 +1,42 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react';
 import CaveartLayout from '../app/user_interface/CaveartLayout';
-import axios from 'axios';
 import { useUser } from '../auth/client/hooks/useUser';
-import { ActionType, UserType } from '../auth/types/user.d.ts';
+import { UserType } from '../auth/types/user.d.ts';
 
 const Profile: React.FC = () => {
-
-  const {viewProfile, getUser} = useUser();
-  const [userProfile, setUserProfile] = useState<UserType>({})
-
-  useEffect(() => {
-    const userInfo = getUser()
-    setUserProfile(userInfo)
-  }, [getUser]);
+  const { viewProfile } = useUser();
+  const [userProfile, setUserProfile] = useState<UserType | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      viewProfile();
-    }
-    catch(error) {
-      console.log(err);
+    const fetchProfile = async () => {
+      try {
+        const profile = await viewProfile();
+        setUserProfile(profile);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
     };
-  },
-  []);
+
+    fetchProfile();
+  }, []);
+
+  if (loading) {
+    return <CaveartLayout>Loading...</CaveartLayout>;
+  }
 
   if (userProfile) {
     return (
-      <CaveartLayout requireLogin={false}>
+      <CaveartLayout requireLogin={true}>
         <h1>{userProfile.username}</h1>
-        <p>member since {userProfile.created_at} | {userProfile.email}</p>
+        <p>{userProfile.created_at} | {userProfile.email}</p>
       </CaveartLayout>
-    )
-  } else {
-    return (
-      <CaveartLayout>
-      </CaveartLayout>
-    )
+    );
   }
 
-  
-}
+  return <CaveartLayout>Error loading profile</CaveartLayout>;
+};
 
 export default Profile;
