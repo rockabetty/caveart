@@ -95,16 +95,20 @@ export async function clearUserSession(
     }
 }
 
-export async function getUserSiteProfile(
+export async function getUser(
     userId: number,
     columns: UserModel
 ): Promise<QueryResult | Error> {
-    return await getTable(
-        'users',
-        'id',
-        userId,
-        columns
+    const result = await getTable(
+      'users',
+      'id',
+      userId,
+      columns
     );
+    if (result.rows && result.rows.length > 0) {
+      return result.rows[0];
+    }
+    return null;
 };
 
 export async function editUser(

@@ -1,17 +1,17 @@
 import { NextApiRequest, NextApiResponse, NextApiHandler } from 'next';
 import jwt from 'jsonwebtoken';
 import { getUserSession } from '../data/users';
+import { requireEnvVar} from '../errors/envcheck';
 
-const SECRET_KEY_JWT = process.env.SECRET_KEY_JWT;
-
+const SECRET_KEY_JWT = requireEnvVar('SECRET_KEY_JWT');
+const TOKEN_NAME = requireEnvVar('UNIQUE_AUTH_TOKEN_NAME');
 const withAuth = (fn: NextApiHandler) => async (req: NextApiRequest, res: NextApiResponse) => {
-  const tokenName = process.env.UNIQUE_AUTH_TOKEN_NAME;
-
-  if (!tokenName) {
+  
+  if (!TOKEN_NAME) {
     return res.status(500).json({ error: 'Misconfiguration' });
   }
 
-  const token = req.cookies[tokenName];
+  const token = req.cookies[TOKEN_NAME];
 
   if (!token) {
     return res.status(401).json({ error: 'Unauthorized' });
