@@ -64,18 +64,11 @@ const SignUp: React.FC<AuthProps> = () => {
     const isValid = validateSignup();
  
     if (isValid) {
-      dispatch({
-        type: ActionType.Loading,
-      });
-
       const userData = {name, email, password}
 
       axios.post('/api/auth/signup', userData)
         .then((res) => {
-          dispatch({
-            type: ActionType.Login,
-            payload: userData
-          });
+          loginUser(email, password);
         })
         .catch((err) => {
           console.log(err);

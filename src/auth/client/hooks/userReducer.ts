@@ -1,4 +1,4 @@
-import {UserAuthenticationState, UserAction} from "../types/UserTypes";
+import {UserAuthenticationState, UserAction, ActionType} from "../../types/user.d.ts";
 
 const userReducer = (state: UserAuthState, action: UserAction): UserAuthState => {
     switch (action.type) {

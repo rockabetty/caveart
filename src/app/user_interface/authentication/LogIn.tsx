@@ -1,33 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { TextInput } from '../../../../component_library';
-import { Button } from '../../../../component_library';
+import { TextInput, Button } from '../../../../component_library';
 import { useUser } from '../../../auth/client/hooks/useUser';
-import { ActionType } from '../../../auth/types/user.d.ts'
+import { ActionType } from '../../../auth/types/user.d.ts';
+import { ErrorKeys } from '../../../auth/types/errors';
 
-
-const LogIn: React.FC<AuthProps> = () => {
-
-  const [state, dispatch] = useUser();
-
+const SignUp: React.FC<AuthProps> = () => {
   const { t } = useTranslation();
+
+  const [state, dispatch, loginUser] = useUser();
   
-  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  
+  const [emailError, setEmailError] = useState<string>("");
+  const [passwordError, setPasswordError] = useState<string>("");
+  
+  const isEmailValid = () => /^([\w.%+-]+)@([\w-]+).([\w]{2,})$/i.test(email);
 
-  const [validName, setValidName] = useState<boolean>(false);
-  const [validPassword, setValidPassword] = useState<boolean>(false);
- 
-  const [nameState, setNameState] = useState<"default"|"error"|"valid">('default');
-  const [passwordState, setPasswordState] = useState<"default"|"error"|"valid">('default');
-
-  const [nameError, setNameError] = useState<string>("");
-
-  const [serverError, setServerError] = useState<string>("");
-
-  const onInputName = function (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    setName(e.target.value)
+  const onInputEmail = function (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    setEmail(e.target.value)
   }
 
   const onInputPassword = function (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -35,40 +28,27 @@ const LogIn: React.FC<AuthProps> = () => {
   }
 
   const validateLogin = () => {
-    const isValidName = name.length > 0;
-    const isValidPassword = password.length > 0;
-    if (isValidName && isValidPassword) {
-      console.log("valid")
-      return true
+    if (!isEmailValid()) {
+      console.log("Not valid")
+      setEmailError(t(ErrorKeys.EMAIL_INVALID));
+      return false;
     }
-
-    setNameState(isValidName ? 'default' : 'error');
-    setNameError(isValidName ? '' : t('authenticationForm.instructions.username'));
-    setValidName(isValidName);
-
-    setPasswordState(isValidPassword ? 'default' : 'error');
-    setValidPassword(isValidPassword);
-
-    return false;
+    if (password.length === 0) {
+      setPasswordError(t(ErrorKeys.PASSWORD_SHORT));
+      return false;
+    }
+    return true;
   };
 
   const handleLogin = () => {
     const isValid = validateLogin();
-    const userData = { name, password };
     if (isValid) {
-      axios.post('/api/auth/signup', userData)
-        .then((res) => {
-          setName("");
-          setPassword("");
-          dispatch({
-            type: ActionType.Login,
-            payload: userData
-          })
-        })
-        .catch((err) => {
-          const { data } = err?.response;
-          setServerError(err.response.data);
-        });
+      try {
+        loginUser(email, password);
+      }
+      catch(error) {
+        console.log(err);
+      };
     }
   };
 
@@ -77,27 +57,25 @@ const LogIn: React.FC<AuthProps> = () => {
       <form noValidate>
         <fieldset>
           <TextInput
-            labelText={t('authenticationForm.labels.username')}
-            id="signup_name"
-            onChange={(e) => {onInputName(e)}}
-            status={nameState}
-            type="text"
-            placeholderText="Captain Caveman"
-            errorText={nameError}
-            value={name}
+            labelText={t('authenticationForm.labels.email')}
+            id="signup_email"
+            onChange={(e) => {onInputEmail(e)}}
+            placeholderText="unga@bunga.com"
+            type="email"
+            errorText={emailError}
+            value={email}
           />
           <TextInput
             labelText={t('authenticationForm.labels.password')}
+            helperText={t('authenticationForm.instructions.password')}
             value={password}
             placeholderText=""
-            errorText={t('authenticationForm.userErrorMessages.passwordTooShort')}
-            status={passwordState}
+            errorText={passwordError}
             id="signup_password"
             onChange={(e) => {onInputPassword(e)}}
             type="password"
           />
         </fieldset>
-        { serverError && <span className="form_server-message Error">{serverError}</span> }
         <Button id="authenticate_login" type="button" onClick={handleLogin} look="primary">
           {t('authenticationForm.buttonLabels.logIn')}
         </Button>
@@ -106,4 +84,4 @@ const LogIn: React.FC<AuthProps> = () => {
   );
 };
 
-export default LogIn;
+export default SignUp;

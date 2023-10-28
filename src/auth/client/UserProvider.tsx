@@ -1,5 +1,6 @@
 import {ReactNode, useReducer, useEffect, useMemo, Dispatch} from "react";
-import {User, UserAuthenticationState, UserAction, ActionType} from "./types/UserTypes";
+import {User, UserAuthenticationState, UserAction, ActionType} from "../types/user.d.ts";
+import axios from "axios";
 import UserContext from "./UserContext";
 import userReducer from "./hooks/userReducer";
 import {dev, logActions, loggerMap} from './hooks/userLogger';
@@ -29,6 +30,7 @@ const UserProvider = function({children}: UserProviderProps) {
     }
 
     const loginUser = async (email: string, password: string) => {
+        console.log("User provider!")
         dispatch({ type: ActionType.Loading });
         try {
             const loginInfo = { email, password };
