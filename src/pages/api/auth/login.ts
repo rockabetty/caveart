@@ -1,12 +1,11 @@
 import { NextApiHandler } from 'next';
 import { encrypt } from '../../../auth/server/encrypt';
-import { generateToken } from '../../../auth/server/jwt';
+import { createUserSessionCookie } from '../../../auth/server/userSessionCookie';
 import { getUsersWithMatchingAuthCredentials } from '../../../data/users';
-
+ 
 const handler: NextApiHandler = async (req, res) => {
   try {
     const {password, username, email} = req.body;
-
     if (!password || (!username && !email)) {
       return res.status(400).send("Required fields are missing.");
     }
@@ -27,21 +26,9 @@ const handler: NextApiHandler = async (req, res) => {
     );
 
     if (matchingUsers.rows && matchingUsers.rows.length === 1 ) {
-      const userId = matchingUsers.rows[0].id;
-      const {token, expirationDate} = generateToken(userId)
-
-      const newUserSession = await createUserSession(
-        userId,
-        token,
-        expirationDate
-      );
-
-      const tokenName = process.env.USER_AUTH_TOKEN_NAME;
-      if (!tokenName) {
-        throw new Error('Website misconfiguration')
-      }
-
-      res.setHeader('Set-Cookie', `${tokenName}=${token}; HttpOnly; Path=/;  Secure; SameSite=Lax; Expires=${expirationDate.toUTCString()};`);
+      const userId = Number(matchingUsers.rows[0].id);
+      const userSessionCookie = await createUserSessionCookie(userId);
+      res.setHeader('Set-Cookie', userSessionCookie);
       res.status(200).send('Authentication successful');
   } else {
       res.status(401).send('Invalid credentials');

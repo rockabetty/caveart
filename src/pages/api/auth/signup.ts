@@ -3,9 +3,11 @@ import { createHash, createRandom } from '../../../auth/server/hash';
 import { createUser } from '../../../data/users';
 import { encrypt } from '../../../auth/server/encrypt';
 import { requireEnvVar } from '../../../errors/envcheck'
+import { generateToken } from '../../../auth/server/jwt';
+import { createUserSessionCookie } from '../../../auth/server/userSessionCookie';
 
-const passwordRounds = requireEnvVar('SALT_ROUNDS_PASSWORD');
-const emailRounds = requireEnvVar('SALT_ROUNDS_EMAIL');
+const passwordRounds = Number(requireEnvVar('SALT_ROUNDS_PASSWORD'));
+const emailRounds = Number(requireEnvVar('SALT_ROUNDS_EMAIL'));
 
 const handler: NextApiHandler = async (req, res) => {
   console.log("signup route hit")
@@ -16,9 +18,7 @@ const handler: NextApiHandler = async (req, res) => {
   try {
     const {password, name} = req.body;
     const sanitizedEmail = req.body.email.replace(/[^a-zA-Z0-9@._-]/gi, '');
-
-    console.log(sanitizedEmail);
-
+   
     if (!password || !name || !sanitizedEmail) {
       return res.status(400).send("Required fields are missing.");
     }
@@ -29,7 +29,8 @@ const handler: NextApiHandler = async (req, res) => {
     }
  
     const encryptedEmail = encrypt(sanitizedEmail);
-    const hashedEmail = await createHash(email, emailRounds);
+    const hashedEmail = await createHash(sanitizedEmail, emailRounds);
+    console.log(`Hashed email: ${hashedEmail}`);
     const hashedPassword = await createHash(password, passwordRounds);
     const newUser = await createUser(
       name,
@@ -38,9 +39,11 @@ const handler: NextApiHandler = async (req, res) => {
       hashedPassword,
     );
 
-    console.log(newUser);
-
-    res.status(200).send(newUser);
+    const userId = newUser.rows[0].id;
+    const userSessionCookie = await createUserSessionCookie(userId);
+    res.setHeader('Set-Cookie', userSessionCookie);
+    res.status(200).send();
+    
   }
   catch (error) {
     res.status(500).send(error);
