@@ -36,12 +36,11 @@ const UserProvider = function({children}: UserProviderProps) {
         try {
             const loginInfo = { email, password };
             const response = await axios.post('/api/auth/login', loginInfo);
-            console.log(response);
             dispatch({
                 type: ActionType.Login,
                 payload: response.data.user
             });
-            router.push(`/user/${response.data.user}`);
+            router.push(`/profile`);
         }
         catch(error) {
           const errorMessage = error.response && error.response.data.message
@@ -51,8 +50,26 @@ const UserProvider = function({children}: UserProviderProps) {
         }
     };
 
+    const logoutUser = async () => {
+        dispatch({ type: ActionType.Logout });
+        try {
+            const response = await axios.post('/api/auth/logout');
+            dispatch({
+                type: ActionType.Logout,
+                payload: response.data
+            });
+            router.push('/');
+        }
+        catch (error) {
+          const errorMessage = error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message;
+          dispatch({ type: ActionType.Error, payload: errorMessage });
+        }
+    }
+
     const contextValue = useMemo(
-        () => [state, dispatch, loginUser] as [UserAuthenticationState, Dispatch<UserAction>, typeof loginUser],
+        () => [state, dispatch, loginUser, logoutUser] as [UserAuthenticationState, Dispatch<UserAction>, typeof loginUser, typeof logoutUser],
         [state, dispatch]
     );
 

@@ -1,4 +1,4 @@
-import logs from '../../logs';
+import {logger} from '../../../logs';
 import * as UserLoggerTypes from '../../types/userlogger';
 import {ActionType} from "../../types/user.d.ts"
 

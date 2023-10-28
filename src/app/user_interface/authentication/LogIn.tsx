@@ -9,7 +9,7 @@ import { ErrorKeys } from '../../../auth/types/errors';
 const SignUp: React.FC<AuthProps> = () => {
   const { t } = useTranslation();
 
-  const [state, dispatch, loginUser] = useUser();
+  const {loginUser} = useUser();
   
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");

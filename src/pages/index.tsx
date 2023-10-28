@@ -1,7 +1,8 @@
 import Head from 'next/head'
 import CaveartLayout from '../app/user_interface/CaveartLayout'
 import LogIn from '../app/user_interface/authentication/LogIn'
-export default function Home() {
+
+export default function CaveArt() {
   return (
     <>
       <Head>
@@ -12,7 +13,6 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <CaveartLayout>
-        <LogIn onLogin={() =>{}} />
         <main>
           henlo welcome 2 chilis
         </main>
