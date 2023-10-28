@@ -1,5 +1,5 @@
 import { NextApiHandler } from 'next';
-import { createHash, hashEmail, compareHash } from '../../../auth/server/hash';
+import { hashPassword, hashEmail, compareHash } from '../../../auth/server/hash';
 import { createUser } from '../../../data/users';
 import { encrypt } from '../../../auth/server/encrypt';
 import { requireEnvVar } from '../../../errors/envcheck'
@@ -9,7 +9,6 @@ import { createUserSessionCookie } from '../../../auth/server/userSessionCookie'
 const passwordRounds = Number(requireEnvVar('SALT_ROUNDS_PASSWORD'));
 
 const handler: NextApiHandler = async (req, res) => {
-  console.log("signup route hit")
   if (req.method !== 'POST') {
     return res.status(405).end();
   }
@@ -30,7 +29,7 @@ const handler: NextApiHandler = async (req, res) => {
     const encryptedEmail = encrypt(sanitizedEmail);
     const hashedEmail = await hashEmail(sanitizedEmail);
 
-    const hashedPassword = await createHash(password, passwordRounds);
+    const hashedPassword = await hashPassword(password, passwordRounds);
     const newUser = await createUser(
       name,
       encryptedEmail,
@@ -39,9 +38,7 @@ const handler: NextApiHandler = async (req, res) => {
     );
 
     const userId = newUser.rows[0].id;
-    console.log(`Got a user ID: ${userId}`);
     const userSessionCookie = await createUserSessionCookie(userId);
-    console.log("Got a session cookie" + userSessionCookie);
     res.setHeader('Set-Cookie', userSessionCookie);
     res.status(200).send();
 

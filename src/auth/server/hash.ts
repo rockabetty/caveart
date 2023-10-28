@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import { requireEnvVar } from "../../errors/envcheck"
 
 const emailSalt = requireEnvVar('EMAIL_SALT');
+const passwordSalt = requireEnvVar('SALT_ROUNDS_PASSWORD');
 
 export function hashEmail(email: string) {
     const hash = crypto.createHash('sha256');
@@ -15,8 +16,8 @@ export function hashEmail(email: string) {
  * @param {string} password - The plaintext password.
  * @returns {Promise<string>} - The hashed password.
  */
-export async function createHash(stringToHash: string, saltRounds: number): Promise<string> {
-    return bcrypt.hash(stringToHash, saltRounds);
+export async function hashPassword(stringToHash: string): Promise<string> {
+    return bcrypt.hash(stringToHash, passwordSalt);
 }
 
 /**

@@ -32,18 +32,21 @@ export async function getUserById(
     return await queryDbConnection(query, values)
 };
 
-export async function getUsersWithMatchingAuthCredentials(
-    identificationFormat: 'email' | 'username',
-    identificationString: string,
-    hashedPassword: string
+export async function getUserCredentials(
+    identificationFormat: 'hashed_email' | 'username',
+    identificationString: string
 ): Promise<QueryResult | Error> {
-    const baseQuery = `SELECT id FROM users WHERE password = $2 `;
-    const condition = identificationFormat === 'email'
-      ? 'AND email = $1'
-      : 'AND username = $1';
+    const baseQuery = `SELECT id, email, password FROM users WHERE `;
+    const condition = identificationFormat === 'hashed_email'
+      ? 'hashed_email = $1'
+      : 'username = $1';
     const query = baseQuery + condition;
-    const values = [identificationString, hashedPassword]
-    return await queryDbConnection(query, values);
+    const values = [identificationString]
+    const result = await queryDbConnection(query, values);
+    if (result.rows && result.rows.length > 0) {
+        return result.rows[0];
+    }
+    return null;
 };
 
 export async function createUserSession(
