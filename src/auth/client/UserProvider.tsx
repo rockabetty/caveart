@@ -51,7 +51,7 @@ const UserProvider = function({children}: UserProviderProps) {
     };
 
     const logoutUser = async () => {
-        dispatch({ type: ActionType.Logout });
+        dispatch({ type: ActionType.Loading });
         try {
             const response = await axios.post('/api/auth/logout');
             dispatch({
@@ -59,6 +59,23 @@ const UserProvider = function({children}: UserProviderProps) {
                 payload: response.data
             });
             router.push('/');
+        }
+        catch (error) {
+          const errorMessage = error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message;
+          dispatch({ type: ActionType.Error, payload: errorMessage });
+        }
+    };
+
+    const viewProfile = async () => {
+        dispatch({ type: ActionType.Loading });
+        try {
+            const response = await axios.post(`/api/user`);
+            dispatch({
+                type: ActionType.ViewProfile,
+                payload: response.data
+            });
         }
         catch (error) {
           const errorMessage = error.response && error.response.data.message
