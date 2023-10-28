@@ -86,7 +86,17 @@ const UserProvider = function({children}: UserProviderProps) {
     }
 
     const contextValue = useMemo(
-        () => [state, dispatch, loginUser, logoutUser] as [UserAuthenticationState, Dispatch<UserAction>, typeof loginUser, typeof logoutUser],
+        () => [state,
+        dispatch,
+        loginUser,
+        logoutUser,
+        viewProfile] as [
+          UserAuthenticationState,
+          Dispatch<UserAction>,
+          typeof loginUser,
+          typeof logoutUser,
+          typeof viewProfile
+        ],
         [state, dispatch]
     );
 
