@@ -1,5 +1,5 @@
 import { NextApiHandler } from 'next';
-import { createHash, createRandom } from '../../../auth/server/hash';
+import { createHash, hashEmail, compareHash } from '../../../auth/server/hash';
 import { createUser } from '../../../data/users';
 import { encrypt } from '../../../auth/server/encrypt';
 import { requireEnvVar } from '../../../errors/envcheck'
@@ -7,7 +7,6 @@ import { generateToken } from '../../../auth/server/jwt';
 import { createUserSessionCookie } from '../../../auth/server/userSessionCookie';
 
 const passwordRounds = Number(requireEnvVar('SALT_ROUNDS_PASSWORD'));
-const emailRounds = Number(requireEnvVar('SALT_ROUNDS_EMAIL'));
 
 const handler: NextApiHandler = async (req, res) => {
   console.log("signup route hit")
@@ -29,8 +28,8 @@ const handler: NextApiHandler = async (req, res) => {
     }
  
     const encryptedEmail = encrypt(sanitizedEmail);
-    const hashedEmail = await createHash(sanitizedEmail, emailRounds);
-    console.log(`Hashed email: ${hashedEmail}`);
+    const hashedEmail = await hashEmail(sanitizedEmail);
+
     const hashedPassword = await createHash(password, passwordRounds);
     const newUser = await createUser(
       name,
@@ -43,7 +42,7 @@ const handler: NextApiHandler = async (req, res) => {
     const userSessionCookie = await createUserSessionCookie(userId);
     res.setHeader('Set-Cookie', userSessionCookie);
     res.status(200).send();
-    
+
   }
   catch (error) {
     res.status(500).send(error);

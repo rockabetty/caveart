@@ -1,4 +1,14 @@
 import * as bcrypt from 'bcrypt';
+import crypto from 'crypto';
+import { requireEnvVar } from "../../errors/envcheck"
+
+const emailSalt = requireEnvVar('EMAIL_SALT');
+
+export function hashEmail(email: string) {
+    const hash = crypto.createHash('sha256');
+    hash.update(email + emailSalt);
+    return hash.digest('hex');
+}
 
 /**
  * Hash a password.

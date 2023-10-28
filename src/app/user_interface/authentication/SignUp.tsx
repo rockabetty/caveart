@@ -82,15 +82,14 @@ const SignUp: React.FC<AuthProps> = () => {
         .catch((err) => {
           console.log(err);
           const {detail} = err?.response?.data;
-          console.log(detail);
-          // if (detail.includes("name")) {
-          //   setNameError(t('authenticationForm.userErrorMessages.userNameTaken'));
-          //   setNameState('error')
-          // }
-          // if (detail.includes("email")) {
-          //   setEmailError(t('authenticationForm.userErrorMessages.emailTaken'));
-          //   setEmailState('error')
-          // }
+          if (detail && detail.includes("name")) {
+            setNameError(t('authenticationForm.userErrorMessages.userNameTaken'));
+            setNameState('error')
+          }
+          if (detail && detail.includes("email")) {
+            setEmailError(t('authenticationForm.userErrorMessages.emailTaken'));
+            setEmailState('error')
+          }
           // setServerError(err.response.data);
         });
     }
