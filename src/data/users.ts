@@ -105,6 +105,8 @@ export async function getUser(
       userId,
       columns
     );
+
+    console.log(result);
     if (result.rows && result.rows.length > 0) {
       return result.rows[0];
     }

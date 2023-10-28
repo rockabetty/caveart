@@ -32,13 +32,15 @@ export async function getTable(
     identifierColumn: string,
     identifierValue: string | number,
     columns: string[]
-    ) {;
+    ) {
+    console.log("Get table called")
     const columnsToSelect = columns.join(", "); 
     const query = `
       SELECT ${columnsToSelect}
       FROM ${table}
       WHERE ${identifierColumn} = $1
     `;
+    const values = [identifierValue];
     return await queryDbConnection(query, values)
 };
 

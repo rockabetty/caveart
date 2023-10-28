@@ -71,7 +71,7 @@ const UserProvider = function({children}: UserProviderProps) {
     const viewProfile = async () => {
         dispatch({ type: ActionType.Loading });
         try {
-            const response = await axios.post(`/api/user`);
+            const response = await axios.post(`/api/auth/profile`);
             dispatch({
                 type: ActionType.ViewProfile,
                 payload: response.data

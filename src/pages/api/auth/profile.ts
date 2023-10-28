@@ -1,9 +1,10 @@
 import { NextApiHandler } from 'next';
 import jwt from 'jsonwebtoken';
 import { getUser } from '../../../data/users';
+import { decrypt } from '../../../auth/server/encrypt';
 import { requireEnvVar } from '../../../errors/envcheck'; 
 
-const TOKEN_NAME = requireEnvVar('UNIQUE_AUTH_TOKEN_NAME');
+const TOKEN_NAME = requireEnvVar('USER_AUTH_TOKEN_NAME');
 const SECRET_KEY_JWT = requireEnvVar('SECRET_KEY_JWT');
 
 const handler: NextApiHandler = async (req, res) => {
@@ -11,7 +12,6 @@ const handler: NextApiHandler = async (req, res) => {
     const token = req.cookies[TOKEN_NAME];
     const decodedRequestToken = jwt.verify(token, SECRET_KEY_JWT);
     const userId = decodedRequestToken.sub;
-
     const userProfileDetails = [
       'username',
       'email',
@@ -19,12 +19,22 @@ const handler: NextApiHandler = async (req, res) => {
       'created_at'
     ];
 
-    if (userId) {
-      const userProfile = await getUser(userId, userProfileDetails);
-      res.status.send(userProfile);
+    if (!userId) {
+      return res.status(400).json({ error: 'Cannot identify user' });
     }
-    res.status(500).json({ error: 'Cannot identify user' });
+
+    const userProfile = await getUser(userId, userProfileDetails);
+    if (!userProfile) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const {email} = userProfile;
+    const decryptedEmail = decrypt(email);
+    userProfile.email = decryptedEmail;
+    res.status(200).send(userProfile);
+  } catch (error) {
+    res.status(500).send({ error: 'Internal server error' });
   }
-}
+};
 
 export default handler;
