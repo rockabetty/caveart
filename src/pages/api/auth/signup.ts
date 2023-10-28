@@ -28,8 +28,8 @@ const handler: NextApiHandler = async (req, res) => {
  
     const encryptedEmail = encrypt(sanitizedEmail);
     const hashedEmail = await hashEmail(sanitizedEmail);
-
-    const hashedPassword = await hashPassword(password, passwordRounds);
+ 
+    const hashedPassword = await hashPassword(password);
     const newUser = await createUser(
       name,
       encryptedEmail,

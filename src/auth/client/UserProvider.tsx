@@ -1,6 +1,7 @@
 import {ReactNode, useReducer, useEffect, useMemo, Dispatch} from "react";
-import {User, UserAuthenticationState, UserAction, ActionType} from "../types/user.d.ts";
 import axios from "axios";
+import {useRouter} from "next/router";
+import {User, UserAuthenticationState, UserAction, ActionType} from "../types/user.d.ts";
 import UserContext from "./UserContext";
 import userReducer from "./hooks/userReducer";
 import {dev, logActions, loggerMap} from './hooks/userLogger';
@@ -18,10 +19,11 @@ const initialState: UserAuthenticationState = {
 
 const UserProvider = function({children}: UserProviderProps) {
     const [state, dispatch] = useReducer(userReducer, initialState);
+    const router = useRouter();
 
     const loggedDispatch = (action: UserAction) => {
         const logFunction = logActions[action.type]
-        if (logFunction & "payload" in action) {
+        if (logFunction && "payload" in action) {
             logFunction(action.payload)
         } else if (dev) {
            console.log(`Unknown action type: ${action.type}`);
@@ -30,15 +32,16 @@ const UserProvider = function({children}: UserProviderProps) {
     }
 
     const loginUser = async (email: string, password: string) => {
-        console.log("User provider!")
         dispatch({ type: ActionType.Loading });
         try {
             const loginInfo = { email, password };
-            const loginAttempt = axios.post('/api/auth/login', loginInfo);
+            const response = await axios.post('/api/auth/login', loginInfo);
+            console.log(response);
             dispatch({
                 type: ActionType.Login,
                 payload: response.data.user
             });
+            router.push(`/user/${response.data.user}`);
         }
         catch(error) {
           const errorMessage = error.response && error.response.data.message

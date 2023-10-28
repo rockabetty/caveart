@@ -24,9 +24,9 @@ const handler: NextApiHandler = async (req, res) => {
       const isMatch = await compareHash(password, storedPassword);
 
       if (isMatch) {
-        const userSessionCookie = await createUserSessionCookie(userId);
-        res.setHeader('Set-Cookie', userSessionCookie);
-        res.status(200).send('Authentication successful');
+        const sessionCookie = await createUserSessionCookie(userCredentials.id);
+        res.setHeader('Set-Cookie', sessionCookie);
+        res.status(200).send({ user: userCredentials.username });
       }
     }
     res.status(400).send('Credentials not valid');
