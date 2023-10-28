@@ -27,6 +27,21 @@ export function writeUpdateString(columnsToUpdate: string[]): string {
     return setClauses.join(", ");
 };
 
+export async function getTable(
+    table: string,
+    identifierColumn: string,
+    identifierValue: string | number,
+    columns: string[]
+    ) {;
+    const columnsToSelect = columns.join(", "); 
+    const query = `
+      SELECT ${columnsToSelect}
+      FROM ${table}
+      WHERE ${identifierColumn} = $1
+    `;
+    return await queryDbConnection(query, values)
+};
+
 export async function editTable(
     table: string,
     identifierColumn: string,

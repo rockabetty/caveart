@@ -1,4 +1,4 @@
-import {queryDbConnection, editTable} from './queryFunctions';
+import {queryDbConnection, editTable, getTable} from './queryFunctions';
 import {UserModel} from './types/models';
 
 export async function createUser(
@@ -95,6 +95,18 @@ export async function clearUserSession(
     }
 }
 
+export async function getUserSiteProfile(
+    userId: number,
+    columns: UserModel
+): Promise<QueryResult | Error> {
+    return await getTable(
+        'users',
+        'id',
+        userId,
+        columns
+    );
+};
+
 export async function editUser(
     userId: number,
     update: UserModel
@@ -104,5 +116,5 @@ export async function editUser(
         'id',
         userId,
         update
-    )
+    );
 };

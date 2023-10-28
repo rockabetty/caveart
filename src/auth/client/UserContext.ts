@@ -5,7 +5,7 @@ type UserContextType = [
   UserAuthenticationState,
   Dispatch<UserAction>,
   (email: string, password: string) => Promise<void>, // loginUser type
-  () => Promise<void>  // logoutUser type
+  () => Promise<void>, // logoutUser type
   () => Promise<UserProfile> // viewProfile type 
 ];
 
