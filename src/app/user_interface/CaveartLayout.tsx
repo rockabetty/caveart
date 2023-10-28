@@ -36,7 +36,6 @@ export default function CaveartLayout({ children, requireLogin = false }) {
   const logIn = () => {};
   
   return (
-    isAuthenticated
     <>
     <SiteHeader
       onSignup={() => {openAuthModal('Sign Up')}}
