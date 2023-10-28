@@ -28,8 +28,26 @@ const UserProvider = function({children}: UserProviderProps) {
         dispatch(action);
     }
 
+    const loginUser = async (email: string, password: string) => {
+        dispatch({ type: ActionType.Loading });
+        try {
+            const loginInfo = { email, password };
+            const loginAttempt = axios.post('/api/auth/login', loginInfo);
+            dispatch({
+                type: ActionType.Login,
+                payload: response.data.user
+            });
+        }
+        catch(error) {
+          const errorMessage = error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message;
+          dispatch({ type: ActionType.Error, payload: errorMessage });
+        }
+    };
+
     const contextValue = useMemo(
-        () => [state, dispatch] as [UserAuthenticationState, Dispatch<UserAction>],
+        () => [state, dispatch, loginUser] as [UserAuthenticationState, Dispatch<UserAction>, typeof loginUser],
         [state, dispatch]
     );
 

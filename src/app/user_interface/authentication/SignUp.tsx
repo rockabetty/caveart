@@ -9,7 +9,7 @@ import { ErrorKeys } from '../../../auth/types/errors';
 const SignUp: React.FC<AuthProps> = () => {
   const { t } = useTranslation();
 
-  const [state, dispatch] = useUser();
+  const [state, dispatch, loginUser] = useUser();
   
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -38,8 +38,6 @@ const SignUp: React.FC<AuthProps> = () => {
   const onInputPasswordVerification = function (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setPasswordVerification(e.target.value)
   }
-
-
 
   const validateSignup = () => {
     if (name.length === 0) {
