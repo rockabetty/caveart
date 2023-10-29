@@ -45,7 +45,6 @@ const SignUp: React.FC<AuthProps> = () => {
       return false;
     }
     if (!isEmailValid()) {
-      console.log("Not valid")
       setEmailError(t(ErrorKeys.EMAIL_INVALID));
       return false;
     }

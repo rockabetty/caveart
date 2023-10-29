@@ -53,7 +53,6 @@ const UserProvider: React.FC = function({children}: UserProviderProps) {
     };
 
     const verifyUser = async () => {
-        console.log("Verify user running")
         dispatch({ type: ActionType.Loading });
         try {
             const response = await axios.post('/api/auth/check');

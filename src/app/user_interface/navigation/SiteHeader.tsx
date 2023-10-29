@@ -10,15 +10,14 @@ const SiteHeader = ({
   onSignup,
   loggedIn,
   ...props}: SiteHeaderProps) => {
-
-
+  
   return (
     <div className="horizontal-nav">
       <div className="horizontal-nav_inner">
         <a href="/" className="horizontal-nav_brand">
           <img alt="Cave Art!" src='/img/brand/headerlogo.png' width='200' />
         </a>
-        { loggedIn ? 
+        { loggedIn === true ? 
           <>
             <Link id="horizontal-nav_profile" href="/profile">My Account</Link>
             <Link id="horizontal-nav_manage-comics" href="/comics/mine">My Webcomics</Link>
@@ -28,7 +27,7 @@ const SiteHeader = ({
         }
         <div className="horizontal-nav_authentication">
           {
-            loggedIn ? 
+            loggedIn === false ?
               (
                 <Button look="muted" id="header-logout" onClick={onLogout}>Log Out</Button>
               )

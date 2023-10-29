@@ -14,7 +14,7 @@ export default function CaveartLayout({ children, requireLogin = false }) {
   const router = useRouter();
   const {isAuthenticated, verifyUser, hasSessionToken, logoutUser} = useUser();
 
-  const [loggedIn, setLoggedIn] = useState<boolean>(false)
+  const [loggedIn, setLoggedIn] = useState<boolean>(undefined)
   const [authModalOpen, setAuthModalOpen] = useState<boolean>(false)
   const [authMode, setAuthMode] = useState<'Sign Up' | 'Log In'>('Sign Up');
 
