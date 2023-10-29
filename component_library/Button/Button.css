@@ -91,3 +91,11 @@
 .buttonset .button:last-of-type {
   border-radius: 0 var(--size-border-radius) var(--size-border-radius) 0;
 }
+
+.buttonskeleton {
+  text-decoration: none;
+  box-sizing: border-box;
+  display: flex;
+  width: 100%;
+  height:  var(--spacing-xl);
+}
