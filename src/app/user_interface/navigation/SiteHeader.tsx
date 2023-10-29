@@ -1,10 +1,10 @@
 import React from 'react'
-import {Button, ButtonSet} from '../../../../component_library/Button'
+import { Button, ButtonSet } from '../../../../component_library/Button'
 import Link from '../../../../component_library/Link'
 import './Navigation.css'
 
 const SiteHeader = ({
-  loggedIn = false,
+  loggedIn,
   onLogIn,
   onLogout,
   onSignup,
@@ -17,8 +17,9 @@ const SiteHeader = ({
         </a>
         { loggedIn ? 
           <>
-            <Link id="horizontal-nav_manage" href="/comics/mine">My Webcomics</Link>
-            <Link id="horizontal-nav_manage" href="/read">My Reading List</Link>
+            <Link id="horizontal-nav_profile" href="/profile">My Account</Link>
+            <Link id="horizontal-nav_manage-comics" href="/comics/mine">My Webcomics</Link>
+            <Link id="horizontal-nav_reading-list" href="/read">My Reading List</Link>
           </>
           : ""
         }

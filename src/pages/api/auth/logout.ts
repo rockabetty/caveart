@@ -1,15 +1,16 @@
 import { NextApiHandler } from 'next';
 import jwt from 'jsonwebtoken';
+import { requireEnvVar } from '../../../errors/envcheck'; 
+import { withAuth } from '../../../middleware/withAuth';
+import { clearUserSession } from '../../../data/users';
+
+const TOKEN_NAME = requireEnvVar('USER_AUTH_TOKEN_NAME');
+const SECRET_KEY_JWT = requireEnvVar('SECRET_KEY_JWT');
 
 const handler: NextApiHandler = async (req, res) => {
   try {
-    const tokenName = process.env.UNIQUE_AUTH_TOKEN_NAME;
-    if (!tokenName) {
-      return res.status(500).send({ message: 'Authentication service unavailable' });
-    }
-
-    const token = req.cookies[tokenName];
-
+    
+    const token = req.cookies[TOKEN_NAME];
     if (!token) {
       return res.status(400).send({ error: 'Token not found' });
     }
@@ -23,12 +24,12 @@ const handler: NextApiHandler = async (req, res) => {
 
     const userId = decoded.sub;
     const sessionCleared = await clearUserSession(userId, token);
-
+   
     if (!sessionCleared) {
       return res.status(401).send({ error: 'No session found for given token' });
     }
     
-    res.setHeader('Set-Cookie', `${tokenName}=deleted; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`);    
+    res.setHeader('Set-Cookie', `${TOKEN_NAME}=deleted; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`);    
     res.status(200).send({ message: 'Logged out successfully' });
 
   } catch (error) {
@@ -36,4 +37,4 @@ const handler: NextApiHandler = async (req, res) => {
   }
 }
 
-export default handler;
+export default withAuth(handler);

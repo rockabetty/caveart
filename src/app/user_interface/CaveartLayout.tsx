@@ -11,7 +11,7 @@ import './themes/main.css'
 export default function CaveartLayout({ children, requireLogin = false }) {
 
   const router = useRouter();
-  const {isAuthenticated} = useUser();
+  const {isAuthenticated, logoutUser} = useUser();
 
   useEffect(() => {
     if (requireLogin && !isAuthenticated()) {
@@ -27,26 +27,29 @@ export default function CaveartLayout({ children, requireLogin = false }) {
     setAuthModalOpen(false);
   }
 
+  useEffect(() => {
+    if (isAuthenticated()) {
+      setLoggedIn(true);
+      closeAuthModal();
+    }
+  }, [isAuthenticated])
+
   const openAuthModal = function (whichMode: string) {
     setAuthMode(whichMode);
     setAuthModalOpen(true);
   }
 
-  const logOut = () => {};
-  const logIn = () => {};
-  
   return (
     <>
     <SiteHeader
       onSignup={() => {openAuthModal('Sign Up')}}
       onLogIn={()=> {openAuthModal('Log In')}}
       loggedIn={loggedIn}
-      onLogout={logOut}
+      onLogout={logoutUser}
     />
     <AuthModal
       isOpen={authModalOpen}
       onClose={closeAuthModal}
-      onAuth={logIn}
       initial={authMode}
     />
 
