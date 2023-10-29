@@ -32,6 +32,7 @@ const handler: NextApiHandler = async (req, res) => {
     res.status(400).send('Credentials not valid');
   }
   catch (error) {
+    console.log(error);
     res.status(500).send(error)
   }
 }

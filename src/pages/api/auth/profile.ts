@@ -4,8 +4,8 @@ import { getUser } from '../../../data/users';
 import { decrypt } from '../../../auth/server/encrypt';
 import { requireEnvVar } from '../../../errors/envcheck'; 
 import { withAuth } from '../../../middleware/withAuth';
+import { USER_AUTH_TOKEN_NAME } from '../../../../constants';
 
-const TOKEN_NAME = requireEnvVar('USER_AUTH_TOKEN_NAME');
 const SECRET_KEY_JWT = requireEnvVar('SECRET_KEY_JWT');
 
 const handler: NextApiHandler = async (req, res) => {

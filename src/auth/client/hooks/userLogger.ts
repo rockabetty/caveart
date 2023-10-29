@@ -8,6 +8,9 @@ export const logActions = {
   LOGIN: (payload: UserLoggerTypes.LoginLoggerPayload) => {
     logger.info(`${dev ? `User [ID: ${payload.id}] logged in from ${payload.source}` : 'User logged in'}`)
   },
+  VERIFY: (payload: UserLoggerTypes.VerifyLoggerPayload) => {
+    logger.info(`${dev ? `User [ID: ${payload.id}] verified as still logged in` : 'User authentication verified'}`)
+  },
   LOGOUT: (payload: UserLoggerTypes.LogoutLoggerPayload) => {
     // TODO: maybe log logout reason, e.g. session expiry or deliberate
     logger.info(`${dev ? `User [ID: ${payload.id}] logged out: ${payload.reason}` : 'User logged out'}`)
@@ -40,6 +43,7 @@ type LoggerActionsMap = {
 export const loggerMap: LoggerActionsMap = {
     [ActionType.Login]: logActions.LOGIN,
     [ActionType.Logout]: logActions.LOGOUT,
+    [ActionType.Verify]: logActions.VERIFY,
     [ActionType.ViewProfile]: logActions.VIEW_PROFILE,
     [ActionType.UpdateProfile]: logActions.UPDATE_PROFILE,
     [ActionType.Error]: logActions.ERROR,

@@ -13,6 +13,7 @@ export type UserAuthState = {
 export enum ActionType {
     Login = "LOGIN",
     Logout = "LOGOUT",
+    Verify = "VERIFY",
     Error = "ERROR",
     Loading = "LOADING",
     ViewProfile = "VIEW_PROFILE",
@@ -28,6 +29,7 @@ export type UserProfile = {
 export type UserAction =
     | { type: ActionType.Login; payload: User }
     | { type: ActionType.Logout }
+    | { type: ActionType.Verify; payload: Partial<UserAuthState> }
     | { type: ActionType.Error; payload: string }
     | { type: ActionType.Loading }
     | { type: ActionType.ViewProfile; payload: User }

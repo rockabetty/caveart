@@ -4,6 +4,7 @@ import {UserAuthenticationState, UserAction, UserProfile} from "./types/UserType
 type UserContextType = [
   UserAuthenticationState,
   Dispatch<UserAction>,
+  () => Promise<Partial<UserAuthenticationState>>,
   (email: string, password: string) => Promise<void>, // loginUser type
   () => Promise<void>, // logoutUser type
   () => Promise<UserProfile> // viewProfile type 

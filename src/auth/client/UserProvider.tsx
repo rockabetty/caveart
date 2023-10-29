@@ -1,7 +1,8 @@
 import {ReactNode, useReducer, useEffect, useMemo, Dispatch} from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
 import {useRouter} from "next/router";
-import {User, UserAuthenticationState, UserAction, ActionType} from "../types/user.d.ts";
+import {User, UserAuthState, UserAction, ActionType} from "../types/user.d.ts";
 import UserContext from "./UserContext";
 import userReducer from "./hooks/userReducer";
 import {dev, logActions, loggerMap} from './hooks/userLogger';
@@ -10,14 +11,15 @@ interface UserProviderProps {
     children: ReactNode;
 }
 
-const initialState: UserAuthenticationState = {
-    user: null,
-    authenticated: false,
-    loading: false,
-    error: null
-}
+const UserProvider: React.FC = function({children}: UserProviderProps) {
 
-const UserProvider = function({children}: UserProviderProps) {
+    const initialState: UserAuthState = {
+        user: null,
+        authenticated: false,
+        loading: false,
+        error: null,
+    }
+
     const [state, dispatch] = useReducer(userReducer, initialState);
     const router = useRouter();
 
@@ -43,6 +45,25 @@ const UserProvider = function({children}: UserProviderProps) {
             router.push(`/profile`);
         }
         catch(error) {
+          const errorMessage = error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message;
+          dispatch({ type: ActionType.Error, payload: errorMessage });
+        }
+    };
+
+    const verifyUser = async () => {
+        console.log("Verify user running")
+        dispatch({ type: ActionType.Loading });
+        try {
+            const response = await axios.post('/api/auth/check');
+             dispatch({
+                type: ActionType.Verify,
+                payload: response.data
+            });
+            return response.data;
+        }
+        catch (error) {
           const errorMessage = error.response && error.response.data.message
             ? error.response.data.message
             : error.message;
@@ -89,6 +110,7 @@ const UserProvider = function({children}: UserProviderProps) {
     const contextValue = useMemo(
         () => [state,
         dispatch,
+        verifyUser,
         loginUser,
         logoutUser,
         viewProfile] as [

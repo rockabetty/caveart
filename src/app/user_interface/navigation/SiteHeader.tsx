@@ -1,14 +1,17 @@
 import React from 'react'
+import Cookies from "js-cookie";
 import { Button, ButtonSet } from '../../../../component_library/Button'
 import Link from '../../../../component_library/Link'
 import './Navigation.css'
 
 const SiteHeader = ({
-  loggedIn,
   onLogIn,
   onLogout,
   onSignup,
+  loggedIn,
   ...props}: SiteHeaderProps) => {
+
+
   return (
     <div className="horizontal-nav">
       <div className="horizontal-nav_inner">

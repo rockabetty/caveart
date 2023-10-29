@@ -8,7 +8,7 @@ export const useUser = () => {
       throw new Error('useUser must be used within a UserProvider');
     }
 
-    const [state, dispatch, loginUser, logoutUser, viewProfile] = context;
+    const [state, dispatch, verifyUser, loginUser, logoutUser, viewProfile] = context;
 
     const isAuthenticated = () => state.authenticated;
     const getUser = () => state.user;
@@ -17,8 +17,9 @@ export const useUser = () => {
         ...state,
         loginUser,
         logoutUser,
-        viewProfile,
-        getUser,
+        verifyUser,
         isAuthenticated,
+        viewProfile,
+        getUser
     };
 };

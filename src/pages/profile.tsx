@@ -24,7 +24,7 @@ const Profile: React.FC = () => {
   }, []);
 
   if (loading) {
-    return <CaveartLayout>Loading...</CaveartLayout>;
+    return <CaveartLayout requireLogin={true}>Loading...</CaveartLayout>;
   }
 
   if (userProfile) {
