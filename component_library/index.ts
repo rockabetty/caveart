@@ -1,3 +1,3 @@
 export { Button, ButtonSet } from './Button';
-export { Form, TextInput } from './Form';
+export { TextArea, Form, TextInput } from './Form';
 export { Modal } from './Modal';
