@@ -10,7 +10,7 @@ const SECRET_KEY_JWT = requireEnvVar('SECRET_KEY_JWT');
 
 const handler: NextApiHandler = async (req, res) => {
   try {
-    const token = req.cookies[TOKEN_NAME];
+    const token = req.cookies[USER_AUTH_TOKEN_NAME];
     const decodedRequestToken = jwt.verify(token, SECRET_KEY_JWT);
     const userId = decodedRequestToken.sub;
     const userProfileDetails = [
