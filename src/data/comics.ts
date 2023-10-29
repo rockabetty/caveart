@@ -84,3 +84,15 @@ export async function editComic(
         update
     );
 };
+
+export async function deleteComic(comic: number): Promise<QueryResult | Error> {
+    const sql = `DELETE FROM comics 
+    WHERE id = $1;`
+    const values = [comic]
+    const result = await queryDbConnection(query, values);
+    if (result.rowCount > 0) {
+      return true;
+    } else {
+      return false;
+    }
+};
