@@ -10,3 +10,22 @@ export type UserModel = {
     updated_at?: Date;
     role?: 'Member' | 'Creator' | 'Moderator';
 };
+
+export type ComicModel = {
+    id?: number;
+    title?: string;
+    subdomain?: string;
+    tagline?: string;
+    description?: string;
+    created_at?: Date;
+    thumbnail?: string;
+    comments?: number;
+    critique?: boolean;
+    is_unlisted?: boolean;
+    is_private?: boolean;
+    moderate_comments?: boolean;
+    view_count?: number;
+    likes?: number;
+    rating?: number;
+    stylesheet_variables?: string;
+};

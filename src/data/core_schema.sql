@@ -129,7 +129,6 @@ CREATE TABLE IF NOT EXISTS comics_to_authors (
     UNIQUE (user_id, comic_id)
 );
 
-
 CREATE OR REPLACE FUNCTION update_timestamp()
 RETURNS TRIGGER AS $$
 BEGIN
