@@ -1,7 +1,7 @@
 import React from 'react'
 import classNames from 'classnames'
-import '../../design/Style.css'
-import FormField from '../FormField/FormField'
+import '../../design/style.css'
+import FormField from '../atoms/FormField'
 import './Radio.css'
 
 export interface RadioProps {

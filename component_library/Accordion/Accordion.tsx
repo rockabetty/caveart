@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react'
-import Badge from '../Button'
-import '../design/style.css'
-import './Accordion.css'
+import Badge from './../Button/Badge';
+import '../design/style.css';
+import './Accordion.css';
 
 export interface AccordionProps {
   id?: string
@@ -65,4 +65,4 @@ const Accordion = ({
   )
 }
 
-export default Accordion
+export default Accordion;

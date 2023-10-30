@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { TextArea, TextInput, Button, Accordion } from '../../../component_library';
+import { TextArea, TextInput, Button, Radio, Accordion } from '../../../component_library';
 import CaveartLayout from '../../app/user_interface/CaveartLayout'
 
 const ComicProfileForm = () => {
 
+  const [contentWarnings, setContentWarnings] = useState<any[]>([]);
   const [submissionError, setSubmissionError] = useState<boolean>(false)
   const [formValues, setFormValues] = useState({
     name: '',
@@ -25,6 +26,31 @@ const ComicProfileForm = () => {
     setSubmissionError("")
     setFormValues({ ...formValues, [e.target.name]: e.target.value })
   }
+
+  const onContentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const content = {...formValues.content}
+    
+    console.log(content)
+    let value = undefined;
+    if(e.target.value === "true") {
+      value = true;
+    } else if(e.target.value === "false") {
+      value = false;
+    } else if(e.target.value === "no") {
+      delete content[e.target.name];
+      value = undefined;
+    }
+    const newContent = {...content, [e.target.name]: value}
+    setFormValues({ ...formValues, content: newContent })
+  }
+
+  useEffect(() => {
+    const contentWarnings = axios
+      .get('/api/content')
+      .then((response) => {
+        setContentWarnings(response.data)
+      })
+  }, [])
 
   return(
     <CaveartLayout>
@@ -60,7 +86,47 @@ const ComicProfileForm = () => {
             value={formValues?.description}
           />
 
-
+          {contentWarnings.map((warning, idx) => {
+            return (<Accordion key={idx}>
+              {warning.parent_name}
+              {warning.children.map((child, idx) => {
+                const name = child.name.split('.').pop();
+                console.log(formValues.content[name])
+                return (
+                  <fieldset className="form-field" key={`content-warning-${idx}`}>  
+                    <legend><strong>{child.name}:</strong></legend>
+                    
+                    <Radio
+                      id={`no-cw-${name}`}
+                      onChange={onContentChange}
+                      labelText="No"
+                      checked={formValues.content[name] === undefined}
+                      name={name}
+                      value="no"
+                    />
+                    <Radio
+                      id={`some-cw-${name}`}
+                      onChange={onContentChange}
+                      labelText="Sometimes"
+                      name={name}
+                      checked={formValues.content[name] === false }
+                      value="false"
+                    />
+                    <Radio
+                      id={`frequent-cw-${name}`}
+                      onChange={onContentChange}
+                      labelText="Often"
+                      name={name}
+                      checked={formValues.content[name] === true}
+                      value="true"
+                    />
+                  </fieldset>
+                )
+              })}
+              </Accordion>
+              )
+            }
+          )}
     </CaveartLayout>
   )
 }

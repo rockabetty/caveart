@@ -1,3 +1,3 @@
 export {default as Button } from './Button';
 export {default as ButtonSet} from './ButtonSet';
-export {Badge} from './Badge';
+export {default as Badge} from './Badge';
