@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS users_sessions (
   id SERIAL PRIMARY KEY,
-  user_id INT REFERENCES users(id),
+  user_id INT REFERENCES users(id) ON DELETE CASCADE,
   session_token VARCHAR(250) UNIQUE NOT NULL,
   expiration_date TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS comics (
     moderate_comments BOOLEAN DEFAULT FALSE,
     view_count INT DEFAULT 0,
     likes INT DEFAULT 0,
-    rating INT REFERENCES ratings(id),
+    rating INT REFERENCES ratings(id) ON DELETE CASCADE,
     stylesheet_variables JSONB,
     UNIQUE (title, subdomain)
 );
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS genres (
 CREATE TABLE IF NOT EXISTS comics_to_genres (
     id SERIAL PRIMARY KEY,
     comic_id INT REFERENCES comics(id) ON DELETE CASCADE,
-    genre_id INT REFERENCES genres(id),
+    genre_id INT REFERENCES genres(id) ON DELETE CASCADE,
     UNIQUE (comic_id, genre_id)
 );
 CREATE TABLE IF NOT EXISTS styles (
@@ -80,33 +80,33 @@ CREATE TABLE IF NOT EXISTS styles (
 CREATE TABLE IF NOT EXISTS comics_to_styles (
     id SERIAL PRIMARY KEY,
     comic_id INT REFERENCES comics(id) ON DELETE CASCADE,
-    style_id INT REFERENCES styles(id),
+    style_id INT REFERENCES styles(id) ON DELETE CASCADE,
     UNIQUE (comic_id, style_id)
 );
 CREATE TABLE IF NOT EXISTS content_warnings (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL UNIQUE,
     description TEXT,
-    parent_id INT references styles(id)
+    parent_id INT references styles(id) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS comics_to_content_warnings (
     id SERIAL PRIMARY KEY,
     comic_id INT REFERENCES comics(id) ON DELETE CASCADE,
-    content_warning_id INT REFERENCES content_warnings(id),
+    content_warning_id INT REFERENCES content_warnings(id) ON DELETE CASCADE,
     frequent BOOLEAN DEFAULT false,
     UNIQUE (comic_id, content_warning_id)
 );
 CREATE TABLE IF NOT EXISTS comic_tags (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
-    comic_id INT REFERENCES comics(id)
+    comic_id INT REFERENCES comics(id) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS chapters (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     index INT NOT NULL,
     description TEXT NOT NULL,
-    comic_id INT REFERENCES comics(id),
+    comic_id INT REFERENCES comics(id) ON DELETE CASCADE,
     thumbnail TEXT,
     UNIQUE (comic_id, index)
 );
@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS comic_pages (
     page_number INT,
     img TEXT NOT NULL UNIQUE,
     comic_id INT REFERENCES comics(id) ON DELETE CASCADE,
-    chapter_id INT REFERENCES chapters(id),
+    chapter_id INT REFERENCES chapters(id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT NOW(),
     release_on TIMESTAMP DEFAULT NOW(),
     UNIQUE (comic_id, chapter_id, page_number),
@@ -123,8 +123,8 @@ CREATE TABLE IF NOT EXISTS comic_pages (
     like_count INT DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS comics_to_authors (
-    comic_id INT REFERENCES comics(id),
-    user_id INT REFERENCES users(id),
+    comic_id INT REFERENCES comics(id) ON DELETE CASCADE,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
     role TEXT,
     UNIQUE (user_id, comic_id)
 );
@@ -141,3 +141,85 @@ CREATE TRIGGER update_users_modtime
 BEFORE UPDATE ON users FOR EACH ROW
 EXECUTE FUNCTION update_timestamp();
 
+INSERT INTO genres (name) VALUES
+  ('Action'),
+  ('Adventure'),
+  ('Comedy'),
+  ('Drama'),
+  ('Fantasy'),
+  ('Horror'),
+  ('Mystery'),
+  ('Romance'),
+  ('Sci-Fi'),
+  ('Slice of Life'),
+  ('Superhero'),
+  ('Thriller'),
+  ('Historical'),
+  ('Western'),
+  ('Noir'),
+  ('Dystopian'),
+  ('Mecha'),
+  ('Magical Girl'),
+  ('Pokemon'),
+  ('Fandom');
+
+TRUNCATE content_warnings RESTART IDENTITY CASCADE;
+
+INSERT INTO content_warnings
+  (id, name, parent_id)
+  VALUES
+  (1, 'sexualContent', null),
+  (2, 'violentContent', null),
+  (3, 'languageContent', null),
+  (4, 'substanceContent', null),
+  (5, 'partialNudity', 1),
+  (6, 'somePartialNudity', 5),
+  (7, 'frequentPartialNudity', 5),
+  (8, 'fullNudity', 1),
+  (9, 'someFullNudity', 8),
+  (10, 'frequentFullNudity', 8),
+  (11, 'sexScenes', 1),
+  (12, 'someSexScenes', 11),
+  (13, 'frequentSexScenes', 11),
+  (14, 'sexualViolence', 1),
+  (15, 'someSexualViolence', 14),
+  (16, 'frequentSexualViolence', 14),
+  (17, 'suggestiveContent', 1),
+  (18, 'someSuggestiveContent', 17),
+  (19, 'frequentSuggestiveContent', 17),
+  (20, 'violence', 2),
+  (21, 'someViolence', 20),
+  (22, 'frequentViolence', 20),
+  (23, 'gore', 2),
+  (24, 'someGore', 23),
+  (25, 'frequentGore', 23),
+  (26, 'blood', 2),
+  (27, 'someBlood', 26),
+  (28, 'frequentBlood', 26),
+  (29, 'realisticInjuries', 2),
+  (30, 'someRealisticInjuries', 29),
+  (31, 'frequentRealisticInjuries', 29),
+  (32, 'sexualLanguage', 3),
+  (33, 'someSexualLanguage', 32),
+  (34, 'frequentSexualLanguage', 32),
+  (35, 'swearing', 3),
+  (36, 'someSwearing', 35),
+  (37, 'frequentSwearing', 35),
+  (38, 'slurs', 3),
+  (39, 'someSlurs', 38),
+  (40, 'frequentSlurs', 38),
+  (41, 'threats', 3),
+  (42, 'someThreats', 41),
+  (43, 'frequentThreats', 41),
+  (45, 'hardDrugUse', 4),
+  (46, 'someHardDrugUse', 45),
+  (47, 'frequentHardDrugUse', 45),
+  (48, 'commonDrugUse', 4),
+  (49, 'someCommonDrugUse', 48),
+  (50, 'FrequentCommonDrugUse', 48),
+  (51, 'alcoholUse', 4),
+  (52, 'someAlcoholUse', 51),
+  (53, 'frequentAlcoholUse', 51),
+  (54, 'referencesToSubstances', 4),
+  (55, 'someReferencesToSubstances', 54),
+  (56, 'frequentReferencesToSubstances', 54);
