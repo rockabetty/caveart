@@ -66,17 +66,17 @@
   --swatch-lime-20: #abf3a7;
   --swatch-lime-10: #e1fbe0;
 
-  --theme-interface-00: var(--swatch-black);
-  --theme-interface-10: var(--swatch-gray-100);
-  --theme-interface-20: var(--swatch-gray-90);
-  --theme-interface-30: var(--swatch-gray-80);
-  --theme-interface-40: var(--swatch-gray-70);
-  --theme-interface-50: var(--swatch-gray-60);
-  --theme-interface-60: var(--swatch-gray-50);
-  --theme-interface-70: var(--swatch-gray-40);
-  --theme-interface-80: var(--swatch-gray-30);
-  --theme-interface-90: var(--swatch-gray-20);
-  --theme-interface-100: var(--swatch-gray-10);
+  --theme-interface-00: var(--swatch-gray-100);
+  --theme-interface-10: var(--swatch-gray-90);
+  --theme-interface-20: var(--swatch-gray-80);
+  --theme-interface-30: var(--swatch-gray-70);
+  --theme-interface-40: var(--swatch-gray-60);
+  --theme-interface-50: var(--swatch-gray-50);
+  --theme-interface-60: var(--swatch-gray-40);
+  --theme-interface-70: var(--swatch-gray-30);
+  --theme-interface-80: var(--swatch-gray-20);
+  --theme-interface-90: var(--swatch-gray-10);
+  --theme-interface-100: var(--swatch-white);
 
   --theme-primary-00: var(--swatch-white);
   --theme-primary-10: var(--swatch-ochre-100);
