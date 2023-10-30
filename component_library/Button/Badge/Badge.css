@@ -1,0 +1,42 @@
+.button.Badge {
+  width: var(--spacing-xl);
+  height: var(--spacing-xl);
+  margin: var(--spacing-md);
+  padding: 0;
+  display: flex;
+  border-radius: 100%;
+  justify-content: center;
+  align-items: center;
+  fill: var(--col-button-label);;
+}
+
+.Badge.Labeled {
+  width: auto;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--spacing-md);
+}
+.Badge.Labeled svg {
+  margin-inline-end: var(--spacing-xs);
+}
+
+.Invisible {
+  width: 1px;
+  opacity: 0;
+}
+
+.Badge.Primary svg {
+  fill: var(--col-button-primary-label);
+}
+.Badge.Warning svg {
+  fill: var(--col-button-warning-label);
+}
+.Badge.Muted svg {
+  fill: var(--col-interactive-01);
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .button.Badge {
+    width: var(--spacing-xl);
+    height:  var(--spacing-xl);
+  }
+}
