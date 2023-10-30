@@ -35,16 +35,14 @@ const ComicProfileForm = () => {
   const onContentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const content = {...formValues.content};
     let value = undefined;
-    if(e.target.value === "true") {
-      value = true;
-    } else if(e.target.value === "false") {
-      value = false;
-    } else if(e.target.value === "no") {
-      delete content[e.target.name];
-      value = undefined;
+    const contentMarker = e.target.name;
+    if(e.target.value === "none") {
+      delete content[contentMarker];
     }
-    const newContent = {...content, [e.target.name]: value}
+    else value = e.target.value;
+    const newContent = {...content, [contentMarker]: value}
     setFormValues({ ...formValues, content: newContent })
+    console.log(formValues)
   }
 
   useEffect(() => {
@@ -93,9 +91,9 @@ const ComicProfileForm = () => {
       <div className="FlexRow">
         {contentWarnings.map((warning, idx) => {
           return (
-            <div className="Quarter">
+            <div className="FlexGrow">
               <Accordion key={idx}>
-                {warning.parent_name}
+                {warning.name}
                 {warning.children.map((child, idx) => {
                   const name = child.name;
                   return (
@@ -107,24 +105,20 @@ const ComicProfileForm = () => {
                         labelText="No"
                         checked={formValues.content[name] === undefined}
                         name={name}
-                        value="no"
+                        value="none"
                       />
-                      <Radio
-                        id={`some-cw-${name}`}
-                        onChange={onContentChange}
-                        labelText="Sometimes"
-                        name={name}
-                        checked={formValues.content[name] === false }
-                        value="false"
-                      />
-                      <Radio
-                        id={`frequent-cw-${name}`}
-                        onChange={onContentChange}
-                        labelText="Often"
-                        name={name}
-                        checked={formValues.content[name] === true}
-                        value="true"
-                      />
+                      {child.children.map((option, idx) => {
+                        return (
+                          <Radio
+                            id={`cw-${name}-${option.id}`}
+                            onChange={onContentChange}
+                            labelText={["Some", "Frequent"][idx]}
+                            name={name}
+                            checked={formValues.content[name] == option.id }
+                            value={option.id}
+                          />)  
+                      })}
+                    
                     </fieldset>
                   )
                 })}
@@ -133,6 +127,8 @@ const ComicProfileForm = () => {
           )}
         )}
       </div>
+
+      <h2>Genres</h2>
 
       <Button id="new_comic" type="submit" onClick={submitComic} look="primary">
         Submit

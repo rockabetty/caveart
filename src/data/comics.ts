@@ -74,18 +74,36 @@ export async function getComic(
 };
 
 export async function getContentWarningDefs(): Promise<QueryResult | Error> {
-  const query = `SELECT 
-    parents.id AS parent_id, 
-    parents.name AS parent_name,
-    COALESCE(json_agg(row_to_json(children)) FILTER (WHERE children.id IS NOT NULL), '[]'::json) AS children
-    FROM 
-    content_warnings AS parents
-    LEFT JOIN 
-    content_warnings AS children ON parents.id = children.parent_id
-    WHERE 
-    parents.parent_id IS NULL
-    GROUP BY 
-    parents.id, parents.name;`
+    const query = `WITH
+    Parents AS (
+      SELECT id, name
+      FROM content_warnings
+      WHERE parent_id IS NULL
+    ),
+    Children AS (
+      SELECT p.id AS parent_id, i.id, i.name
+      FROM content_warnings i
+      JOIN Parents p ON i.parent_id = p.id
+    ),
+    GrandChildren AS (
+      SELECT c.id AS child_id, i.id, i.name
+      FROM content_warnings i
+      JOIN Children c ON i.parent_id = c.id
+    )
+
+    SELECT 
+      p.id,
+      p.name,
+      COALESCE(json_agg(json_build_object('id', c.id, 'name', c.name, 'children', gc_agg)) FILTER (WHERE c.id IS NOT NULL), '[]'::json) AS children
+    FROM Parents p
+    LEFT JOIN Children c ON p.id = c.parent_id
+    LEFT JOIN (
+      SELECT child_id, json_agg(json_build_object('id', id, 'name', name)) AS gc_agg
+      FROM GrandChildren
+      GROUP BY child_id
+    ) gc ON gc.child_id = c.id
+    GROUP BY p.id, p.name
+    `;
 
     const result = await queryDbConnection(query);
 
@@ -95,6 +113,10 @@ export async function getContentWarningDefs(): Promise<QueryResult | Error> {
       return result.rows
     }
     return null;
+}
+
+export async function getGenres(): Promise<QueryResult | Error> {
+
 }
 
 export async function editComic(
