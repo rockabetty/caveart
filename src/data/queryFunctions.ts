@@ -65,6 +65,5 @@ export async function editTable(
       SET ${updateString}
       WHERE ${identifierColumn} = $${idPlaceholder}
     `;
-
     return await queryDbConnection(query, values)
 };

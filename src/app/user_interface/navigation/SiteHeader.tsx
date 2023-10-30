@@ -1,7 +1,6 @@
 import React from 'react'
 import Cookies from "js-cookie";
-import { Button, ButtonSet } from '../../../../component_library/Button'
-import Link from '../../../../component_library/Link'
+import { Button, ButtonSet, Link } from '../../../../component_library'
 import './Navigation.css'
 
 const SiteHeader = ({
