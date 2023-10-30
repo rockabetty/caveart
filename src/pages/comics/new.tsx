@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { TextArea, TextInput, Button } from '../../../component_library';
+import { TextArea, TextInput, Button, Accordion } from '../../../component_library';
 import CaveartLayout from '../../app/user_interface/CaveartLayout'
 
 const ComicProfileForm = () => {
@@ -59,6 +59,7 @@ const ComicProfileForm = () => {
             onChange={onChange}
             value={formValues?.description}
           />
+
 
     </CaveartLayout>
   )

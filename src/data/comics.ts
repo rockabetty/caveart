@@ -1,4 +1,4 @@
-import {queryDbConnection, editTable, getTable} from './queryFunctions';
+import {queryDbConnection, getParentsAndChildren, editTable, getTable} from './queryFunctions';
 import {ComicModel} from './types/models';
 
 export async function createComic(
@@ -72,6 +72,30 @@ export async function getComic(
     }
     return null;
 };
+
+export async function getContentWarningDefs(): Promise<QueryResult | Error> {
+  const query = `SELECT 
+    parents.id AS parent_id, 
+    parents.name AS parent_name,
+    COALESCE(json_agg(row_to_json(children)) FILTER (WHERE children.id IS NOT NULL), '[]'::json) AS children
+    FROM 
+    content_warnings AS parents
+    LEFT JOIN 
+    content_warnings AS children ON parents.id = children.parent_id
+    WHERE 
+    parents.parent_id IS NULL
+    GROUP BY 
+    parents.id, parents.name;`
+
+    const result = await queryDbConnection(query);
+
+    console.log(result);
+
+    if (result.rows && result.rows.length > 0) {
+      return result.rows
+    }
+    return null;
+}
 
 export async function editComic(
     comicId: number,
