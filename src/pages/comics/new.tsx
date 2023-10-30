@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { TextArea, TextInput, Button, Radio, Accordion } from '../../../component_library';
+import { TextArea, TextInput, Button, Radio, Checkbox, Accordion } from '../../../component_library';
 import CaveartLayout from '../../app/user_interface/CaveartLayout';
 import '../../app/user_interface/layout.css';
 
 const ComicProfileForm = () => {
 
+  console.log(Checkbox)
+
   const [contentWarnings, setContentWarnings] = useState<any[]>([]);
+  const [genres, setGenres] = useState<any[]>([])
   const [submissionError, setSubmissionError] = useState<boolean>(false)
   const [formValues, setFormValues] = useState({
     name: '',
@@ -14,7 +17,7 @@ const ComicProfileForm = () => {
     name: '',
     subdomain: '',
     description: '',
-    genre: {},
+    genres: {},
     style: {},
     content: {},
     comments: 'allowed',
@@ -31,6 +34,17 @@ const ComicProfileForm = () => {
   const submitComic = () => {
     console.log("hi welcoem to chilis")
   }
+
+  const onToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selection = formValues[e.target.name] || {}
+    if (selection[e.target.value]) {
+      delete selection[e.target.value]
+    } else {
+      selection[e.target.value] = true
+    }
+    setFormValues({ ...formValues, [e.target.name]: selection })
+  }
+
 
   const onContentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const content = {...formValues.content};
@@ -50,6 +64,12 @@ const ComicProfileForm = () => {
       .get('/api/content')
       .then((response) => {
         setContentWarnings(response.data)
+      })
+
+    const genres = axios
+      .get('/api/genres')
+      .then((response) => {
+        setGenres(response.data)
       })
   }, [])
 
@@ -88,10 +108,12 @@ const ComicProfileForm = () => {
       />
 
       <h2>Content Warnings</h2>
-      <div className="FlexRow">
+      <p>
+        Please put content warnings on your comic so that we can show our users appropriate content.
+      </p>
+      <div className="ReactiveGrid">
         {contentWarnings.map((warning, idx) => {
           return (
-            <div className="FlexGrow">
               <Accordion key={idx}>
                 {warning.name}
                 {warning.children.map((child, idx) => {
@@ -111,6 +133,7 @@ const ComicProfileForm = () => {
                         return (
                           <Radio
                             id={`cw-${name}-${option.id}`}
+                            key={`cw-key-${idx}`}
                             onChange={onContentChange}
                             labelText={["Some", "Frequent"][idx]}
                             name={name}
@@ -118,17 +141,79 @@ const ComicProfileForm = () => {
                             value={option.id}
                           />)  
                       })}
-                    
                     </fieldset>
                   )
                 })}
               </Accordion>
-            </div>
           )}
         )}
       </div>
 
       <h2>Genres</h2>
+      <div class="ReactiveGrid">
+        {genres.map((genre, idx) => {
+          return (
+            <div>
+            <Checkbox
+              key={`genre-${idx}`}
+              labelText={genre.name}
+              id={`genre-${genre.name}`}
+              checked={formValues.genres[genre.id]}
+              onChange={onToggle}
+              name="genres"
+              value={genre.id}
+            />
+            </div>
+          );
+        })}
+      </div>
+
+      <h2>Settings</h2>
+      <fieldset>
+        <legend>Visibility</legend>
+        {['Public', 'Private', 'Invite-Only'].map((option, idx) => {
+          return (
+            <div key={idx}>
+              <Radio
+                labelText={option}
+                checked={formValues.visibility === option}
+                name="visibility"
+                id={`visibility-${option}`}
+                value={option}
+                onChange={onChange}
+              />
+            </div>
+          )
+        })}
+      </fieldset>
+
+      <fieldset>
+        <legend>Comments on comic pages</legend>
+        <Radio 
+          labelText="Allow users to freely comment"
+          checked={formValues.comments === 'Allowed'}
+          name="comments"
+          id="comments_allowed"
+          value="Allowed"
+          onChange={onChange}
+        />
+        <Radio 
+          labelText="Allow moderated comments"
+          checked={formValues.comments === 'Moderated'}
+          name="comments"
+          id="comments_moderated"
+          value="Moderated"
+          onChange={onChange}
+        />
+         <Radio 
+          labelText="Disable comments"
+          checked={formValues.comments === 'Disabled'}
+          name="comments"
+          id="comments_disabled"
+          value="Disabled"
+          onChange={onChange}
+        />
+      </fieldset>
 
       <Button id="new_comic" type="submit" onClick={submitComic} look="primary">
         Submit

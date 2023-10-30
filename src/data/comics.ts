@@ -106,17 +106,18 @@ export async function getContentWarningDefs(): Promise<QueryResult | Error> {
     `;
 
     const result = await queryDbConnection(query);
-
-    console.log(result);
-
     if (result.rows && result.rows.length > 0) {
-      return result.rows
+      return result.rows;
     }
     return null;
 }
 
 export async function getGenres(): Promise<QueryResult | Error> {
-
+  const result = await queryDbConnection('SELECT * FROM genres ORDER BY name ASC');
+  if (result.rows && result.rows.length > 0) {
+    return result.rows;
+  }
+  return null;
 }
 
 export async function editComic(
