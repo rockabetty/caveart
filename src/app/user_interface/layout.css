@@ -1,0 +1,4 @@
+.FlexRow {
+  display: flex;
+  flex-direction: row;
+}
