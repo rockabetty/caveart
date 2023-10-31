@@ -41,7 +41,7 @@ const UserProvider: React.FC = function({children}: UserProviderProps) {
         error: null,
     }
 
-    const [state, dispatch] = useReducer(userReducer, initialState);
+    const [state, _dispatch] = useReducer(userReducer, initialState);
     const router = useRouter();
 
     /**
@@ -55,14 +55,14 @@ const UserProvider: React.FC = function({children}: UserProviderProps) {
      * 
      * @param {UserAction} action - The action to be dispatched and logged.
      */
-    const loggedDispatch = (action: UserAction) => {
+    const dispatch = (action: UserAction) => {
         const logFunction = logActions[action.type]
-        if (logFunction && "payload" in action) {
+        if (logFunction) {
             logFunction(action.payload)
         } else if (dev) {
            console.log(`Unknown action type: ${action.type}`);
         }
-        dispatch(action);
+        _dispatch(action);
     }
 
     /**
@@ -81,7 +81,7 @@ const UserProvider: React.FC = function({children}: UserProviderProps) {
      * @param {string} password - The password of the user.
      */
     const loginUser = async (email: string, password: string) => {
-        dispatch({ type: ActionType.Loading });
+        dispatch({ type: ActionType.Loading, payload: {process: ActionType.Login} });
         try {
             const loginInfo = { email, password };
             const response = await axios.post('/api/auth/login', loginInfo);
@@ -113,7 +113,7 @@ const UserProvider: React.FC = function({children}: UserProviderProps) {
      * they claim to be and not an imposter.
      */
     const verifyUser = async () => {
-        dispatch({ type: ActionType.Loading });
+        dispatch({ type: ActionType.Loading, payload: {process: ActionType.Verify } });
         try {
             const response = await axios.post('/api/auth/check');
              dispatch({
@@ -141,7 +141,7 @@ const UserProvider: React.FC = function({children}: UserProviderProps) {
      *
      */
     const logoutUser = async () => {
-        dispatch({ type: ActionType.Loading });
+        dispatch({ type: ActionType.Loading, payload: {process: ActionType.Logout} });
         try {
             const response = await axios.post('/api/auth/logout');
             dispatch({
@@ -168,7 +168,7 @@ const UserProvider: React.FC = function({children}: UserProviderProps) {
      * already knows.
      */
     const viewProfile = async () => {
-        dispatch({ type: ActionType.Loading });
+        dispatch({ type: ActionType.Loading, payload: {process: ActionType.ViewProfile} });
         try {
             const response = await axios.post(`/api/auth/profile`);
             dispatch({

@@ -1,4 +1,4 @@
-import {User, ActionType} from './UserTypes';
+import {User, ActionType, UserAuthState} from './user.d.ts';
 
 export type LoginLoggerPayload = {
     user: {
@@ -28,6 +28,10 @@ export type UpdateProfileLoggerPayload = {
 export type ErrorLoggerPayload = {
     error: Error;
 };
+
+export type VerifyLoggerPayload = {
+    auth: Partial<UserAuthState>;
+}
 
 export type LoadingLoggerPayload = {
     process: ActionType;
