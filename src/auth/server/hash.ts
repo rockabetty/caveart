@@ -5,6 +5,16 @@ import { requireEnvVar } from "../../errors/envcheck"
 const emailSalt = requireEnvVar('EMAIL_SALT');
 const passwordSalt = Number(requireEnvVar('SALT_ROUNDS_PASSWORD'));
 
+/**
+ * Hashes an email address using SHA-256 cryptographic hash function.
+ * The hashing process uses a salt (emailSalt) combined with the email to ensure
+ * additional security against rainbow table attacks. 
+ * 
+ * `emailSalt` comes from the .env.
+ *
+ * @param {string} email - The email address to be hashed.
+ * @returns {string} The hashed representation of the email address in hexadecimal format.
+ */
 export function hashEmail(email: string) {
     const hash = crypto.createHash('sha256');
     hash.update(email + emailSalt);
