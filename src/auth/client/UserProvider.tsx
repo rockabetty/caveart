@@ -4,6 +4,11 @@
  * This component serves as a context provider for user authentication. It provides
  * functions for logging in, logging out, verifying a user, and viewing a user profile.
  * It manages the user authentication state using the userReducer.
+ * 
+ * If you want to use these functions, you actually are in the wrong place.  This file
+ * defines how these functions act under the hood and are subject to change!  You want
+ * to go to 'useUser', which is a more 'stable' file that exposes these functions in a
+ * more user-friendly manner.
  *
  * @component
  * @example
