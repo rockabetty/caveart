@@ -18,11 +18,10 @@ const ComicProfileForm = () => {
     subdomain: '',
     description: '',
     genres: {},
-    style: {},
     content: {},
     comments: 'allowed',
     visibility: 'Public',
-    likes: { allowed: true },
+    likes: true,
     rating: 'Appropriate for everyone'
   })
 
@@ -31,11 +30,14 @@ const ComicProfileForm = () => {
     setFormValues({ ...formValues, [e.target.name]: e.target.value })
   }
 
-  const submitComic = () => {
-    console.log("hi welcoem to chilis")
+  const submitComic = async () => {
+    const response = await axios.post('/api/comics/new', formValues)
+    .then((response) => {
+      console.log(response)
+    })
   }
 
-  const onToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onToggleTag = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selection = formValues[e.target.name] || {}
     if (selection[e.target.value]) {
       delete selection[e.target.value]
@@ -43,6 +45,14 @@ const ComicProfileForm = () => {
       selection[e.target.value] = true
     }
     setFormValues({ ...formValues, [e.target.name]: selection })
+  }
+
+  const toggleLikes = () => {
+    const allowLikes = formValues.likes;
+    setFormValues({
+      ...formValues,
+      likes: !allowLikes
+    })
   }
 
 
@@ -159,7 +169,7 @@ const ComicProfileForm = () => {
               labelText={genre.name}
               id={`genre-${genre.name}`}
               checked={formValues.genres[genre.id]}
-              onChange={onToggle}
+              onChange={onToggleTag}
               name="genres"
               value={genre.id}
             />
@@ -189,29 +199,30 @@ const ComicProfileForm = () => {
 
       <fieldset>
         <legend>Comments on comic pages</legend>
-        <Radio 
-          labelText="Allow users to freely comment"
-          checked={formValues.comments === 'Allowed'}
-          name="comments"
-          id="comments_allowed"
-          value="Allowed"
-          onChange={onChange}
-        />
-        <Radio 
-          labelText="Allow moderated comments"
-          checked={formValues.comments === 'Moderated'}
-          name="comments"
-          id="comments_moderated"
-          value="Moderated"
-          onChange={onChange}
-        />
-         <Radio 
-          labelText="Disable comments"
-          checked={formValues.comments === 'Disabled'}
-          name="comments"
-          id="comments_disabled"
-          value="Disabled"
-          onChange={onChange}
+         {['Allowed', 'Moderated', 'Disabled'].map((option, idx) => {
+          return (
+            <div key={idx}>
+              <Radio
+                labelText={option}
+                checked={formValues.comments === option}
+                name="comments"
+                id={`comments-${option}`}
+                value={option}
+                onChange={onChange}
+              />
+            </div>
+          )
+        })}
+      </fieldset>
+
+      <fieldset>
+        <legend>User ratings</legend>
+        <Checkbox
+          labelText="Allow likes"
+          checked={formValues.likes}
+          id={`likes`}
+          value={true}
+          onChange={toggleLikes}
         />
       </fieldset>
 
