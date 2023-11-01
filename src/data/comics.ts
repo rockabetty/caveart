@@ -1,4 +1,4 @@
-import {queryDbConnection, getParentsAndChildren, editTable, getTable} from './queryFunctions';
+import {queryDbConnection, getParentsAndChildren, buildOneToManyRowValues, editTable, getTable} from './queryFunctions';
 import {ComicModel} from './types/models';
 
 export async function createComic(
@@ -34,6 +34,50 @@ export async function createComic(
     ];
     const result = await queryDbConnection(query, values);
     return data.rows[0];
+};
+
+export async function addGenresToComic(
+    comicID: number,
+    genreIDs: number[]
+): Promise<QueryResult[]> {
+    const insertPromises: Promise<QueryResult>[] = [];
+    genreIDs.forEach(genreID => {
+      const query = `
+          INSERT INTO comics_to_genres (comic_id, genre_id)
+          VALUES ($1, $2)
+          RETURNING id
+      `;
+      const values = [comicID, genreID];
+      insertPromises.push(queryDbConnection(query, values));
+    });
+    try {
+        const results: QueryResult[] = await Promise.all(insertPromises);
+        return results;
+    } catch (error) {
+        return error;
+    }
+};
+
+export async function addContentWarningsToComic(
+    comicID: number,
+    contentIDs: number[]
+): Promise<QueryResult[]> {
+    const insertPromises: Promise<QueryResult>[] = [];
+    contentIDs.forEach(contentID => {
+      const query = `
+          INSERT INTO comics_to_content_warnings (comic_id, content_warning_id)
+          VALUES ($1, $2)
+          RETURNING id
+      `;
+      const values = [comicID, contentIDs];
+      insertPromises.push(queryDbConnection(query, values));
+    });
+    try {
+        const results: QueryResult[] = await Promise.all(insertPromises);
+        return results;
+    } catch (error) {
+        return error;
+    }
 };
 
 export async function addAuthor(

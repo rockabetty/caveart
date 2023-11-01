@@ -27,6 +27,17 @@ export function writeUpdateString(columnsToUpdate: string[]): string {
     return setClauses.join(", ");
 };
 
+/**
+ * Builds a string representation of one-to-many relationships suitable for SQL insertion.
+ * 
+ * @param one - The 'one' side of the relationship.
+ * @param many - An array representing the 'many' side of the relationship.
+ * @returns A string in the format `(one, many[0]), (one, many[1]), ...`
+ */
+export function buildOneToManyRowValues(one: number, many: number[]): string {
+  return many.map(m => `(${one}, ${m})`).join(', ');
+}
+
 export async function getTable(
     table: string,
     identifierColumn: string,
