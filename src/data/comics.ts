@@ -33,7 +33,7 @@ export async function createComic(
       comic.rating
     ];
     const result = await queryDbConnection(query, values);
-    return data.rows[0];
+    return result.rows[0]
 };
 
 export async function addGenresToComic(
@@ -199,16 +199,50 @@ export async function deleteComic(comic: number): Promise<QueryResult | Error> {
     }
 };
 
-export async function removeGenresFromComic(comic: number, genreList: number[] = null): Promise<QueryResult> {
+export async function removeGenresFromComic(comic: number, genreList: number[] = null): Promise<boolean> {
+    const genreColumn = !!genreList ? 'genre_id' : null;
     const operation = await removeOneToManyAssociations(
       'comics_to_genres',
       'comic_id',
       comic,
-      'genre_id',
+      genreColumn,
       genreList
     )
+    if (operation.rowCount > 0) {
+      return true;
+    } else {
+      return false;
+    }
 };
 
+export async function removeContentWarningsFromComic(comic: number, contentList: number[] = null): Promise<boolean> {
+    const warningColumn = !!contentList ? 'content_warning_id' : null;
+    const operation = await removeOneToManyAssociations(
+      'comics_to_content_warnings',
+      'comic_id',
+      comic,
+      warningColumn,
+      contentList
+    )
+    if (result.rowCount > 0) {
+      return true;
+    } else {
+      return false;
+    }
+};
 
-      const detachWarnings = await removeContentWarningsFromComic(id);
-      const detachAuthor = await removeAuthorsFromComic(id);
+export async function removeAuthorsFromComic(comic: number, userList: number[] = null): Promise<boolean> {
+    const userColumn = !!userList ? 'user_id' : null;
+    const operation = await removeOneToManyAssociations(
+      'comics_to_authors',
+      'comic_id',
+      comic,
+      userColumn,
+      userList
+    )
+    if (result.rowCount > 0) {
+      return true;
+    } else {
+      return false;
+    }
+};

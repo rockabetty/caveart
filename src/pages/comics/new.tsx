@@ -15,7 +15,7 @@ const ComicProfileForm = () => {
     description: '',
     genres: {},
     content: {},
-    comments: 'allowed',
+    comments: 'Allowed',
     visibility: 'Public',
     likes: true,
     rating: 'Appropriate for everyone'

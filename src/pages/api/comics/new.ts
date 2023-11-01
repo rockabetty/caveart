@@ -1,6 +1,16 @@
 import { NextApiHandler } from 'next';
 import { withAuth } from '../../../auth/server/withAuth';
 import { extractUserIdFromToken } from  '../../../auth/server/extractUserIdFromToken';
+import {
+  createComic,
+  addGenresToComic,
+  addContentWarningsToComic,
+  addAuthorToComic,
+  deleteComic,
+  removeGenresFromComic,
+  removeContentWarningsFromComic,
+  removeAuthorsFromComic
+} from '../../../data/comics';
 
 const handler: NextApiHandler = async (req, res) => {
   const {
@@ -19,30 +29,84 @@ const handler: NextApiHandler = async (req, res) => {
     title,
     subdomain,
     description,
-    comments: commments !== 'Disabled',
+    comments: comments !== 'Disabled',
     likes,
     is_private: visibility === 'Private',
     is_unlisted: visibility === 'Unlisted',
     moderate_comments: comments === 'Moderated'
   };
 
+  // Validating that the title is alpahnumeric or has !, -, ?
+  const titleRegex = /^[a-zA-Z0-9 !\-?]+$/;
+  if (!titleRegex.test(title)) {
+    return res.status(400).json({ error: 'Invalid title format' });
+  }
+
+  // Validating that subdomain is purely alphanumeric with hyphens or underscores only
+  const subdomainRegex = /^[a-zA-Z0-9_-]+$/;
+  if (!subdomainRegex.test(subdomain)) {
+    return res.status(400).json({ error: 'Invalid subdomain format' });
+  }
+
+  if (description.length < 10 || description.length > 1000) {
+    return res.status(400).json({ error: 'Description should be between 10 and 1000 characters' });
+  }
+
+  let id = null;
+ 
   try {
-    const genreList: number[] = Object.keys(genres);
-    const warningList: number[] = Object.values(content);
+    const genreList = Object.keys(genres).map(key => {
+      const num = parseInt(key, 10);
+      if (isNaN(num)) {
+          return res.status(400).json({ error: 'Invalid genre format' });
+      }
+      return num;
+    });
+
+    const warningList = Object.values(content).map(value => {
+      const num = parseInt(value, 10);
+      if (isNaN(num)) {
+          return res.status(400).json({ error: 'Invalid content warning format' });
+      }
+      return num;
+    });
+
+    const validComments = ['Allowed', 'Moderated', 'Disabled'];
+    if (!validComments.includes(comments)) {
+      return res.status(400).json({ error: 'Invalid comment option' });
+    }
+
+    const validVisibilities = ['Public', 'Private', 'Invite-Only'];
+    if (!validVisibilities.includes(visibility)) {
+      return res.status(400).json({ error: 'Invalid visibility option' });
+    }
+
+    if (typeof likes !== 'boolean') {
+      return res.status(400).json({ error: 'Likes should be a boolean' });
+    }
+
     const newComic = await createComic(comicTableData);
-    const {id} = newComic;
+    id = newComic.id;
     const comicGenres = await addGenresToComic(id, genreList);
     const comicWarnings = await addContentWarningsToComic(id, warningList);
     const userID = await extractUserIdFromToken(req, false);
-    const comicAuthor = await addAuthorToComic(id, userID)
-    catch (error) {
-      const deleteComic = await deleteComic(id);
-      const detachGenres = await removeGenresFromComic(id);
-      const detachWarnings = await removeContentWarningsFromComic(id);
-      const detachAuthor = await removeAuthorsFromComic(id);
-    }
+    const comicAuthor = await addAuthorToComic(id, userID);
+    return res.status(201).send("Comic created successfully");
   }
-  return res.status(200).send("ok");
+  catch (error) {
+    console.error("Error during comic creation: ", error);
+    if (id) {
+      try {
+        const deleteComicOperation = await deleteComic(id);
+        const detachGenres = await removeGenresFromComic(id);
+        const detachWarnings = await removeContentWarningsFromComic(id);
+        const detachAuthor = await removeAuthorsFromComic(id);
+      } catch (cleanupError) {
+        console.error("Error during cleanup: ", cleanupError);
+      }
+    }
+    return res.status(500).send("Failed to create comic");
+  }
 }
 
 export default withAuth(handler);

@@ -19,12 +19,8 @@ const tableNames = new Set([
   'users_sessions'
 ]);
 
-const _isValidTable(table: string) {
+const _isValidTable = function (table: string): boolean {
   return tableNames.has(table)
-}
-
-const _isValidColumn(table: string, column: string) {
-
 }
 
 export async function queryDbConnection(queryString: string, values: any[] = []): Promise<QueryResult | Error> {
@@ -104,7 +100,7 @@ export async function editTable(
     return await queryDbConnection(query, values)
 };
 
-xport async function removeOneToManyAssociations(
+export async function removeOneToManyAssociations(
     table: string,
     oneColumn: string,
     oneID: number,
@@ -112,9 +108,11 @@ xport async function removeOneToManyAssociations(
     manyIDs?: number[]
 ): Promise<QueryResult[]> {
 
-    if (!table.match(/^\w+$/) || !oneColumn.match(/^\w+$/) || (manyColumn && !manyColumn.match(/^\w+$/))) {
-        throw new Error("Invalid table or column name");
+    if (!_isValidTable(table)) {
+        throw new Error("Invalid table name");
     }
+
+    // TODO: Constrain to only valid columns
 
     if (!manyColumn || !manyIDs || manyIDs.length === 0) {
         const query = `DELETE FROM ${table} WHERE ${oneColumn} = $1`;
