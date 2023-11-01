@@ -2,6 +2,31 @@ import { PoolClient, QueryResult } from 'pg';
 import PoolConnection from './connection';
 import {QueryFunction, GenericStringMap} from './types/queries';
 
+const tableNames = new Set([
+  'chapters',
+  'comic_pages',
+  'comic_tags',
+  'comics',
+  'comics_to_authors',
+  'comics_to_content_warnings',
+  'comics_to_genres',
+  'comics_to_styles',
+  'content_warnings',
+  'genres',
+  'ratings',
+  'usage_devices',
+  'users',
+  'users_sessions'
+]);
+
+const _isValidTable(table: string) {
+  return tableNames.has(table)
+}
+
+const _isValidColumn(table: string, column: string) {
+
+}
+
 export async function queryDbConnection(queryString: string, values: any[] = []): Promise<QueryResult | Error> {
     const pool = PoolConnection.get();
     const client = await pool.connect();
@@ -77,4 +102,35 @@ export async function editTable(
       WHERE ${identifierColumn} = $${idPlaceholder}
     `;
     return await queryDbConnection(query, values)
+};
+
+xport async function removeOneToManyAssociations(
+    table: string,
+    oneColumn: string,
+    oneID: number,
+    manyColumn?: string,
+    manyIDs?: number[]
+): Promise<QueryResult[]> {
+
+    if (!table.match(/^\w+$/) || !oneColumn.match(/^\w+$/) || (manyColumn && !manyColumn.match(/^\w+$/))) {
+        throw new Error("Invalid table or column name");
+    }
+
+    if (!manyColumn || !manyIDs || manyIDs.length === 0) {
+        const query = `DELETE FROM ${table} WHERE ${oneColumn} = $1`;
+        const values = [oneID];
+        return [await queryDbConnection(query, values)];
+    }
+
+    const deletePromises: Promise<QueryResult>[] = [];
+
+    manyIDs.forEach(manyID => {
+        const query = `
+            DELETE FROM ${table} WHERE ${oneColumn} = $1 AND ${manyColumn} = $2
+        `;
+        const values = [oneID, manyID];
+        deletePromises.push(queryDbConnection(query, values));
+    });
+
+    return await Promise.all(deletePromises);
 };

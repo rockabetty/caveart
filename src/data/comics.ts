@@ -1,4 +1,4 @@
-import {queryDbConnection, getParentsAndChildren, buildOneToManyRowValues, editTable, getTable} from './queryFunctions';
+import {queryDbConnection, getParentsAndChildren, buildOneToManyRowValues, removeOneToManyAssociations, editTable, getTable} from './queryFunctions';
 import {ComicModel} from './types/models';
 
 export async function createComic(
@@ -80,7 +80,7 @@ export async function addContentWarningsToComic(
     }
 };
 
-export async function addAuthor(
+export async function addAuthorToComic(
     comicID: number,
     authorID: number
 ): Promise<QueryResult | Error> {
@@ -198,3 +198,17 @@ export async function deleteComic(comic: number): Promise<QueryResult | Error> {
       return false;
     }
 };
+
+export async function removeGenresFromComic(comic: number, genreList: number[] = null): Promise<QueryResult> {
+    const operation = await removeOneToManyAssociations(
+      'comics_to_genres',
+      'comic_id',
+      comic,
+      'genre_id',
+      genreList
+    )
+};
+
+
+      const detachWarnings = await removeContentWarningsFromComic(id);
+      const detachAuthor = await removeAuthorsFromComic(id);

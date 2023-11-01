@@ -30,3 +30,40 @@ export type ComicModel = {
     rating?: number;
     stylesheet_variables?: string;
 };
+
+export type GenreModel = {
+    id?: number;
+    name?: string;
+};
+
+export type ComicsGenreBridgeModel = {
+    comic_id: number;
+    genre_id: number;
+    id?: number;
+};
+
+export type ContentWarningModel = {
+    id?: number;
+    name: string;
+};
+
+export type ComicsContentWarningBridgeModel = {
+    comic_id: number;
+    content_warning_id: number;
+    id?: number;
+};
+
+export type ComicsUsersBridgeModel = {
+    comic_id: number;
+    user_id: number;
+    role?: string;
+};
+
+export type ValidTableTypes = 
+   | UserModel
+   | ComicModel
+   | GenreModel
+   | ComicsGenreBridgeModel
+   | ContentWarningModel
+   | ComicsContentWarningBridgeModel
+   | ComicsUsersBridgeModel
