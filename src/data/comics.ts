@@ -6,7 +6,7 @@ export async function createComic(
 ): Promise<QueryResult | Error> {
     const query = `
       INSERT INTO comics (
-        name,
+        title,
         subdomain,
         description,
         comments,
@@ -20,7 +20,18 @@ export async function createComic(
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       RETURNING id
     `;
-    const values = [comic.name, comic.subdomain, comic.description, comic.comments, comic.isUnlisted, comic.isPrivate, comic.moderate, comic.thumbnail, comic.likes, comic.rating]
+    const values = [
+      comic.title,
+      comic.subdomain,
+      comic.description,
+      comic.comments,
+      comic.isUnlisted,
+      comic.isPrivate,
+      comic.moderate_comments,
+      comic.thumbnail,
+      comic.likes,
+      comic.rating
+    ];
     const result = await queryDbConnection(query, values);
     return data.rows[0];
 };

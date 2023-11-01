@@ -25,7 +25,8 @@ export type ComicModel = {
     is_private?: boolean;
     moderate_comments?: boolean;
     view_count?: number;
-    likes?: number;
+    likes?: boolean;
+    like_count?: number;
     rating?: number;
     stylesheet_variables?: string;
 };

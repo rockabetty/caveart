@@ -10,9 +10,7 @@ const ComicProfileForm = () => {
   const [genres, setGenres] = useState<any[]>([])
   const [submissionError, setSubmissionError] = useState<boolean>(false)
   const [formValues, setFormValues] = useState({
-    name: '',
-    subdomain: '',
-    name: '',
+    title: '',
     subdomain: '',
     description: '',
     genres: {},
@@ -83,11 +81,11 @@ const ComicProfileForm = () => {
     <CaveartLayout>
      <TextInput
         labelText="Name of comic"
-        name="name"
+        name="title"
         type="text"
         id="comic_name"
         onChange={onChange}
-        value={formValues?.name}
+        value={formValues?.title}
         placeholderText="Unga Bunga Grunga"
         required={true}
       />

@@ -4,7 +4,7 @@ import { extractUserIdFromToken } from  '../../../auth/server/extractUserIdFromT
 
 const handler: NextApiHandler = async (req, res) => {
   const {
-    name,
+    title,
     subdomain,
     description,
     genres,
@@ -16,19 +16,20 @@ const handler: NextApiHandler = async (req, res) => {
   } = req.body;
 
   const comicTableData = {
-    name,
+    title,
     subdomain,
     description,
-    comments,
+    comments: commments !== 'Disabled',
     likes,
-    isPrivate: visibility === 'Private',
-    isUnlisted: visibility === 'Unlisted'
+    is_private: visibility === 'Private',
+    is_unlisted: visibility === 'Unlisted',
+    moderate_comments: comments === 'Moderated'
   };
 
   try {
     const genreList: number[] = Object.keys(genres);
     const warningList: number[] = Object.values(content);
-    const newComic = await createComic();
+    const newComic = await createComic(comicTableData);
     const {id} = newComic;
     const comicGenres = await addGenresToComic(id, genreList);
     const comicWarnings = await addContentWarningsToComic(id, warningList);
