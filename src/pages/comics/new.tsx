@@ -6,8 +6,6 @@ import '../../app/user_interface/layout.css';
 
 const ComicProfileForm = () => {
 
-  console.log(Checkbox)
-
   const [contentWarnings, setContentWarnings] = useState<any[]>([]);
   const [genres, setGenres] = useState<any[]>([])
   const [submissionError, setSubmissionError] = useState<boolean>(false)
@@ -55,7 +53,6 @@ const ComicProfileForm = () => {
     })
   }
 
-
   const onContentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const content = {...formValues.content};
     let value = undefined;
@@ -66,7 +63,6 @@ const ComicProfileForm = () => {
     else value = e.target.value;
     const newContent = {...content, [contentMarker]: value}
     setFormValues({ ...formValues, content: newContent })
-    console.log(formValues)
   }
 
   useEffect(() => {

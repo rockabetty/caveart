@@ -35,9 +35,7 @@ CREATE TABLE IF NOT EXISTS usage_devices (
 
 CREATE TABLE IF NOT EXISTS ratings (
     id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-    description TEXT NOT NULL,
-    thumbnail TEXT
+    name TEXT UNIQUE NOT NULL
 );
 CREATE TABLE IF NOT EXISTS comics (
     id SERIAL PRIMARY KEY,
@@ -53,7 +51,8 @@ CREATE TABLE IF NOT EXISTS comics (
     is_private BOOLEAN DEFAULT FALSE,
     moderate_comments BOOLEAN DEFAULT FALSE,
     view_count INT DEFAULT 0,
-    likes INT DEFAULT 0,
+    likes BOOLEAN DEFAULT TRUE,
+    like_count INT DEFAULT 0,
     rating INT REFERENCES ratings(id) ON DELETE CASCADE,
     stylesheet_variables JSONB,
     UNIQUE (title, subdomain)
@@ -162,6 +161,13 @@ INSERT INTO genres (name) VALUES
   ('Magical Girl'),
   ('Pokemon'),
   ('Fandom');
+
+INSERT INTO ratings (name) VALUES
+  ('All Ages'),
+  ('Ages 10+'),
+  ('Teen (13+)'),
+  ('Mature (17+)'),
+  ('Adults Only (18+)');
 
 TRUNCATE content_warnings RESTART IDENTITY CASCADE;
 
