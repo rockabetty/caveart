@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse, NextApiHandler } from 'next';
 import jwt from 'jsonwebtoken';
-import { getUserSession } from '../data/users';
-import { requireEnvVar} from '../errors/envcheck';
-import { USER_AUTH_TOKEN_NAME } from '../../constants';
+import { getUserSession } from '../../data/users';
+import { requireEnvVar} from '../../errors/envcheck';
+import { USER_AUTH_TOKEN_NAME } from '../../../constants';
 
 const SECRET_KEY_JWT = requireEnvVar('SECRET_KEY_JWT');
 

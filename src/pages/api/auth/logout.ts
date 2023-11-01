@@ -1,7 +1,7 @@
 import { NextApiHandler } from 'next';
 import jwt from 'jsonwebtoken';
 import { requireEnvVar } from '../../../errors/envcheck'; 
-import { withAuth } from '../../../middleware/withAuth';
+import { withAuth } from '../../../auth/server/withAuth';
 import { clearUserSession } from '../../../data/users';
 import { USER_AUTH_TOKEN_NAME } from '../../../../constants';
 
