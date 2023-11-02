@@ -39,17 +39,17 @@ const handler: NextApiHandler = async (req, res) => {
   // Validating that the title is alpahnumeric or has !, -, ?
   const titleRegex = /^[a-zA-Z0-9 !\-?]+$/;
   if (!titleRegex.test(title)) {
-    return res.status(400).json({ error: 'Invalid title format' });
+    return res.status(400).json({ error: 'invalidTitleFormat' });
   }
 
   // Validating that subdomain is purely alphanumeric with hyphens or underscores only
   const subdomainRegex = /^[a-zA-Z0-9_-]+$/;
   if (!subdomainRegex.test(subdomain)) {
-    return res.status(400).json({ error: 'Invalid subdomain format' });
+    return res.status(400).json({ error: 'invalidSubdomainFormat' });
   }
 
-  if (description.length < 10 || description.length > 1000) {
-    return res.status(400).json({ error: 'Description should be between 10 and 1000 characters' });
+  if (description.length > 1000) {
+    return res.status(400).json({ error: 'invalidDescriptionLength' });
   }
 
   let id = null;
@@ -58,7 +58,7 @@ const handler: NextApiHandler = async (req, res) => {
     const genreList = Object.keys(genres).map(key => {
       const num = parseInt(key, 10);
       if (isNaN(num)) {
-          return res.status(400).json({ error: 'Invalid genre format' });
+          return res.status(400).json({ error: 'invalidGenreFormat' });
       }
       return num;
     });
@@ -66,23 +66,23 @@ const handler: NextApiHandler = async (req, res) => {
     const warningList = Object.values(content).map(value => {
       const num = parseInt(value, 10);
       if (isNaN(num)) {
-          return res.status(400).json({ error: 'Invalid content warning format' });
+          return res.status(400).json({ error: 'invalidContentWarningFormat' });
       }
       return num;
     });
 
     const validComments = ['Allowed', 'Moderated', 'Disabled'];
     if (!validComments.includes(comments)) {
-      return res.status(400).json({ error: 'Invalid comment option' });
+      return res.status(400).json({ error: 'invalidCommentOption' });
     }
 
     const validVisibilities = ['Public', 'Private', 'Invite-Only'];
     if (!validVisibilities.includes(visibility)) {
-      return res.status(400).json({ error: 'Invalid visibility option' });
+      return res.status(400).json({ error: 'invalidVisibilityOption' });
     }
 
     if (typeof likes !== 'boolean') {
-      return res.status(400).json({ error: 'Likes should be a boolean' });
+      return res.status(400).json({ error: 'invalidLikesOption' });
     }
 
     const newComic = await createComic(comicTableData);

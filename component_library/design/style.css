@@ -58,7 +58,7 @@
   --swatch-black: #222222;
 
   --base-size: 1.16rem;
-  --base-scaler: 1.6;
+  --base-scaler: 1.5;
   --base-line-height-body: 1.4;
   --base-line-height-header: 1.3;
   --scaler-pow-2: calc( var(--base-scaler) * var(--base-scaler));

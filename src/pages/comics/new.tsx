@@ -21,10 +21,14 @@ const ComicProfileForm = () => {
     rating: 'Appropriate for everyone'
   })
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)  => {
     setSubmissionError("")
     setFormValues({ ...formValues, [e.target.name]: e.target.value })
   }
+
+  useEffect(() => {
+  console.log("Form Values:", formValues);
+}, [formValues]);
 
   const submitComic = async () => {
     const response = await axios.post('/api/comics/new', formValues)
@@ -84,6 +88,7 @@ const ComicProfileForm = () => {
         name="title"
         type="text"
         id="comic_name"
+        pattern={/^[a-zA-Z0-9 !\-?]+$/}
         onChange={onChange}
         value={formValues?.title}
         placeholderText="Unga Bunga Grunga"
