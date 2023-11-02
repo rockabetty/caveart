@@ -84,7 +84,7 @@ export async function addAuthorToComic(
     comicID: number,
     authorID: number
 ): Promise<QueryResult | Error> {
-    const sql = `
+    const query = `
       INSERT INTO comics_to_authors (comic_id, user_id)
       VALUES ($1, $2)
       RETURNING id
@@ -224,7 +224,7 @@ export async function removeContentWarningsFromComic(comic: number, contentList:
       warningColumn,
       contentList
     )
-    if (result.rowCount > 0) {
+    if (operation.rowCount > 0) {
       return true;
     } else {
       return false;
@@ -240,7 +240,7 @@ export async function removeAuthorsFromComic(comic: number, userList: number[] =
       userColumn,
       userList
     )
-    if (result.rowCount > 0) {
+    if (operation.rowCount > 0) {
       return true;
     } else {
       return false;

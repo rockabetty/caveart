@@ -56,6 +56,7 @@ const handler: NextApiHandler = async (req, res) => {
  
   try {
     const genreList = Object.keys(genres).map(key => {
+      console.log("KEY:" + key);
       const num = parseInt(key, 10);
       if (isNaN(num)) {
           return res.status(400).json({ error: 'invalidGenreFormat' });
@@ -97,10 +98,10 @@ const handler: NextApiHandler = async (req, res) => {
     console.error("Error during comic creation: ", error);
     if (id) {
       try {
-        const deleteComicOperation = await deleteComic(id);
         const detachGenres = await removeGenresFromComic(id);
         const detachWarnings = await removeContentWarningsFromComic(id);
         const detachAuthor = await removeAuthorsFromComic(id);
+        const deleteComicOperation = await deleteComic(id);
       } catch (cleanupError) {
         console.error("Error during cleanup: ", cleanupError);
       }
