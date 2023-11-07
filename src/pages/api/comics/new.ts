@@ -1,6 +1,6 @@
 import { NextApiHandler } from 'next';
-import { withAuth } from '../../../auth/server/withAuth';
-import { extractUserIdFromToken } from  '../../../auth/server/extractUserIdFromToken';
+import { withAuth } from '../../../services/auth/server/withAuth';
+import { extractUserIdFromToken } from  '../../../services/auth/server/extractUserIdFromToken';
 import {
   createComic,
   addGenresToComic,

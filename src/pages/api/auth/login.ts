@@ -1,6 +1,6 @@
 import { NextApiHandler } from 'next';
-import { hashEmail, compareHash } from '../../../auth/server/hash';
-import { createUserSessionCookie } from '../../../auth/server/userSessionCookie';
+import { hashEmail, compareHash } from '../../../services/auth/server/hash';
+import { createUserSessionCookie } from '../../../services/auth/server/userSessionCookie';
 import { getUserCredentials } from '../../../data/users';
  
 const handler: NextApiHandler = async (req, res) => {

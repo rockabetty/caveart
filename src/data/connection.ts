@@ -1,5 +1,5 @@
 import { Pool } from 'pg'
-import { requireEnvVar } from '../errors/envcheck'
+import { requireEnvVar } from '../services/logs/envcheck'
 
 const user = requireEnvVar('PG_USERNAME');
 const database = requireEnvVar('PG_DATABASE'); 

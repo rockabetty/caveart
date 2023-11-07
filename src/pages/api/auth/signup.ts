@@ -1,10 +1,11 @@
 import { NextApiHandler } from 'next';
-import { hashPassword, hashEmail, compareHash } from '../../../auth/server/hash';
+import { hashPassword, hashEmail, compareHash } from '../../../services/auth/server/hash';
 import { createUser } from '../../../data/users';
-import { encrypt } from '../../../auth/server/encrypt';
-import { requireEnvVar } from '../../../errors/envcheck'
-import { generateToken } from '../../../auth/server/jwt';
-import { createUserSessionCookie } from '../../../auth/server/userSessionCookie';
+import { encrypt } from '../../../services/auth/server/encrypt';
+import { requireEnvVar } from '../../../services/logs/envcheck'
+import { generateToken } from '../../../services/auth/server/jwt';
+import { createUserSessionCookie } from '../../../services/auth/server/userSessionCookie';
+import { ErrorKeys } from '../../../services/auth/types/errors'
 
 const passwordRounds = Number(requireEnvVar('SALT_ROUNDS_PASSWORD'));
 
@@ -16,19 +17,21 @@ const handler: NextApiHandler = async (req, res) => {
   try {
     const {password, name} = req.body;
     const sanitizedEmail = req.body.email.replace(/[^a-zA-Z0-9@._-]/gi, '');
-   
-    if (!password || !name || !sanitizedEmail) {
-      return res.status(400).send("Required fields are missing.");
+    if (!name) {
+      return res.status(400).send(ErrorKeys.USERNAME_MISSING);
     }
-
+    if (!password) {
+      return res.status(400).send(ErrorKeys.PASSWORD_MISSING);
+    }
+    if (!sanitizedEmail) {
+      return res.status(400).send(ErrorKeys.EMAIL_INVALID);
+    }
     const validUsername = /^[a-zA-Z0-9_-]+$/;
     if (!validUsername.test(name)) {
-       return res.status(400).send("Usernames can only be letters, numbers, dashes and underscores.")
+       return res.status(400).send(ErrorKeys.USERNAME_INVALID);
     }
- 
     const encryptedEmail = encrypt(sanitizedEmail);
     const hashedEmail = await hashEmail(sanitizedEmail);
- 
     const hashedPassword = await hashPassword(password);
     const newUser = await createUser(
       name,
@@ -36,15 +39,25 @@ const handler: NextApiHandler = async (req, res) => {
       hashedEmail,
       hashedPassword,
     );
-
     const userId = newUser.rows[0].id;
     const userSessionCookie = await createUserSessionCookie(userId);
     res.setHeader('Set-Cookie', userSessionCookie);
-    res.status(200).send();
-
+    return res.status(200).send();
   }
   catch (error) {
-    res.status(500).send(error);
+    const code = error.code;
+    if (code && code === '23505') {
+      switch (error.constraint) {
+        case 'users_username_key':
+          return res.status(400).send(ErrorKeys.USERNAME_TAKEN)
+        case 'users_email_key':
+          return res.status(400).send(ErrorKeys.EMAIL_TAKEN)
+        default:
+          return res.status(400).send(ErrorKeys.GENERAL_SUBMISSION_ERROR)
+      }
+      return res.status(400).send(error.constraint)
+    }
+    return res.status(500).send(error);
   }
 }
 

@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { TextInput, Button } from '../../../../component_library';
-import { useUser } from '../../../auth/client/hooks/useUser';
-import { ActionType } from '../../../auth/types/user.d.ts';
-import { ErrorKeys } from '../../../auth/types/errors';
+import { useUser } from '../../../services/auth/client/hooks/useUser';
+import { ActionType } from '../../../services/auth/types/user.d.ts';
+import { ErrorKeys } from '../../../services/auth/types/errors';
 
 const SignUp: React.FC<AuthProps> = () => {
   const { t } = useTranslation();

@@ -1,4 +1,4 @@
-import UserProvider from '../auth/client/UserProvider';
+import UserProvider from '../services/auth/client/UserProvider';
 
 export default function App({ Component, pageProps }) {
   return (

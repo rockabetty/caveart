@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUser } from '../../../auth/client/hooks/useUser';
+import { useUser } from '../../../services/auth/client/hooks/useUser';
 import Login from './LogIn';
 import Signup from './SignUp';
 import { Button, Modal } from '../../../../component_library';
