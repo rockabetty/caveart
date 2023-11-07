@@ -69,7 +69,7 @@ export async function addContentWarningsToComic(
           VALUES ($1, $2)
           RETURNING id
       `;
-      const values = [comicID, contentIDs];
+      const values = [comicID, contentID];
       insertPromises.push(queryDbConnection(query, values));
     });
     try {
@@ -91,7 +91,7 @@ export async function addAuthorToComic(
     `
     const values = [comicID, authorID]
     const result = await queryDbConnection(query, values);
-    return data.rows[0];
+    return result.rows[0];
 };
 
 export async function isAuthor(
@@ -188,7 +188,7 @@ export async function editComic(
 };
 
 export async function deleteComic(comic: number): Promise<QueryResult | Error> {
-    const sql = `DELETE FROM comics 
+    const query = `DELETE FROM comics 
     WHERE id = $1;`
     const values = [comic]
     const result = await queryDbConnection(query, values);

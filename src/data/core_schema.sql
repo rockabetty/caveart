@@ -122,6 +122,7 @@ CREATE TABLE IF NOT EXISTS comic_pages (
     like_count INT DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS comics_to_authors (
+    id SERIAL PRIMRAY KEY,
     comic_id INT REFERENCES comics(id) ON DELETE CASCADE,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
     role TEXT,

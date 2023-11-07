@@ -7,7 +7,7 @@ import '../../app/user_interface/layout.css';
 const ComicProfileForm = () => {
 
   const [contentWarnings, setContentWarnings] = useState<any[]>([]);
-  const [genres, setGenres] = useState<any[]>([])
+  const [genres, setGenres] = useState<any[]>([]);
   const [submissionError, setSubmissionError] = useState<boolean>(false)
   const [formValues, setFormValues] = useState({
     title: '',
@@ -26,10 +26,6 @@ const ComicProfileForm = () => {
     setFormValues({ ...formValues, [e.target.name]: e.target.value })
   }
 
-  useEffect(() => {
-  console.log("Form Values:", formValues);
-}, [formValues]);
-
   const submitComic = async () => {
     const response = await axios.post('/api/comics/new', formValues)
     .then((response) => {
@@ -38,14 +34,20 @@ const ComicProfileForm = () => {
   }
 
   const onToggleTag = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selection = formValues[e.target.name] || {}
-    if (selection[e.target.value]) {
-      delete selection[e.target.value]
+    const fieldName = e.target.name;
+    const currentValue = Number(e.target.value);
+    const currentObject = { ...formValues[fieldName] };
+    if (currentObject[currentValue]) {
+      delete currentObject[currentValue];
     } else {
-      selection[e.target.value] = true
+      currentObject[currentValue] = true;
     }
-    setFormValues({ ...formValues, [e.target.name]: selection })
-  }
+    const updatedFormValues = {
+      ...formValues,
+      [fieldName]: currentObject
+    };
+    setFormValues(updatedFormValues);
+  };
 
   const toggleLikes = () => {
     const allowLikes = formValues.likes;
@@ -159,19 +161,18 @@ const ComicProfileForm = () => {
       </div>
 
       <h2>Genres</h2>
-      <div class="ReactiveGrid">
-        {genres.map((genre, idx) => {
+      <div className="ReactiveGrid">
+        {genres.map((genre) => {
           return (
-            <div>
-            <Checkbox
-              key={`genre-${idx}`}
-              labelText={genre.name}
-              id={`genre-${genre.name}`}
-              checked={formValues.genres[genre.id]}
-              onChange={onToggleTag}
-              name="genres"
-              value={genre.id}
-            />
+            <div key={`genre-${genre.id}`}>
+              <Checkbox
+                labelText={genre.name}
+                id={`genre-${genre.id}`}
+                checked={!!formValues.genres[genre.id]}
+                onChange={onToggleTag}
+                name="genres"
+                value={genre.id.toString()}
+              />
             </div>
           );
         })}
