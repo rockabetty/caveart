@@ -2,6 +2,27 @@ import { PoolClient, QueryResult } from 'pg';
 import PoolConnection from './connection';
 import {QueryFunction, GenericStringMap} from './types/queries';
 
+const tableNames = new Set([
+  'chapters',
+  'comic_pages',
+  'comic_tags',
+  'comics',
+  'comics_to_authors',
+  'comics_to_content_warnings',
+  'comics_to_genres',
+  'comics_to_styles',
+  'content_warnings',
+  'genres',
+  'ratings',
+  'usage_devices',
+  'users',
+  'users_sessions'
+]);
+
+const _isValidTable = function (table: string): boolean {
+  return tableNames.has(table)
+}
+
 export async function queryDbConnection(queryString: string, values: any[] = []): Promise<QueryResult | Error> {
     const pool = PoolConnection.get();
     const client = await pool.connect();
@@ -26,6 +47,17 @@ export function writeUpdateString(columnsToUpdate: string[]): string {
     }
     return setClauses.join(", ");
 };
+
+/**
+ * Builds a string representation of one-to-many relationships suitable for SQL insertion.
+ * 
+ * @param one - The 'one' side of the relationship.
+ * @param many - An array representing the 'many' side of the relationship.
+ * @returns A string in the format `(one, many[0]), (one, many[1]), ...`
+ */
+export function buildOneToManyRowValues(one: number, many: number[]): string {
+  return many.map(m => `(${one}, ${m})`).join(', ');
+}
 
 export async function getTable(
     table: string,
@@ -66,4 +98,37 @@ export async function editTable(
       WHERE ${identifierColumn} = $${idPlaceholder}
     `;
     return await queryDbConnection(query, values)
+};
+
+export async function removeOneToManyAssociations(
+    table: string,
+    oneColumn: string,
+    oneID: number,
+    manyColumn?: string,
+    manyIDs?: number[]
+): Promise<QueryResult[]> {
+
+    if (!_isValidTable(table)) {
+        throw new Error("Invalid table name");
+    }
+
+    // TODO: Constrain to only valid columns
+
+    if (!manyColumn || !manyIDs || manyIDs.length === 0) {
+        const query = `DELETE FROM ${table} WHERE ${oneColumn} = $1`;
+        const values = [oneID];
+        return [await queryDbConnection(query, values)];
+    }
+
+    const deletePromises: Promise<QueryResult>[] = [];
+
+    manyIDs.forEach(manyID => {
+        const query = `
+            DELETE FROM ${table} WHERE ${oneColumn} = $1 AND ${manyColumn} = $2
+        `;
+        const values = [oneID, manyID];
+        deletePromises.push(queryDbConnection(query, values));
+    });
+
+    return await Promise.all(deletePromises);
 };

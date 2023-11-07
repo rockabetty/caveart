@@ -1,4 +1,4 @@
-import {queryDbConnection, getParentsAndChildren, editTable, getTable} from './queryFunctions';
+import {queryDbConnection, getParentsAndChildren, buildOneToManyRowValues, removeOneToManyAssociations, editTable, getTable} from './queryFunctions';
 import {ComicModel} from './types/models';
 
 export async function createComic(
@@ -6,7 +6,7 @@ export async function createComic(
 ): Promise<QueryResult | Error> {
     const query = `
       INSERT INTO comics (
-        name,
+        title,
         subdomain,
         description,
         comments,
@@ -20,23 +20,78 @@ export async function createComic(
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       RETURNING id
     `;
-    const values = [comic.name, comic.subdomain, comic.description, comic.comments, comic.isUnlisted, comic.isPrivate, comic.moderate, comic.thumbnail, comic.likes, comic.rating]
+    const values = [
+      comic.title,
+      comic.subdomain,
+      comic.description,
+      comic.comments,
+      comic.isUnlisted,
+      comic.isPrivate,
+      comic.moderate_comments,
+      comic.thumbnail,
+      comic.likes,
+      comic.rating
+    ];
     const result = await queryDbConnection(query, values);
-    return data.rows[0];
+    return result.rows[0]
 };
 
-export async function addAuthor(
+export async function addGenresToComic(
+    comicID: number,
+    genreIDs: number[]
+): Promise<QueryResult[]> {
+    const insertPromises: Promise<QueryResult>[] = [];
+    genreIDs.forEach(genreID => {
+      const query = `
+          INSERT INTO comics_to_genres (comic_id, genre_id)
+          VALUES ($1, $2)
+          RETURNING id
+      `;
+      const values = [comicID, genreID];
+      insertPromises.push(queryDbConnection(query, values));
+    });
+    try {
+        const results: QueryResult[] = await Promise.all(insertPromises);
+        return results;
+    } catch (error) {
+        return error;
+    }
+};
+
+export async function addContentWarningsToComic(
+    comicID: number,
+    contentIDs: number[]
+): Promise<QueryResult[]> {
+    const insertPromises: Promise<QueryResult>[] = [];
+    contentIDs.forEach(contentID => {
+      const query = `
+          INSERT INTO comics_to_content_warnings (comic_id, content_warning_id)
+          VALUES ($1, $2)
+          RETURNING id
+      `;
+      const values = [comicID, contentID];
+      insertPromises.push(queryDbConnection(query, values));
+    });
+    try {
+        const results: QueryResult[] = await Promise.all(insertPromises);
+        return results;
+    } catch (error) {
+        return error;
+    }
+};
+
+export async function addAuthorToComic(
     comicID: number,
     authorID: number
 ): Promise<QueryResult | Error> {
-    const sql = `
+    const query = `
       INSERT INTO comics_to_authors (comic_id, user_id)
       VALUES ($1, $2)
       RETURNING id
     `
     const values = [comicID, authorID]
     const result = await queryDbConnection(query, values);
-    return data.rows[0];
+    return result.rows[0];
 };
 
 export async function isAuthor(
@@ -133,11 +188,59 @@ export async function editComic(
 };
 
 export async function deleteComic(comic: number): Promise<QueryResult | Error> {
-    const sql = `DELETE FROM comics 
+    const query = `DELETE FROM comics 
     WHERE id = $1;`
     const values = [comic]
     const result = await queryDbConnection(query, values);
     if (result.rowCount > 0) {
+      return true;
+    } else {
+      return false;
+    }
+};
+
+export async function removeGenresFromComic(comic: number, genreList: number[] = null): Promise<boolean> {
+    const genreColumn = !!genreList ? 'genre_id' : null;
+    const operation = await removeOneToManyAssociations(
+      'comics_to_genres',
+      'comic_id',
+      comic,
+      genreColumn,
+      genreList
+    )
+    if (operation.rowCount > 0) {
+      return true;
+    } else {
+      return false;
+    }
+};
+
+export async function removeContentWarningsFromComic(comic: number, contentList: number[] = null): Promise<boolean> {
+    const warningColumn = !!contentList ? 'content_warning_id' : null;
+    const operation = await removeOneToManyAssociations(
+      'comics_to_content_warnings',
+      'comic_id',
+      comic,
+      warningColumn,
+      contentList
+    )
+    if (operation.rowCount > 0) {
+      return true;
+    } else {
+      return false;
+    }
+};
+
+export async function removeAuthorsFromComic(comic: number, userList: number[] = null): Promise<boolean> {
+    const userColumn = !!userList ? 'user_id' : null;
+    const operation = await removeOneToManyAssociations(
+      'comics_to_authors',
+      'comic_id',
+      comic,
+      userColumn,
+      userList
+    )
+    if (operation.rowCount > 0) {
       return true;
     } else {
       return false;

@@ -6,45 +6,56 @@ import '../../app/user_interface/layout.css';
 
 const ComicProfileForm = () => {
 
-  console.log(Checkbox)
-
   const [contentWarnings, setContentWarnings] = useState<any[]>([]);
-  const [genres, setGenres] = useState<any[]>([])
+  const [genres, setGenres] = useState<any[]>([]);
   const [submissionError, setSubmissionError] = useState<boolean>(false)
   const [formValues, setFormValues] = useState({
-    name: '',
-    subdomain: '',
-    name: '',
+    title: '',
     subdomain: '',
     description: '',
     genres: {},
-    style: {},
     content: {},
-    comments: 'allowed',
+    comments: 'Allowed',
     visibility: 'Public',
-    likes: { allowed: true },
+    likes: true,
     rating: 'Appropriate for everyone'
   })
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)  => {
     setSubmissionError("")
     setFormValues({ ...formValues, [e.target.name]: e.target.value })
   }
 
-  const submitComic = () => {
-    console.log("hi welcoem to chilis")
+  const submitComic = async () => {
+    const response = await axios.post('/api/comics/new', formValues)
+    .then((response) => {
+      console.log(response)
+    })
   }
 
-  const onToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selection = formValues[e.target.name] || {}
-    if (selection[e.target.value]) {
-      delete selection[e.target.value]
+  const onToggleTag = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fieldName = e.target.name;
+    const currentValue = Number(e.target.value);
+    const currentObject = { ...formValues[fieldName] };
+    if (currentObject[currentValue]) {
+      delete currentObject[currentValue];
     } else {
-      selection[e.target.value] = true
+      currentObject[currentValue] = true;
     }
-    setFormValues({ ...formValues, [e.target.name]: selection })
-  }
+    const updatedFormValues = {
+      ...formValues,
+      [fieldName]: currentObject
+    };
+    setFormValues(updatedFormValues);
+  };
 
+  const toggleLikes = () => {
+    const allowLikes = formValues.likes;
+    setFormValues({
+      ...formValues,
+      likes: !allowLikes
+    })
+  }
 
   const onContentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const content = {...formValues.content};
@@ -56,7 +67,6 @@ const ComicProfileForm = () => {
     else value = e.target.value;
     const newContent = {...content, [contentMarker]: value}
     setFormValues({ ...formValues, content: newContent })
-    console.log(formValues)
   }
 
   useEffect(() => {
@@ -77,11 +87,12 @@ const ComicProfileForm = () => {
     <CaveartLayout>
      <TextInput
         labelText="Name of comic"
-        name="name"
+        name="title"
         type="text"
         id="comic_name"
+        pattern={/^[a-zA-Z0-9 !\-?]+$/}
         onChange={onChange}
-        value={formValues?.name}
+        value={formValues?.title}
         placeholderText="Unga Bunga Grunga"
         required={true}
       />
@@ -150,19 +161,18 @@ const ComicProfileForm = () => {
       </div>
 
       <h2>Genres</h2>
-      <div class="ReactiveGrid">
-        {genres.map((genre, idx) => {
+      <div className="ReactiveGrid">
+        {genres.map((genre) => {
           return (
-            <div>
-            <Checkbox
-              key={`genre-${idx}`}
-              labelText={genre.name}
-              id={`genre-${genre.name}`}
-              checked={formValues.genres[genre.id]}
-              onChange={onToggle}
-              name="genres"
-              value={genre.id}
-            />
+            <div key={`genre-${genre.id}`}>
+              <Checkbox
+                labelText={genre.name}
+                id={`genre-${genre.id}`}
+                checked={!!formValues.genres[genre.id]}
+                onChange={onToggleTag}
+                name="genres"
+                value={genre.id.toString()}
+              />
             </div>
           );
         })}
@@ -189,29 +199,30 @@ const ComicProfileForm = () => {
 
       <fieldset>
         <legend>Comments on comic pages</legend>
-        <Radio 
-          labelText="Allow users to freely comment"
-          checked={formValues.comments === 'Allowed'}
-          name="comments"
-          id="comments_allowed"
-          value="Allowed"
-          onChange={onChange}
-        />
-        <Radio 
-          labelText="Allow moderated comments"
-          checked={formValues.comments === 'Moderated'}
-          name="comments"
-          id="comments_moderated"
-          value="Moderated"
-          onChange={onChange}
-        />
-         <Radio 
-          labelText="Disable comments"
-          checked={formValues.comments === 'Disabled'}
-          name="comments"
-          id="comments_disabled"
-          value="Disabled"
-          onChange={onChange}
+         {['Allowed', 'Moderated', 'Disabled'].map((option, idx) => {
+          return (
+            <div key={idx}>
+              <Radio
+                labelText={option}
+                checked={formValues.comments === option}
+                name="comments"
+                id={`comments-${option}`}
+                value={option}
+                onChange={onChange}
+              />
+            </div>
+          )
+        })}
+      </fieldset>
+
+      <fieldset>
+        <legend>User ratings</legend>
+        <Checkbox
+          labelText="Allow likes"
+          checked={formValues.likes}
+          id={`likes`}
+          value={true}
+          onChange={toggleLikes}
         />
       </fieldset>
 
