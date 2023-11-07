@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import { useRouter } from "next/router";
 import Head from 'next/head'
-import { useUser } from "../../auth/client/hooks/useUser";
+import { useUser } from "../../services/auth/client/hooks/useUser";
 import SiteHeader from './navigation/SiteHeader';
 import AuthModal from './authentication/AuthModal';
-import UserProvider from '../../auth/client/UserProvider';
+import UserProvider from '../../services/auth/client/UserProvider';
 import  './../../../component_library/design/style.css'
 import '../../i18n';
 import './themes/main.css'

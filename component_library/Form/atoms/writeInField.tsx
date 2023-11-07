@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react'
+import React, {useState, useRef, useEffect} from 'react'
 import { InputProps, InputDefaults } from '../../types/input'
 import classNames from 'classnames'
 import '../../design/style.css'
@@ -28,6 +28,10 @@ export interface WriteInFieldProps extends InputProps {
   */
   maxLength?: number;
   /*
+  * A minimum character length
+  */
+  minLength?: number;
+  /*
   * Restrict valid input
   */
   pattern?: string;
@@ -48,6 +52,7 @@ export const writeInDefaults: WriteInFieldProps = {
   min: '',
   max: '',
   maxLength: null,
+  minLength: null,
   helperText: "",
   errorText: "",
 } as WriteInFieldProps
@@ -60,6 +65,7 @@ const WriteInField: React.FC<WriteInFieldProps> = (props) => {
     max,
     min,
     maxLength,
+    minLength,
     name,
     onBlur,
     onChange,
@@ -68,38 +74,43 @@ const WriteInField: React.FC<WriteInFieldProps> = (props) => {
     labelText,
     placeholderText,
     helperText,
+    errorText,
     isValid,
     classes,
     required,
     value
   } = props
 
-  const { localValid, error, validate } = useValidation(value, required, pattern, maxLength);
-  const [dirty, setDirty] = useState<boolean>(false);
+  const { valid, error, setError, validate } = useValidation({
+    value,
+    required,
+    pattern,
+    maxLength,
+    minLength,
+    min,
+    max
+  });
+
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const renderHelperOrErrorText = () => {
-    if (!helperText && !error) return null;
+    if (!helperText && !errorText && !error) return null;
     return (
-      <p className={classNames({ "form-field_helpertext": true, "Error": !!error })}>
-        { error || helperText }
+      <p className={classNames({ "form-field_helpertext": true, "Error": !!errorText })}>
+        { errorText || error || helperText }
       </p>
     );
   }
 
   const textAreaChangeHandler = function (e) {
-    setDirty(true);
-    console.log(isValid)
-      if (textareaRef.current) {
-        textareaRef.current.style.height = 'auto'; // Reset the height
-        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // Set the new height
-      }
-      onChange(e);
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'; // Reset the height
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // Set the new height
+    }
+    onChange(e);
   }
 
   const inputChangeHandler = function (e) {
-    console.log(isValid)
-    setDirty(true);
     onChange(e);
   }
 
@@ -138,8 +149,8 @@ const WriteInField: React.FC<WriteInFieldProps> = (props) => {
     <FormField
       classes={classNames({
         'Disabled': disabled,
-        'Error': error,
-        'Valid': isValid || localValid 
+        'Error': error || errorText,
+        'Valid': !errorText && valid
       })}
     >
       <Label

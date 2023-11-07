@@ -84,7 +84,7 @@ const UserProvider: React.FC = function({children}: UserProviderProps) {
         dispatch({ type: ActionType.Loading, payload: {process: ActionType.Login} });
         try {
             const loginInfo = { email, password };
-            const response = await axios.post('/api/auth/login', loginInfo);
+            const response = await axios.post('/api/services//services/auth/login', loginInfo);
             dispatch({
                 type: ActionType.Login,
                 payload: response.data.user

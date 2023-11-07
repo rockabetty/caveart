@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { requireEnvVar } from '../../errors/envcheck';
+import { requireEnvVar } from '../../logs/envcheck';
 
 /** 
  * Represents the encryption key used for both encryption and decryption.

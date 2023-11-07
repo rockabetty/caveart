@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import CaveartLayout from '../app/user_interface/CaveartLayout';
-import { useUser } from '../auth/client/hooks/useUser';
-import { UserType } from '../auth/types/user.d.ts';
+import { useUser } from '../services/auth/client/hooks/useUser';
+import { UserType } from '../services/auth/types/user.d.ts';
 
 const Profile: React.FC = () => {
   const { viewProfile } = useUser();

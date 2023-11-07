@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { TextInput, Button } from '../../../../component_library';
-import { useUser } from '../../../auth/client/hooks/useUser';
-import { ActionType } from '../../../auth/types/user.d.ts';
-import { ErrorKeys } from '../../../auth/types/errors';
+import { useUser } from '../../../services/auth/client/hooks/useUser';
+import { ActionType } from '../../../services/auth/types/user.d.ts';
+import { ErrorKeys } from '../../../services/auth/types/errors';
 
 const SignUp: React.FC<AuthProps> = () => {
   const { t } = useTranslation();
@@ -20,8 +20,16 @@ const SignUp: React.FC<AuthProps> = () => {
   const [emailError, setEmailError] = useState<string>("");
   const [passwordError, setPasswordError] = useState<string>("");
   const [passwordVerificationError, setPasswordVerificationError] = useState<string>("");
+  const [formError, setFormError] = useState<string>("");
 
   const isEmailValid = () => /^([\w.%+-]+)@([\w-]+).([\w]{2,})$/i.test(email);
+
+  const checkpasswordsMatch = () => {
+    setPasswordVerificationError("");
+    if (password !== passwordVerification) {
+      setPasswordVerificationError(t(ErrorKeys.PASSWORD_MISMATCH));
+    }
+  }
 
   const onInputName = function (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setName(e.target.value)
@@ -40,14 +48,17 @@ const SignUp: React.FC<AuthProps> = () => {
   }
 
   const validateSignup = () => {
+    setNameError("");
     if (name.length === 0) {
       setNameError(t(ErrorKeys.USERNAME_MISSING));
       return false;
     }
+    setEmailError("");
     if (!isEmailValid()) {
       setEmailError(t(ErrorKeys.EMAIL_INVALID));
       return false;
     }
+    setPasswordError("");
     if (password.length < 8) {
       setPasswordError(t(ErrorKeys.PASSWORD_SHORT));
       return false;
@@ -60,6 +71,7 @@ const SignUp: React.FC<AuthProps> = () => {
   };
 
   const handleSignup = () => {
+    setFormError("");
     const isValid = validateSignup();
  
     if (isValid) {
@@ -70,13 +82,21 @@ const SignUp: React.FC<AuthProps> = () => {
           loginUser(email, password);
         })
         .catch((err) => {
-          console.log(err);
-          const {detail} = err?.response?.data;
-          if (detail && detail.includes("name")) {
-            setNameError(t(ErrorKeys.USERNAME_TAKEN));
-          }
-          if (detail && detail.includes("email")) {
-            setEmailError(t(ErrorKeys.EMAIL_TAKEN));
+          const {data} = err?.response;
+          console.log("THERE WAS AN ISSUE")
+          switch (err.response) {
+            case ErrorKeys.USERNAME_MISSING:
+              setNameError(t(ErrorKeys.USERNAME_MISSING));
+            case ErrorKeys.PASSWORD_MISSING:
+              setPasswordError(t(ErrorKeys.PASSWORD_MISSING));
+            case ErrorKeys.EMAIL_INVALID:
+              setEmailError(t(ErrorKeys.EMAIL_INVALID));
+            case ErrorKeys.USERNAME_TAKEN:
+              setNameError(t(ErrorKeys.USERNAME_TAKEN));
+            case ErrorKeys.EMAIL_TAKEN:
+              setEmailError(t(ErrorKeys.EMAIL_TAKEN));
+            default:
+              setFormError(t(ErrorKeys.GENERAL_SUBMISSION_ERROR));
           }
         });
     }
@@ -88,12 +108,14 @@ const SignUp: React.FC<AuthProps> = () => {
         <fieldset>
           <TextInput
             labelText={t('authenticationForm.labels.username')}
+            pattern={/^[a-zA-Z0-9_-]+$/}
             id="signup_name"
             onChange={(e) => {onInputName(e)}}
             type="text"
             placeholderText="Captain Caveman"
             errorText={nameError}
             value={name}
+            required={true}
           />
           <TextInput
             labelText={t('authenticationForm.labels.email')}
@@ -103,16 +125,19 @@ const SignUp: React.FC<AuthProps> = () => {
             type="email"
             errorText={emailError}
             value={email}
+            required={true}
           />
           <TextInput
             labelText={t('authenticationForm.labels.password')}
             helperText={t('authenticationForm.instructions.password')}
             value={password}
             placeholderText=""
+            minLength={8}
             errorText={passwordError}
             id="signup_password"
             onChange={(e) => {onInputPassword(e)}}
             type="password"
+            required={true}
           />
           <TextInput
             labelText={t('authenticationForm.labels.password2')}
@@ -121,7 +146,9 @@ const SignUp: React.FC<AuthProps> = () => {
             placeholderText=""
             id="signup_password_verification"
             onChange={(e) => {onInputPasswordVerification(e)}}
+            onBlur={() => {checkpasswordsMatch()}}
             type="password"
+            required={true}
           />
         </fieldset>
         <Button id="authenticate_signup" type="button" onClick={handleSignup} look="primary">
