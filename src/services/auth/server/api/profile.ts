@@ -5,6 +5,7 @@ import { decrypt } from '../encrypt';
 import { requireEnvVar } from '../../../logs/envcheck'
 import { withAuth } from '../withAuth';
 import { USER_AUTH_TOKEN_NAME } from '../../../../../constants';
+import { ErrorKeys } from '../../types/errors';
 
 const SECRET_KEY_JWT = requireEnvVar('SECRET_KEY_JWT');
 
@@ -21,12 +22,12 @@ const handler: NextApiHandler = async (req, res) => {
     ];
 
     if (!userId) {
-      return res.status(400).json({ error: 'Cannot identify user' });
+      return res.status(403).json(ErrorKeys.USER_INVALID);
     }
 
     const userProfile = await getUser(userId, userProfileDetails);
     if (!userProfile) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json(ErrorKeys.USER_INVALID);
     }
 
     const {email} = userProfile;
@@ -41,7 +42,7 @@ const handler: NextApiHandler = async (req, res) => {
 
     res.status(200).send(userProfile);
   } catch (error) {
-    res.status(500).send({ error: 'Internal server error' });
+    res.status(500).send(ErrorKeys.GENERAL_SERVER_ERROR);
   }
 };
 

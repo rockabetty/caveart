@@ -2,12 +2,16 @@ import { NextApiHandler } from 'next';
 import { hashEmail, compareHash } from '../hash';
 import { createUserSessionCookie } from '../userSessionCookie';
 import { getUserCredentials } from '../../../../data/users';
+import { ErrorKeys } from '../../types/errors';
  
 const handler: NextApiHandler = async (req, res) => {
   try {
     const {password, email} = req.body;
-    if (!password || !email) {
-      res.status(400).send("Required fields are missing.");
+    if (!password) {
+      return res.status(400).send(ErrorKeys.PASSWORD_MISSING);
+    }
+    if (!email) {
+      return res.status(400).send(ErrorKeys.EMAIL_MISSING);
     }
 
     const sanitizedEmail = email.replace(/[^a-zA-Z0-9@._-]/gi, '');
@@ -29,11 +33,10 @@ const handler: NextApiHandler = async (req, res) => {
         res.status(200).send({ user: userCredentials.username });
       }
     }
-    res.status(400).send('Credentials not valid');
+    return res.status(403).send(ErrorKeys.CREDENTIALS_INVALID);
   }
   catch (error) {
-    console.log(error);
-    res.status(500).send(error)
+    return res.status(500).send(error)
   }
 }
 
