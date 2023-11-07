@@ -53,7 +53,6 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   let id = null;
-  let stage = '';
  
   try {
     const genreList = Object.keys(genres).map(key => {
@@ -86,33 +85,24 @@ const handler: NextApiHandler = async (req, res) => {
       return res.status(400).json({ error: 'invalidLikesOption' });
     }
 
-    stage = 'Creating comic'
     const newComic = await createComic(comicTableData);
     id = newComic.id;
-    stage = 'Adding genres'
     const comicGenres = await addGenresToComic(id, genreList);
-    stage = 'Adding content warnings'
     const comicWarnings = await addContentWarningsToComic(id, warningList);
-    stage = 'Getting user ID'
     const userID = await extractUserIdFromToken(req, false);
-    stage = 'Adding authors'
     const comicAuthor = await addAuthorToComic(id, userID);
     return res.status(201).send("Comic created successfully");
   }
   catch (error) {
-    console.error(`Error during comic creation while ${stage}:`, error);
+    console.error(`Error during comic creation:`, error);
     if (id) {
       try {
-        stage = 'detaching genres';
         const detachGenres = await removeGenresFromComic(id);
-        stage = 'detaching content warnings';
         const detachWarnings = await removeContentWarningsFromComic(id);
-        stage = 'detaching authors';
         const detachAuthor = await removeAuthorsFromComic(id);
-        stage = 'deleting comic'
         const deleteComicOperation = await deleteComic(id);
       } catch (cleanupError) {
-        console.error(`Error during cleanup while ${stage}:`, cleanupError);
+        console.error(`Error during cleanup:`, cleanupError);
       }
     }
     return res.status(500).send("Failed to create comic");
