@@ -31,7 +31,7 @@ const handler: NextApiHandler = async (req, res) => {
     description,
     comments: comments !== 'Disabled',
     likes,
-    is_private: visibility === 'Private',
+    is_private: visibility === 'Invite-Only',
     is_unlisted: visibility === 'Unlisted',
     moderate_comments: comments === 'Moderated'
   };

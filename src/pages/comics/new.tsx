@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 import { TextArea, TextInput, Button, Radio, Checkbox, Accordion } from '../../../component_library';
 import CaveartLayout from '../../app/user_interface/CaveartLayout';
@@ -28,12 +28,16 @@ const ComicProfileForm = () => {
 
   const submitComic = async () => {
     const response = await axios.post('/api/comics/new', formValues)
-    .then((response) => {
-      console.log(response)
+    .then((res) => {
+      console.log(res)
+    })
+    .catch((err) => {
+      const {error} = err.response.data;
+      setSubmissionError(error)
     })
   }
 
-  const onToggleTag = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onToggleTag = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const fieldName = e.target.name;
     const currentValue = Number(e.target.value);
     const currentObject = { ...formValues[fieldName] };
@@ -47,17 +51,17 @@ const ComicProfileForm = () => {
       [fieldName]: currentObject
     };
     setFormValues(updatedFormValues);
-  };
+  }, [formValues]);
 
-  const toggleLikes = () => {
+  const toggleLikes = useCallback(() => {
     const allowLikes = formValues.likes;
     setFormValues({
       ...formValues,
       likes: !allowLikes
     })
-  }
+  }, [formValues]);
 
-  const onContentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onContentChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const content = {...formValues.content};
     let value = undefined;
     const contentMarker = e.target.name;
@@ -67,7 +71,7 @@ const ComicProfileForm = () => {
     else value = e.target.value;
     const newContent = {...content, [contentMarker]: value}
     setFormValues({ ...formValues, content: newContent })
-  }
+  }, [formValues])
 
   useEffect(() => {
     const contentWarnings = axios
@@ -181,7 +185,7 @@ const ComicProfileForm = () => {
       <h2>Settings</h2>
       <fieldset>
         <legend>Visibility</legend>
-        {['Public', 'Private', 'Invite-Only'].map((option, idx) => {
+        {['Public', 'Unlisted', 'Invite-Only'].map((option, idx) => {
           return (
             <div key={idx}>
               <Radio
@@ -226,6 +230,7 @@ const ComicProfileForm = () => {
         />
       </fieldset>
 
+      <p className="HasError">{submissionError}</p>
       <Button id="new_comic" type="submit" onClick={submitComic} look="primary">
         Submit
       </Button>
