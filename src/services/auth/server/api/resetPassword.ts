@@ -1,5 +1,5 @@
 import { NextApiHandler } from 'next';
-import { hashEmail, hashPassword, compareHash } from '../hash';
+import { hashEmail, hashPassword } from '../hash';
 import { getUserCredentials, editUser } from '../../../../data/users';
 import { ErrorKeys } from '../../types/errors';
 import { logger } from '../../../logs';
@@ -66,7 +66,9 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(403).send(ErrorKeys.CREDENTIALS_INVALID);
   }
   catch (error) {
-    logger.error(error);
+    if (error instanceof Error) {
+      logger.error(error); 
+    }
     return res.status(500).send(ErrorKeys.GENERAL_SERVER_ERROR)
   }
 }

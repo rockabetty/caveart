@@ -1,5 +1,5 @@
 import { NextApiHandler } from 'next';
-import { hashEmail, compareHash, createRandom } from '../hash';
+import { hashEmail, createRandom } from '../hash';
 import { decrypt } from '../encrypt';
 import { getUserCredentials, editUser } from '../../../../data/users';
 import { ErrorKeys } from '../../types/errors';
@@ -45,9 +45,9 @@ const handler: NextApiHandler = async (req, res) => {
       password_reset_expiry: expirationDate
     };
 
-    const resetAttempt = await editUser(id, update);
+    await editUser(id, update);
     const decryptedEmail = decrypt(email);
-    const passwordResetEmail = await sendSingleEmail(
+    await sendSingleEmail(
       decryptedEmail,
       'Password Reset',
       `
@@ -63,7 +63,9 @@ const handler: NextApiHandler = async (req, res) => {
     );
     return res.status(200).send({ message: 'Password reset email sent.' });
   } catch (error) {
-    logger.error(error)
+    if (error instanceof Error) {
+      logger.error(error) 
+    }
     return res.status(500).send(ErrorKeys.GENERAL_SERVER_ERROR);
   }
 };

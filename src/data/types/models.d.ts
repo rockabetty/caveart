@@ -4,8 +4,8 @@ export type UserModel = {
     email?: string;
     hashed_email?: string;
     password?: string;
-    password_reset_token?: string;
-    password_reset_expiry?: Date;
+    password_reset_token?: string | null;
+    password_reset_expiry?: Date | null;
     verified?: boolean;
     created_at?: Date;
     updated_at?: Date;
