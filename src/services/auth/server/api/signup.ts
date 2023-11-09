@@ -1,13 +1,9 @@
 import { NextApiHandler } from 'next';
-import { hashPassword, hashEmail, compareHash } from '../hash';
+import { hashPassword, hashEmail } from '../hash';
 import { createUser } from '../../../../data/users';
 import { encrypt } from '../encrypt';
-import { requireEnvVar } from '../../../logs/envcheck'
-import { generateToken } from '../jwt';
 import { createUserSessionCookie } from '../userSessionCookie';
 import { ErrorKeys } from '../../types/errors'
-
-const passwordRounds = Number(requireEnvVar('SALT_ROUNDS_PASSWORD'));
 
 const handler: NextApiHandler = async (req, res) => {
   if (req.method !== 'POST') {
@@ -42,20 +38,24 @@ const handler: NextApiHandler = async (req, res) => {
     const userId = newUser.rows[0].id;
     const userSessionCookie = await createUserSessionCookie(userId);
     res.setHeader('Set-Cookie', userSessionCookie);
-    return res.status(200).send();
+    return res.status(200).send({ message: "Signup successful" });
   }
   catch (error) {
-    const code = error.code;
-    if (code && code === '23505') {
-      switch (error.constraint) {
-        case 'users_username_key':
-          return res.status(400).send(ErrorKeys.USERNAME_TAKEN)
-        case 'users_email_key':
-          return res.status(400).send(ErrorKeys.EMAIL_TAKEN)
-        default:
-          return res.status(400).send(ErrorKeys.GENERAL_SUBMISSION_ERROR)
+    if (error instanceof Error) {
+      const customError = error as { code?: string, constraint?: string, message: string };
+
+      const {code, constraint} = customError;
+      if (code && code === '23505') {
+        switch (constraint) {
+          case 'users_username_key':
+            return res.status(400).send(ErrorKeys.USERNAME_TAKEN)
+          case 'users_email_key':
+            return res.status(400).send(ErrorKeys.EMAIL_TAKEN)
+          default:
+            return res.status(400).send(ErrorKeys.GENERAL_SUBMISSION_ERROR)
+        }
+        return res.status(400).send(constraint)
       }
-      return res.status(400).send(error.constraint)
     }
     return res.status(500).send(error);
   }
