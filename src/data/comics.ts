@@ -128,6 +128,37 @@ export async function getComic(
     return null;
 };
 
+export async function getComicsByAuthor(
+    authorID: number,
+    columns?: ComicModel,
+    omniscientView: boolean = false
+): Promise<QueryResult | Error> {
+ 
+  let conditions = '';
+  const columnSelection = columns ? columns : '*';
+  const baseQuery = `
+    SELECT ${columnSelection}
+    FROM comics c
+    JOIN comics_to_authors ca
+    ON ca.comic_id = c.id
+    WHERE ca.user_id = $1
+  `;
+
+  // TODO: Add whitelisting behavior so users can mark otehr users as allowed to read private comics
+
+  if (!omniscientView) {
+    conditions = ' AND c.is_private IS NOT TRUE'
+  }
+
+  const query = baseQuery + conditions;
+
+  const result = await queryDbConnection(query, [authorID]);
+  if (result.rows && result.rows.length > 0) {
+    return result.rows[0];
+  }
+  return null;
+};
+
 export async function getContentWarningDefs(): Promise<QueryResult | Error> {
     const query = `WITH
     Parents AS (
