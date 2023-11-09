@@ -34,7 +34,7 @@ import {createUserSession} from  '../../../data/users';
 import {USER_AUTH_TOKEN_NAME} from '../../../../constants';
 
 export async function createUserSessionCookie ( userId: string ): Promise<string> {
-  const {token, expirationDate} = generateToken(Number(userId));
+  const {token, expirationDate} = generateToken(userId);
   try {
     await createUserSession(
       userId,

@@ -17,19 +17,26 @@ import jwt from 'jsonwebtoken';
 import { getUserSession } from '../../../data/users';
 import { requireEnvVar } from '../../logs/envcheck';
 import { USER_AUTH_TOKEN_NAME } from '../../../../constants';
+import { ErrorKeys } from '../types/errors';
 
 const SECRET_KEY_JWT = requireEnvVar('SECRET_KEY_JWT');
 
 export async function extractUserIdFromToken (req: NextApiRequest, validateSession: boolean = true): Promise<string> {
   const token = req.cookies[USER_AUTH_TOKEN_NAME];
-  const decodedRequestToken = jwt.verify(token, SECRET_KEY_JWT);
-  if (validateSession) {
-    const userSession = await getUserSession(token);
-    if (!userSession || decodedRequestToken.sub !== userSession['user_id']) {
-      throw new Error("Invalid user session");
+  if (token) {
+    const decodedRequestToken = jwt.verify(token, SECRET_KEY_JWT);
+    if (validateSession) {
+      const userSession = await getUserSession(token);
+      if (!userSession || decodedRequestToken.sub !== userSession['user_id']) {
+        throw new Error(ErrorKeys.SESSION_INVALID);
+      }
     }
+
+    return decodedRequestToken.sub as string
   }
-  return decodedRequestToken.sub
+  
+  throw new Error(ErrorKeys.SESSION_INVALID)
+   
 }
 
 export default extractUserIdFromToken;

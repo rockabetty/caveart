@@ -13,6 +13,7 @@ export enum ErrorKeys {
   TOKEN_MISSING = "authenticationService.requestErrorMessages.tokenMissing",
   TOKEN_INVALID = "authenticationService.requestErrorMessages.tokenInvalid",
   SESSION_MISSING = "authenticationService.requestErrorMessages.sessionMissing",
+  SESSION_INVALID = "authenticationService.requestErrorMessages.sessionInvalid",
   GENERAL_SERVER_ERROR = "authenticationService.requestErrorMessages.serverError",
   RESET_TOKEN_MISSING = "authenticationService.requestErrorMessages.resetTokenMissing",
   RESET_TOKEN_EXPIRED = "authenticationService.requestErrorMessages.resetTokenExpired",

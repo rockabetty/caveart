@@ -1,4 +1,4 @@
-import { encrypt, decrypt } from '../encrypt'
+import { encrypt, decrypt } from '../server/encrypt'
 
 process.env['ENCRYPTION_KEY_32_BYTE'] = 'e3decb86a5c318a0c1f182e7126849eab56c204f21201625f2482abf825548cb';
 
