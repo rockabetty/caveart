@@ -3,6 +3,7 @@ import { hashEmail, compareHash } from '../hash';
 import { createUserSessionCookie } from '../userSessionCookie';
 import { getUserCredentials } from '../../../../data/users';
 import { ErrorKeys } from '../../types/errors';
+import { logger } from '../../../logs';
  
 const handler: NextApiHandler = async (req, res) => {
 
@@ -41,7 +42,8 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(403).send(ErrorKeys.CREDENTIALS_INVALID);
   }
   catch (error) {
-    return res.status(500).send(error)
+    logger.log(error)
+    return res.status(500).send(ErrorKeys.GENERAL_SERVER_ERROR);
   }
 }
 

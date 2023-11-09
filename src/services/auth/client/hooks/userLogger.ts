@@ -62,11 +62,10 @@ export const logActions = {
     logger.info(`${dev ? `User [ID: ${payload.id}] logged out: ${payload.reason}` : 'User logged out'}`)
   },
   ERROR: (payload: UserLoggerTypes.ErrorLoggerPayload) => {
-    const {error} = payload;
     if (dev) {
-     logger.log(`Error occured: ${error.message} \n ${error.stack}`);
+     logger.log(`Error occured: ${payload.message} \n ${payload.stack}`);
     }
-    logger.log(`Error occurred: ${error.message}`);
+    logger.log(`Error occurred: ${payload.message}`);
   },
   LOADING: (payload: UserLoggerTypes.LoadingLoggerPayload) => {
     if (dev) {

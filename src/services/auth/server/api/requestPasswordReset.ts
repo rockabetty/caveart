@@ -3,9 +3,9 @@ import { hashEmail, compareHash, createRandom } from '../hash';
 import { decrypt } from '../encrypt';
 import { getUserCredentials, editUser } from '../../../../data/users';
 import { ErrorKeys } from '../../types/errors';
-import { logger } from '../../../../logs';
+import { logger } from '../../../logs';
 import { sendSingleEmail } from '../../../emailer';
-
+import { requireEnvVar } from '../../../logs/envcheck';
 
 const handler: NextApiHandler = async (req, res) => {
   if (req.method !== 'POST') {
@@ -13,13 +13,13 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   try {
-    const {email} = req.body;
+    const requestEmail = req.body.email;
 
-    if (!email) {
+    if (!requestEmail) {
       return res.status(400).send(ErrorKeys.EMAIL_MISSING);
     }
 
-    const sanitizedEmail = email.replace(/[^a-zA-Z0-9@._-]/gi, '');
+    const sanitizedEmail = requestEmail.replace(/[^a-zA-Z0-9@._-]/gi, '');
     const hashedEmail = hashEmail(sanitizedEmail);
  
     const userCredentials = await getUserCredentials(
@@ -44,7 +44,7 @@ const handler: NextApiHandler = async (req, res) => {
       password_reset_token: resetToken,
       password_reset_expiry: expirationDate
     };
-    
+
     const resetAttempt = await editUser(id, update);
     const decryptedEmail = decrypt(email);
     const passwordResetEmail = await sendSingleEmail(
@@ -54,13 +54,18 @@ const handler: NextApiHandler = async (req, res) => {
       <p>Hello!</p>
       <p>You are receiving this email because of an attempt to reset your password.</p>
       <p>
-        <a href="https://www.caveartwebcomics.com/auth/password/${resetToken}>
+        <a href="https://www.caveartwebcomics.com/auth/password/${resetToken}">
           Click here to reset your password.
         </a>
         If you did not request this password reset then please ignore this email or contact us at ${requireEnvVar('SUPPORT_EMAIL_ADDRESS')} to report this email.
       </p>
       `
-    )
+    );
     return res.status(200).send({ message: 'Password reset email sent.' });
+  } catch (error) {
+    logger.error(error)
+    return res.status(500).send(ErrorKeys.GENERAL_SERVER_ERROR);
   }
 };
+
+export default handler;

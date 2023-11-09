@@ -13,9 +13,9 @@ let transporter = nodemailer.createTransport({
 });
 
 export const sendSingleEmail = async function(
-  recipient: string;
-  subject: string;
-  bodyAsText: string;
+  recipient: string,
+  subject: string,
+  bodyAsText: string
 ): Promise<void> {
 
    let mailOptions = {

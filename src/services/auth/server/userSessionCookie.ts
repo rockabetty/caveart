@@ -29,9 +29,9 @@
  *   console.error("Failed to create user session cookie:", error);
  * }
  */
-import generateToken from '../jwt';
+import {generateToken} from './jwt';
 import {createUserSession} from  '../../../data/users';
-import { USER_AUTH_TOKEN_NAME } from '../../../../constants';
+import {USER_AUTH_TOKEN_NAME} from '../../../../constants';
 
 export async function createUserSessionCookie ( userId: string ): Promise<string> {
   const {token, expirationDate} = generateToken(Number(userId));

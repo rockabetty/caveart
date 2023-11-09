@@ -84,7 +84,7 @@ const UserProvider: React.FC = function({children}: UserProviderProps) {
         dispatch({ type: ActionType.Loading, payload: {process: ActionType.Login} });
         try {
             const loginInfo = { email, password };
-            const response = await axios.post('/api/services//services/auth/login', loginInfo);
+            const response = await axios.post('/api/auth/login', loginInfo);
             dispatch({
                 type: ActionType.Login,
                 payload: response.data.user
@@ -170,7 +170,7 @@ const UserProvider: React.FC = function({children}: UserProviderProps) {
     const viewProfile = async () => {
         dispatch({ type: ActionType.Loading, payload: {process: ActionType.ViewProfile} });
         try {
-            const response = await axios.post(`/api/auth/profile`);
+            const response = await axios.get(`/api/auth/profile`);
             dispatch({
                 type: ActionType.ViewProfile,
                 payload: response.data
