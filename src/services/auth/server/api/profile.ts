@@ -10,6 +10,11 @@ import { ErrorKeys } from '../../types/errors';
 const SECRET_KEY_JWT = requireEnvVar('SECRET_KEY_JWT');
 
 const handler: NextApiHandler = async (req, res) => {
+
+  if (req.method !== 'GET') {
+    return res.status(405).end();
+  }
+
   try {
     const token = req.cookies[USER_AUTH_TOKEN_NAME];
     const decodedRequestToken = jwt.verify(token, SECRET_KEY_JWT);

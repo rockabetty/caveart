@@ -8,7 +8,7 @@ function PrivacyPolicy() {
         <h1>Privacy Policy</h1>
 
         <p>
-          This privacy policy describes how and why we might collect and use your information when you use our platform.  If you have any questions, then send an email to <strong>ask@caveartwebcomics.com</strong>.
+          This privacy policy describes how and why we might collect and use your information when you use our platform.  If you have any questions, then send an email to <strong>hello@caveartwebcomics.com</strong>.
         </p>
 
         <h2>TL'DR</h2>
@@ -84,7 +84,7 @@ function PrivacyPolicy() {
 
         <h2>How To Delete Your Information</h2>
         <p>
-          If you are having trouble finding out how to delete or alter your account information through your account settings page, you can contact us at ask@caveartwebcomics.com to have your information deleted. When you do that, there will be a necessary verification process so that we are actually sure that you are who you say you are.  We will have to contact you through the email address that you used to send this request.  Please keep in mind that CaveArt is not a paid service and its moderators have jobs outside of the website, so we do not have a dedicated team that will swiftly respond.
+          If you are having trouble finding out how to delete or alter your account information through your account settings page, you can contact us at hello@caveartwebcomics.com to have your information deleted. When you do that, there will be a necessary verification process so that we are actually sure that you are who you say you are.  We will have to contact you through the email address that you used to send this request.  Please keep in mind that CaveArt is not a paid service and its moderators have jobs outside of the website, so we do not have a dedicated team that will swiftly respond.
         </p>
 
         <h2>Countermeasures Against Art Generating AI</h2>
@@ -120,7 +120,7 @@ function PrivacyPolicy() {
 
         <ul>
           <li>
-            <b>Consent.</b> We may process your information if you give us permission to do so.  You supplying us your information by filling out forms on our website (such as the sign up form) constitutes permission to do so.  You can withdraw this consent at any time by email to ask@caveartwebcomics.com.
+            <b>Consent.</b> We may process your information if you give us permission to do so.  You supplying us your information by filling out forms on our website (such as the sign up form) constitutes permission to do so.  You can withdraw this consent at any time by email to hello@caveartwebcomics.com.
           </li>
           <li>
             <b>Legitimate interests.</b> We may process your information when we believe it is reasonably necessary to achieve our goals and those goals do not outweigh your own personal interests, rights, or freedoms.  So for example, we may process your personal information to diagnose problems or prevent fraudulent activities, or analyze how our services are used so we can improve them.
@@ -132,7 +132,7 @@ function PrivacyPolicy() {
 
         <h3>For Canadian Residents</h3>
         <p>
-          If you are in Canada, this section applies to you.  We may process your information if you have given us specific permission to do so for a specific purpose or where your permission is implied.  You can withdraw your consent at any time by emailing ask@caveartwebcomics.com. 
+          If you are in Canada, this section applies to you.  We may process your information if you have given us specific permission to do so for a specific purpose or where your permission is implied.  You can withdraw your consent at any time by emailing hello@caveartwebcomics.com. 
         </p>
 
         <p>
@@ -140,13 +140,13 @@ function PrivacyPolicy() {
         </p>
 
         <h3>For Californians</h3>
-        <p>If you are a resident of California, you should know about California Civil Code Section 1798.83 (the "Shine The Light" law).  Once a year and free of charge you may request to obtain information about personal information (if any) we disclosed to third parties.  In advance, we do not actually disclose information to third parties, but you have the legal right to check anyway!  Email us at ask@caveartwebcomics.com.</p>
+        <p>If you are a resident of California, you should know about California Civil Code Section 1798.83 (the "Shine The Light" law).  Once a year and free of charge you may request to obtain information about personal information (if any) we disclosed to third parties.  In advance, we do not actually disclose information to third parties, but you have the legal right to check anyway!  Email us at hello@caveartwebcomics.com.</p>
 
         <p>
           You have the right to request that we delete your data, to get a report on what sort of data we've been collecting over the past 12 months, and to be informed in full about whether, how, and why we collect data. 
         </p>
 
-        <p>If you are a California resident under 18 years of age then you have the right to request removal of any unwanted data that you publicly post on Caveart by contacting us at ask@caveartwebcomics.com.  Please be aware that depending on how we store our data at any given time the removal might not be complete or comprehensive.
+        <p>If you are a California resident under 18 years of age then you have the right to request removal of any unwanted data that you publicly post on Caveart by contacting us at hello@caveartwebcomics.com.  Please be aware that depending on how we store our data at any given time the removal might not be complete or comprehensive.
         </p>
 
         <h3>For Virginians</h3>

@@ -2,6 +2,7 @@ export type UserModel = {
     id?: number;
     username?: string;
     email?: string;
+    hashed_email?: string;
     password?: string;
     password_reset_token?: string;
     password_reset_expiry?: Date;

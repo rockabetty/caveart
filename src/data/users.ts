@@ -36,7 +36,16 @@ export async function getUserCredentials(
     identificationFormat: 'hashed_email' | 'username',
     identificationString: string
 ): Promise<QueryResult | Error> {
-    const baseQuery = `SELECT id, username, email, password FROM users WHERE `;
+    const baseQuery = `SELECT
+      id,
+      username,
+      email,
+      password,
+      password_reset_token,
+      password_reset_expiry,
+      verified,
+      role
+    FROM users WHERE `;
     const condition = identificationFormat === 'hashed_email'
       ? 'hashed_email = $1'
       : 'username = $1';

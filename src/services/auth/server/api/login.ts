@@ -5,6 +5,11 @@ import { getUserCredentials } from '../../../../data/users';
 import { ErrorKeys } from '../../types/errors';
  
 const handler: NextApiHandler = async (req, res) => {
+
+  if (req.method !== 'POST') {
+    return res.status(405).end();
+  }
+
   try {
     const {password, email} = req.body;
     if (!password) {
