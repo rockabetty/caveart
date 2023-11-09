@@ -26,9 +26,9 @@ export const sendSingleEmail = async function(
   }
 
   try {
-    const sendAttempt = transporter.sendMail(mailOptions);
-    logger.log('Message sent: %s', info.messageId);
+    const sendAttempt = await transporter.sendMail(mailOptions);
+    logger.log(`Message sent: - ${sendAttempt.messageId}`);
   } catch (error) {
-    logger.log(error);
+    logger.error(error as Error);
   }
 }

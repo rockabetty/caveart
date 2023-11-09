@@ -3,6 +3,10 @@ import { InteractiveProps, InteractiveDefaults } from './interactive'
 
 export interface InputProps extends InteractiveProps {
     /**
+     * Define a string that designates what an interactive item is for
+    */
+    labelText?: string 
+    /**
      * Define a string value that labels an interactive element.
      * Not necessary if there is already an actual label element.
     */
@@ -42,14 +46,15 @@ export interface InputProps extends InteractiveProps {
 
 export const InputDefaults = {
   ...InteractiveDefaults,
+  labelText: "",
   ariaLabel: "",
   ariaLabelledby: "",
   hasError: false,
   isValid: false,
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   name: "",
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   onChange: () => {},
   refer: null,
   required: false,
-  value: "",
+  value: undefined,
 } as InputProps

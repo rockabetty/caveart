@@ -1,4 +1,4 @@
-export const NODE_ENV = requireEnvVar("NODE_ENV", process.env.NODE_ENV) as 
+export const NODE_ENV = requireEnvVar("NODE_ENV") as 
   | "development"
   | "test"
   | "staging"

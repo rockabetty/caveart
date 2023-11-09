@@ -10,7 +10,7 @@ export interface ButtonSetProps {
 const Button = ({
   children,
   classes = '',
-  ...props}: ButtonSetProps) => {
+}: ButtonSetProps) => {
   return (
     <div
       className={`buttonset ${classes}`.trim()}

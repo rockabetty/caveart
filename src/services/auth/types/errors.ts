@@ -1,7 +1,7 @@
 export enum ErrorKeys {
   USERNAME_MISSING = "authenticationForm.instructions.username",
   USERNAME_TAKEN = "authenticationForm.userErrorMessages.userNameTaken",
-  USERNAME_INVALID = "authenticationForm.userErrorMessages.userNameInvalid"
+  USERNAME_INVALID = "authenticationForm.userErrorMessages.userNameInvalid",
   EMAIL_INVALID = "authenticationForm.instructions.email",
   EMAIL_TAKEN = "authenticationForm.userErrorMessages.emailTaken",
   EMAIL_MISSING = "authenticationForm.userErrorMessages.emailMissing",

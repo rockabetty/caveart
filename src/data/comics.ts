@@ -154,7 +154,7 @@ export async function getComicsByAuthor(
 
   const result = await queryDbConnection(query, [authorID]);
   if (result.rows && result.rows.length > 0) {
-    return result.rows[0];
+    return result.rows;
   }
   return null;
 };

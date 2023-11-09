@@ -1,5 +1,5 @@
 export type QueryFunction = (client: PoolClient) => Promise<QueryResult>;
 
-export type GenericStringMap {
+export type GenericStringMap = {
   [key:string]: string
 }

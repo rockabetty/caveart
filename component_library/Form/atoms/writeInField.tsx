@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react'
+import React, {useRef} from 'react'
 import { InputProps, InputDefaults } from '../../types/input'
 import classNames from 'classnames'
 import '../../design/style.css'
@@ -34,7 +34,7 @@ export interface WriteInFieldProps extends InputProps {
   /*
   * Restrict valid input
   */
-  pattern?: string;
+  pattern?: RegExp;
   /**
    * Give the user information to understand the field
    */
@@ -51,10 +51,10 @@ export const writeInDefaults: WriteInFieldProps = {
   type: 'text',
   min: '',
   max: '',
-  maxLength: null,
-  minLength: null,
+  maxLength: undefined,
+  minLength: undefined,
   helperText: "",
-  errorText: "",
+  errorText: ""
 } as WriteInFieldProps
 
 const WriteInField: React.FC<WriteInFieldProps> = (props) => {
@@ -75,13 +75,12 @@ const WriteInField: React.FC<WriteInFieldProps> = (props) => {
     placeholderText,
     helperText,
     errorText,
-    isValid,
     classes,
     required,
     value
   } = props
 
-  const { valid, error, setError, validate } = useValidation({
+  const { valid, error, validate } = useValidation({
     value,
     required,
     pattern,
