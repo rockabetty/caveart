@@ -9,6 +9,7 @@ function MyComics() {
   useEffect(() => {
     const comicList = axios.get('/api/comics/mine')
       .then((response) => {
+        console.log(response);
         setComics(response.data)
       })
   }, [])
