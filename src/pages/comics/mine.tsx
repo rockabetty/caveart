@@ -1,6 +1,10 @@
 import CaveartLayout from '../../app/user_interface/CaveartLayout'
 import {useEffect, useState} from 'react';
+import {Link} from '../../../component_library';
+import ComicProfile from '../../app/user_interface/comic/ComicProfile';
 import axios from 'axios';
+
+console.log(ComicProfile)
 
 function MyComics() {
 
@@ -18,10 +22,18 @@ function MyComics() {
   return (
     <CaveartLayout requireLogin={true}>
     <h1>My Comics</h1>
+    <Link href="new">Create a comic</Link>
+   
     {comics.map((comic) => {
-      return <div>{comic.title}</div>
+      return (
+        <ComicProfile
+          title={comic.title}
+          thumbnail={comic.thumbnail}
+          subdomain={comic.subdomain}
+        />
+      )
     })}
-    </CaveartLayout>
+     </CaveartLayout>
   )
 }
 
