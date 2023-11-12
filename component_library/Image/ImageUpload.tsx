@@ -20,7 +20,7 @@ export interface ImageUploadProps {
   required?: boolean;
   flexible?: boolean;
   name?: boolean;
-  onChange?: (newImageUrl: string) => void
+  onChange?: (files: FileList | undefined) => void
 }
 
 const ImageUpload = ({
@@ -85,7 +85,7 @@ const ImageUpload = ({
             </label>
           </div>
 
-          <img src={img} alt={alt} className="image_image" />
+          <img src={img || src} alt={alt} className="image_image" />
         </div>
         <span className={`form-field_helpertext ${fileError ? 'Error' : ''}`.trim()}>
           {fileError ? fileError : helperText}

@@ -40,6 +40,8 @@ const ComicProfileForm = () => {
       ...formValues,
       thumbnail: files
     }) 
+    console.log("file changed")
+    console.log(formValues)
   };
 
   const submitComic = async () => {
@@ -51,7 +53,17 @@ const ComicProfileForm = () => {
       }
     }
 
-    const response = await axios.post('/api/comics/new', formValues)
+    for (const key in formValues) {
+      if (key !== 'thumbnail' && formValues[key] !== null) {
+        let value = formValues[key]
+        if (typeof value === 'object') {
+          value = JSON.stringify(value);
+        }
+        formData.append(key, value);
+      }
+    }
+
+    const response = await axios.post('/api/comics/new', formData)
     .then((res) => {
       console.log(res)
     })
@@ -151,8 +163,8 @@ const ComicProfileForm = () => {
         helperText="Cover images can be up to 1MB."
         editable={true}
         maxSize={1000}
+        src="/img/brand/kraugak.png"
         onChange={onFileChange}
-        src={formValues?.thumbnail}
       />
 
       <h2>Content Warnings</h2>

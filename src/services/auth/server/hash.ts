@@ -22,6 +22,18 @@ export function hashEmail(email: string) {
 }
 
 /**
+* Make a SHA256 hash with optional salt
+* @param {string} data
+* @param {string} [salt]  
+* @returns {string} with the hashed value.
+*/
+export const createHash = function (data: string, salt?: string) {
+  let sum = crypto.createHash('sha256')
+  sum.update(data + salt)
+  return sum.digest('hex')
+}
+
+/**
  * Hash a password.
  * @param {string} password - The plaintext password.
  * @returns {Promise<string>} - The hashed password.
