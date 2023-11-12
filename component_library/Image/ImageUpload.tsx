@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import useImageUploader from './useImageUploader';
 import classNames from 'classnames'
 import './Image.css'
 import '../Form/Form.css'
@@ -19,7 +20,7 @@ export interface ImageUploadProps {
   required?: boolean;
   flexible?: boolean;
   name?: boolean;
-  onChange?: (...params: any) => any
+  onChange?: (newImageUrl: string) => void
 }
 
 const ImageUpload = ({
@@ -38,53 +39,27 @@ const ImageUpload = ({
   onChange = () => {},
 }: ImageUploadProps) => {
 
-  const [files, setFiles] = useState<FileList | undefined>()
-  const [img, setImg] = useState<string | undefined>("")
-  const [error, setError] = useState<boolean>(false)
+  const { img, fileError, setFileError, generatePreview } = useImageUploader({
+    maxSize,
+    allowedFileTypes: ['image/jpeg', 'image/gif', 'image/png', 'image/tiff'],
+    initialSrc: src,
+    onChange,
+  });
+
   const [editing, setEditing] = useState<boolean>(false)
   const fileUploadRef = useRef<HTMLInputElement | null>(null);
 
-  const allowedFileTypes = ['image/jpeg', 'image/gif', 'image/png', 'image/tiff']
-
-  const generatePreview = function(e: React.ChangeEvent<HTMLInputElement>) {
-    const target = e.target
-    if (target.files.length > 0) {
-      const file = target.files[0]
-      const fsize = Math.round(file.size / 1024)
-      if (fsize > maxSize) {
-        setError(`Files can not exceed ${maxSize} KB`)
-        return
-      }
-      if (!allowedFileTypes.includes(file.type)) {
-        setError("You can upload GIFs, JPGs, JPEGs, PNGs and TIFFs.")
-        return
-      }
-      setError('')
-      setFiles(target.files)
-      const url = URL.createObjectURL(target.files[0])
-      setImg(url)
-      if (onChange) {
-        onChange(url)
-      }
+  // Handle custom error text from props
+  useEffect(() => {
+    if (errorText) {
+      setFileError(errorText);
     }
-  }
+  }, [errorText]);
 
-  // The component validates itself, but if some custom context means we need to pass down an error...
+  // Handle editing state based on file selection
   useEffect(() => {
-    setError(errorText)
-  }, [errorText])
-
-  useEffect(() => {
-    setEditing(!!files)
-  }, [files])
-
-  useEffect(() => {
-    setImg(src || defaultImageSrc)
-    if (src === undefined) {
-      setFiles(undefined)
-    }
-  },
-  [src])
+    setEditing(!!img);
+  }, [img]);
 
   if (editable) {
     return (
@@ -93,7 +68,7 @@ const ImageUpload = ({
           "image" : true,
           "Editable" : true,
           "Flexible": flexible,
-          "Error" : !!error
+          "Error" : !!fileError
         })}>
           <div className="image_overlay">
             <input
@@ -112,8 +87,8 @@ const ImageUpload = ({
 
           <img src={img} alt={alt} className="image_image" />
         </div>
-        <span className={`form-field_helpertext ${error ? 'Error' : ''}`.trim()}>
-          {error ? error : helperText}
+        <span className={`form-field_helpertext ${fileError ? 'Error' : ''}`.trim()}>
+          {fileError ? fileError : helperText}
         </span>
       </>
     )

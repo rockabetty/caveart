@@ -21,6 +21,7 @@ const handler: NextApiHandler = async (req, res) => {
     content,
     comments,
     visibility,
+    thumbnail,
     likes,
     rating
   } = req.body;
@@ -29,6 +30,7 @@ const handler: NextApiHandler = async (req, res) => {
     title,
     subdomain,
     description,
+    thumbnail,
     comments: comments !== 'Disabled',
     likes,
     is_private: visibility === 'Invite-Only',

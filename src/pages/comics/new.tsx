@@ -1,6 +1,14 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
-import { TextArea, TextInput, Button, Radio, Checkbox, Accordion } from '../../../component_library';
+import {
+  useImageUploader,
+  ImageUpload,
+  TextArea,
+  TextInput,
+  Button, Radio,
+  Checkbox,
+  Accordion
+} from '../../../component_library';
 import CaveartLayout from '../../app/user_interface/CaveartLayout';
 import '../../app/user_interface/layout.css';
 
@@ -18,7 +26,8 @@ const ComicProfileForm = () => {
     comments: 'Allowed',
     visibility: 'Public',
     likes: true,
-    rating: 'Appropriate for everyone'
+    rating: 'Appropriate for everyone',
+    thumbnail: null
   })
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)  => {
@@ -26,7 +35,22 @@ const ComicProfileForm = () => {
     setFormValues({ ...formValues, [e.target.name]: e.target.value })
   }
 
+  const onFileChange = (files: FileList | undefined) => {
+    setFormValues({
+      ...formValues,
+      thumbnail: files
+    }) 
+  };
+
   const submitComic = async () => {
+    const formData = new FormData();
+    const fileList = formValues.thumbnail
+    if (fileList) {
+      for (let i = 0; i < fileList.length; i++) {
+        formData.append('files', fileList[i], fileList[i].name);
+      }
+    }
+
     const response = await axios.post('/api/comics/new', formValues)
     .then((res) => {
       console.log(res)
@@ -120,6 +144,15 @@ const ComicProfileForm = () => {
         placeholderText="Tell us about your comic!"
         onChange={onChange}
         value={formValues?.description}
+      />
+
+      <ImageUpload
+        labelText="Cover Image"
+        helperText="Cover images can be up to 1MB."
+        editable={true}
+        maxSize={1000}
+        onChange={onFileChange}
+        src={formValues?.thumbnail}
       />
 
       <h2>Content Warnings</h2>

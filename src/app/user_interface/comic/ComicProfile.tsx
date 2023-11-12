@@ -18,8 +18,7 @@ function ComicProfile(props) {
         {title}
         </h1>
         <Link href={`pages/new`}>Add pages</Link>
-        <Link href={`profile/${subdomain}`}>Edit profile</Link>
-        
+        <Link href={`edit/${subdomain}`}>Edit</Link>
       </div>
     </div>
   )
