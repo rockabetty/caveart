@@ -9,7 +9,7 @@ type ContentWarningData = {
 }
 
 type ContentWarningSelection = {
-  [key:string]?: boolean
+  [key:string]: boolean;
 }
 
 export const useContentWarnings = (initialData?:ContentWarningSelection) => {
