@@ -1,6 +1,7 @@
 import { NextApiHandler } from 'next';
 import jwt from 'jsonwebtoken';
 import { getUser } from '../../../../data/users';
+import { UserModel } from '../../../../data/types/models';
 import { decrypt } from '../encrypt';
 import { requireEnvVar } from '../../../logs/envcheck'
 import { withAuth } from '../withAuth';
@@ -17,18 +18,26 @@ const handler: NextApiHandler = async (req, res) => {
 
   try {
     const token = req.cookies[USER_AUTH_TOKEN_NAME];
-    const decodedRequestToken = jwt.verify(token, SECRET_KEY_JWT);
-    const userId = decodedRequestToken.sub;
+    if (!token) {
+      return res.status(500).send(ErrorKeys.TOKEN_MISSING);
+    }
+
+    const decodedRequestToken = jwt.verify(token, SECRET_KEY_JWT) as { sub: string } | null;
+    if (!decodedRequestToken) {
+      return res.status(500).send(ErrorKeys.TOKEN_INVALID);
+    }
+    const userId = parseInt(decodedRequestToken.sub);
+
+    if (!userId) {
+      return res.status(403).json(ErrorKeys.USER_INVALID);
+    }
+
     const userProfileDetails = [
       'username',
       'email',
       'role',
       'created_at'
-    ];
-
-    if (!userId) {
-      return res.status(403).json(ErrorKeys.USER_INVALID);
-    }
+    ] as UserModel;
 
     const userProfile = await getUser(userId, userProfileDetails);
     if (!userProfile) {
@@ -44,7 +53,6 @@ const handler: NextApiHandler = async (req, res) => {
     const day = date.getDate();
     const year = date.getFullYear();
     userProfile['created_at'] = `${month}/${day}/${year}`;
-
     res.status(200).send(userProfile);
   } catch (error) {
     res.status(500).send(ErrorKeys.GENERAL_SERVER_ERROR);

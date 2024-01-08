@@ -18,7 +18,7 @@ const handler: NextApiHandler = async (req, res) => {
 
     let decoded;
     try {
-      decoded = jwt.verify(token, SECRET_KEY_JWT);
+      decoded = jwt.verify(token, SECRET_KEY_JWT) as { sub: string };
     } catch (err) {
       return res.status(401).send(ErrorKeys.TOKEN_INVALID);
     }
@@ -31,7 +31,7 @@ const handler: NextApiHandler = async (req, res) => {
     }
     
     res.setHeader('Set-Cookie', `${USER_AUTH_TOKEN_NAME}=deleted; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`);    
-    return res.status(200).send();
+    return res.status(200).send({ user: userId });
 
   } catch (error) {
     return res.status(500).send(ErrorKeys.GENERAL_SERVER_ERROR);

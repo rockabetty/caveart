@@ -4,8 +4,8 @@
  To learn more about what a React "context" is: https://react.dev/learn/scaling-up-with-reducer-and-context
  */
 
-import { createContext, Dispatch } from "react";
-import {UserAuthenticationState, UserContextType, UserAction, UserProfile} from "./types/UserTypes";
+import { createContext } from "react";
+import { UserContextType } from "../types/user";
 
 /**
  * UserContext is the main React context for user management and actions.

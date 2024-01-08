@@ -1,5 +1,8 @@
+import { Dispatch } from 'react';
+import * as loggerPayloads from './userlogger';
+
 export interface User {
-    id: string;
+    id: number;
     name: string;
 }
 
@@ -7,7 +10,7 @@ export type UserAuthState = {
     user: User | null;
     isAuthenticated: boolean;
     isLoading: boolean;
-    error: null | string;
+    error: loggerPayloads.ErrorLoggerPayload | null;
 };
 
 export enum ActionType {
@@ -20,11 +23,15 @@ export enum ActionType {
     UpdateProfile = "UPDATE_PROFILE"
 }
 
-export type UserProfile = {
-    username?: string;
-    email?: string;
-    role?: 'Member' | 'Creator' | 'Moderator';
+type UserProfile = {
+    username: string;
+    email: string;
+    role: 'Member' | 'Creator' | 'Moderator'
 };
+
+// ToDo: 
+// type MemberProfile = UserProfile & { role: 'Member' }, etc.
+
 
 /**
  * UserContextType defines the structure and types of our user context.
@@ -40,19 +47,20 @@ export type UserProfile = {
  *  6. Function to view a user profile, returning a promise with the user profile.
  */
 export type UserContextType = [
-  UserAuthenticationState,
+  UserAuthState,
   Dispatch<UserAction>,
-  () => Promise<Partial<UserAuthenticationState>>,
+  () => Promise<Partial<UserAuthState>>,
   (email: string, password: string) => Promise<void>,
   () => Promise<void>,
   () => Promise<UserProfile>
 ];
 
+
 export type UserAction =
-    | { type: ActionType.Login; payload: User }
-    | { type: ActionType.Logout }
-    | { type: ActionType.Verify; payload: Partial<UserAuthState> }
-    | { type: ActionType.Error; payload: string }
-    | { type: ActionType.Loading }
-    | { type: ActionType.ViewProfile; payload: User }
-    | { type: ActionType.UpdateProfile; payload: Partial<User> };
+    | { type: ActionType.Login; payload: loggerPayloads.LoginLoggerPayload }
+    | { type: ActionType.Logout; payload: loggerPayloads.LogoutLoggerPayload }
+    | { type: ActionType.Verify; payload: loggerPayloads.VerifyLoggerPayload }
+    | { type: ActionType.Error; payload: loggerPayloads.ErrorLoggerPayload }
+    | { type: ActionType.Loading; payload: loggerPayloads.LoadingLoggerPayload }
+    | { type: ActionType.ViewProfile; payload: loggerPayloads.ViewProfileLoggerPayload }
+    | { type: ActionType.UpdateProfile; payload: loggerPayloads.UpdateProfileLoggerPayload };

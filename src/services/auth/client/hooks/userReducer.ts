@@ -35,18 +35,18 @@
  * // newState will now reflect that a user is logged in with their profile.
  */
 
-import {UserAuthenticationState, UserAction, ActionType} from "../../types/user.d.ts";
+import {UserAuthState, UserAction, ActionType} from "../../types/user";
 
 const userReducer = (state: UserAuthState, action: UserAction): UserAuthState => {
     switch (action.type) {
       case ActionType.Login:
-        return { ...state, user: action.payload, authenticated: true, loading: false }
+        return { ...state, user: action.payload.user, isAuthenticated: true, isLoading: false }
       case ActionType.Verify:
-        return { ...state, authenticated: true, loading: false }
+        return { ...state, isAuthenticated: true, isLoading: false }
       case ActionType.Logout:
-        return { ...state, user: null, authenticated: false, loading: false }  
+        return { ...state, user: null, isAuthenticated: false, isLoading: false }  
       case ActionType.ViewProfile:
-        return { ...state, user: action.payload, loading: false};
+        return { ...state, user: action.payload.user, isLoading: false};
       case ActionType.UpdateProfile: {
         if (state.user) {
           return {
@@ -55,15 +55,15 @@ const userReducer = (state: UserAuthState, action: UserAction): UserAuthState =>
               ...state.user,
               ...action.payload
             },
-            loading: false,
+            isLoading: false,
           };
         }
         return state;
       }
       case ActionType.Loading:
-        return {...state, loading: true};
+        return {...state, isLoading: true};
       case ActionType.Error:
-        return {...state, error: action.payload, loading: false};
+        return {...state, error: action.payload, isLoading: false};
       default:
         return state;
     }
