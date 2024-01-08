@@ -2,7 +2,7 @@ import { Dispatch } from 'react';
 import * as loggerPayloads from './userlogger';
 
 export interface User {
-    id: string;
+    id: number;
     name: string;
 }
 
@@ -10,7 +10,7 @@ export type UserAuthState = {
     user: User | null;
     isAuthenticated: boolean;
     isLoading: boolean;
-    error: null | string;
+    error: loggerPayloads.ErrorLoggerPayload | null;
 };
 
 export enum ActionType {
@@ -23,11 +23,15 @@ export enum ActionType {
     UpdateProfile = "UPDATE_PROFILE"
 }
 
-export type UserProfile = {
-    username?: string;
-    email?: string;
-    role?: 'Member' | 'Creator' | 'Moderator';
+type UserProfile = {
+    username: string;
+    email: string;
+    role: 'Member' | 'Creator' | 'Moderator'
 };
+
+// ToDo: 
+// type MemberProfile = UserProfile & { role: 'Member' }, etc.
+
 
 /**
  * UserContextType defines the structure and types of our user context.
