@@ -105,7 +105,7 @@ export async function clearUserSession(
 }
 
 export async function getUser(
-    userId: number | string,
+    userId: number,
     columns: UserModel
 ): Promise<QueryResult | Error> {
     const result = await getTable(
