@@ -42,11 +42,12 @@ export const useUser = () => {
 
     const [state, dispatch, verifyUser, loginUser, logoutUser, viewProfile] = context;
 
-    const isAuthenticated = () => state.authenticated;
+    const isAuthenticated = () => state.isAuthenticated;
     const getUser = () => state.user;
 
     return {
         ...state,
+        dispatch,
         loginUser,
         logoutUser,
         verifyUser,
