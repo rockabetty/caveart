@@ -19,27 +19,26 @@
  * )
  */
 
-import {ReactNode, useReducer, useMemo, Dispatch} from "react";
+import {ReactNode, useReducer, useMemo} from "react";
 import axios from "axios";
-import Cookies from "js-cookie";
 import {useRouter} from "next/router";
-import {User, UserAuthState, UserAction, ActionType, UserContextType} from "../types/user.d.ts";
+import {UserAuthState, UserAction, ActionType, UserContextType} from "../types/user";
 import UserContext from "./UserContext";
 import userReducer from "./hooks/userReducer";
-import {dev, logActions, loggerMap} from './hooks/userLogger';
+import {dev, loggerMap} from './hooks/userLogger';
 
 interface UserProviderProps {
     children: ReactNode;  /**< The React children components to be wrapped by the provider */
 }
 
-const UserProvider: React.FC = function({children}: UserProviderProps) {
+const UserProvider: React.FC<UserProviderProps> = function({children}) {
 
     const initialState: UserAuthState = {
         user: null,
-        authenticated: false,
-        loading: false,
+        isAuthenticated: false,
+        isLoading: false,
         error: null,
-    }
+    };
 
     const [state, _dispatch] = useReducer(userReducer, initialState);
     const router = useRouter();
@@ -56,7 +55,7 @@ const UserProvider: React.FC = function({children}: UserProviderProps) {
      * @param {UserAction} action - The action to be dispatched and logged.
      */
     const dispatch = (action: UserAction) => {
-        const logFunction = logActions[action.type]
+        const logFunction = loggerMap[action.type]
         if (logFunction) {
             logFunction(action.payload)
         } else if (dev) {
@@ -87,11 +86,11 @@ const UserProvider: React.FC = function({children}: UserProviderProps) {
             const response = await axios.post('/api/auth/login', loginInfo);
             dispatch({
                 type: ActionType.Login,
-                payload: response.data.user
+                payload: response.data
             });
             router.push(`/profile`);
         }
-        catch(error) {
+        catch(error: any) {
           const errorMessage = error.response && error.response.data.message
             ? error.response.data.message
             : error.message;
@@ -122,7 +121,7 @@ const UserProvider: React.FC = function({children}: UserProviderProps) {
             });
             return response.data;
         }
-        catch (error) {
+        catch (error: any) {
           const errorMessage = error.response && error.response.data.message
             ? error.response.data.message
             : error.message;
@@ -150,7 +149,7 @@ const UserProvider: React.FC = function({children}: UserProviderProps) {
             });
             router.push('/');
         }
-        catch (error) {
+        catch (error: any) {
           const errorMessage = error.response && error.response.data.message
             ? error.response.data.message
             : error.message;
@@ -177,7 +176,7 @@ const UserProvider: React.FC = function({children}: UserProviderProps) {
             });
             return response.data;
         }
-        catch (error) {
+        catch (error: any) {
           const errorMessage = error.response && error.response.data.message
             ? error.response.data.message
             : error.message;

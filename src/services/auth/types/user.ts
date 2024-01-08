@@ -1,3 +1,6 @@
+import { Dispatch } from 'react';
+import * as loggerPayloads from './userlogger';
+
 export interface User {
     id: string;
     name: string;
@@ -40,19 +43,20 @@ export type UserProfile = {
  *  6. Function to view a user profile, returning a promise with the user profile.
  */
 export type UserContextType = [
-  UserAuthenticationState,
+  UserAuthState,
   Dispatch<UserAction>,
-  () => Promise<Partial<UserAuthenticationState>>,
+  () => Promise<Partial<UserAuthState>>,
   (email: string, password: string) => Promise<void>,
   () => Promise<void>,
   () => Promise<UserProfile>
 ];
 
+
 export type UserAction =
-    | { type: ActionType.Login; payload: User }
-    | { type: ActionType.Logout }
-    | { type: ActionType.Verify; payload: Partial<UserAuthState> }
-    | { type: ActionType.Error; payload: string }
-    | { type: ActionType.Loading }
-    | { type: ActionType.ViewProfile; payload: User }
-    | { type: ActionType.UpdateProfile; payload: Partial<User> };
+    | { type: ActionType.Login; payload: loggerPayloads.LoginLoggerPayload }
+    | { type: ActionType.Logout; payload: loggerPayloads.LogoutLoggerPayload }
+    | { type: ActionType.Verify; payload: loggerPayloads.VerifyLoggerPayload }
+    | { type: ActionType.Error; payload: loggerPayloads.ErrorLoggerPayload }
+    | { type: ActionType.Loading; payload: loggerPayloads.LoadingLoggerPayload }
+    | { type: ActionType.ViewProfile; payload: loggerPayloads.ViewProfileLoggerPayload }
+    | { type: ActionType.UpdateProfile; payload: loggerPayloads.UpdateProfileLoggerPayload };

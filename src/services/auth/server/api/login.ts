@@ -3,7 +3,6 @@ import { hashEmail, compareHash } from '../hash';
 import { createUserSessionCookie } from '../userSessionCookie';
 import { getUserCredentials } from '../../../../data/users';
 import { ErrorKeys } from '../../types/errors';
-import { logger } from '../../../logs';
  
 const handler: NextApiHandler = async (req, res) => {
 
@@ -32,17 +31,18 @@ const handler: NextApiHandler = async (req, res) => {
 
     if (storedPassword) {
       const isMatch = await compareHash(password, storedPassword);
-
       if (isMatch) {
         const sessionCookie = await createUserSessionCookie(userCredentials.id);
         res.setHeader('Set-Cookie', sessionCookie);
-        res.status(200).send({ user: userCredentials.username });
+        res.status(200).send({ 
+          id: userCredentials.id,
+          user: userCredentials.username
+        });
       }
     }
     return res.status(403).send(ErrorKeys.CREDENTIALS_INVALID);
   }
   catch (error) {
-    logger.log(error)
     return res.status(500).send(ErrorKeys.GENERAL_SERVER_ERROR);
   }
 }

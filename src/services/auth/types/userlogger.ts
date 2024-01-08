@@ -1,8 +1,9 @@
-import {User, ActionType, UserAuthState} from './user.d.ts';
+import {User, ActionType, UserAuthState} from './user';
 
 export type LoginLoggerPayload = {
     user: {
       id: string;
+      name?: string;
     };
     source?: string;
 };
@@ -35,5 +36,4 @@ export type VerifyLoggerPayload = {
 
 export type LoadingLoggerPayload = {
     process: ActionType;
-    timestamp?: string;
 };
