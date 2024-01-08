@@ -46,26 +46,30 @@
 
 import {logger} from '../../../logs';
 import * as UserLoggerTypes from '../../types/userlogger';
-import {ActionType} from "../../types/user.d.ts"
+import {ActionType} from "../../types/user"
 
 export const dev = process.env.NODE_ENV === 'development';
 
 export const logActions = {
   LOGIN: (payload: UserLoggerTypes.LoginLoggerPayload) => {
-    logger.info(`${dev ? `User [ID: ${payload.id}] logged in from ${payload.source}` : 'User logged in'}`)
+    const { id } = payload.user;
+    logger.info(`${dev ? `User [ID: ${id}] logged in from ${payload.source}` : 'User logged in'}`);
   },
   VERIFY: (payload: UserLoggerTypes.VerifyLoggerPayload) => {
-    logger.info(`${dev ? `User [ID: ${payload.id}] verified as still logged in` : 'User authentication verified'}`)
+    const { user } = payload.auth;
+    logger.info(`${dev && user ? `User [ID: ${user.id}] verified as still logged in` : 'User authentication verified'}`)
   },
   LOGOUT: (payload: UserLoggerTypes.LogoutLoggerPayload) => {
     // TODO: maybe log logout reason, e.g. session expiry or deliberate
-    logger.info(`${dev ? `User [ID: ${payload.id}] logged out: ${payload.reason}` : 'User logged out'}`)
+    const { id } = payload.user;
+    logger.info(`${dev ? `User [ID: ${id}] logged out: ${payload.reason}` : 'User logged out'}`)
   },
   ERROR: (payload: UserLoggerTypes.ErrorLoggerPayload) => {
+    const {message, stack} = payload.error;
     if (dev) {
-     logger.log(`Error occured: ${payload.message} \n ${payload.stack}`);
+     logger.log(`Error occured: ${message} \n ${stack}`);
     }
-    logger.log(`Error occurred: ${payload.message}`);
+    logger.log(`Error occurred: ${message}`);
   },
   LOADING: (payload: UserLoggerTypes.LoadingLoggerPayload) => {
     if (dev) {
@@ -73,11 +77,13 @@ export const logActions = {
     }
   },
   VIEW_PROFILE: (payload: UserLoggerTypes.ViewProfileLoggerPayload) => {
-    logger.log(`User profile view for user ${payload?.id || payload?.name}`)
+    const {id, name} = payload.user;
+    logger.log(`User profile view for user ${id || name}`)
   },
   UPDATE_PROFILE: (payload: UserLoggerTypes.UpdateProfileLoggerPayload) => {
     // TODO: maybe log the fields updated (not the actual values).
-    logger.log(`User profile update for user ${payload?.id || payload?.name}`)
+    const {id, name} = payload.user;
+    logger.log(`User profile update for user ${id || name}`)
   }
 };
 
