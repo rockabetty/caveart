@@ -1,7 +1,13 @@
 import { ImageUpload, Link } from '../../../../component_library'
 import './ComicProfile.css';
 
-function ComicProfile(props) {
+interface ComicProfileProps {
+  thumbnail: string | null;
+  title: string;
+  subdomain: string;
+}
+
+const ComicProfile: React.FC<ComicProfileProps> = (props) => {
   const {
     thumbnail,
     title,
@@ -17,8 +23,8 @@ function ComicProfile(props) {
         <h1>
         {title}
         </h1>
-        <Link href={`pages/new`}>Add pages</Link>
-        <Link href={`edit/${subdomain}`}>Edit</Link>
+        <Link id="link-add_pages" href={`pages/new`}>Add pages</Link>
+        <Link id="link-edit" href={`edit/${subdomain}`}>Edit</Link>
       </div>
     </div>
   )
