@@ -4,6 +4,7 @@ import * as loggerPayloads from './userlogger';
 export interface User {
     id: number;
     name: string;
+    email: string;
 }
 
 export type UserAuthState = {
@@ -23,10 +24,11 @@ export enum ActionType {
     UpdateProfile = "UPDATE_PROFILE"
 }
 
-type UserProfile = {
+export type UserProfile = {
     username: string;
     email: string;
-    role: 'Member' | 'Creator' | 'Moderator'
+    role: 'Member' | 'Creator' | 'Moderator';
+    'created_at': string;
 };
 
 // ToDo: 
