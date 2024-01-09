@@ -1,6 +1,5 @@
 import Head from 'next/head'
 import CaveartLayout from '../app/user_interface/CaveartLayout'
-import LogIn from '../app/user_interface/authentication/LogIn'
 
 export default function CaveArt() {
   return (
