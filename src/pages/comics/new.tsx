@@ -1,7 +1,6 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import {
-  useImageUploader,
   ImageUpload,
   TextArea,
   TextInput,
@@ -12,12 +11,39 @@ import {
 import CaveartLayout from '../../app/user_interface/CaveartLayout';
 import '../../app/user_interface/layout.css';
 
+type GenreSelection = {
+  [genreId: string | number]: boolean;
+}
+
+type ContentWarningSelection = {
+  [ContentWarningName: string]: string | undefined;
+}
+
+type ContentWarning = {
+  id: string;
+  name: string;
+  children: ContentWarning[];
+};
+
+type FormValues = {
+  title: string;
+  subdomain: string;
+  description: string;
+  genres: GenreSelection;
+  content: ContentWarningSelection;
+  comments: string;
+  visibility: string;
+  likes: boolean;
+  rating: string;
+  thumbnail: FileList | undefined
+};
+
 const ComicProfileForm = () => {
 
-  const [contentWarnings, setContentWarnings] = useState<any[]>([]);
+  const [contentWarnings, setContentWarnings] = useState<ContentWarning[]>([]);
   const [genres, setGenres] = useState<any[]>([]);
-  const [submissionError, setSubmissionError] = useState<boolean>(false)
-  const [formValues, setFormValues] = useState({
+  const [submissionError, setSubmissionError] = useState<string>("")
+  const [formValues, setFormValues] = useState<FormValues>({
     title: '',
     subdomain: '',
     description: '',
@@ -27,7 +53,7 @@ const ComicProfileForm = () => {
     visibility: 'Public',
     likes: true,
     rating: 'Appropriate for everyone',
-    thumbnail: null
+    thumbnail: undefined
   })
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)  => {
@@ -40,30 +66,41 @@ const ComicProfileForm = () => {
       ...formValues,
       thumbnail: files
     }) 
-    console.log("file changed")
-    console.log(formValues)
   };
 
   const submitComic = async () => {
     const formData = new FormData();
-    const fileList = formValues.thumbnail
+    const fileList = formValues.thumbnail;
+
     if (fileList) {
       for (let i = 0; i < fileList.length; i++) {
         formData.append('files', fileList[i], fileList[i].name);
       }
     }
 
+    // TODO: Fix this shoddy code because Typescript hates it and I hate it
     for (const key in formValues) {
+      //@ts-ignore 
       if (key !== 'thumbnail' && formValues[key] !== null) {
-        let value = formValues[key]
-        if (typeof value === 'object') {
-          value = JSON.stringify(value);
-        }
-        formData.append(key, value);
+      //@ts-ignore 
+      const value = formValues[key];
+      if (typeof value === 'object') {
+        // Special handling for objects (e.g., JSON.stringify)
+        formData.append(key, JSON.stringify(value));
+      } else {
+        formData.append(key, value.toString());
       }
     }
 
-    const response = await axios.post('/api/comics/new', formData)
+    // Handle the 'thumbnail' field if needed
+    if (formValues.thumbnail) {
+      for (let i = 0; i < formValues.thumbnail.length; i++) {
+        formData.append('files', formValues.thumbnail[i], formValues.thumbnail[i].name);
+      }
+    }
+  }
+
+    await axios.post('/api/comics/new', formData)
     .then((res) => {
       console.log(res)
     })
@@ -73,18 +110,17 @@ const ComicProfileForm = () => {
     })
   }
 
-  const onToggleTag = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const fieldName = e.target.name;
+  const onToggleGenre = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const currentValue = Number(e.target.value);
-    const currentObject = { ...formValues[fieldName] };
-    if (currentObject[currentValue]) {
-      delete currentObject[currentValue];
+    const currentGenres: GenreSelection = { ...formValues.genres };
+    if (currentGenres[currentValue]) {
+      delete currentGenres[currentValue];
     } else {
-      currentObject[currentValue] = true;
+      currentGenres[currentValue] = true;
     }
     const updatedFormValues = {
       ...formValues,
-      [fieldName]: currentObject
+      genres: currentGenres
     };
     setFormValues(updatedFormValues);
   }, [formValues]);
@@ -110,13 +146,13 @@ const ComicProfileForm = () => {
   }, [formValues])
 
   useEffect(() => {
-    const contentWarnings = axios
+    axios
       .get('/api/content')
       .then((response) => {
         setContentWarnings(response.data)
       })
 
-    const genres = axios
+    axios
       .get('/api/genres')
       .then((response) => {
         setGenres(response.data)
@@ -143,7 +179,7 @@ const ComicProfileForm = () => {
         helperText="A-Z, numbers, hyphens and undescores only.  Your comic will be hosted at http://yourChoice.caveartcomics.com"
         id="comic_subdomain"
         onChange={onChange}
-        pattern="[A-Za-z0-9\-_]{1,}"
+        pattern={/[A-Za-z0-9\-_]{1,}/}
         value={formValues?.subdomain}
         placeholderText="unga-bunga-grunga"
         required={true}
@@ -156,6 +192,7 @@ const ComicProfileForm = () => {
         placeholderText="Tell us about your comic!"
         onChange={onChange}
         value={formValues?.description}
+        required={false}
       />
 
       <ImageUpload
@@ -172,11 +209,11 @@ const ComicProfileForm = () => {
         Please put content warnings on your comic so that we can show our users appropriate content.
       </p>
       <div className="ReactiveGrid">
-        {contentWarnings.map((warning, idx) => {
+        {contentWarnings.map((warning: ContentWarning, idx: number) => {
           return (
               <Accordion key={idx}>
                 {warning.name}
-                {warning.children.map((child, idx) => {
+                {warning.children.map((child: ContentWarning, idx: number) => {
                   const name = child.name;
                   return (
                     <fieldset className="form-field" key={`content-warning-${idx}`}>  
@@ -189,7 +226,7 @@ const ComicProfileForm = () => {
                         name={name}
                         value="none"
                       />
-                      {child.children.map((option, idx) => {
+                      {child.children.map((option: ContentWarning, idx: number) => {
                         return (
                           <Radio
                             id={`cw-${name}-${option.id}`}
@@ -217,8 +254,8 @@ const ComicProfileForm = () => {
               <Checkbox
                 labelText={genre.name}
                 id={`genre-${genre.id}`}
-                checked={!!formValues.genres[genre.id]}
-                onChange={onToggleTag}
+                checked={!!formValues.genres[genre.id as string | number]}
+                onChange={onToggleGenre}
                 name="genres"
                 value={genre.id.toString()}
               />
