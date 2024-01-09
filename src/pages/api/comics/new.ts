@@ -1,4 +1,4 @@
-import { NextApiHandler } from 'next';
+import { NextApiHandler, NextApiRequest } from 'next';
 import formidable from "formidable"
 import imageOptions from "../../../services/uploader/imagedefaults"
 import ensureUploadDirectoryExists from  "../../../services/uploader/ensureUploadDirectoryExists"
@@ -14,6 +14,7 @@ import {
   removeContentWarningsFromComic,
   removeAuthorsFromComic
 } from '../../../data/comics';
+import { ComicModel } from '../../../data/types/models';
 
 export const config = {
   api: {
@@ -21,8 +22,28 @@ export const config = {
   },
 }
 
+interface SubmissionResult {
+  fields?: formidable.Fields;
+  files?: formidable.Files;
+}
+
+interface ProcessedFields {
+  title?: string;
+  subdomain?: string;
+  description?: string;
+  genres?: number[];
+  content?: number[];
+  moderate_comments?: boolean;
+  comments?: boolean;
+  is_private?: boolean;
+  is_unlisted?: boolean;
+  thumbnail?: string;
+  likes?: boolean;
+  rating?: string;
+}
+
 const readForm = (req: NextApiRequest)
-:Promise<{fields?: formidable.Fields; files?: formidable.Files}> => {
+:Promise<SubmissionResult> => {
   const form = formidable(imageOptions);
   return new Promise((resolve, reject) => {
     form.parse(req, (err, fields, files) => {
@@ -34,126 +55,193 @@ const readForm = (req: NextApiRequest)
 
 const handler: NextApiHandler = async (req, res) => {
 
-  let id = null;
+  let id: string | null = null;
  
   try {
     ensureUploadDirectoryExists();
     const submission = await readForm(req)
     const fields = submission.fields;
-    const {newFilename} = submission?.files?.files[0] || '';
+    const processedFields: ProcessedFields = {};
+
+    let newFilename = "";
+    if (submission?.files?.files) {
+       newFilename = submission?.files?.files[0].newFilename || '';
+       processedFields.thumbnail = `uploads/${newFilename}`;
+    }
 
     /*
     When form data is parsed by formidable, it will return each form field
     value as an array, even if it's a single value. This is because the same
     field name can theoretically appear multiple times in multipart/form-data.
-
-    We want our form data to be a particular format, though, so we're going to
-    gussy up the data into the format we want, here, with processedFields.
     */
-    const processedFields = {};
-    for (const key in fields) {
-      if (fields[key] instanceof Array && fields[key].length > 0) {
-        processedFields[key] = fields[key][0]; // Take the first element of the array
-      } else {
-        processedFields[key] = fields[key];
+    
+    if (fields) {
+
+      if (fields.title) {
+        const title = fields.title[0];
+        // Validating that the title is alpahnumeric or has !, -, ?
+        const titleRegex = /^[a-zA-Z0-9 !\-?]+$/;
+        if (!titleRegex.test(title)) {
+          return res.status(400).json({ error: 'invalidTitleFormat' });
+        }
+        processedFields.title = title;
+      }
+
+
+      if (fields.genres) {
+        const genres = JSON.parse(fields.genres[0]);
+
+        Object.keys(genres).map(key => {
+          const num = parseInt(key, 10);
+          if (isNaN(num)) {
+              return res.status(400).json({ error: 'invalidGenreFormat' });
+          }
+          return num;
+        });
+        processedFields.genres = genres;
+      }
+
+
+      if (fields.content) {
+        const content = JSON.parse(fields.content[0]);
+        Object.values(content).map(value => {
+          const num = parseInt(value as string, 10);
+          if (isNaN(num)) {
+            return res.status(400).json({ error: 'invalidContentWarningFormat' });
+          }
+        return num;
+        });
+
+        processedFields.content = content;
+      }
+
+
+      if (fields.subdomain) {
+        const subdomain = fields.subdomain[0]
+        // Validating that subdomain is purely alphanumeric with hyphens or underscores only
+        const subdomainRegex = /^[a-zA-Z0-9_-]+$/;
+        if (!subdomainRegex.test(subdomain)) {
+          return res.status(400).json({ error: 'invalidSubdomainFormat' });
+        }
+        processedFields.subdomain = subdomain;
+      }
+
+
+      if (fields.description) {
+        const description = fields.description[0];
+        if (description.length > 1024) {
+          return res.status(400).json({ error: 'invalidDescriptionLength' });
+        }
+        processedFields.description = description;
+      }
+
+
+      if (fields.comments) {
+        const selectedCommentsOption = fields.comments[0]
+
+        const validComments = ['Allowed', 'Moderated', 'Disabled'];
+        if (!validComments.includes(selectedCommentsOption)) {
+          return res.status(400).json({ error: 'invalidCommentOption' });
+        }
+
+        processedFields.comments = selectedCommentsOption !== 'Disabled'
+        if (selectedCommentsOption === 'Moderated') {
+          processedFields.moderate_comments = true;
+        }      
+      }
+
+      if (fields.visibility) {
+        const selectedVisibilityOption = fields.visibility[0];
+        const validVisibilities = ['Public', 'Private', 'Invite-Only'];
+        if (!validVisibilities.includes(selectedVisibilityOption)) {
+          return res.status(400).json({ error: 'invalidVisibilityOption' });
+        }
+        if (selectedVisibilityOption === 'Invite-Only') {
+          processedFields.is_private = true
+        }
+        if (selectedVisibilityOption === 'Unlisted') {
+          processedFields.is_unlisted = true
+        }
+      }
+
+
+      if (fields.likes) {
+        const selectedLikesOption = fields.likes[0];
+        if (selectedLikesOption !== 'true' && selectedLikesOption !== 'false') {
+          return res.status(400).json({ error: 'invalidLikesOption' }); 
+        }
+        processedFields.likes = selectedLikesOption === 'true';
+      }
+
+      if (fields.rating) {
+        const rating = fields.rating[0]
+        const validRatings = [
+          'Everyone',
+          'Children 10+',
+          'Teen 13+',
+          'Mature 17+',
+          'Adult 18+'
+        ];
+
+        if (!validRatings.includes(rating)) {
+          res.status(400).json({ error: 'invalidRating' });
+        }
+
+        processedFields.rating = rating;
       }
     }
 
-    if (processedFields.genres) {
-      processedFields.genres = JSON.parse(processedFields.genres);
-    }
-    if (processedFields.content) {
-      processedFields.content = JSON.parse(processedFields.content);
-    }
+    let comicData: ComicModel = {};
 
     const {
       title,
       subdomain,
-      description,
-      genres,
-      content,
-      comments,
-      visibility,
+      description, 
       thumbnail,
+      comments,
+      is_unlisted,
+      is_private,
+      moderate_comments,
       likes,
-      rating
+      rating 
     } = processedFields
 
-    const comicTableData = {
+    comicData = {
       title,
       subdomain,
-      description,
-      thumbnail: `/uploads/${newFilename}`,
-      comments: comments !== 'Disabled',
-      likes: likes === 'true',
-      is_private: visibility === 'Invite-Only',
-      is_unlisted: visibility === 'Unlisted',
-      moderate_comments: comments === 'Moderated'
+      description, 
+      thumbnail,
+      comments,
+      is_unlisted,
+      is_private,
+      moderate_comments,
+      likes,
+      rating 
     };
 
-    // Validating that the title is alpahnumeric or has !, -, ?
-    const titleRegex = /^[a-zA-Z0-9 !\-?]+$/;
-    if (!titleRegex.test(title)) {
-      console.log(title)
-      return res.status(400).json({ error: 'invalidTitleFormat' });
+    const newComic = await createComic(comicData);
+    const id = parseInt(newComic.id);
+
+    if (processedFields.genres) {
+       await addGenresToComic(id, processedFields.genres);
     }
-
-    if (likes !== 'true' && likes !== 'false') {
-      return res.status(400).json({ error: 'invalidLikesOption' });
+   
+    if (processedFields.content) {
+      await addContentWarningsToComic(id, processedFields.content);
     }
-
-    // Validating that subdomain is purely alphanumeric with hyphens or underscores only
-    const subdomainRegex = /^[a-zA-Z0-9_-]+$/;
-    if (!subdomainRegex.test(subdomain)) {
-      return res.status(400).json({ error: 'invalidSubdomainFormat' });
-    }
-
-    if (description.length > 1000) {
-      return res.status(400).json({ error: 'invalidDescriptionLength' });
-    }
-
-    const genreList = Object.keys(genres).map(key => {
-      const num = parseInt(key, 10);
-      if (isNaN(num)) {
-          return res.status(400).json({ error: 'invalidGenreFormat' });
-      }
-      return num;
-    });
-
-    const warningList = Object.values(content).map(value => {
-      const num = parseInt(value, 10);
-      if (isNaN(num)) {
-          return res.status(400).json({ error: 'invalidContentWarningFormat' });
-      }
-      return num;
-    });
-
-    const validComments = ['Allowed', 'Moderated', 'Disabled'];
-    if (!validComments.includes(comments)) {
-      return res.status(400).json({ error: 'invalidCommentOption' });
-    }
-
-    const validVisibilities = ['Public', 'Private', 'Invite-Only'];
-    if (!validVisibilities.includes(visibility)) {
-      return res.status(400).json({ error: 'invalidVisibilityOption' });
-    }
-
-    const newComic = await createComic(comicTableData);
-    id = newComic.id;
-    const comicGenres = await addGenresToComic(id, genreList);
-    const comicWarnings = await addContentWarningsToComic(id, warningList);
+ 
     const userID = await extractUserIdFromToken(req, false);
-    const comicAuthor = await addAuthorToComic(id, userID);
+    await addAuthorToComic(id, parseInt(userID)); 
     return res.status(201).send("Comic created successfully");
   }
   catch (error) {
     console.error(`Error during comic creation:`, error);
     if (id) {
       try {
-        const detachGenres = await removeGenresFromComic(id);
-        const detachWarnings = await removeContentWarningsFromComic(id);
-        const detachAuthor = await removeAuthorsFromComic(id);
-        const deleteComicOperation = await deleteComic(id);
+        await removeGenresFromComic(id);
+        await removeContentWarningsFromComic(id);
+        await removeAuthorsFromComic(id);
+        await deleteComic(id);
       } catch (cleanupError) {
         console.error(`Error during cleanup:`, cleanupError);
       }

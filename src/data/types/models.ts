@@ -20,7 +20,7 @@ export type ComicModel = {
     description?: string;
     created_at?: Date;
     thumbnail?: string;
-    comments?: number;
+    comments?: boolean;
     critique?: boolean;
     is_unlisted?: boolean;
     is_private?: boolean;
@@ -28,7 +28,7 @@ export type ComicModel = {
     view_count?: number;
     likes?: boolean;
     like_count?: number;
-    rating?: number;
+    rating?: string;
     stylesheet_variables?: string;
 };
 
