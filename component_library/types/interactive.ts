@@ -18,15 +18,15 @@ export interface InteractiveProps extends UniversalProps {
     /**
     * Determine behavior when the user no longer focuses on the element
     */
-    onBlur: (...params: any) => any;
+    onBlur?: (...params: any) => any;
     /**
      * Determine behavior when user clicks on the element
      */
-    onClick: (...params: any) => any;
+    onClick?: (...params: any) => any;
     /**
     * Determine behavior when the user focuses on the element
     */
-    onFocus: (...params: any) => any;
+    onFocus?: (...params: any) => any;
 };
 
 export const InteractiveDefaults = {
