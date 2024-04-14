@@ -1,5 +1,7 @@
-import {queryDbConnection, editTable, getTable} from './queryFunctions';
-import {UserModel} from './types/models';
+import {queryDbConnection, editTable, getTable, getOneRowResult } from './queryFunctions';
+import { convertUTCStringToDate } from '../services/timestamps';
+import { UserModel, UserColumnsArray } from './types/models';
+import { QueryResult } from 'pg';
 
 export async function createUser(
     username: string,
@@ -35,7 +37,7 @@ export async function getUserById(
 export async function getUserCredentials(
     identificationFormat: 'hashed_email' | 'username',
     identificationString: string
-): Promise<QueryResult | Error> {
+): Promise<QueryResult | null> {
     const baseQuery = `SELECT
       id,
       username,
@@ -52,10 +54,14 @@ export async function getUserCredentials(
     const query = baseQuery + condition;
     const values = [identificationString]
     const result = await queryDbConnection(query, values);
-    if (result.rows && result.rows.length > 0) {
-        return result.rows[0];
+
+    try {
+        return getOneRowResult(result);
     }
-    return null;
+    catch (error) {
+        console.error("getUserCredentials error", error)
+        return null;
+    }
 };
 
 export async function createUserSession(
@@ -76,7 +82,7 @@ export async function createUserSession(
 
 export async function getUserSession(
     token: string
-): Promise<QueryResult | Error> {
+): Promise<QueryResult | null> {
     const query = `
       SELECT * FROM users_sessions WHERE session_token = $1
     `;
@@ -84,30 +90,37 @@ export async function getUserSession(
     const values = [token];
     const result = await queryDbConnection(query, values);
 
-    if (result.rows && result.rows.length > 0) {
-        return result.rows[0];
+    try {
+        return getOneRowResult(result);
     }
-    return null;
+    catch (error) {
+        console.error("getUserSession error", error)
+        return null;
+    }
 };
 
 export async function clearUserSession(
     userId: string,
     token: string
-): Promise<QueryResult | Error> {
+): Promise<Boolean | null> {
     const query = `DELETE FROM users_sessions WHERE user_id = $1 and session_token = $2`;
     const values = [userId, token];
     const result = await queryDbConnection(query, values);
-    if (result.rowCount > 0) {
-      return true;  // Session was cleared
-    } else {
-      return false; // No session found for given token
+    
+    try {
+        const deletions = getOneRowResult(result);
+        return deletions !== null 
+    }
+    catch (error) {
+        console.error("clearUserSession error", error)
+        return null;
     }
 }
 
 export async function getUser(
     userId: number,
-    columns: UserModel
-): Promise<QueryResult | Error> {
+    columns: UserColumnsArray
+): Promise<QueryResult | null> {
     const result = await getTable(
       'users',
       'id',
@@ -115,21 +128,34 @@ export async function getUser(
       columns
     );
 
-    console.log(result);
-    if (result.rows && result.rows.length > 0) {
-      return result.rows[0];
+    try {
+        return getOneRowResult(result);
     }
-    return null;
+    catch (error) {
+        console.error("getUserCredentials error", error)
+        return null;
+    }
 };
 
 export async function editUser(
     userId: number,
     update: UserModel
 ): Promise<QueryResult | Error> {
+
+    const updatedValues = {
+        ...update,
+        id: parseInt(update.id.toString(), 10),
+        password_reset_expiry: update.password_reset_expiry
+          ? update.password_reset_expiry instanceof Date 
+            ? update.password_reset_expiry
+            : convertUTCStringToDate(update.password_reset_expiry)
+          : null  // Explicitly handle null values
+    };
+
     return await editTable(
         'users',
         'id',
         userId,
-        update
+        updatedValues
     );
 };

@@ -1,5 +1,5 @@
 export type UserModel = {
-    id?: number;
+    id: number;
     username?: string;
     email?: string;
     hashed_email?: string;
@@ -12,8 +12,11 @@ export type UserModel = {
     role?: 'Member' | 'Creator' | 'Moderator';
 };
 
+export type UserColumnNames = keyof UserModel;
+export type UserColumnsArray = UserColumnNames[];
+
 export type ComicModel = {
-    id?: number;
+    id: number;
     title?: string;
     subdomain?: string;
     tagline?: string;
@@ -33,7 +36,7 @@ export type ComicModel = {
 };
 
 export type GenreModel = {
-    id?: number;
+    id: number;
     name?: string;
 };
 
