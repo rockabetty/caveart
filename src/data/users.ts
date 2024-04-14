@@ -1,14 +1,15 @@
 import {queryDbConnection, editTable, getTable, getOneRowResult } from './queryFunctions';
 import { convertUTCStringToDate } from '../services/timestamps';
-import { UserModel, UserSession, UserColumnsArray } from './types/models';
+import { UserModel, UserSession, CreatedUserResult, UserColumnsArray } from './types/models';
 import { QueryResult } from 'pg';
+import { ErrorKeys } from '../services/auth/types/errors';
 
 export async function createUser(
     username: string,
     email: string,
     hashedEmail: string,
     password: string
-): Promise<QueryResult | Error> {
+): Promise<CreatedUserResult | null> {
     const query = `
       INSERT INTO users
       (username, email, hashed_email, password)
@@ -17,7 +18,36 @@ export async function createUser(
       RETURNING id
     `;
     const values = [username, email, hashedEmail, password];
-    return await queryDbConnection(query, values);
+    
+    try {
+      const result = await queryDbConnection(query, values);
+      return getOneRowResult(result);
+    }
+
+    catch (error) {
+      if (error instanceof Error) {
+        const customError = error as { 
+          name: 'ClientError',
+          code?: string,
+          constraint?: string,
+          message: string
+        };
+        const {code, constraint} = customError;
+        if (code && code === '23505') {
+          switch (constraint) {
+            case 'users_username_key':
+              customError.message = ErrorKeys.USERNAME_TAKEN;
+              break;
+            case 'users_email_key':
+              customError.message = ErrorKeys.EMAIL_TAKEN;
+              break;
+            default:
+              customError.message = GENERAL_SUBMISSION_ERROR;
+              break;
+          }
+        }
+      }
+      throw customError;
 };
 
 export async function getUserById(

@@ -23,6 +23,10 @@ export type UserSession = {
     created_at: Date;
 };
 
+export type CreatedUserResult = {
+    id: number;
+}
+
 export type ComicModel = {
     id: number;
     title?: string;

@@ -11,23 +11,24 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   try {
-    const {password, name} = req.body;
-    const sanitizedEmail = req.body.email.replace(/[^a-zA-Z0-9@._-]/gi, '');
+    const {password, name, email} = req.body;
+    const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).send(ErrorKeys.EMAIL_INVALID);
+    }
     if (!name) {
       return res.status(400).send(ErrorKeys.USERNAME_MISSING);
     }
     if (!password) {
       return res.status(400).send(ErrorKeys.PASSWORD_MISSING);
     }
-    if (!sanitizedEmail) {
-      return res.status(400).send(ErrorKeys.EMAIL_INVALID);
-    }
+    
     const validUsername = /^[a-zA-Z0-9_-]+$/;
     if (!validUsername.test(name)) {
        return res.status(400).send(ErrorKeys.USERNAME_INVALID);
     }
-    const encryptedEmail = encrypt(sanitizedEmail);
-    const hashedEmail = await hashEmail(sanitizedEmail);
+    const encryptedEmail = encrypt(email);
+    const hashedEmail = await hashEmail(email);
     const hashedPassword = await hashPassword(password);
     const newUser = await createUser(
       name,
@@ -35,27 +36,18 @@ const handler: NextApiHandler = async (req, res) => {
       hashedEmail,
       hashedPassword,
     );
-    const userId = newUser.rows[0].id;
-    const userSessionCookie = await createUserSessionCookie(userId);
-    res.setHeader('Set-Cookie', userSessionCookie);
-    return res.status(200).send({ message: "Signup successful" });
+
+    if (newUser) {
+      const userId = newUser.id;
+      const userSessionCookie = await createUserSessionCookie(userId.toString());
+      res.setHeader('Set-Cookie', userSessionCookie);
+      return res.status(200).send({ message: "Signup successful" });
+    }
   }
   catch (error) {
-    if (error instanceof Error) {
-      const customError = error as { code?: string, constraint?: string, message: string };
-
-      const {code, constraint} = customError;
-      if (code && code === '23505') {
-        switch (constraint) {
-          case 'users_username_key':
-            return res.status(400).send(ErrorKeys.USERNAME_TAKEN)
-          case 'users_email_key':
-            return res.status(400).send(ErrorKeys.EMAIL_TAKEN)
-          default:
-            return res.status(400).send(ErrorKeys.GENERAL_SUBMISSION_ERROR)
-        }
-        return res.status(400).send(constraint)
-      }
+    console.error("Signup API error:", error); 
+    if (error instanceof Error && error.name === 'ClientError') {
+      return res.status(400).send(error)
     }
     return res.status(500).send(error);
   }
