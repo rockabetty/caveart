@@ -1,6 +1,6 @@
 import {queryDbConnection, editTable, getTable, getOneRowResult } from './queryFunctions';
 import { convertUTCStringToDate } from '../services/timestamps';
-import { UserModel, UserColumnsArray } from './types/models';
+import { UserModel, UserSession, UserColumnsArray } from './types/models';
 import { QueryResult } from 'pg';
 
 export async function createUser(
@@ -82,7 +82,7 @@ export async function createUserSession(
 
 export async function getUserSession(
     token: string
-): Promise<QueryResult | null> {
+): Promise<UserSession | null> {
     const query = `
       SELECT * FROM users_sessions WHERE session_token = $1
     `;

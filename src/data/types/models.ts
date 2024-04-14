@@ -15,6 +15,14 @@ export type UserModel = {
 export type UserColumnNames = keyof UserModel;
 export type UserColumnsArray = UserColumnNames[];
 
+export type UserSession = {
+    id: number;
+    user_id: number;
+    session_token: string;
+    expiration_date: Date | null;
+    created_at: Date;
+};
+
 export type ComicModel = {
     id: number;
     title?: string;
