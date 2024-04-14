@@ -3,7 +3,7 @@ import formidable from "formidable"
 import imageOptions from "../../../services/uploader/imagedefaults"
 import ensureUploadDirectoryExists from  "../../../services/uploader/ensureUploadDirectoryExists"
 import { withAuth } from '../../../services/auth/server/withAuth';
-import { extractUserIdFromToken } from  '../../../services/auth/server/extractUserIdFromToken';
+import { extractUserIdFromToken } from  '../../../services/auth/server/extractUserIDFromToken';
 import {
   createComic,
   addGenresToComic,
