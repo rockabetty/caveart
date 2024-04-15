@@ -100,6 +100,15 @@ export async function editTable(
     return await queryDbConnection(query, values)
 };
 
+export function getOneRowResult<T extends QueryResult>( result: QueryResult<T> | Error ): T | null {
+    if (result instanceof Error) {
+        throw result;
+    }
+    return result.rows.length > 0
+      ? result.rows[0]
+      : null;
+};
+
 export async function removeOneToManyAssociations(
     table: string,
     oneColumn: string,

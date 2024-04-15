@@ -27,7 +27,7 @@ export async function extractUserIdFromToken (req: NextApiRequest, validateSessi
     const decodedRequestToken = jwt.verify(token, SECRET_KEY_JWT);
     if (validateSession) {
       const userSession = await getUserSession(token);
-      if (!userSession || decodedRequestToken.sub !== userSession['user_id']) {
+      if (!userSession || decodedRequestToken.sub !== userSession.user_id.toString()) {
         throw new Error(ErrorKeys.SESSION_INVALID);
       }
     }

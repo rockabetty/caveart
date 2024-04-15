@@ -3,4 +3,4 @@ export { Link } from './Link';
 export { TextArea, Form, TextInput, Checkbox, Radio } from './Form';
 export { Modal } from './Modal';
 export { Accordion } from './Accordion';
-export { ImageUpload } from './Image';
+export { ImageUpload, useImageUploader } from './Image';

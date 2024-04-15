@@ -49,7 +49,7 @@ export interface CheckboxProps {
   /*
   * HTML value attribute to pass down
   */
-  value?: string
+  value?: string | boolean
 }
 
 const Checkbox = ({
