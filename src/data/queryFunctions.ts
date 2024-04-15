@@ -100,7 +100,7 @@ export async function editTable(
     return await queryDbConnection(query, values)
 };
 
-export function getOneRowResult<T extends QueryResult>( result: QueryResult<T> | Error ): T | null {
+export function getOneRowResult<T extends QueryResult>( result: QueryResult<T> ): T | null {
     if (result instanceof Error) {
         throw result;
     }
