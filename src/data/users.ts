@@ -48,6 +48,7 @@ export async function createUser(
         }
       }
       throw customError;
+  }
 };
 
 export async function getUserById(
@@ -86,7 +87,7 @@ export async function getUserCredentials(
     const result = await queryDbConnection(query, values);
 
     try {
-        return getOneRowResult(result);
+        return getOneRowResult(result) as UserModel;
     }
     catch (error) {
         console.error("getUserCredentials error", error)
@@ -168,7 +169,7 @@ export async function getUser(
 };
 
 export async function editUser(
-    userId: number,
+    id: number,
     update: UserModel
 ): Promise<QueryResult | Error> {
 
@@ -185,7 +186,7 @@ export async function editUser(
     return await editTable(
         'users',
         'id',
-        userId,
+        id,
         updatedValues
     );
 };

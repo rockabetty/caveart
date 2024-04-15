@@ -1,5 +1,5 @@
 export type UserModel = {
-    id: number;
+    id?: number;
     username?: string;
     email?: string;
     hashed_email?: string;
@@ -11,6 +11,21 @@ export type UserModel = {
     updated_at?: Date;
     role?: 'Member' | 'Creator' | 'Moderator';
 };
+
+export type PasswordResetCredentials = Pick<UserModel, 
+  'id' |
+  'password_reset_token' |
+  'password_reset_expiry'
+>;
+
+export type UserCredentials = Pick<UserModel,
+  'id' |
+  'username' |
+  'email' |
+  'password' |
+  'verified' |
+  'role'
+>;
 
 export type UserColumnNames = keyof UserModel;
 export type UserColumnsArray = UserColumnNames[];

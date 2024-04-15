@@ -33,8 +33,8 @@ const handler: NextApiHandler = async (req, res) => {
       hashedEmail,
     );
 
-    const storedResetToken = userCredentials['password_reset_token'];
-    const expirationTimestamp = userCredentials['password_reset_expiry'];
+    const storedResetToken =  userCredentials?.password_reset_token;
+    const expirationTimestamp = userCredentials?.password_reset_expiry;
     const {id} = userCredentials;
 
     if (storedResetToken) {
