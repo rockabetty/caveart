@@ -179,6 +179,7 @@ const UserProvider: React.FC<UserProviderProps> = function({children}) {
             return response.data;
         }
         catch (error: any) {
+            console.log(error)
           const errorMessage = error.response && error.response.data.message
             ? error.response.data.message
             : error.message;

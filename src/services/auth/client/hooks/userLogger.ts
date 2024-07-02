@@ -77,8 +77,8 @@ export const logActions = {
     }
   },
   VIEW_PROFILE: (payload: UserLoggerTypes.ViewProfileLoggerPayload) => {
-    const {id, name} = payload.user;
-    logger.log(`User profile view for user ${id || name}`)
+    const {email, username} = payload;
+    logger.log(`User profile view for user ${username} (${email})`)
   },
   UPDATE_PROFILE: (payload: UserLoggerTypes.UpdateProfileLoggerPayload) => {
     // TODO: maybe log the fields updated (not the actual values).
