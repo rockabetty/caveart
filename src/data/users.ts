@@ -166,10 +166,14 @@ export async function clearUserSession(
   const query = `DELETE FROM users_sessions WHERE user_id = $1 and session_token = $2`;
   const values = [userId, token];
   const result = await queryDbConnection(query, values);
+  console.log("attempted to delete - ")
+  console.log(userId)
+  console.log(token)
   
   try {
-    const deletions = getOneRowResult(result);
-    return deletions !== null 
+    const deletions = result.rowCount;
+    console.log(deletions);
+    return deletions === 1; 
   }
   catch (error) {
     console.error("clearUserSession error", error)

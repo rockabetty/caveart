@@ -10,7 +10,6 @@ const SECRET_KEY_JWT = requireEnvVar('SECRET_KEY_JWT');
 
 const handler: NextApiHandler = async (req, res) => {
   try {
-    
     const token = req.cookies[USER_AUTH_TOKEN_NAME];
     if (!token) {
       return res.status(400).send(ErrorKeys.TOKEN_MISSING);
@@ -20,6 +19,7 @@ const handler: NextApiHandler = async (req, res) => {
     try {
       decoded = jwt.verify(token, SECRET_KEY_JWT) as { sub: string };
     } catch (err) {
+      console.log("Token invalid")
       return res.status(401).send(ErrorKeys.TOKEN_INVALID);
     }
 
@@ -27,6 +27,7 @@ const handler: NextApiHandler = async (req, res) => {
     const sessionCleared = await clearUserSession(userId, token);
    
     if (!sessionCleared) {
+      console.log("Session was not cleared must be missing")
       return res.status(401).send(ErrorKeys.SESSION_MISSING);
     }
     

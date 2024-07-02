@@ -26,7 +26,7 @@ const SiteHeader = ({
         }
         <div className="horizontal-nav_authentication">
           {
-            loggedIn === false ?
+            loggedIn === true ?
               (
                 <Button look="muted" id="header-logout" onClick={onLogout}>Log Out</Button>
               )

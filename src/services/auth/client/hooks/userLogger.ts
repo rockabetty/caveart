@@ -61,6 +61,7 @@ export const logActions = {
   },
   LOGOUT: (payload: UserLoggerTypes.LogoutLoggerPayload) => {
     // TODO: maybe log logout reason, e.g. session expiry or deliberate
+    console.log(payload)
     const { id } = payload.user;
     logger.info(`${dev ? `User [ID: ${id}] logged out: ${payload.reason}` : 'User logged out'}`)
   },
