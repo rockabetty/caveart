@@ -4,6 +4,7 @@ import { UserModel } from './types/models';
 import { UserSession, CreatedUserResult,  UserColumnsArray, PasswordResetCredentials } from './types/users';
 import { QueryResult } from 'pg';
 import { ErrorKeys } from '../services/auth/types/errors';
+import { ClientError } from './types/errors';
 
 export async function createUser(
   username: string,
@@ -27,28 +28,24 @@ export async function createUser(
 
   catch (error) {
     if (error instanceof Error) {
-    const customError = error as { 
-      name: 'ClientError',
-      code?: string,
-      constraint?: string,
-      message: string
-    };
-    const {code, constraint} = customError;
+    const {code, constraint} = error;
+    let errorMessage = ErrorKeys.GENERAL_SUBMISSION_ERROR; 
+    
     if (code && code === '23505') {
       switch (constraint) {
       case 'users_username_key':
-        customError.message = ErrorKeys.USERNAME_TAKEN;
+        errorMessage = ErrorKeys.USERNAME_TAKEN;
         break;
-      case 'users_email_key':
-        customError.message = ErrorKeys.EMAIL_TAKEN;
+      case 'users_hashed_email_key':
+        errorMessage = ErrorKeys.EMAIL_TAKEN;
         break;
       default:
-        customError.message = GENERAL_SUBMISSION_ERROR;
+        errorMessage = ErrorKeys.GENERAL_SUBMISSION_ERROR;
         break;
       }
     }
+    throw new ClientError(errorMessage, code, constraint);
     }
-    throw customError;
   }
 };
 

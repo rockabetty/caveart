@@ -45,9 +45,8 @@ const handler: NextApiHandler = async (req, res) => {
     }
   }
   catch (error) {
-    console.error("Signup API error:", error); 
-    if (error instanceof Error && error.name === 'ClientError') {
-      return res.status(400).send(error)
+    if (error.name === 'ClientError') {
+      return res.status(400).json({ message: error.message })
     }
     return res.status(500).send(error);
   }

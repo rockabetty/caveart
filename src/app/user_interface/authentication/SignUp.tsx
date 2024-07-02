@@ -82,9 +82,9 @@ const SignUp: React.FC<AuthProps> = () => {
           loginUser(email, password);
         })
         .catch((err) => {
+          console.log(err)
           const {data} = err?.response;
-          console.log("THERE WAS AN ISSUE")
-          switch (err.response) {
+          switch (data.message) {
             case ErrorKeys.USERNAME_MISSING:
               setNameError(t(ErrorKeys.USERNAME_MISSING));
             case ErrorKeys.PASSWORD_MISSING:
