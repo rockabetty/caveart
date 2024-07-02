@@ -36,8 +36,8 @@ const Link = ({
   target = '_self',
   classes = '',
   disabled,
-  inline,
-  onClick
+  type,
+  onClick,
 }:LinkProps) => {
 
   return(
@@ -46,8 +46,9 @@ const Link = ({
       href={href}
       target={target}
       className={`link ${classes} ${classNames({
-        'Inline': !!inline,
-        'Disabled': !!disabled
+        'Inline': type === 'inline',
+        'Disabled': !!disabled,
+        'Button': type === 'button'
       })}`.trim()}
       onClick={onClick}
     >

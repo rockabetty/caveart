@@ -5,13 +5,22 @@
      url('/img/brand/tiling_hands.jpg');
 }
 
-.horizontal-nav_inner {
-  width:  var(--grid-maxwidth);
+.horizontal-nav_inner, .footer {
+  width: var(--grid-maxwidth);
   display: flex;
   margin: auto;
-  align-content: space-around;
   align-items: center;
+}
+.horizontal-nav_inner {
   justify-content: space-between;
+}
+.footer {
+  flex-direction: column;
+  justify-content: center;
+  font-size: var(--size-font-sm);
+}
+.footer-nav a {
+  margin: var(--spacing-md);
 }
 
 .horizontal-nav_authentication {

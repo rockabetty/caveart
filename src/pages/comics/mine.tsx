@@ -27,16 +27,19 @@ function MyComics() {
     <h1>My Comics</h1>
     <Link id="link-create_comic" href="new">Create a comic</Link>
    
-    {comics.map((comic) => {
-      return (
-        <ComicProfile
-          key={comic.subdomain}
-          title={comic.title}
-          thumbnail={comic.thumbnail}
-          subdomain={comic.subdomain}
-        />
-      )
-    })}
+    {comics
+      ? comics.map((comic) => {
+        return (
+          <ComicProfile
+            key={comic.subdomain}
+            title={comic.title}
+            thumbnail={comic.thumbnail}
+            subdomain={comic.subdomain}
+          />
+        )
+      })
+      : null
+    }
      </CaveartLayout>
   )
 }

@@ -1,8 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import { useRouter } from "next/router";
 import Head from 'next/head'
+import { Link } from '../../../component_library'
 import { useUser } from "../../services/auth/client/hooks/useUser";
 import SiteHeader from './navigation/SiteHeader';
+import SiteFooter from './navigation/SiteFooter';
 import AuthModal from './authentication/AuthModal';
 import UserProvider from '../../services/auth/client/UserProvider';
 import  './../../../component_library/design/style.css'
@@ -71,6 +73,8 @@ export default function CaveartLayout({ children, requireLogin = false }) {
     <div className="wrapper--text">
       <main>{children}</main>
     </div>
+
+    <SiteFooter />
     </>
   )
 }
