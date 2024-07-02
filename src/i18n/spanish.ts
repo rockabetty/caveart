@@ -6,6 +6,12 @@ const spanish = {
       "myAccount": "Perfil",
       "notifications": "Avisos"
     },
+    "comicManagement": {
+      "noComics": "Aún no tienes ningún cómic.",
+      "create": "Crea un cómic",
+      "edit": "Editar",
+      "delete": "Eliminar",
+    },
     "authenticationForm": {
       "labels" : {
         "username": "Nombre de usuario",

@@ -1,10 +1,16 @@
 const polish = {
   translation: {
     "headerNavigation": {
-      "myAccount": "Mój profil",
-      "myWebcomics": "Moje komiksy",
-      "mySubscriptions": "Moje czytelnicze",
+      "myAccount": "Mój Profil",
+      "myWebcomics": "Moje Komiksy",
+      "mySubscriptions": "Moje Czytelnicze",
       "notifications": "Powiadomienia"
+    },
+    "comicManagement": {
+      "noComics": " Nie masz jeszcze żadnych komiksów.",
+      "create": "Stwórz komiks",
+      "edit": "Edytuj",
+      "delete": "Usuń",
     },
     "authenticationForm": {
       "labels" : {

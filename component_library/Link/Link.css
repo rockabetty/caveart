@@ -10,7 +10,6 @@
               0.25s ease-in-out outline-offset,
               0.25s ease-in-out outline;
 }
-
 .link:hover,
 .link:focus {
   color: var(--col-interactive-01-hover);
@@ -20,7 +19,6 @@
               0.125s ease-in-out outline-offset,
               0.125s ease-in-out outline;
 }
-
 .link.Inline {
   padding: 0;
   text-decoration: underline;
@@ -32,4 +30,9 @@
 .link.Disabled {
   pointer-events: none;
   color:  var(--col-disabled);
+}
+.button {
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
 }

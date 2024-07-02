@@ -6,6 +6,12 @@ const english = {
       "mySubscriptions": "My Reading List",
       "notifications": "Notifications"
     },
+    "comicManagement": {
+      "create": "Create a Comic",
+      "noComics": "You don't have any comics yet.",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
     "authenticationForm": {
       "labels" : {
         "username": "Username",

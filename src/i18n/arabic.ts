@@ -6,6 +6,12 @@ const arabic = {
       "myAccount": "ملفي الشخصي",
       "notifications": "التنبيهات"
     },
+    "comicManagement": {
+      "create": "أنشئ رسماً",
+      "noComics": "ليس لديك أي رسوم حتى الآن.",
+      "edit": "تعديل",
+      "delete": "حذف"
+    },
     "authenticationForm": {
       "labels": {
         "username": "اسم المستخدم",

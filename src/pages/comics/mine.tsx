@@ -3,6 +3,7 @@ import {useEffect, useState} from 'react';
 import {Link} from '../../../component_library';
 import ComicProfile from '../../app/user_interface/comic/ComicProfile';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 interface Comic {
   title: string;
@@ -11,6 +12,8 @@ interface Comic {
 }
 
 function MyComics() {
+
+  const { t } = useTranslation();
 
   const [comics, setComics] = useState<Comic[]>([]);
 
@@ -24,8 +27,7 @@ function MyComics() {
  
   return (
     <CaveartLayout requireLogin={true}>
-    <h1>My Comics</h1>
-    <Link id="link-create_comic" href="new">Create a comic</Link>
+    <h1>{t('headerNavigation.myWebcomics')}</h1>
    
     {comics
       ? comics.map((comic) => {
@@ -38,8 +40,10 @@ function MyComics() {
           />
         )
       })
-      : null
+      : <p>{t('comicManagement.noComics')}</p>
     }
+
+      <Link type="button" id="link-create_comic" href="new">{t('comicManagement.create')}</Link>
      </CaveartLayout>
   )
 }

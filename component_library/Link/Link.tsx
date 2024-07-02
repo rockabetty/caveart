@@ -1,7 +1,8 @@
-import React from 'react'
-import classNames from 'classnames'
-import '../design/style.css'
-import './Link.css'
+import React from 'react';
+import classNames from 'classnames';
+import '../design/style.css';
+import './Link.css';
+import '../Button/Button.css';
 
 export interface LinkProps {
   id: string
@@ -45,10 +46,12 @@ const Link = ({
       id={id}
       href={href}
       target={target}
-      className={`link ${classes} ${classNames({
+      className={`${classes} ${classNames({
         'Inline': type === 'inline',
         'Disabled': !!disabled,
-        'Button': type === 'button'
+        'button': type === 'button',
+        'link': type !== 'button',
+        'Primary': type === 'button'
       })}`.trim()}
       onClick={onClick}
     >
