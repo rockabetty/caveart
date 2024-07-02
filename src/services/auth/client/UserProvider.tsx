@@ -113,6 +113,7 @@ const UserProvider: React.FC<UserProviderProps> = function({children}) {
      */
     const verifyUser = async () => {
         dispatch({ type: ActionType.Loading, payload: {process: ActionType.Verify } });
+        axios.defaults.withCredentials = true;
         try {
             const response = await axios.post('/api/auth/check');
              dispatch({

@@ -13,18 +13,17 @@ export const withAuth = (fn: NextApiHandler) => async (req: NextApiRequest, res:
   }
 
   const token = req.cookies[USER_AUTH_TOKEN_NAME];
-
+  
   if (!token) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  // TODO: add expiry, and if close to expiry but not expired, renew expiry
-
   try {
     const decodedRequestToken = jwt.verify(token, SECRET_KEY_JWT);
+   
     const userSession = await getUserSession(token);
     
-    if (!userSession || decodedRequestToken.sub !== userSession.user_id.toString()) {
+    if (!userSession || decodedRequestToken.sub.toString() !== userSession.user_id.toString()) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
