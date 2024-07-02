@@ -86,8 +86,9 @@ CREATE TABLE IF NOT EXISTS content_warnings (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL UNIQUE,
     description TEXT,
-    parent_id INT references styles(id) ON DELETE CASCADE
+    parent_id INT references content_warnings(id) ON DELETE CASCADE
 );
+
 CREATE TABLE IF NOT EXISTS comics_to_content_warnings (
     id SERIAL PRIMARY KEY,
     comic_id INT REFERENCES comics(id) ON DELETE CASCADE,
