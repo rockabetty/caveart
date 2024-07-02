@@ -10,6 +10,7 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(405).end();
   }
 
+
   try {
     const {password, email} = req.body;
     if (!password) {
@@ -27,6 +28,10 @@ const handler: NextApiHandler = async (req, res) => {
       hashedEmail,
     );
 
+    if (!userCredentials) {
+      return res.status(403).send({error: ErrorKeys.CREDENTIALS_INVALID});
+    }
+
     const storedPassword = userCredentials.password;
 
     if (storedPassword) {
@@ -40,10 +45,10 @@ const handler: NextApiHandler = async (req, res) => {
         });
       }
     }
-    return res.status(403).send(ErrorKeys.CREDENTIALS_INVALID);
+    return res.status(403).send({ error: ErrorKeys.CREDENTIALS_INVALID });
   }
   catch (error) {
-    return res.status(500).send(ErrorKeys.GENERAL_SERVER_ERROR);
+    return res.status(500).send({ error: ErrorKeys.GENERAL_SERVER_ERROR });
   }
 }
 

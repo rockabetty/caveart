@@ -1,92 +1,113 @@
-import React, {useState} from 'react'
-import axios from 'axios'
-import './Form.css'
-import {InteractiveProps, InteractiveDefaults} from '../types/interactive'
+import React, { useState, useMemo, ReactNode } from 'react';
+import axios from 'axios';
+import './Form.css';
+import { InteractiveProps, InteractiveDefaults } from '../types/interactive';
 
-export interface FormProps extends InteractiveProps {  
+export interface FormProps extends InteractiveProps {
   /**
    * API endpoint to post to
-  */
-  postTo?: string;
+   */
+  onSubmit: (formValues: { [key: string]: any }) => Promise<void>;
   /**
    * Function to call if post request is successful
-  */
-  onSuccess: (...params: any) => any;
+   */
+  onSuccess: (res: any) => void;
   /**
-   * Funciton to call if post request fails
-  */
-  onFailure: (...params: any) => any;
+   * Function to call if post request fails
+   */
+  onFailure: (err: any) => void;
+  /**
+   * Submission error message
+   */
+  submissionError?: string;
+  /**
+   * Submit button label
+   */
+  submitLabel?: string;
+  /**
+   * Children components (form elements)
+   */
+  children: ReactNode;
 }
 
-export const formDefaults: FormProps = {
+export const formDefaults: Partial<FormProps> = {
   ...InteractiveDefaults,
-  postTo: ''
-} as FormProps
+  postTo: '',
+  onSuccess: () => {},
+  onFailure: () => {},
+  submissionError: '',
+  submitLabel: 'Submit',
+};
 
 const Form: React.FC<FormProps> = (props) => {
-  const {
-    children,
-    id,
-    postTo,
-    onFailure,
-    onSuccess
-  } = props
+  const { children, id, postTo, onFailure, onSuccess, submissionError, submitLabel } = props;
 
-  const [formValues, setFormValues] = useState({"name": "Jim"})
+  const [formValues, setFormValues] = useState<{ [key: string]: any }>({});
+  const [isLoading, setIsLoading] = useState(false);
 
-  function handleChange (e) {
-    setFormValues({...formValues, [e.target.name]: e.target.value})
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setFormValues({ ...formValues, [e.target.name]: e.target.value });
   }
 
-  function handleSubmit (e): null {
-    e.preventDefault()
-    const form = document.querySelector(`#${id}`)
-    const errorCount = form.getElementsByClassName('Error').length
-    if (errorCount === 0) {
-      axios({
-        method: 'post',
-        url: postTo
-      })
-        .then((res) => {
-          onSuccess(res)
-        })
-        .catch((err) => {
-          onFailure(err)
-        })
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = document.querySelector(`#${id}`);
+    const errorCount = form ? form.getElementsByClassName('Error').length : 0;
+
+    if (errorCount === 0 && onSubmit) {
+      setIsLoading(true);
+      try {
+        await onSubmit(formValues)
+      } catch (err) {
+        onFailure(err);
+      } finally {
+        setIsLoading(false);
+      }
     }
   }
 
-  const inputTypes = ['text']
-
-  const patchedChildren = React.useMemo(() => {
-    return React.Children.map(children, child => {
+  const patchedChildren = useMemo(() => {
+    return React.Children.map(children, (child) => {
       if (React.isValidElement(child)) {
-        if (inputTypes.includes(child.props.type)) {
-          const name = child.props.name
-          const extendedChild = React.cloneElement(child, {
+        if (child.props.name) {
+          return React.cloneElement(child, {
             onChange: handleChange,
-            value: formValues.name
-          })
-          return extendedChild
-        } else {
-          return child
+            value: formValues[child.props.name] || '',
+          });
         }
+        return child;
       }
-    })
-  }, [formValues])
+      return null;
+    });
+  }, [children, formValues]);
 
-  return(
-    <form
+  return (
+    <form 
       id={id}
       className="form"
       noValidate
       onSubmit={handleSubmit}
     >
       {patchedChildren}
+      {submissionError 
+        ? <p className="form-feedback Error">{submissionError}</p>
+        : null
+      }
+
+      <Button
+        id={`${id}-form-submit`}
+        type="button"
+        onClick={onSubmit}
+        look="primary"
+        loading={isLoading}
+      >
+          {t(submitLabel)}
+      </Button>
+    
     </form>
-  )
-}
+  );
+};
 
-Form.defaultProps = formDefaults
+Form.defaultProps = formDefaults;
 
-export default Form
+export default Form;

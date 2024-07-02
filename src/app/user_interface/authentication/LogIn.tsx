@@ -9,7 +9,7 @@ import { ErrorKeys } from '../../../services/auth/types/errors';
 const SignUp: React.FC<AuthProps> = () => {
   const { t } = useTranslation();
 
-  const {loginUser} = useUser();
+  const {loginUser, isLoading, authError} = useUser();
   
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -42,12 +42,7 @@ const SignUp: React.FC<AuthProps> = () => {
   const handleLogin = () => {
     const isValid = validateLogin();
     if (isValid) {
-      try {
-        loginUser(email, password);
-      }
-      catch(error) {
-        console.log(err);
-      };
+      loginUser(email, password);
     }
   };
 
@@ -75,6 +70,10 @@ const SignUp: React.FC<AuthProps> = () => {
             type="password"
           />
         </fieldset>
+        { authError.status === 403
+         ? <p className="Error">{t(authError.message)}</p>
+         : null
+        }
         <Button id="authenticate_login" type="button" onClick={handleLogin} look="primary">
           {t('authenticationForm.buttonLabels.logIn')}
         </Button>

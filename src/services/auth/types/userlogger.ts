@@ -1,34 +1,36 @@
 import {User, ActionType, UserAuthState} from './user';
 
 export type LoginLoggerPayload = {
-    user: User;
-    source?: string;
+  user: User;
+  source?: string;
 };
 
 export type LogoutLoggerPayload = {
-    user: User;
-    reason?: string
+  user: User;
+  reason?: string
 };
 
 export type ViewProfileLoggerPayload = {
-    user: User;
-    loading: boolean;
+  user: User;
+  loading: boolean;
 };
 
 export type UpdateProfileLoggerPayload = {
-    user: Partial<User>;
-    changes: Partial<User>;
-    loading: boolean;
+  user: Partial<User>;
+  changes: Partial<User>;
+  loading: boolean;
 };
 
 export type ErrorLoggerPayload = {
-    error: Error;
+  message: string;
+  status?: number;
+  stack?: string;
 };
 
 export type VerifyLoggerPayload = {
-    auth: Partial<UserAuthState>;
+  auth: Partial<UserAuthState>;
 }
 
 export type LoadingLoggerPayload = {
-    process: ActionType;
+  process: ActionType;
 };

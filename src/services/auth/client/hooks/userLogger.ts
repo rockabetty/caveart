@@ -66,9 +66,10 @@ export const logActions = {
     logger.info(`${dev ? `User [ID: ${id}] logged out: ${payload.reason}` : 'User logged out'}`)
   },
   ERROR: (payload: UserLoggerTypes.ErrorLoggerPayload) => {
-    const {message, stack} = payload.error;
+    const {message, stack} = payload.authError;
     if (dev) {
-     logger.log(`Error occured: ${message} \n ${stack}`);
+     logger.log(`Error occured.`)
+     console.log(message);
     }
     logger.log(`Error occurred: ${message}`);
   },

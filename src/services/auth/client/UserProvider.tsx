@@ -43,6 +43,13 @@ const UserProvider: React.FC<UserProviderProps> = function({children}) {
     const [state, _dispatch] = useReducer(userReducer, initialState);
     const router = useRouter();
 
+    const handleError = (error: any) => {
+      const {stack} = error;
+      const {status} = error.response;
+      const message = error?.response?.data?.error;
+      dispatch({ type: ActionType.Error, payload: { authError: { message, stack, status } } });
+    };
+
     /**
      * loggedDispatch dispatches actions with optional logging based on action type.
      * If the action type has a logFunction, the action payload will be logged.
@@ -91,10 +98,7 @@ const UserProvider: React.FC<UserProviderProps> = function({children}) {
             router.push(`/profile`);
         }
         catch(error: any) {
-          const errorMessage = error.response && error.response.data.message
-            ? error.response.data.message
-            : error.message;
-          dispatch({ type: ActionType.Error, payload: errorMessage });
+          handleError(error);
         }
     };
 
@@ -122,12 +126,8 @@ const UserProvider: React.FC<UserProviderProps> = function({children}) {
             });
             return response.data;
         }
-        catch (error: any) {
-            console.error(error)
-          const errorMessage = error.response && error.response.data.message
-            ? error.response.data.message
-            : error.message;
-          dispatch({ type: ActionType.Error, payload: errorMessage });
+        catch(error: any) {
+            handleError(error);
         }
     };
 
@@ -151,11 +151,8 @@ const UserProvider: React.FC<UserProviderProps> = function({children}) {
             });
             router.push('/');
         }
-        catch (error: any) {
-          const errorMessage = error.response && error.response.data.message
-            ? error.response.data.message
-            : error.message;
-          dispatch({ type: ActionType.Error, payload: errorMessage });
+        catch(error: any) {
+            handleError(error);
         }
     };
 
@@ -178,12 +175,8 @@ const UserProvider: React.FC<UserProviderProps> = function({children}) {
             });
             return response.data;
         }
-        catch (error: any) {
-            console.log(error)
-          const errorMessage = error.response && error.response.data.message
-            ? error.response.data.message
-            : error.message;
-          dispatch({ type: ActionType.Error, payload: errorMessage });
+        catch(error: any) {
+            handleError(error);
         }
     }
 
