@@ -31,12 +31,6 @@ export type UserProfile = {
     'created_at': string;
 };
 
-export interface AuthError {
-  message: string;
-  status?: number;
-  stack?: string;
-}
-
 // ToDo: 
 // type MemberProfile = UserProfile & { role: 'Member' }, etc.
 
