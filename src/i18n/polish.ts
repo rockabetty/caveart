@@ -13,14 +13,14 @@ const polish = {
         "password": "Ustaw hasło zawierające minimum 8 znaków",
       },
       "userErrorMessages": {
-        "userNameTaken": "Wybierz inną nazwę użytkownika",
-        "emailTaken": "Wybierz inny adres e-mail",  
-        "passwordTooShort": "To hasło jest zbyt krótkie",
-        "passwordMissing": "Proszę wprowadzić hasło",
-        "passwordsDontMatch": "Hasła nie pokrywają się",
+        "userNameTaken": "Wybierz inną nazwę użytkownika.",
+        "emailTaken": "Wybierz inny adres e-mail.",  
+        "passwordTooShort": "To hasło jest zbyt krótkie.",
+        "passwordMissing": "Proszę wprowadzić hasło.",
+        "passwordsDontMatch": "Hasła nie pokrywają się.",
         // This message is for when a user's email or password is not correct
         // It is not advised to specify which one is the case, so be vague.
-        "badLoginInfo": "Nieprawidłowe dane logowania"
+        "credentialsInvalid": "Spróbuj innego hasła."
       },
       "buttonLabels": {
         "logIn": "Zaloguj",

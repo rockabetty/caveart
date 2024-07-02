@@ -7,8 +7,8 @@ import { ActionType } from '../../../services/auth/types/user.d.ts';
 import { ErrorKeys } from '../../../services/auth/types/errors';
 
 const SignUp: React.FC<AuthProps> = () => {
-  const { t } = useTranslation();
-
+  const { t, i18n } = useTranslation();
+ 
   const {loginUser, isLoading, authError} = useUser();
   
   const [email, setEmail] = useState<string>("");

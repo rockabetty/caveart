@@ -93,7 +93,6 @@ const Form: React.FC<FormProps> = (props) => {
         ? <p className="form-feedback Error">{submissionError}</p>
         : null
       }
-
       <Button
         id={`${id}-form-submit`}
         type="button"
@@ -103,7 +102,6 @@ const Form: React.FC<FormProps> = (props) => {
       >
           {t(submitLabel)}
       </Button>
-    
     </form>
   );
 };

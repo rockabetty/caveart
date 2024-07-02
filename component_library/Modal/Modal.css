@@ -36,13 +36,13 @@
   border: 1px solid var(--col-border);
 }
 .modal_content.Small {
-  max-width: calc(var(--spacing-sm) * 25);
+  width: calc(var(--spacing-sm) * 25);
 }
 .modal_content.Medium {
-  max-width: calc(var(--spacing-md) * 25);
+  width: calc(var(--spacing-md) * 25);
 }
 .modal_content.Large {
-  max-width: calc(var(--spacing-lg) * 25);
+  width: calc(var(--spacing-lg) * 25);
 }
 
 .modal_header {

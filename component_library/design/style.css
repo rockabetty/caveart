@@ -57,10 +57,10 @@
   --swatch-white: #FEFEFE;
   --swatch-black: #222222;
 
-  --base-size: 1.16rem;
-  --base-scaler: 1.5;
-  --base-line-height-body: 1.4;
-  --base-line-height-header: 1.3;
+  --base-size: var(--base-font-size, 1.16rem);
+  --base-scaler: var(--base-font-scaler, 1.5);
+  --base-line-height-body: var(--base-line-height-body, 1.4);
+  --base-line-height-header: var(--base-line-height-header, 1.3);
   --scaler-pow-2: calc( var(--base-scaler) * var(--base-scaler));
   --scaler-pow-3: calc( var(--scaler-pow-2) * var(--base-scaler));
   --scaler-pow-4: calc( var(--scaler-pow-3) * var(--base-scaler));

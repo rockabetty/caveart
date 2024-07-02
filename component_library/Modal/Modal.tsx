@@ -144,7 +144,10 @@ const Modal = ({
         className={`modal ${classes} ${classNames({
           Open: isOpen,
           Alert: isAlert,
-          Warning: isWarning
+          Warning: isWarning,
+          Medium: size === 'md' || !!size,
+          Large: size === 'lg',
+          Small: size === 'sm'
         })}`
           .trim()}
         id={id}

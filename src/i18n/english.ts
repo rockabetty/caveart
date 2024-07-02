@@ -5,7 +5,7 @@ const english = {
         "username": "Username",
         "email": "Email",
         "password": "Password",
-        "password2": "Verify password"
+        "password2": "Verify password",
       },
       "instructions": {
         "username": "Please enter a username",
@@ -19,8 +19,8 @@ const english = {
         "passwordMissing": "Please provide a password",
         "passwordsDontMatch": "Passwords do not match",
         // This message is for when a user's email or password is not correct
-        // It is not advised to specify which one is the case, so be vague.
-        "badLoginInfo": "Can't log in with these credentials"
+        // Do not actually verify is an email, etc. is on file.
+         "credentialsInvalid": "Please check your password and try again."
       },
       "buttonLabels": {
         "logIn": "Log in",

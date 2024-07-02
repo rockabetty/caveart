@@ -13,14 +13,14 @@ const spanish = {
         "password": "Su contraseña necesita 8 caracteres o más",
       },
       "userErrorMessages": {
-        "userNameTaken": "Ya hay usuario con este nombre",
-        "emailTaken": "Este correo electrónico no está disponible",  
-        "passwordTooShort": "Esta contraseña es demasiado corta",
-        "passwordsDontMatch": "Las contraseñas deben ser exactamente iguales",
-        "passwordMissing": "Por favor, introduzca una contraseña",
+        "userNameTaken": "Ya hay usuario con este nombre.",
+        "emailTaken": "Este correo electrónico no está disponible.",  
+        "passwordTooShort": "Esta contraseña es demasiado corta.",
+        "passwordsDontMatch": "Las contraseñas deben ser exactamente iguales.",
+        "passwordMissing": "Por favor, introduzca una contraseña.",
         // This message is for when a user's email or password is not correct
         // It is not advised to specify which one is the case, so be vague.
-        "badLoginInfo": "Este inicio de sesión no es válido"
+        "credentialsInvalid ": "Pruebe con una contraseña diferente."
       },
       "buttonLabels": {
         "logIn": "Iniciar sesión",

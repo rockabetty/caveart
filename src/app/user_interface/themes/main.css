@@ -125,4 +125,7 @@
   --theme-success-80: var(--swatch-lime-30);
   --theme-success-90: var(--swatch-lime-20);
   --theme-success-100: var(--swatch-lime-10);
+
+  --base-font-scaler: 1.33;
+  --base-font-size: 1.16rem;
 }
