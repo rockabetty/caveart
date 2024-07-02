@@ -1,5 +1,6 @@
-import React from 'react'
-import CaveartLayout from '../app/user_interface/CaveartLayout'
+import React from 'react';
+import CaveartLayout from '../app/user_interface/CaveartLayout';
+import { Link } from '../../component_library';
 
 function PrivacyPolicy() {
   return (
@@ -17,7 +18,7 @@ function PrivacyPolicy() {
         </p>
 
         <p>
-          You can see and edit or delete all of this information by going to <a href="account">https://www.caveartwebcomics.com/account</a>. 
+          You can see and edit or delete all of this information by going to <Link type="inline" href="account">https://www.caveartwebcomics.com/account</Link>. 
         </p>
 
         <p>
@@ -92,8 +93,8 @@ function PrivacyPolicy() {
           Different artists have different concerns about what AI means for their own work.  We want our artists to be able to protect their work if they feel the need to do so, but as a website made by unpaid hobbyists we absolutely can not guarantee that we can safeguard your content because we don't know how that stuff works in the first place. That said, here is some useful information.
         </p>
           <ul>
-            <li><a href="https://glaze.cs.uchicago.edu/">Glaze</a> is a measure meant to thwart art generation AIs by throwing off their ability to mimic your style.  You should check it out and determine for yourself whether to use it.  We have no affiliation with Glaze or its creators.</li>
-            <li>Google's privacy policy says it lets anything its spider access be used as training data for AI.   Spiders rely on things like links to pages (which search results provide) in order to consume them, so one way to pull the plug on Google is to mark your comic as Unlisted. That way someone needs the direct link to see your work.</li>
+            <li><Link target="_blank" type="inline" href="https://glaze.cs.uchicago.edu/">Glaze</Link> is a measure meant to thwart art generation AIs by throwing off their ability to mimic your style.  You should check it out and determine for yourself whether to use it.  We have no affiliation with Glaze or its creators.  We do have plans to integrate Glaze (or an equivalent) into the website, but it is a stretch goal that has currently not yet been achieved.</li>
+            <li><Link target="_blank" type="inline" href="https://policies.google.com/privacy?hl=en-US">Google's privacy policy</Link> says it lets anything its spider access be used as training data for AI.   Spiders rely on things like links to pages (which search results provide) in order to consume them, so one way to pull the plug on Google is to mark your comic as Unlisted. That way someone needs the direct link to see your work.</li>
             <li>Google can't scrape pages that it doesn't have access to. If you mark your comic as login-only, your comic profile shows up in searches but when someone tries to read it, they need to be logged in. That way, new people can find your comic, but they have to be logged in to get past the cover, so the only thing Google is going to get is your cover image (since that is on the profile page which shows up in the search results).</li>
           </ul>
         
@@ -140,7 +141,7 @@ function PrivacyPolicy() {
         </p>
 
         <h3>For Californians</h3>
-        <p>If you are a resident of California, you should know about California Civil Code Section 1798.83 (the "Shine The Light" law).  Once a year and free of charge you may request to obtain information about personal information (if any) we disclosed to third parties.  In advance, we do not actually disclose information to third parties, but you have the legal right to check anyway!  Email us at hello@caveartwebcomics.com.</p>
+        <p>If you are a resident of California, you should know about <Link type="inline" href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?sectionNum=1798.83.&lawCode=CIV">California Civil Code Section 1798.83</Link> (the "Shine The Light" law).  Once a year and free of charge you may request to obtain information about personal information (if any) we disclosed to third parties.  In advance, we do not actually disclose information to third parties, but you have the legal right to check anyway!  Email us at hello@caveartwebcomics.com.</p>
 
         <p>
           You have the right to request that we delete your data, to get a report on what sort of data we've been collecting over the past 12 months, and to be informed in full about whether, how, and why we collect data. 

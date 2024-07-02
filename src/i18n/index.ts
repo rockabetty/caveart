@@ -1,16 +1,23 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
 import english from './english';
+import polish from './polish';
+import spanish from './spanish';
 
 const resources = {
-  en: english
+  en: english,
+  es: spanish,
+  pl: polish
 };
 
 i18n
   .use(initReactI18next)
+  .use(LanguageDetector)
   .init({
     resources,
-    lng: "en",
+    lng: "pl",
+    fallbackLng: "pl",
     interpolation: {
       escapeValue: false
     }

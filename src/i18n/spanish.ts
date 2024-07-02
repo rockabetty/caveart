@@ -1,5 +1,11 @@
 const spanish = {
   translation: {
+    "headerNavigation": {
+      "myWebcomics": "Mis cómics",
+      "mySubscriptions": "Suscripciones",
+      "myAccount": "Perfil",
+      "notifications": "Avisos"
+    },
     "authenticationForm": {
       "labels" : {
         "username": "Nombre de usuario",

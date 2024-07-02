@@ -1,5 +1,11 @@
 const polish = {
   translation: {
+    "headerNavigation": {
+      "myAccount": "Mój profil",
+      "myWebcomics": "Moje komiksy",
+      "mySubscriptions": "Moje czytelnicze",
+      "notifications": "Powiadomienia"
+    },
     "authenticationForm": {
       "labels" : {
         "username": "Nazwa użytkownika",

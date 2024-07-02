@@ -2,6 +2,7 @@ import React from 'react'
 import Cookies from "js-cookie";
 import { Button, ButtonSet, Link } from '../../../../component_library'
 import './Navigation.css'
+import { useTranslation } from 'react-i18next';
 
 const SiteHeader = ({
   onLogIn,
@@ -9,6 +10,8 @@ const SiteHeader = ({
   onSignup,
   loggedIn,
   ...props}: SiteHeaderProps) => {
+
+  const { t } = useTranslation();
   
   return (
     <div className="horizontal-nav">
@@ -18,9 +21,10 @@ const SiteHeader = ({
         </a>
         { loggedIn === true ? 
           <>
-            <Link id="horizontal-nav_profile" href="/profile">My Account</Link>
-            <Link id="horizontal-nav_manage-comics" href="/comics/mine">My Webcomics</Link>
-            <Link id="horizontal-nav_reading-list" href="/read">My Reading List</Link>
+            <Link id="horizontal-nav_profile" href="/profile">{t('headerNavigation.myAccount')}</Link>
+            <Link id="horizontal-nav_manage-comics" href="/comics/mine">{t('headerNavigation.myWebcomics')}</Link>
+            <Link id="horizontal-nav_reading-list" href="/read">{t('headerNavigation.mySubscriptions')}</Link>
+            <Link id="horizontal-nav_notifications" href="/notifications">{t('headerNavigation.notifications')}</Link>
           </>
           : ""
         }
@@ -28,13 +32,13 @@ const SiteHeader = ({
           {
             loggedIn === true ?
               (
-                <Button look="muted" id="header-logout" onClick={onLogout}>Log Out</Button>
+                <Button look="muted" id="header-logout" onClick={onLogout}>{t('authenticationForm.buttonLabels.logOut')}</Button>
               )
               :
               (
                 <ButtonSet>
-                  <Button id="header-signup" onClick={onSignup}>Sign Up</Button>
-                  <Button id="header-login" onClick={onLogIn} look="primary">Log In</Button>
+                  <Button id="header-signup" onClick={onSignup}>{t('authenticationForm.buttonLabels.signUp')}</Button>
+                  <Button id="header-login" onClick={onLogIn} look="primary">{t('authenticationForm.buttonLabels.logIn')}</Button>
                 </ButtonSet>
               )
           }

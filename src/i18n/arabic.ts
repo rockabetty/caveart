@@ -1,5 +1,11 @@
 const arabic = {
   translation: {
+    "headerNavigation": {
+      "myWebcomics": "رسومياتي",
+      "mySubscriptions": "قراءاتي",
+      "myAccount": "ملفي الشخصي",
+      "notifications": "التنبيهات"
+    },
     "authenticationForm": {
       "labels": {
         "username": "اسم المستخدم",

@@ -1,5 +1,11 @@
 const english = {
   translation: {
+    "headerNavigation": {
+      "myAccount": "My Account",
+      "myWebcomics": "My Webcomics",
+      "mySubscriptions": "My Reading List",
+      "notifications": "Notifications"
+    },
     "authenticationForm": {
       "labels" : {
         "username": "Username",
