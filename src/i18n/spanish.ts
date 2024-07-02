@@ -20,7 +20,8 @@ const spanish = {
         "passwordMissing": "Por favor, introduzca una contraseña.",
         // This message is for when a user's email or password is not correct
         // It is not advised to specify which one is the case, so be vague.
-        "credentialsInvalid ": "Pruebe con una contraseña diferente."
+        "credentialsInvalid ": "Pruebe con una contraseña diferente.",
+        "generalError": "Parte de esta información no funcionará. Por favor, revise el formulario."
       },
       "buttonLabels": {
         "logIn": "Iniciar sesión",

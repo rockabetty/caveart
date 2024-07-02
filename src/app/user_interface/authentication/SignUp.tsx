@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { TextInput, Button } from '../../../../component_library';
+import { TextInput, Button, Form } from '../../../../component_library';
 import { useUser } from '../../../services/auth/client/hooks/useUser';
 import { ActionType } from '../../../services/auth/types/user.d.ts';
 import { ErrorKeys } from '../../../services/auth/types/errors';
@@ -9,7 +9,7 @@ import { ErrorKeys } from '../../../services/auth/types/errors';
 const SignUp: React.FC<AuthProps> = () => {
   const { t } = useTranslation();
 
-  const {loginUser} = useUser();
+  const {loginUser, isLoading, authError} = useUser();
   
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -93,8 +93,10 @@ const SignUp: React.FC<AuthProps> = () => {
               setEmailError(t(ErrorKeys.EMAIL_INVALID));
             case ErrorKeys.USERNAME_TAKEN:
               setNameError(t(ErrorKeys.USERNAME_TAKEN));
+              setFormError(t(ErrorKeys.USERNAME_TAKEN));
             case ErrorKeys.EMAIL_TAKEN:
               setEmailError(t(ErrorKeys.EMAIL_TAKEN));
+              setFormError(t(ErrorKeys.EMAIL_TAKEN));
             default:
               setFormError(t(ErrorKeys.GENERAL_SUBMISSION_ERROR));
           }
@@ -103,59 +105,59 @@ const SignUp: React.FC<AuthProps> = () => {
   };
 
   return (
-    <div>
-      <form noValidate>
-        <fieldset>
-          <TextInput
-            labelText={t('authenticationForm.labels.username')}
-            pattern={/^[a-zA-Z0-9_-]+$/}
-            id="signup_name"
-            onChange={(e) => {onInputName(e)}}
-            type="text"
-            placeholderText="Captain Caveman"
-            errorText={nameError}
-            value={name}
-            required={true}
-          />
-          <TextInput
-            labelText={t('authenticationForm.labels.email')}
-            id="signup_email"
-            onChange={(e) => {onInputEmail(e)}}
-            placeholderText="unga@bunga.com"
-            type="email"
-            errorText={emailError}
-            value={email}
-            required={true}
-          />
-          <TextInput
-            labelText={t('authenticationForm.labels.password')}
-            helperText={t('authenticationForm.instructions.password')}
-            value={password}
-            placeholderText=""
-            minLength={8}
-            errorText={passwordError}
-            id="signup_password"
-            onChange={(e) => {onInputPassword(e)}}
-            type="password"
-            required={true}
-          />
-          <TextInput
-            labelText={t('authenticationForm.labels.password2')}
-            errorText={passwordVerificationError}
-            value={passwordVerification}
-            placeholderText=""
-            id="signup_password_verification"
-            onChange={(e) => {onInputPasswordVerification(e)}}
-            onBlur={() => {checkpasswordsMatch()}}
-            type="password"
-            required={true}
-          />
-        </fieldset>
-        <Button id="authenticate_signup" type="button" onClick={handleSignup} look="primary">
-          {t('authenticationForm.buttonLabels.signUp')}
-        </Button>
-      </form>
-    </div>
+    <Form
+      id="signup-modal"
+      onSubmit={handleSignup}
+      submitLabel={t('authenticationForm.buttonLabels.signUp')}
+      submissionError={t(formError)}
+    >
+      <fieldset>
+        <TextInput
+          labelText={t('authenticationForm.labels.username')}
+          pattern={/^[a-zA-Z0-9_-]+$/}
+          id="signup_name"
+          onChange={(e) => {onInputName(e)}}
+          type="text"
+          placeholderText="Captain Caveman"
+          errorText={nameError}
+          value={name}
+          required={true}
+        />
+        <TextInput
+          labelText={t('authenticationForm.labels.email')}
+          id="signup_email"
+          onChange={(e) => {onInputEmail(e)}}
+          placeholderText="unga@bunga.com"
+          type="email"
+          errorText={emailError}
+          value={email}
+          required={true}
+        />
+        <TextInput
+          labelText={t('authenticationForm.labels.password')}
+          helperText={t('authenticationForm.instructions.password')}
+          value={password}
+          placeholderText=""
+          minLength={8}
+          errorText={passwordError}
+          id="signup_password"
+          onChange={(e) => {onInputPassword(e)}}
+          type="password"
+          required={true}
+        />
+        <TextInput
+          labelText={t('authenticationForm.labels.password2')}
+          errorText={passwordVerificationError}
+          value={passwordVerification}
+          placeholderText=""
+          id="signup_password_verification"
+          onChange={(e) => {onInputPasswordVerification(e)}}
+          onBlur={() => {checkpasswordsMatch()}}
+          type="password"
+          required={true}
+        />
+      </fieldset>
+    </Form>
   );
 };
 

@@ -18,6 +18,7 @@ const english = {
         "passwordTooShort": "This password is not long enough",
         "passwordMissing": "Please provide a password",
         "passwordsDontMatch": "Passwords do not match",
+        "generalError": "Some of this info won't work. Check the form for errors.",
         // This message is for when a user's email or password is not correct
         // Do not actually verify is an email, etc. is on file.
          "credentialsInvalid": "Please check your password and try again."

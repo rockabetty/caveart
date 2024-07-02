@@ -29,6 +29,10 @@ export interface FormProps extends InteractiveProps {
    * Children components (form elements)
    */
   children: ReactNode;
+  /**
+   * Whether the form is pending 
+  */
+  isLoading: boolean;
 }
 
 export const formDefaults: Partial<FormProps> = {
@@ -38,14 +42,14 @@ export const formDefaults: Partial<FormProps> = {
   onFailure: () => {},
   submissionError: '',
   submitLabel: 'Submit',
+  isLoading: false
 };
 
 const Form: React.FC<FormProps> = (props) => {
-  const { children, id, onSubmit, onFailure, onSuccess, submissionError, submitLabel } = props;
+  const { children, id, onSubmit, onFailure, onSuccess, submissionError, submitLabel, isLoading } = props;
 
   const [formValues, setFormValues] = useState<{ [key: string]: any }>({});
-  const [isLoading, setIsLoading] = useState(false);
-
+ 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setFormValues({ ...formValues, [e.target.name]: e.target.value });
   }
@@ -56,13 +60,10 @@ const Form: React.FC<FormProps> = (props) => {
     const errorCount = form ? form.getElementsByClassName('Error').length : 0;
 
     if (errorCount === 0 && onSubmit) {
-      setIsLoading(true);
       try {
         await onSubmit(formValues)
       } catch (err) {
         onFailure(err);
-      } finally {
-        setIsLoading(false);
       }
     }
   }

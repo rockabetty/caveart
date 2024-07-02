@@ -13,12 +13,13 @@ const arabic = {
         "password": "اختر كلمة مرور تحتوي على 8 أحرف على الأقل",
       },
       "userErrorMessages": {
-        "userNameTaken": "يرجى اختيار اسم مستخدم آخر",
-        "emailTaken": "يرجى اختيار عنوان بريد إلكتروني آخر",
-        "passwordTooShort": "كلمة المرور قصيرة جداً",
-        "passwordsDontMatch": "كلمتا المرور غير متطابقتان",
-        "passwordMissing": " من فضلك، أدخل كلمة المرور",
-        "credentialsInvalid": "الرجاء تجربة كلمة مرور مختلفة"
+        "userNameTaken": "يرجى اختيار اسم مستخدم آخر.",
+        "emailTaken": "يرجى اختيار عنوان بريد إلكتروني آخر.",
+        "passwordTooShort": "كلمة المرور قصيرة جداً.",
+        "passwordsDontMatch": "كلمتا المرور غير متطابقتان.",
+        "passwordMissing": " من فضلك، أدخل كلمة المرور.",
+        "credentialsInvalid": "الرجاء تجربة كلمة مرور مختلفة.",
+        "generalError": "بعض هذه المعلومات غير صالحة. يرجى التحقق من النموذج."
       },
       "buttonLabels": {
         "logIn": "تسجيل الدخول",

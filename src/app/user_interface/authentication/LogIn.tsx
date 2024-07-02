@@ -49,12 +49,14 @@ const SignUp: React.FC<AuthProps> = () => {
   return (
     <div>
       <Form
+        id="login-modal"
         onSubmit={handleLogin}
         submitLabel={t('authenticationForm.buttonLabels.logIn')}
         submissionError={authError.status === 403
           ? t(authError.message)
           : null
         }
+        loading={isLoading}
       >
         <fieldset>
           <TextInput

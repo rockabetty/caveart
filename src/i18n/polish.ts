@@ -20,7 +20,8 @@ const polish = {
         "passwordsDontMatch": "Hasła nie pokrywają się.",
         // This message is for when a user's email or password is not correct
         // It is not advised to specify which one is the case, so be vague.
-        "credentialsInvalid": "Spróbuj innego hasła."
+        "credentialsInvalid": "Spróbuj innego hasła.",
+        "generalError": "Niektóre z tych informacji są niepoprawne. Proszę sprawdzić formularz."
       },
       "buttonLabels": {
         "logIn": "Zaloguj",
