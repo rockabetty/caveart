@@ -56,7 +56,7 @@ export const logActions = {
     logger.info(`${dev ? `User [ID: ${id}] logged in from ${payload.source}` : 'User logged in'}`);
   },
   VERIFY: (payload: UserLoggerTypes.VerifyLoggerPayload) => {
-    const { user } = payload.auth;
+    const { user } = payload.authenticated;
     logger.info(`${dev && user ? `User [ID: ${user.id}] verified as still logged in` : 'User authentication verified'}`)
   },
   LOGOUT: (payload: UserLoggerTypes.LogoutLoggerPayload) => {
