@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { TextInput, Button } from '../../../../component_library';
+import { TextInput, Button, Form } from '../../../../component_library';
 import { useUser } from '../../../services/auth/client/hooks/useUser';
 import { ActionType } from '../../../services/auth/types/user.d.ts';
 import { ErrorKeys } from '../../../services/auth/types/errors';
@@ -48,7 +48,14 @@ const SignUp: React.FC<AuthProps> = () => {
 
   return (
     <div>
-      <form noValidate>
+      <Form
+        onSubmit={handleLogin}
+        submitLabel={t('authenticationForm.buttonLabels.logIn')}
+        submissionError={authError.status === 403
+          ? t(authError.message)
+          : null
+        }
+      >
         <fieldset>
           <TextInput
             labelText={t('authenticationForm.labels.email')}
@@ -70,14 +77,7 @@ const SignUp: React.FC<AuthProps> = () => {
             type="password"
           />
         </fieldset>
-        { authError.status === 403
-         ? <p className="Error">{t(authError.message)}</p>
-         : null
-        }
-        <Button id="authenticate_login" type="button" onClick={handleLogin} look="primary">
-          {t('authenticationForm.buttonLabels.logIn')}
-        </Button>
-      </form>
+      </Form>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState, useMemo, ReactNode } from 'react';
 import axios from 'axios';
 import './Form.css';
+import { Button } from '../Button'
 import { InteractiveProps, InteractiveDefaults } from '../types/interactive';
 
 export interface FormProps extends InteractiveProps {
@@ -32,7 +33,7 @@ export interface FormProps extends InteractiveProps {
 
 export const formDefaults: Partial<FormProps> = {
   ...InteractiveDefaults,
-  postTo: '',
+  onSubmit: () => {},
   onSuccess: () => {},
   onFailure: () => {},
   submissionError: '',
@@ -40,7 +41,7 @@ export const formDefaults: Partial<FormProps> = {
 };
 
 const Form: React.FC<FormProps> = (props) => {
-  const { children, id, postTo, onFailure, onSuccess, submissionError, submitLabel } = props;
+  const { children, id, onSubmit, onFailure, onSuccess, submissionError, submitLabel } = props;
 
   const [formValues, setFormValues] = useState<{ [key: string]: any }>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -100,7 +101,7 @@ const Form: React.FC<FormProps> = (props) => {
         look="primary"
         loading={isLoading}
       >
-          {t(submitLabel)}
+          {submitLabel}
       </Button>
     </form>
   );
