@@ -8,7 +8,9 @@ import {
   UserColumnsArray,
   PasswordResetCredentials,
   ClientError,
-  User 
+  UserCredentials,
+  User,
+  GenericStringMap
 } from './types';
 
 export async function createUser(
@@ -31,8 +33,7 @@ export async function createUser(
     return getOneRowResult(result);
   }
 
-  catch (error) {
-    if (error instanceof Error) {
+  catch (error: any) {
     const {code, constraint} = error;
     let errorMessage = ErrorKeys.GENERAL_SUBMISSION_ERROR; 
     
@@ -50,14 +51,13 @@ export async function createUser(
       }
     }
     throw new ClientError(errorMessage, code, constraint);
-    }
   }
 };
 
 export async function getUserCredentials(
   identificationFormat: 'hashed_email' | 'username',
   identificationString: string
-): Promise<UserCredentials> {
+): Promise<UserCredentials | null> {
   const baseQuery = `SELECT
     id,
     username,
@@ -73,13 +73,11 @@ export async function getUserCredentials(
     : 'username = $1';
   const query = baseQuery + condition;
   const values = [identificationString]
-  const result = await queryDbConnection(query, values);
-
+  const result: QueryResult<UserCredentials> = await queryDbConnection(query, values);
   try {
-    return getOneRowResult(result) as User;
-  }
-  catch (error) {
-    console.error("getUserCredentials error", error)
+    return getOneRowResult(result) as UserCredentials | null
+  } catch (error: any) {
+    console.log("Get user credentials error", error);
     throw error;
   }
 };
@@ -91,7 +89,7 @@ export async function getPasswordResetCredentials(
   const baseQuery = `SELECT
     password_reset_token,
     password_reset_expiry,
-  FROM users WHERE `;
+    FROM users WHERE `;
   const condition = identificationFormat === 'hashed_email'
     ? 'hashed_email = $1'
     : 'username = $1';
@@ -107,7 +105,7 @@ export async function getPasswordResetCredentials(
     return credentials as PasswordResetCredentials;
   }
   catch (error) {
-    console.error("getPasswordResetCredentials error", error)
+    console.error("getPasswordResetCredentials error", error);
     throw error;
   }
 };
@@ -116,7 +114,7 @@ export async function createUserSession(
   userId: string,
   token: string,
   expirationDate: Date
-): Promise<QueryResult | Error> {
+): Promise<UserSession | null> {
   const query = `
     INSERT INTO users_sessions
     (user_id, session_token, expiration_date)
@@ -125,12 +123,19 @@ export async function createUserSession(
     RETURNING user_id, id, session_token
   `;
   const values = [userId, token, expirationDate];
-  return await queryDbConnection(query, values);
+
+  try {
+    const result: QueryResult<UserSession> = await queryDbConnection(query, values);
+    return getOneRowResult(result);
+  } catch (error: any) {
+    console.error("Create user session error", error);
+    throw error;
+  }
 };
 
 export async function getUserSession(
   token: string
-): Promise<UserSession> {
+): Promise<UserSession | null> {
   const query = `
     SELECT * FROM users_sessions WHERE session_token = $1
   `;
@@ -154,9 +159,6 @@ export async function clearUserSession(
   const query = `DELETE FROM users_sessions WHERE user_id = $1 and session_token = $2`;
   const values = [userId, token];
   const result = await queryDbConnection(query, values);
-  console.log("attempted to delete - ")
-  console.log(userId)
-  console.log(token)
   
   try {
     const deletions = result.rowCount;
@@ -191,21 +193,31 @@ export async function getUser(
 export async function editUser(
   id: number,
   update: User
-): Promise<QueryResult | Error> {
-  const updatedValues = {
+): Promise<QueryResult | null> {
+  if (!update.id) {
+    throw new Error();
+    console.error('no update id for editUser')
+  }
+  
+  const updatedValues: GenericStringMap = {
     ...update,
     id: parseInt(update.id.toString(), 10),
     password_reset_expiry: update.password_reset_expiry
       ? update.password_reset_expiry instanceof Date 
-      ? update.password_reset_expiry
-      : convertUTCStringToDate(update.password_reset_expiry)
-      : null  // Explicitly handle null values
+        ? update.password_reset_expiry
+        : convertUTCStringToDate(update.password_reset_expiry)
+      : null 
   };
 
-  return await editTable(
-    'users',
-    'id',
-    id,
-    updatedValues
-  );
+  try {
+    return await editTable(
+      'users',
+      'id',
+      id,
+      updatedValues
+    );
+  } catch (error: any) {
+    console.error("editUser error", error);
+    throw error;
+  }
 };

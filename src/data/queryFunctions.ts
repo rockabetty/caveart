@@ -23,13 +23,12 @@ const _isValidTable = function (table: string): boolean {
   return tableNames.has(table)
 }
 
-export async function queryDbConnection(queryString: string, values: any[] = []): Promise<QueryResult | Error> {
+export async function queryDbConnection(queryString: string, values: any[] = []): Promise<QueryResult> {
     const pool = PoolConnection.get();
     const client = await pool.connect();
     try {
         return await client.query(queryString, values);
     } catch (err) {
-        console.log(err)
         throw err;
     } finally {
         client.release();
@@ -80,28 +79,34 @@ export async function getTable(
 };
 
 export async function editTable(
-    table: string,
-    identifierColumn: string,
-    identifierValue: string | number,
-    update: GenericStringMap
-    ) {
-    const columnOrder = Object.keys(update);
-    const updateString = writeUpdateString(columnOrder);
-    const values = [];
-    const idPlaceholder = columnOrder.length + 1
+  table: string,
+  identifierColumn: string,
+  identifierValue: string | number,
+  update: GenericStringMap
+): Promise<QueryResult | null> {
+  const columnOrder = Object.keys(update);
+  const updateString = writeUpdateString(columnOrder);
+  const values = [...columnOrder.map(key => update[key]), identifierValue];
+  const idPlaceholder = columnOrder.length + 1;
 
-    for (const key of columnOrder) {
-        values.push(update[key]);
-    }
-    values.push(identifierValue);
+  // Ensure table and identifierColumn are safe to use in the query
+  if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(table) || !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(identifierColumn)) {
+    throw new Error('Invalid table or column name');
+  }
 
-    const query = `
-      UPDATE ${table}
-      SET ${updateString}
-      WHERE ${identifierColumn} = $${idPlaceholder}
-    `;
-    return await queryDbConnection(query, values)
-};
+  const query = `
+    UPDATE ${table}
+    SET ${updateString}
+    WHERE ${identifierColumn} = $${idPlaceholder}
+  `;
+
+  try {
+    return await queryDbConnection(query, values);
+  } catch (error: any) {
+    console.error("editTable error", error);
+    throw error;
+  }
+}
 
 export function getOneRowResult<T extends QueryResultRow>(result: QueryResult<T> ): T | null {
     if (result instanceof Error) {
