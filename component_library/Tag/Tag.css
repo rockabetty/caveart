@@ -1,0 +1,22 @@
+.tag {
+	background-color: var(--theme-interface-10);
+	margin: var(--spacing-sm);
+	padding: var(--spacing-xs) var(--spacing-md);
+	border-radius: var(--spacing-xl);
+	font-size: var(--size-font-sm);
+	outline: 1px solid var(--theme-interface-30);
+	display: inline-flex;
+	align-items: center;
+	width: fit-content;
+}
+
+.tag.Removable {
+  margin-inline-end: 0;
+  padding: 0;
+  padding-inline-start: var(--spacing-md);
+}
+
+.tag .Badge {
+	margin: 0;
+	margin-inline-start: var(--spacing-sm);
+}

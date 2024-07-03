@@ -65,7 +65,6 @@ export async function getTable(
     identifierValue: string | number,
     columns: string[]
     ) {
-    console.log("Get table called")
     const columnsToSelect = columns.join(", "); 
     const query = `
       SELECT ${columnsToSelect}

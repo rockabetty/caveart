@@ -115,12 +115,40 @@ export async function getComic(
     comicId: number,
     columns: ComicModel
 ): Promise<QueryResult | Error> {
-    const result = await getTable(
-      'comics',
-      'id',
-      comicId,
-      columns
-    );
+    const query = `
+    SELECT
+      title,
+      tagline,
+      c.description,
+      thumbnail,
+      comments,
+      is_unlisted,
+      is_private,
+      moderate_comments,
+      view_count,
+      likes,
+      like_count,
+      r.name as rating,
+      COALESCE(jsonb_agg(DISTINCT jsonb_build_object('id', g.id, 'name', g.name)), '[]') AS genres,
+      COALESCE(jsonb_agg(DISTINCT jsonb_build_object('id', cw.id, 'name', cw.name)), '[]') AS content_warnings
+    FROM comics c
+    JOIN ratings r
+      ON c.rating = r.id
+    JOIN comics_to_genres cg
+      ON cg.comic_id = c.id
+    JOIN genres g
+      ON g.id = cg.genre_id
+    JOIN comics_to_content_warnings ccw
+      ON ccw.comic_id = c.id
+    JOIN content_warnings cw
+      ON cw.id = ccw.content_warning_id
+    WHERE c.id = $1
+      GROUP BY
+      c.id, c.title, c.description, r.name
+    `;
+
+    const values = [comicId]
+    const result = await queryDbConnection(query, values);
 
     if (result.rows && result.rows.length > 0) {
       return result.rows[0];

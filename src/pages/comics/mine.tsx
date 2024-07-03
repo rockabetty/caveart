@@ -24,18 +24,18 @@ function MyComics() {
        setComics(response.data)
       })
   }, [])
-
  
   return (
     <CaveartLayout requireLogin={true}>
     <h1>{t('headerNavigation.myWebcomics')}</h1>
    
     {comics
-      ? comics.map((comic) => {
+      ? comics.map((comic, idx) => {
         return (
           <ComicProfile
-            key={comic.subdomain}
-            data={comic}
+            key={`comic-${idx}`}
+            comicId={comic.id}
+            subdomain={comic.subdomain}
           />
         )
       })
