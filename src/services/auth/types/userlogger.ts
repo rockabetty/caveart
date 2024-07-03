@@ -1,4 +1,4 @@
-import {User, ActionType, UserAuthState} from './user';
+import { User, ActionType, UserAuthState } from "./user";
 
 export type LoginLoggerPayload = {
   user: User;
@@ -7,7 +7,7 @@ export type LoginLoggerPayload = {
 
 export type LogoutLoggerPayload = {
   user: User;
-  reason?: string
+  reason?: string;
 };
 
 export type ViewProfileLoggerPayload = {
@@ -21,15 +21,15 @@ export type UpdateProfileLoggerPayload = {
   loading: boolean;
 };
 
-export type AuthError = {
+export type ErrorLoggerPayload = {
   message: string;
   status?: number | string;
   stack?: string;
-}
+};
 
 export type VerifyLoggerPayload = {
   auth: Partial<UserAuthState>;
-}
+};
 
 export type LoadingLoggerPayload = {
   process: ActionType;

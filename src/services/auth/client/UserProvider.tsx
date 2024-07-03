@@ -26,6 +26,7 @@ import {UserAuthState, UserAction, ActionType, UserContextType} from "../types/u
 import UserContext from "./UserContext";
 import userReducer from "./hooks/userReducer";
 import {dev, loggerMap} from './hooks/userLogger';
+import { ErrorLoggerPayload } from "../types/userlogger";
 
 interface UserProviderProps {
     children: ReactNode;  /**< The React children components to be wrapped by the provider */
@@ -47,7 +48,12 @@ const UserProvider: React.FC<UserProviderProps> = function({children}) {
     const {stack} = error;
     const {status} = error.response;
     const message = error?.response?.data?.error || error.message;
-    dispatch({ type: ActionType.Error, payload: { authError: { message, stack, status } } });
+    const errorPayload: ErrorLoggerPayload = {
+        message,
+        stack,
+        status
+    }
+    dispatch({ type: ActionType.Error, payload: errorPayload });
 };
 
     /**
