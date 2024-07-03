@@ -2,12 +2,37 @@ import { ImageUpload, Link, Button, Tag } from '../../../../component_library'
 import './ComicProfile.css';
 import { ComicModel, GenreModel } from '../../../types/comics';
 import GenreSelector from './GenreSelector';
+import ContentWarningSelector from './ContentWarningSelector';
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { useContentWarnings } from '../../../app/user_interface/comic/hooks/useContentWarnings';
 
 interface ComicProfileProps {
   comicId: number;
   subdomain: string
+}
+
+const ContentWarningSection: React.FC = ({
+    selection,
+  }) => {
+
+  const {
+    contentWarningsForDisplay,
+    ratingString,
+    ratingId,
+    contentWarningUserSelection,
+    onContentChange
+  } = useContentWarnings(selection);
+
+  console.log(selection)
+
+  return (
+    <ContentWarningSelector
+      onChange={onContentChange}
+      options={contentWarningsForDisplay}
+      selection={selection}
+    />
+  )
 }
 
 const ComicProfile: React.FC<ComicProfileProps> = ({comicId, subdomain}: ComicProfileProps) => {
@@ -28,10 +53,14 @@ const ComicProfile: React.FC<ComicProfileProps> = ({comicId, subdomain}: ComicPr
     axios.get(`/api/comic/${comicId}`)
     .then((response) => {
       setComicProfile(response.data)
+
       let genreUpdate = {}
       for (let genre of response.data.genres) {
         const {id, name} = genre;
         genreUpdate[id] = true;
+      }
+      for (let label of response.data.content_warnings) {
+        const {id, name} = label;
       }
       setComicUpdate({...comicUpdate, genres: genreUpdate});
     })
@@ -42,7 +71,6 @@ const ComicProfile: React.FC<ComicProfileProps> = ({comicId, subdomain}: ComicPr
     axios
       .get('/api/genres')
       .then((response) => {
-        console.log(response.data);
         setGenres(response.data)
     });
   },[]);
@@ -90,32 +118,34 @@ const ComicProfile: React.FC<ComicProfileProps> = ({comicId, subdomain}: ComicPr
         {comicProfile.rating}
         {editing 
           ? <GenreSelector
-            options={genres}
-            id={`genre-selection-${comicId}`}
-            selection={comicUpdate.genres}
-            onChange={onUpdateGenre}
-          />
+              options={genres}
+              id={`genre-selection-${comicId}`}
+              selection={comicUpdate.genres}
+              onChange={onUpdateGenre}
+            />
           : comicProfile.genres
               ? comicProfile.genres.map((genre, idx) => <Tag key={`tag-${comicId}-${idx}`} id={genre.name} label={genre.name} />)
               : null
         }
-          {comicProfile.content_warnings
-            ? comicProfile.content_warnings.map((contentLabel, idx) => <Tag key={`tag-${comicId}-${idx}`} id={contentLabel.name} label={contentLabel.name} />)
-            : null
-          }
+        
         <p>
          {comicProfile.description}
         </p>
+
+        {editing
+          ? <ContentWarningSection
+              selection={comicProfile.content_warnings}
+            />
+          : comicProfile.content_warnings
+              ? comicProfile.content_warnings.map((contentLabel, idx) => <Tag key={`tag-${idx}`} id={contentLabel.name} label={contentLabel.name} />)
+              : null
+         }
+
+        
        
       </div>
     </div>
   )
 }
-
-/*
- comicProfile.genres
-              ? comicProfile.genres.map((genre, idx) => <Tag key={`tag-${comicId}-${idx}`} id={genre.name} label={genre.name} />)
-              : null
-*/
 
 export default ComicProfile;

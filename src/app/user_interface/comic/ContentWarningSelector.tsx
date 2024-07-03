@@ -7,16 +7,22 @@ type ContentWarning = {
   children: ContentWarning[];
 };
 
-type Props = {
+type ContentWarningProps = {
   options: ContentWarning[];
   selection: { [key: string]: any };
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-const ContentWarningSelector: React.FC<Props> = ({ options, selection, onChange }) => {
+const ContentWarningSelector: React.FC<ContentWarningProps> = (props) => {
+  const {
+    options,
+    selection,
+    onChange
+  } = props;
+
   return (
     <div className="ReactiveGrid">
-      {options.map((warning: ContentWarning, idx: number) => {
+      {options && options.map((warning: ContentWarning, idx: number) => {
         return (
           <Accordion key={idx}>
             {warning.name}

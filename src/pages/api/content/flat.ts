@@ -1,12 +1,9 @@
 import { NextApiHandler } from 'next';
-import { getNestedContentWarnings } from '../../../data/comics';
-import { ContentWarningModel } from '../../../data/types/contentwarnings';
-
-
+import { getFlatContentWarnings } from '../../../data/comics';
 
 const handler: NextApiHandler = async (req, res) => {
   try {
-    const content: ContentWarningModel[] = await getNestedContentWarnings();
+    const content = await getFlatContentWarnings();
     return res.status(200).send(content);
   } catch (error) {
     return res.status(500).send(error)

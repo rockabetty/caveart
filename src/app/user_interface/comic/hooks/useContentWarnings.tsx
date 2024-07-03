@@ -7,7 +7,7 @@ type ContentWarning = {
   children: ContentWarning[];
 };
 
-type contentWarningsForDisplayelection = {
+type ContentWarningsUserSelection = {
   [ContentWarningName: string]: string | undefined;
 };
 
@@ -47,21 +47,25 @@ const ratingResults = {
   "frequentHardDrugUse": "Adults Only (18+)"
 };
 
-export const useContentWarnings = () => {
+interface UseContentWarningsProps {
+  initialSelection?: ContentWarningsUserSelection;
+}
+
+export const useContentWarnings = (initialSelection = []) => {
   const [contentWarningsForDisplay, setContentWarningsForDisplay] = useState<ContentWarning[]>([]);
   const [contentWarningOptionList, setContentWarningOptionList] = useState<{[key:number]: string}>();
   const [contentWarningKeys, setContentWarningKeys] = useState<Set<string>>(new Set());
   const [ratingString, setRatingString] = useState<string>("All Ages");
-  const [ratingId, setRatingId] = useState<number>(-1);
+  const [ratingId, setRatingId] = useState<number>(1);
   const [ratings, setRatings] = useState<{[key:string] : number}>({});
-  const [contentWarningUserSelection, setContentWarningUserSelection] = useState<contentWarningsForDisplayelection>({});
+  const [contentWarningUserSelection, setContentWarningUserSelection] = useState<ContentWarningsUserSelection>(initialSelection);
 
   useEffect(() => {
     axios.get('/api/content').then(response => {
       setContentWarningsForDisplay(response.data);
     });
 
-    axios.get('/api/content?format=flat').then(response => {
+    axios.get('/api/content/flat').then(response => {
       setContentWarningOptionList(response.data);
     });
 

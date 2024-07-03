@@ -1,10 +1,15 @@
 import {queryDbConnection, editTable, getTable, getOneRowResult } from './queryFunctions';
 import { convertUTCStringToDate } from '../services/timestamps';
-import { UserModel } from './types/models';
-import { UserSession, CreatedUserResult,  UserColumnsArray, PasswordResetCredentials } from './types/users';
 import { QueryResult } from 'pg';
 import { ErrorKeys } from '../services/auth/types/errors';
-import { ClientError } from './types/errors';
+import {
+  UserSession,
+  CreatedUserResult,
+  UserColumnsArray,
+  PasswordResetCredentials,
+  ClientError,
+  User 
+} from './types';
 
 export async function createUser(
   username: string,
@@ -85,7 +90,7 @@ export async function getUserCredentials(
   const result = await queryDbConnection(query, values);
 
   try {
-    return getOneRowResult(result) as UserModel;
+    return getOneRowResult(result) as User;
   }
   catch (error) {
     console.error("getUserCredentials error", error)
@@ -200,7 +205,7 @@ export async function getUser(
 
 export async function editUser(
   id: number,
-  update: UserModel
+  update: User
 ): Promise<QueryResult | Error> {
   const updatedValues = {
     ...update,

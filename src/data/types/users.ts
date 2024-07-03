@@ -1,4 +1,16 @@
-import { UserModel } from './models';
+export type User = {
+    id?: number;
+    username?: string;
+    email?: string;
+    hashed_email?: string;
+    password?: string;
+    password_reset_token?: string | null;
+    password_reset_expiry?: Date | null;
+    verified?: boolean;
+    created_at?: Date;
+    updated_at?: Date;
+    role?: 'Member' | 'Creator' | 'Moderator';
+};
 
 export type UserColumnNames = keyof UserModel;
 export type UserColumnsArray = UserColumnNames[];

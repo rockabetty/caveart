@@ -1,5 +1,5 @@
 import {queryDbConnection, getParentsAndChildren, buildOneToManyRowValues, removeOneToManyAssociations, editTable, getTable} from './queryFunctions';
-import {ComicModel, ComicColumnList} from './types/models';
+import {Comic, ComicColumnList} from './types';
 
 export async function createComic(
     comic: ComicModel
@@ -196,19 +196,46 @@ export async function getComicsByAuthor(
   return null;
 };
 
-export async function getContentWarningDefs(flattened: boolean = false): Promise<QueryResult | Error> {
-    
-  if (flattened) {
-    const query = `SELECT jsonb_object_agg(cw1.id, cw1.name) AS comics_json FROM content_warnings cw1
-      LEFT JOIN content_warnings cw2 ON cw1.id = cw2.parent_id
-      WHERE cw2.id IS NULL`;
+export async function getComicContentWarnings(comicId: number): Promise <QueryResult | Error> {
+  const query = `SELECT
+    CASE 
+        WHEN COUNT(cw.id) = 0 THEN '{}'::jsonb
+        ELSE jsonb_agg(DISTINCT jsonb_build_object(cwp.name, cw.id))
+      END AS content_warnings
+    FROM comics c
+    LEFT JOIN comics_to_content_warnings ccw
+      ON ccw.comic_id = c.id
+    LEFT JOIN content_warnings cw
+      ON cw.id = ccw.content_warning_id
+    JOIN content_warnings cwp
+      ON cw.parent_id = cwp.id
+      WHERE c.id = $1
+   `;
 
-    const result = await queryDbConnection(query);
-    if (result.rows && result.rows.length > 0) {
-        return result.rows[0].comics_json;
-      }
-  }
-  else {
+   const result = await queryDbConnection(query);
+   if (result.rows && result.rows.length > 0) {
+    return result.rows;
+   }
+   return null;
+}
+
+export async function getFlatContentWarnings(): Promise<QueryResult | Error > {
+  const query = `SELECT
+    jsonb_object_agg(cw1.id, cw1.name)
+    AS comics_json
+    FROM content_warnings cw1
+    LEFT JOIN content_warnings cw2 
+      ON cw1.id = cw2.parent_id
+    WHERE cw2.id IS NULL`;
+
+  const result = await queryDbConnection(query);
+  if (result.rows && result.rows.length > 0) {
+      return result.rows[0].comics_json;
+    }
+  return null;
+}
+
+export async function getNestedContentWarnings(): Promise<QueryResult | Error> {
     const query = `WITH
       Parents AS (
         SELECT id, name
@@ -240,12 +267,11 @@ export async function getContentWarningDefs(flattened: boolean = false): Promise
       GROUP BY p.id, p.name
       `;
 
-      const result = await queryDbConnection(query);
-      if (result.rows && result.rows.length > 0) {
-        return result.rows;
-      }
-  }
-  return null;
+    const result = await queryDbConnection(query);
+    if (result.rows && result.rows.length > 0) {
+      return result.rows;
+    }
+    return null;
 }
 
 export async function getRatingDefs(key: 'name' | 'id'): Promise<QueryResult | Error> {

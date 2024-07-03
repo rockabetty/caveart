@@ -1,6 +1,6 @@
 import { PoolClient, QueryResult } from 'pg';
 import PoolConnection from './connection';
-import {QueryFunction, GenericStringMap} from './types/queries';
+import {QueryFunction, GenericStringMap} from './types';
 
 const tableNames = new Set([
   'chapters',
