@@ -130,11 +130,11 @@ export async function getComic(
       like_count,
       r.name as rating,
       CASE 
-        WHEN COUNT(g.id) = 0 THEN null
+        WHEN COUNT(g.id) = 0 THEN '[]'::jsonb
         ELSE jsonb_agg(DISTINCT jsonb_build_object('id', g.id, 'name', g.name))
       END AS genres,
       CASE 
-        WHEN COUNT(cw.id) = 0 THEN null
+        WHEN COUNT(cw.id) = 0 THEN '[]'::jsonb
         ELSE jsonb_agg(DISTINCT jsonb_build_object('id', cw.id, 'name', cw.name))
       END AS content_warnings
     FROM comics c

@@ -37,7 +37,9 @@ type ComicColumnList = CommaDelimitedKeys<Extract<keyof ComicModel, string>>;
 
 export type GenreModel = {
     id: number;
-    name?: string;
+    name: string;
+    description?: string;
+    path_name?: string;
 };
 
 export type ComicsGenreBridgeModel = {

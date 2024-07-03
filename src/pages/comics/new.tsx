@@ -10,6 +10,7 @@ import {
   Form
 } from '../../../component_library';
 import CaveartLayout from '../../app/user_interface/CaveartLayout';
+import GenreSelector from '../../app/user_interface/comic/GenreSelector';
 import '../../app/user_interface/layout.css';
 import { useTranslation } from 'react-i18next';
 
@@ -155,6 +156,7 @@ const ComicProfileForm = () => {
   }
 
   const onToggleGenre = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e)
     const currentValue = Number(e.target.value);
     const currentGenres: GenreSelection = { ...formValues.genres };
     if (currentGenres[currentValue]) {
@@ -239,11 +241,13 @@ const ComicProfileForm = () => {
         setFormValues({...formValues, rating: allAges});
       });
 
-    axios
-      .get('/api/genres')
-      .then((response) => {
-        setGenres(response.data)
-      });
+      axios
+        .get('/api/genres')
+        .then((response) => {
+          console.log(response);
+          setGenres(response.data)
+      })
+
   }, [])
 
   return(
@@ -339,23 +343,11 @@ const ComicProfileForm = () => {
           )}
         </div>
         <p>{ratingString}</p>
-        <h2>Genres</h2>
-        <div className="ReactiveGrid">
-          {genres.map((genre) => {
-            return (
-              <div key={`genre-${genre.id}`}>
-                <Checkbox
-                  labelText={genre.name}
-                  id={`genre-${genre.id}`}
-                  checked={!!formValues.genres[genre.id as string | number]}
-                  onChange={onToggleGenre}
-                  name="genres"
-                  value={genre.id.toString()}
-                />
-              </div>
-            );
-          })}
-        </div>
+        <GenreSelector
+          options={genres}
+          selection={formValues.genres}
+          onChange={onToggleGenre}
+        />
 
         <h2>Settings</h2>
         <fieldset>
