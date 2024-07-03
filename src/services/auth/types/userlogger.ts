@@ -21,11 +21,11 @@ export type UpdateProfileLoggerPayload = {
   loading: boolean;
 };
 
-export type ErrorLoggerPayload = {
+export type AuthError = {
   message: string;
-  status?: number;
+  status?: number | string;
   stack?: string;
-};
+}
 
 export type VerifyLoggerPayload = {
   auth: Partial<UserAuthState>;

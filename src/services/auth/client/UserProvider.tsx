@@ -37,18 +37,18 @@ const UserProvider: React.FC<UserProviderProps> = function({children}) {
         user: null,
         isAuthenticated: false,
         isLoading: false,
-        error: null,
+        authError: null,
     };
 
     const [state, _dispatch] = useReducer(userReducer, initialState);
     const router = useRouter();
 
     const handleError = (error: any) => {
-      const {stack} = error;
-      const {status} = error.response;
-      const message = error?.response?.data?.error;
-      dispatch({ type: ActionType.Error, payload: { authError: { message, stack, status } } });
-    };
+    const {stack} = error;
+    const {status} = error.response;
+    const message = error?.response?.data?.error || error.message;
+    dispatch({ type: ActionType.Error, payload: { authError: { message, stack, status } } });
+};
 
     /**
      * loggedDispatch dispatches actions with optional logging based on action type.

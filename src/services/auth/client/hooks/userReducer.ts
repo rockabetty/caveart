@@ -64,12 +64,8 @@ const userReducer = (state: UserAuthState, action: UserAction): UserAuthState =>
         return {...state, isLoading: true};
       case ActionType.Error:
         return {
-          ...state, 
-          authError: {
-            message: action.payload.authError.message,
-            status: action.payload.authError.status,
-            stack: action.payload.authError.stack
-          },
+          ...state,
+          authError: action.payload.authError,
           isLoading: false
         };
       default:
