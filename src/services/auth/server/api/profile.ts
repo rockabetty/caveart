@@ -7,7 +7,6 @@ import { requireEnvVar } from '../../../logs/envcheck'
 import { withAuth } from '../withAuth';
 import { USER_AUTH_TOKEN_NAME } from '../../../../../constants';
 import { ErrorKeys } from '../../types/errors';
-import { QueryResult } from 'pg';
 
 const SECRET_KEY_JWT = requireEnvVar('SECRET_KEY_JWT');
 
@@ -40,20 +39,15 @@ const handler: NextApiHandler = async (req, res) => {
       'created_at'
     ] as UserColumnsArray;
 
-    const userProfile: QueryResult<User> = await getUser(userId, userProfileDetails);
+    const userProfile: User | null = await getUser(userId, userProfileDetails);
     if (!userProfile) {
       return res.status(404).json(ErrorKeys.USER_INVALID);
     }
 
     const {email} = userProfile;
-    const decryptedEmail = decrypt(email);
+    const decryptedEmail = email && decrypt(email);
     userProfile.email = decryptedEmail;
 
-    const date = new Date(userProfile['created_at']);
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    const year = date.getFullYear();
-    userProfile['created_at'] = `${month}/${day}/${year}`;
     res.status(200).send(userProfile);
   } catch (error) {
     res.status(500).send(ErrorKeys.GENERAL_SERVER_ERROR);
