@@ -1,14 +1,21 @@
-import path from "path"
-import fs from "fs/promises"
+import path from "path";
+import fs from "fs/promises";
 
 const ensureUploadDirectoryExists = async function () {
+  const uploadPath = path.join(process.cwd(), "public", "uploads");
   try {
-    await fs.readdir(path.join(process.cwd() + "/public/uploads"))
+    await fs.readdir(uploadPath);
   } catch (error) {
-    await fs.mkdir(path.join(process.cwd() + "/public/uploads"))
+    if (error.code === 'ENOENT') {
+      try {
+        await fs.mkdir(uploadPath, { recursive: true });
+      } catch (mkdirError) {
+        console.error("Failed to create upload directory:", mkdirError);
+      }
+    } else {
+      console.error("Error reading upload directory:", error);
+    }
   }
-  // TODO:  adding error handling for the fs.mkdir operation, in case there 
-  // are issues with permissions or other filesystem-related errors.
-}
+};
 
 export default ensureUploadDirectoryExists;
