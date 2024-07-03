@@ -6,6 +6,7 @@ import { ErrorKeys } from '../../types/errors';
 import { logger } from '../../../logs';
 import { sendSingleEmail } from '../../../emailer';
 import { requireEnvVar } from '../../../logs/envcheck';
+import { UserCredentials } from '../../../../data/types';
 
 const handler: NextApiHandler = async (req, res) => {
   if (req.method !== 'POST') {
@@ -22,10 +23,15 @@ const handler: NextApiHandler = async (req, res) => {
     const sanitizedEmail = requestEmail.replace(/[^a-zA-Z0-9@._-]/gi, '');
     const hashedEmail = hashEmail(sanitizedEmail);
  
-    const userCredentials = await getUserCredentials(
+    const userCredentials: UserCredentials | null = await getUserCredentials(
       'hashed_email',
       hashedEmail,
     );
+
+    if (!userCredentials) {
+      // Don't want somebody to guess if an account exists or not, hence this misleading response
+      return res.status(200).send({ message: 'Password reset email sent.' });
+    }
 
     const {id, email} = userCredentials;
 
