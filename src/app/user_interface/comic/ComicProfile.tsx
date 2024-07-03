@@ -12,7 +12,7 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
     thumbnail,
     title,
     subdomain
-  } = props;
+  } = props.data;
  
   return (
     <div className="comic-profile">

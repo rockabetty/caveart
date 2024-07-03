@@ -20,6 +20,7 @@ function MyComics() {
   useEffect(() => {
     axios.get('/api/comics/mine')
       .then((response) => {
+        console.log(response.data)
        setComics(response.data)
       })
   }, [])
@@ -34,9 +35,7 @@ function MyComics() {
         return (
           <ComicProfile
             key={comic.subdomain}
-            title={comic.title}
-            thumbnail={comic.thumbnail}
-            subdomain={comic.subdomain}
+            data={comic}
           />
         )
       })

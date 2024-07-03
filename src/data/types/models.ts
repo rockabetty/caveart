@@ -31,6 +31,9 @@ export type ComicModel = {
     rating?: string;
     stylesheet_variables?: string;
 };
+type ComicModelKeys = keyof ComicModel;
+type CommaDelimitedKeys<T extends string> = `${T}` | `${T},${CommaDelimitedKeys<T>}`;
+type ComicColumnList = CommaDelimitedKeys<Extract<keyof ComicModel, string>>;
 
 export type GenreModel = {
     id: number;

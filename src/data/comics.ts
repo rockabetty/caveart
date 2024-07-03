@@ -1,5 +1,5 @@
 import {queryDbConnection, getParentsAndChildren, buildOneToManyRowValues, removeOneToManyAssociations, editTable, getTable} from './queryFunctions';
-import {ComicModel} from './types/models';
+import {ComicModel, ComicColumnList} from './types/models';
 
 export async function createComic(
     comic: ComicModel
@@ -130,12 +130,16 @@ export async function getComic(
 
 export async function getComicsByAuthor(
     authorID: number,
-    columns?: ComicModel,
+    columns?: ComicColumnList,
     omniscientView: boolean = false
 ): Promise<QueryResult | Error> {
  
   let conditions = '';
-  const columnSelection = columns ? columns : '*';
+  let columnString = ''
+  if (columns) {
+    columnString = 'c.' + columns.split(',').join(',c.')
+  }
+  const columnSelection = columnString ? columnString : '*';
   const baseQuery = `
     SELECT ${columnSelection}
     FROM comics c
@@ -211,8 +215,12 @@ export async function getContentWarningDefs(flattened: boolean = false): Promise
   return null;
 }
 
-export async function getRatingDefs(): Promise<QueryResult | Error> {
-  const result = await queryDbConnection('SELECT jsonb_object_agg(name, id) AS comics_json FROM ratings');
+export async function getRatingDefs(key: 'name' | 'id'): Promise<QueryResult | Error> {
+  let format = 'name, id';
+  if (key === 'id') {
+    format = 'id, name'
+  }
+  const result = await queryDbConnection(`SELECT jsonb_object_agg(${format}) AS comics_json FROM ratings`);
   if (result.rows && result.rows.length === 1) {
     return result.rows[0].comics_json;
   }

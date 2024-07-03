@@ -16,8 +16,8 @@ i18n
   .use(LanguageDetector)
   .init({
     resources,
-    lng: "pl",
-    fallbackLng: "pl",
+    lng: "en",
+    fallbackLng: "en",
     interpolation: {
       escapeValue: false
     }
