@@ -11,22 +11,14 @@ import {
 } from '../../../component_library';
 import CaveartLayout from '../../app/user_interface/CaveartLayout';
 import GenreSelector from '../../app/user_interface/comic/GenreSelector';
+import ContentWarningSelector from '../../app/user_interface/comic/ContentWarningSelector';
 import '../../app/user_interface/layout.css';
 import { useTranslation } from 'react-i18next';
+import { useContentWarnings } from '../../app/user_interface/comic/hooks/useContentWarnings';
 
 type GenreSelection = {
   [genreId: string | number]: boolean;
 }
-
-type ContentWarningSelection = {
-  [ContentWarningName: string]: string | undefined;
-}
-
-type ContentWarning = {
-  id: string;
-  name: string;
-  children: ContentWarning[];
-};
 
 type FormValues = {
   title: string;
@@ -41,52 +33,13 @@ type FormValues = {
   thumbnail: FileList | undefined
 };
 
-const ratingResults = {
-  "someViolence": "Ages 10+",
-  "someSuggestiveContent": "Ages 10+",
-  "frequentViolence": "Teen (13+)",
-  "someRealisticInjuries": "Teen (13+)",
-  "frequentSuggestiveContent": "Teen (13+)",
-  "someBlood": "Teen (13+)",
-  "someThreats": "Teen (13+)",
-  "someSwearing": "Teen (13+)",
-  "someSlurs": "Teen (13+)",
-  "someSexualLanguage": "Teen (13+)",
-  "someReferencesToSubstances": "Teen (13+)",
-  "someAlcoholUse": "Teen (13+)",
-  "someCommonDrugUse": "Teen (13+)",
-  "frequentRealisticInjuries": "Mature (17+)",
-  "frequentBlood": "Mature (17+)",
-  "someGore": "Mature (17+)",
-  "somePartialNudity": "Teen (13+)",
-  "frequentPartialNudity": "Mature (17+)",
-  "someFullNudity": "Mature (17+)",
-  "someSexScenes": "Mature (17+)",
-  "frequentThreats": "Mature (17+)",
-  "frequentSwearing": "Mature (17+)",
-  "frequentSlurs": "Mature (17+)",
-  "frequentSexualLanguage": "Mature (17+)",
-  "frequentReferencesToSubstances": "Mature (17+)",
-  "frequentAlcoholUse": "Mature (17+)",
-  "someHardDrugUse": "Mature (17+)",
-  "frequentGore": "Adults Only (18+)",
-  "frequentFullNudity": "Adults Only (18+)",
-  "frequentSexScenes": "Adults Only (18+)",
-  "someSexualViolence": "Adults Only (18+)",
-  "frequentSexualViolence": "Adults Only (18+)",
-  "frequentHardDrugUse": "Adults Only (18+)"
-};
-
 
 const ComicProfileForm = () => {
 
   const { t } = useTranslation();
 
-  const [contentWarnings, setContentWarnings] = useState<ContentWarning[]>([]);
-  const [flatContentWarnings, setFlatContentWarnings] = useState<{[key:number]: string}>();
+  const { contentWarningsForDisplay, ratingString, contentWarningUserSelection, onContentChange } = useContentWarnings();
   const [genres, setGenres] = useState<any[]>([]);
-  const [ratings, setRatings] = useState<{[key:string] : number}>({});
-  const [ratingString, setRatingString] = useState<string>("All Ages");
   const [contentWarningList, setContentWarningList] = useState<Set>(new Set());
   const [submissionError, setSubmissionError] = useState<string>("")
   const [formValues, setFormValues] = useState<FormValues>({
@@ -94,7 +47,6 @@ const ComicProfileForm = () => {
     subdomain: '',
     description: '',
     genres: {},
-    content: {},
     comments: 'Allowed',
     visibility: 'Public',
     likes: true,
@@ -178,68 +130,7 @@ const ComicProfileForm = () => {
     })
   }, [formValues]);
 
-  const onContentChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    let content = {...formValues.content};
-    let contentWarningListUpdate = new Set(contentWarningList);
-    let value = undefined;
-    let contentWarningName="";
-    const contentWarningCategory = e.target.name;
-    if(e.target.value === "none") {
-      delete content[contentWarningCategory];
-      const contentLabel = contentWarningCategory.charAt(0).toUpperCase() + contentWarningCategory.slice(1);
-      contentWarningListUpdate.delete(`some${contentLabel}`);
-      contentWarningListUpdate.delete(`frequent${contentLabel}`);
-    }
-    else {
-      value = e.target.value;
-      contentWarningName = flatContentWarnings[value];
-      contentWarningListUpdate.add(contentWarningName);
-      content = {...content, [contentWarningCategory]: value}
-    }
-    setContentWarningList(contentWarningListUpdate)
-    const audienceRatings = new Set();
-    for(let key of contentWarningListUpdate) {
-      const rating = ratingResults[key];
-      audienceRatings.add(rating)
-    }
-    let ratingUpdate = 'All Ages';
-    if (audienceRatings.has('Adults Only (18+)')) {
-      ratingUpdate = "Adults Only (18+)";
-    } else if (audienceRatings.has('Mature (17+)')) {
-      ratingUpdate = "Mature (17+)";
-    } else if (audienceRatings.has('Teen (13+)')) {
-      ratingUpdate = "Teen (13+)";
-    } else if (audienceRatings.has('Ages 10+')) {
-      ratingUpdate = "Ages 10+";
-    }
-    setRatingString(ratingUpdate);
-    setFormValues({ ...formValues, content, rating: ratings[ratingUpdate] });
-    
-  }, [formValues])
-
   useEffect(() => {
-    axios
-      .get('/api/content')
-      .then((response) => {
-        setContentWarnings(response.data)
-        // each individual rating is 2 deep in 4 different parts 
-        let flattenedRatings = {};
-      });
-
-    axios
-      .get('/api/content?format=flat')
-      .then((response) => {
-        setFlatContentWarnings(response.data)
-      })
-
-    axios
-      .get('/api/ratings')
-      .then((response) => {
-        const allAges = response.data['All Ages'];
-        setRatings(response.data)
-        setFormValues({...formValues, rating: allAges});
-      });
-
       axios
         .get('/api/genres')
         .then((response) => {
@@ -303,43 +194,11 @@ const ComicProfileForm = () => {
         <p>
           Please put content warnings on your comic so that we can show our users appropriate content.
         </p>
-        <div className="ReactiveGrid">
-          {contentWarnings.map((warning: ContentWarning, idx: number) => {
-            return (
-                <Accordion key={idx}>
-                  {warning.name}
-                  {warning.children.map((child: ContentWarning, idx: number) => {
-                    const name = child.name;
-                    return (
-                      <fieldset className="form-field" key={`content-warning-${idx}`}>  
-                        <legend><strong>{child.name}:</strong></legend> 
-                        <Radio
-                          id={`no-cw-${name}`}
-                          onChange={onContentChange}
-                          labelText="No"
-                          checked={formValues.content[name] === undefined}
-                          name={name}
-                          value="none"
-                        />
-                        {child.children.map((option: ContentWarning, idx: number) => {
-                          return (
-                            <Radio
-                              id={`cw-${name}-${option.id}`}
-                              key={`cw-key-${idx}`}
-                              onChange={onContentChange}
-                              labelText={["Some", "Frequent"][idx]}
-                              name={name}
-                              checked={formValues.content[name] == option.id }
-                              value={option.id}
-                            />)  
-                        })}
-                      </fieldset>
-                    )
-                  })}
-                </Accordion>
-            )}
-          )}
-        </div>
+        <ContentWarningSelector
+          selection={contentWarningUserSelection}
+          options={contentWarningsForDisplay}
+          onChange={onContentChange}
+        />
         <p>{ratingString}</p>
         <GenreSelector
           options={genres}
