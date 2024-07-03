@@ -37,17 +37,22 @@ const ComicProfile: React.FC<ComicProfileProps> = ({comicId, subdomain}: ComicPr
         {comicProfile.title}
         </h1>
         <div>
-          {comicProfile.rating}
+          <Link id="link-add_pages" href={`pages/new`}>Add pages</Link>
+          <Link id="link-edit" href={`edit/${subdomain}`}>Edit</Link>
+        </div>
+        {comicProfile.rating}
+        {comicProfile.genres
+          ? comicProfile.genres.map((genre) => <Tag id={genre.name} label={genre.name} />)
+          : null
+        }
           {comicProfile.content_warnings
-            ? comicProfile.content_warnings.map((contentLabel) => <Tag filterName="content_warnings" id={contentLabel.name} removable label={contentLabel.name} />)
+            ? comicProfile.content_warnings.map((contentLabel) => <Tag id={contentLabel.name} label={contentLabel.name} />)
             : null
           }
-        </div>
         <p>
          {comicProfile.description}
         </p>
-        <Link id="link-add_pages" href={`pages/new`}>Add pages</Link>
-        <Link id="link-edit" href={`edit/${subdomain}`}>Edit</Link>
+       
       </div>
     </div>
   )
