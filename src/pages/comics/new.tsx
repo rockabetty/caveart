@@ -85,6 +85,7 @@ const ComicProfileForm = () => {
   const [flatContentWarnings, setFlatContentWarnings] = useState<{[key:number]: string}>();
   const [genres, setGenres] = useState<any[]>([]);
   const [ratings, setRatings] = useState<{[key:string] : number}>({});
+  const [ratingString, setRatingString] = useState<string>("All Ages");
   const [contentWarningList, setContentWarningList] = useState<Set>(new Set());
   const [submissionError, setSubmissionError] = useState<string>("")
   const [formValues, setFormValues] = useState<FormValues>({
@@ -103,7 +104,6 @@ const ComicProfileForm = () => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)  => {
     setSubmissionError("")
     setFormValues({ ...formValues, [e.target.name]: e.target.value })
-    console.log("hi")
   }
 
   const onFileChange = (files: FileList | undefined) => {
@@ -184,7 +184,6 @@ const ComicProfileForm = () => {
     let value = undefined;
     let contentWarningName="";
     const contentWarningCategory = e.target.name;
-    console.log(contentWarningCategory)
     if(e.target.value === "none") {
       delete content[contentWarningCategory];
       const contentLabel = contentWarningCategory.charAt(0).toUpperCase() + contentWarningCategory.slice(1);
@@ -213,8 +212,8 @@ const ComicProfileForm = () => {
     } else if (audienceRatings.has('Ages 10+')) {
       ratingUpdate = "Ages 10+";
     }
-
-    setFormValues({ ...formValues, content, rating: ratings[ratingUpdate] })
+    setRatingString(ratingUpdate);
+    setFormValues({ ...formValues, content, rating: ratings[ratingUpdate] });
     
   }, [formValues])
 
@@ -222,7 +221,6 @@ const ComicProfileForm = () => {
     axios
       .get('/api/content')
       .then((response) => {
-        console.log(response.data)
         setContentWarnings(response.data)
         // each individual rating is 2 deep in 4 different parts 
         let flattenedRatings = {};
@@ -231,7 +229,6 @@ const ComicProfileForm = () => {
     axios
       .get('/api/content?format=flat')
       .then((response) => {
-        console.log(response.data)
         setFlatContentWarnings(response.data)
       })
 
@@ -342,8 +339,7 @@ const ComicProfileForm = () => {
             )}
           )}
         </div>
-        <p>{formValues.rating}</p>
-
+        <p>{ratingString}</p>
         <h2>Genres</h2>
         <div className="ReactiveGrid">
           {genres.map((genre) => {

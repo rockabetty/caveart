@@ -55,7 +55,7 @@ const readForm = (req: NextApiRequest)
 
 const handler: NextApiHandler = async (req, res) => {
 
-  let id: string | null = null;
+ let id: string | null = null;
  
   try {
     ensureUploadDirectoryExists();
@@ -90,29 +90,31 @@ const handler: NextApiHandler = async (req, res) => {
 
       if (fields.genres) {
         const genres = JSON.parse(fields.genres[0]);
+        let genreList: number[] = [];
 
         Object.keys(genres).map(key => {
           const num = parseInt(key, 10);
           if (isNaN(num)) {
               return res.status(400).json({ error: 'invalidGenreFormat' });
           }
-          return num;
+          genreList.push(num);
         });
-        processedFields.genres = genres;
+        processedFields.genres = genreList;
       }
 
 
       if (fields.content) {
         const content = JSON.parse(fields.content[0]);
+        let contentWarningList: number[] = [];
         Object.values(content).map(value => {
           const num = parseInt(value as string, 10);
           if (isNaN(num)) {
             return res.status(400).json({ error: 'invalidContentWarningFormat' });
           }
-        return num;
+          contentWarningList.push(num)
         });
 
-        processedFields.content = content;
+        processedFields.content = contentWarningList;
       }
 
 
@@ -221,6 +223,8 @@ const handler: NextApiHandler = async (req, res) => {
 
     const newComic = await createComic(comicData);
     const id = parseInt(newComic.id);
+
+    console.log(processedFields) 
 
     if (processedFields.genres) {
        await addGenresToComic(id, processedFields.genres);
