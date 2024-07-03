@@ -14,7 +14,6 @@ const ComicProfile: React.FC<ComicProfileProps> = ({comicId, subdomain}: ComicPr
     console.log(comicId)
     axios.get(`/api/comic/${comicId}`)
     .then((response) => {
-      console.log(response.data)
       setComicProfile(response.data)
     })
     .catch((error) => {
@@ -22,13 +21,19 @@ const ComicProfile: React.FC<ComicProfileProps> = ({comicId, subdomain}: ComicPr
     })
   },[]);
 
-  const [comicProfile, setComicProfile] = useState({})
+  const [comicProfile, setComicProfile] = useState({
+    genres: null,
+    content_warnings: null,
+    name: '',
+    description: '',
+    thumbnail: null
+  })
 
   return (
     <div className="comic-profile">
       <a href={`/read/${comicId}`}>
         {comicProfile.thumbnail
-          ? <ImageUpload src={comicProfile.thumbnail} />
+          ? <ImageUpload src={`/${comicProfile.thumbnail}`} />
           : <ImageUpload src='/img/brand/kraugak.png' />
         }
       </a>

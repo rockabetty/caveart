@@ -133,17 +133,16 @@ const ComicProfileForm = () => {
         // Special handling for objects (e.g., JSON.stringify)
         formData.append(key, JSON.stringify(value));
       } else {
-        formData.append(key, value.toString());
+          formData.append(key, value.toString());
+        }
       }
     }
 
-    // Handle the 'thumbnail' field if needed
     if (formValues.thumbnail) {
       for (let i = 0; i < formValues.thumbnail.length; i++) {
         formData.append('files', formValues.thumbnail[i], formValues.thumbnail[i].name);
       }
     }
-  }
 
     await axios.post('/api/comics/new', formData)
     .then((res) => {
