@@ -38,7 +38,7 @@ const ComicProfileForm = () => {
 
   const { t } = useTranslation();
 
-  const { contentWarningsForDisplay, ratingString, contentWarningUserSelection, onContentChange } = useContentWarnings();
+  const { contentWarningsForDisplay, ratingString, ratingId, contentWarningUserSelection, onContentChange } = useContentWarnings();
   const [genres, setGenres] = useState<any[]>([]);
   const [contentWarningList, setContentWarningList] = useState<Set>(new Set());
   const [submissionError, setSubmissionError] = useState<string>("")
@@ -50,7 +50,6 @@ const ComicProfileForm = () => {
     comments: 'Allowed',
     visibility: 'Public',
     likes: true,
-    rating: -1,
     thumbnail: undefined
   })
 
@@ -90,6 +89,8 @@ const ComicProfileForm = () => {
         }
       }
     }
+    formData.append('content', JSON.stringify(contentWarningUserSelection));
+    formData.append('rating', ratingId.toString());
 
     if (formValues.thumbnail) {
       for (let i = 0; i < formValues.thumbnail.length; i++) {

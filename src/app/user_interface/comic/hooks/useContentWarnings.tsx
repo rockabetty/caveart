@@ -52,6 +52,7 @@ export const useContentWarnings = () => {
   const [contentWarningOptionList, setContentWarningOptionList] = useState<{[key:number]: string}>();
   const [contentWarningKeys, setContentWarningKeys] = useState<Set<string>>(new Set());
   const [ratingString, setRatingString] = useState<string>("All Ages");
+  const [ratingId, setRatingId] = useState<number>(-1);
   const [ratings, setRatings] = useState<{[key:string] : number}>({});
   const [contentWarningUserSelection, setContentWarningUserSelection] = useState<contentWarningsForDisplayelection>({});
 
@@ -65,7 +66,6 @@ export const useContentWarnings = () => {
     });
 
     axios.get('/api/ratings').then(response => {
-      const allAges = response.data['All Ages'];
       setRatings(response.data);
     });
   }, []);
@@ -108,13 +108,14 @@ export const useContentWarnings = () => {
     }
 
     setRatingString(ratingUpdate);
+    setRatingId(ratings[ratingUpdate]);
     setContentWarningUserSelection(content);
-    console.log(contentWarningUserSelection)
   }, [contentWarningUserSelection, contentWarningOptionList, contentWarningKeys, ratings]);
 
   return {
     contentWarningsForDisplay,
     ratingString,
+    ratingId,
     contentWarningUserSelection,
     onContentChange
   };
