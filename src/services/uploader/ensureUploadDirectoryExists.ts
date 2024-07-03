@@ -5,7 +5,7 @@ const ensureUploadDirectoryExists = async function () {
   const uploadPath = path.join(process.cwd(), "public", "uploads");
   try {
     await fs.readdir(uploadPath);
-  } catch (error) {
+  } catch (error:any) {
     if (error.code === 'ENOENT') {
       try {
         await fs.mkdir(uploadPath, { recursive: true });

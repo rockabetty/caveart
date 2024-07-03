@@ -54,20 +54,6 @@ export async function createUser(
   }
 };
 
-export async function getUserById(
-  identifier: number,
-  columns?: string[] | null
-): Promise<QueryResult | Error> {
-  const query = `
-    SELECT ${columns ? columns.join(",") : "*"}
-    FROM users
-    WHERE id = $1
-  `;
-
-  const values = [identifier]
-  return await queryDbConnection(query, values)
-};
-
 export async function getUserCredentials(
   identificationFormat: 'hashed_email' | 'username',
   identificationString: string
@@ -186,8 +172,9 @@ export async function clearUserSession(
 export async function getUser(
   userId: number,
   columns: UserColumnsArray
-): Promise<QueryResult> {
-  const result = await getTable(
+): Promise<User | null> {
+
+  const result: QueryResult<User> = await getTable(
     'users',
     'id',
     userId,
@@ -195,10 +182,8 @@ export async function getUser(
   );
 
   try {
-    return getOneRowResult(result);
-  }
-  catch (error) {
-    console.error("getUserCredentials error", error)
+    return getOneRowResult(result) as User | null
+  } catch (error: any) {
     throw error;
   }
 };

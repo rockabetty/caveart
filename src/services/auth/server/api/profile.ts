@@ -1,12 +1,13 @@
 import { NextApiHandler } from 'next';
 import jwt from 'jsonwebtoken';
 import { getUser } from '../../../../data/users';
-import { UserModel } from '../../../../data/types/models';
+import { UserColumnsArray, User } from '../../../../data/types';
 import { decrypt } from '../encrypt';
 import { requireEnvVar } from '../../../logs/envcheck'
 import { withAuth } from '../withAuth';
 import { USER_AUTH_TOKEN_NAME } from '../../../../../constants';
 import { ErrorKeys } from '../../types/errors';
+import { QueryResult } from 'pg';
 
 const SECRET_KEY_JWT = requireEnvVar('SECRET_KEY_JWT');
 
@@ -37,9 +38,9 @@ const handler: NextApiHandler = async (req, res) => {
       'email',
       'role',
       'created_at'
-    ] as UserModel;
+    ] as UserColumnsArray;
 
-    const userProfile = await getUser(userId, userProfileDetails);
+    const userProfile: QueryResult<User> = await getUser(userId, userProfileDetails);
     if (!userProfile) {
       return res.status(404).json(ErrorKeys.USER_INVALID);
     }

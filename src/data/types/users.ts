@@ -12,7 +12,7 @@ export type User = {
     role?: 'Member' | 'Creator' | 'Moderator';
 };
 
-export type UserColumnNames = keyof UserModel;
+export type UserColumnNames = keyof User;
 export type UserColumnsArray = UserColumnNames[];
 
 export type PasswordResetCredentials = Pick<UserModel, 

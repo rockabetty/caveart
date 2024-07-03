@@ -24,8 +24,6 @@ const ContentWarningSection: React.FC = ({
     onContentChange
   } = useContentWarnings(selection);
 
-  console.log(selection)
-
   return (
     <ContentWarningSelector
       onChange={onContentChange}
@@ -53,7 +51,6 @@ const ComicProfile: React.FC<ComicProfileProps> = ({comicId, subdomain}: ComicPr
     axios.get(`/api/comic/${comicId}`)
     .then((response) => {
       setComicProfile(response.data)
-
       let genreUpdate = {}
       for (let genre of response.data.genres) {
         const {id, name} = genre;

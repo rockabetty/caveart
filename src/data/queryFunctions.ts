@@ -1,6 +1,6 @@
-import { PoolClient, QueryResult } from 'pg';
+import { QueryResult, QueryResultRow } from 'pg';
 import PoolConnection from './connection';
-import {QueryFunction, GenericStringMap} from './types';
+import {GenericStringMap} from './types';
 
 const tableNames = new Set([
   'chapters',
@@ -64,7 +64,7 @@ export async function getTable(
     identifierColumn: string,
     identifierValue: string | number,
     columns: string[]
-    ) {
+    ): Promise<QueryResult> {
     const columnsToSelect = columns.join(", "); 
     const query = `
       SELECT ${columnsToSelect}
@@ -72,7 +72,11 @@ export async function getTable(
       WHERE ${identifierColumn} = $1
     `;
     const values = [identifierValue];
-    return await queryDbConnection(query, values)
+    const result = await queryDbConnection(query, values)
+    if (result instanceof Error) {
+        throw result;
+    }
+    return result;
 };
 
 export async function editTable(
@@ -99,13 +103,11 @@ export async function editTable(
     return await queryDbConnection(query, values)
 };
 
-export function getOneRowResult<T extends QueryResult>( result: QueryResult<T> ): T | null {
+export function getOneRowResult<T extends QueryResultRow>(result: QueryResult<T> ): T | null {
     if (result instanceof Error) {
         throw result;
     }
-    return result.rows.length > 0
-      ? result.rows[0]
-      : null;
+    return result.rows.length > 0 ? result.rows[0] : null;
 };
 
 export async function removeOneToManyAssociations(

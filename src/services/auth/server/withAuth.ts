@@ -24,7 +24,7 @@ export const withAuth = (fn: NextApiHandler) => async (req: NextApiRequest, res:
     const userSession = await getUserSession(token);
    
     // Ensure the sub is compared as a string
-    if (!userSession || decodedRequestToken.sub.toString() !== userSession.user_id.toString()) {
+    if (!userSession || decodedRequestToken.sub?.toString() !== userSession.user_id.toString()) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
