@@ -1,6 +1,6 @@
 import { ImageUpload, Link, Button, Tag } from '../../../../component_library'
 import './ComicProfile.css';
-import { ComicModel } from '../../../types/comics';
+import { ComicModel, GenreModel } from '../../../types/comics';
 import GenreSelector from './GenreSelector';
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
@@ -11,7 +11,7 @@ interface ComicProfileProps {
 }
 
 const ComicProfile: React.FC<ComicProfileProps> = ({comicId, subdomain}: ComicProfileProps) => {
-
+  const [genres, setGenres] = useState<GenreModel[]>([]);
   const [editing, setEditing] = useState<boolean>(false);
   const [comicProfile, setComicProfile] = useState({
     genres: [],
@@ -38,6 +38,13 @@ const ComicProfile: React.FC<ComicProfileProps> = ({comicId, subdomain}: ComicPr
     .catch((error) => {
       console.error(error)
     })
+
+    axios
+      .get('/api/genres')
+      .then((response) => {
+        console.log(response.data);
+        setGenres(response.data)
+    });
   },[]);
 
   const handleEdit = function() {
@@ -47,7 +54,6 @@ const ComicProfile: React.FC<ComicProfileProps> = ({comicId, subdomain}: ComicPr
   const onUpdateGenre = (e: React.ChangeEvent<HTMLInputElement>) => {
     const currentValue = Number(e.target.value);
     const currentGenres: GenreSelection = { ...comicUpdate.genres };
-    console.log(currentGenres);
     if (currentGenres[currentValue]) {
       delete currentGenres[currentValue];
     } else {
@@ -84,11 +90,14 @@ const ComicProfile: React.FC<ComicProfileProps> = ({comicId, subdomain}: ComicPr
         {comicProfile.rating}
         {editing 
           ? <GenreSelector
+            options={genres}
             id={`genre-selection-${comicId}`}
             selection={comicUpdate.genres}
             onChange={onUpdateGenre}
           />
-          : null
+          : comicProfile.genres
+              ? comicProfile.genres.map((genre, idx) => <Tag key={`tag-${comicId}-${idx}`} id={genre.name} label={genre.name} />)
+              : null
         }
           {comicProfile.content_warnings
             ? comicProfile.content_warnings.map((contentLabel, idx) => <Tag key={`tag-${comicId}-${idx}`} id={contentLabel.name} label={contentLabel.name} />)

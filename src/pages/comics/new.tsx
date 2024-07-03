@@ -156,7 +156,6 @@ const ComicProfileForm = () => {
   }
 
   const onToggleGenre = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e)
     const currentValue = Number(e.target.value);
     const currentGenres: GenreSelection = { ...formValues.genres };
     if (currentGenres[currentValue]) {
@@ -244,7 +243,6 @@ const ComicProfileForm = () => {
       axios
         .get('/api/genres')
         .then((response) => {
-          console.log(response);
           setGenres(response.data)
       })
 
