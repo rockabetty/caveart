@@ -159,43 +159,64 @@ export async function getComicsByAuthor(
   return null;
 };
 
-export async function getContentWarningDefs(): Promise<QueryResult | Error> {
-    const query = `WITH
-    Parents AS (
-      SELECT id, name
-      FROM content_warnings
-      WHERE parent_id IS NULL
-    ),
-    Children AS (
-      SELECT p.id AS parent_id, i.id, i.name
-      FROM content_warnings i
-      JOIN Parents p ON i.parent_id = p.id
-    ),
-    GrandChildren AS (
-      SELECT c.id AS child_id, i.id, i.name
-      FROM content_warnings i
-      JOIN Children c ON i.parent_id = c.id
-    )
-
-    SELECT 
-      p.id,
-      p.name,
-      COALESCE(json_agg(json_build_object('id', c.id, 'name', c.name, 'children', gc_agg)) FILTER (WHERE c.id IS NOT NULL), '[]'::json) AS children
-    FROM Parents p
-    LEFT JOIN Children c ON p.id = c.parent_id
-    LEFT JOIN (
-      SELECT child_id, json_agg(json_build_object('id', id, 'name', name)) AS gc_agg
-      FROM GrandChildren
-      GROUP BY child_id
-    ) gc ON gc.child_id = c.id
-    GROUP BY p.id, p.name
-    `;
+export async function getContentWarningDefs(flattened: boolean = false): Promise<QueryResult | Error> {
+    
+  if (flattened) {
+    const query = `SELECT jsonb_object_agg(cw1.id, cw1.name) AS comics_json FROM content_warnings cw1
+      LEFT JOIN content_warnings cw2 ON cw1.id = cw2.parent_id
+      WHERE cw2.id IS NULL`;
 
     const result = await queryDbConnection(query);
     if (result.rows && result.rows.length > 0) {
-      return result.rows;
-    }
-    return null;
+        return result.rows[0].comics_json;
+      }
+  }
+  else {
+    const query = `WITH
+      Parents AS (
+        SELECT id, name
+        FROM content_warnings
+        WHERE parent_id IS NULL
+      ),
+      Children AS (
+        SELECT p.id AS parent_id, i.id, i.name
+        FROM content_warnings i
+        JOIN Parents p ON i.parent_id = p.id
+      ),
+      GrandChildren AS (
+        SELECT c.id AS child_id, i.id, i.name
+        FROM content_warnings i
+        JOIN Children c ON i.parent_id = c.id
+      )
+
+      SELECT 
+        p.id,
+        p.name,
+        COALESCE(json_agg(json_build_object('id', c.id, 'name', c.name, 'children', gc_agg)) FILTER (WHERE c.id IS NOT NULL), '[]'::json) AS children
+      FROM Parents p
+      LEFT JOIN Children c ON p.id = c.parent_id
+      LEFT JOIN (
+        SELECT child_id, json_agg(json_build_object('id', id, 'name', name)) AS gc_agg
+        FROM GrandChildren
+        GROUP BY child_id
+      ) gc ON gc.child_id = c.id
+      GROUP BY p.id, p.name
+      `;
+
+      const result = await queryDbConnection(query);
+      if (result.rows && result.rows.length > 0) {
+        return result.rows;
+      }
+  }
+  return null;
+}
+
+export async function getRatingDefs(): Promise<QueryResult | Error> {
+  const result = await queryDbConnection('SELECT jsonb_object_agg(name, id) AS comics_json FROM ratings');
+  if (result.rows && result.rows.length === 1) {
+    return result.rows[0].comics_json;
+  }
+  return null;
 }
 
 export async function getGenres(): Promise<QueryResult | Error> {

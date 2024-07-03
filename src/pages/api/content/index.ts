@@ -1,10 +1,9 @@
 import { NextApiHandler } from 'next';
 import { getContentWarningDefs } from '../../../data/comics';
 
-const handler: NextApiHandler = async (_req, res) => {
-
+const handler: NextApiHandler = async (req, res) => {
   try {
-    const content = await getContentWarningDefs();
+    const content = await getContentWarningDefs(req.query.format === 'flat');
     return res.status(200).send(content);
   } catch (error) {
     return res.status(500).send(error)

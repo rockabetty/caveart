@@ -54,6 +54,12 @@ export type ComicsContentWarningBridgeModel = {
     id?: number;
 };
 
+export type ContentWarningModel = {
+    id: number;
+    name: string;
+    children?: ContentWarningModel[]
+}
+
 export type ComicsUsersBridgeModel = {
     comic_id: number;
     user_id: number;
