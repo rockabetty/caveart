@@ -1,38 +1,17 @@
 import React, { useState, useMemo, ReactNode } from 'react';
 import axios from 'axios';
 import './Form.css';
-import { Button } from '../Button'
+import { Button } from '../Button';
 import { InteractiveProps, InteractiveDefaults } from '../types/interactive';
 
 export interface FormProps extends InteractiveProps {
-  /**
-   * API endpoint to post to
-   */
   onSubmit: (formValues: { [key: string]: any }) => Promise<void>;
-  /**
-   * Function to call if post request is successful
-   */
-  onSuccess: (res: any) => void;
-  /**
-   * Function to call if post request fails
-   */
-  onFailure: (err: any) => void;
-  /**
-   * Submission error message
-   */
+  onSuccess?: (res: any) => void;
+  onFailure?: (err: any) => void;
   submissionError?: string;
-  /**
-   * Submit button label
-   */
   submitLabel?: string;
-  /**
-   * Children components (form elements)
-   */
   children: ReactNode;
-  /**
-   * Whether the form is pending 
-  */
-  isLoading: boolean;
+  isLoading?: boolean;
 }
 
 export const formDefaults: Partial<FormProps> = {
@@ -42,67 +21,51 @@ export const formDefaults: Partial<FormProps> = {
   onFailure: () => {},
   submissionError: '',
   submitLabel: 'Submit',
-  isLoading: false
+  isLoading: false,
 };
 
 const Form: React.FC<FormProps> = (props) => {
-  const { children, id, onSubmit, onFailure, onSuccess, submissionError, submitLabel, isLoading } = props;
+  const {
+    children,
+    id,
+    onSubmit,
+    onFailure,
+    onSuccess,
+    submissionError,
+    submitLabel,
+    isLoading,
+  } = props;
 
   const [formValues, setFormValues] = useState<{ [key: string]: any }>({});
- 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setFormValues({ ...formValues, [e.target.name]: e.target.value });
-  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = document.querySelector(`#${id}`);
     const errorCount = form ? form.getElementsByClassName('Error').length : 0;
 
-    if (errorCount === 0 && onSubmit) {
+    if (errorCount === 0) {
       try {
-        await onSubmit(formValues)
+        await onSubmit(formValues);
+        onSuccess && onSuccess(formValues);
       } catch (err) {
-        onFailure(err);
+        onFailure && onFailure(err);
       }
     }
   }
 
-  const patchedChildren = useMemo(() => {
-    return React.Children.map(children, (child) => {
-      if (React.isValidElement(child)) {
-        if (child.props.name) {
-          return React.cloneElement(child, {
-            onChange: handleChange,
-            value: formValues[child.props.name] || '',
-          });
-        }
-        return child;
-      }
-      return null;
-    });
-  }, [children, formValues]);
-
   return (
-    <form 
-      id={id}
-      className="form"
-      noValidate
-      onSubmit={handleSubmit}
-    >
-      {patchedChildren}
-      {submissionError 
-        ? <p className="form-feedback Error">{submissionError}</p>
-        : null
-      }
+    <form id={id} className="form" noValidate onSubmit={handleSubmit}>
+      {children}
+      {submissionError ? (
+        <p className="form-feedback Error">{submissionError}</p>
+      ) : null}
       <Button
         id={`${id}-form-submit`}
-        type="button"
-        onClick={onSubmit}
+        type="submit"
         look="primary"
         loading={isLoading}
       >
-          {submitLabel}
+        {submitLabel}
       </Button>
     </form>
   );

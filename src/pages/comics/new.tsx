@@ -103,6 +103,7 @@ const ComicProfileForm = () => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)  => {
     setSubmissionError("")
     setFormValues({ ...formValues, [e.target.name]: e.target.value })
+    console.log("hi")
   }
 
   const onFileChange = (files: FileList | undefined) => {
