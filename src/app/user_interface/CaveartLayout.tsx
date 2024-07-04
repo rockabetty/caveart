@@ -1,26 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import Head from 'next/head';
+import Head from "next/head";
 import { useUser } from "../../services/auth/client/hooks/useUser";
-import SiteHeader from './navigation/SiteHeader';
-import SiteFooter from './navigation/SiteFooter';
-import AuthModal from './authentication/AuthModal';
-import './../../../component_library/design/style.css';
-import '../../i18n';
-import './themes/main.css';
+import SiteHeader from "./navigation/SiteHeader";
+import SiteFooter from "./navigation/SiteFooter";
+import AuthModal from "./authentication/AuthModal";
+import "./../../../component_library/design/style.css";
+import "../../i18n";
+import "./themes/main.css";
 
 interface CaveartLayoutProps {
   children: React.ReactNode;
   requireLogin?: boolean;
 }
 
-const CaveartLayout: React.FC<CaveartLayoutProps> = ({ children, requireLogin = false }) => {
+const CaveartLayout: React.FC<CaveartLayoutProps> = ({
+  children,
+  requireLogin = false,
+}) => {
   const router = useRouter();
   const { isAuthenticated, verifyUser, logoutUser } = useUser();
 
   const [loggedIn, setLoggedIn] = useState<boolean | undefined>(undefined);
   const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
-  const [authMode, setAuthMode] = useState<'Sign Up' | 'Log In'>('Sign Up');
+  const [authMode, setAuthMode] = useState<"Sign Up" | "Log In">("Sign Up");
 
   useEffect(() => {
     const authCheck = async () => {
@@ -34,18 +37,25 @@ const CaveartLayout: React.FC<CaveartLayoutProps> = ({ children, requireLogin = 
         }
       }
     };
-    authCheck();
 
+    if (requireLogin) {
+      authCheck();
+    } else {
+      setLoggedIn(isAuthenticated);
+    }
+  }, [requireLogin, verifyUser, router]);
+
+  useEffect(() => {
     if (requireLogin && !isAuthenticated) {
       router.push("/");
     }
-  }, [requireLogin, isAuthenticated, verifyUser, router]);
+  }, [requireLogin, isAuthenticated, router]);
 
   const closeAuthModal = () => {
     setAuthModalOpen(false);
   };
 
-  const openAuthModal = (whichMode: 'Sign Up' | 'Log In') => {
+  const openAuthModal = (whichMode: "Sign Up" | "Log In") => {
     setAuthMode(whichMode);
     setAuthModalOpen(true);
   };
@@ -54,15 +64,21 @@ const CaveartLayout: React.FC<CaveartLayoutProps> = ({ children, requireLogin = 
     <>
       <Head>
         <title>Caveart Webcomic Hosting</title>
-        <meta name="description" content="Caveart is a free host for your webcomic projects. Host, manage, and customize your own webcomic pages." />
-        <meta name="keywords" content="webcomic hosting,webcomic host,webcomic hosts,free webcomic hosts,free webcomic host,free webcomic hosting,comic hosting,free comic hosting,webcomics" />
+        <meta
+          name="description"
+          content="Caveart is a free host for your webcomic projects. Host, manage, and customize your own webcomic pages."
+        />
+        <meta
+          name="keywords"
+          content="webcomic hosting,webcomic host,webcomic hosts,free webcomic hosts,free webcomic host,free webcomic hosting,comic hosting,free comic hosting,webcomics"
+        />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <SiteHeader
-        onSignup={() => openAuthModal('Sign Up')}
-        onLogIn={() => openAuthModal('Log In')}
+        onSignup={() => openAuthModal("Sign Up")}
+        onLogIn={() => openAuthModal("Log In")}
         onLogout={logoutUser}
         loggedIn={loggedIn}
       />

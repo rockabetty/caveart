@@ -55,7 +55,7 @@ const handleError = (dispatch: React.Dispatch<UserAction>) => (error: any) => {
     };
     dispatch({
         type: ActionType.Error,
-        payload: { authError: errorPayload },
+        payload: errorPayload,
     });
 };
 
