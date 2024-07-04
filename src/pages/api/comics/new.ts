@@ -14,7 +14,8 @@ import {
   removeContentWarningsFromComic,
   removeAuthorsFromComic
 } from '../../../data/comics';
-import { ComicModel } from '../../../data/types/models';
+import { Comic } from '../../../data/types';
+import { logger } from '../../../services/logs';
 
 export const config = {
   api: {
@@ -55,10 +56,10 @@ const readForm = (req: NextApiRequest)
 
 const handler: NextApiHandler = async (req, res) => {
 
- let id: string | null = null;
+ let id: number | null = null;
  
   try {
-    ensureUploadDirectoryExists();
+     ensureUploadDirectoryExists();
     const submission = await readForm(req)
     const fields = submission.fields;
     const processedFields: ProcessedFields = {};
@@ -74,7 +75,7 @@ const handler: NextApiHandler = async (req, res) => {
     value as an array, even if it's a single value. This is because the same
     field name can theoretically appear multiple times in multipart/form-data.
     */
-    
+
     if (fields) {
 
       if (fields.title) {
@@ -86,7 +87,6 @@ const handler: NextApiHandler = async (req, res) => {
         }
         processedFields.title = title;
       }
-
 
       if (fields.genres) {
         const genres = JSON.parse(fields.genres[0]);
@@ -102,7 +102,6 @@ const handler: NextApiHandler = async (req, res) => {
         processedFields.genres = genreList;
       }
 
-
       if (fields.content) {
         const content = JSON.parse(fields.content[0]);
         let contentWarningList: number[] = [];
@@ -117,7 +116,6 @@ const handler: NextApiHandler = async (req, res) => {
         processedFields.content = contentWarningList;
       }
 
-
       if (fields.subdomain) {
         const subdomain = fields.subdomain[0]
         // Validating that subdomain is purely alphanumeric with hyphens or underscores only
@@ -128,7 +126,6 @@ const handler: NextApiHandler = async (req, res) => {
         processedFields.subdomain = subdomain;
       }
 
-
       if (fields.description) {
         const description = fields.description[0];
         if (description.length > 1024) {
@@ -136,7 +133,6 @@ const handler: NextApiHandler = async (req, res) => {
         }
         processedFields.description = description;
       }
-
 
       if (fields.comments) {
         const selectedCommentsOption = fields.comments[0]
@@ -166,7 +162,6 @@ const handler: NextApiHandler = async (req, res) => {
         }
       }
 
-
       if (fields.likes) {
         const selectedLikesOption = fields.likes[0];
         if (selectedLikesOption !== 'true' && selectedLikesOption !== 'false') {
@@ -175,71 +170,60 @@ const handler: NextApiHandler = async (req, res) => {
         processedFields.likes = selectedLikesOption === 'true';
       }
 
-      if (fields.rating) {
-        const rating = fields.rating[0]
-        const validRatings = [
-          'Everyone',
-          'Children 10+',
-          'Teen 13+',
-          'Mature 17+',
-          'Adult 18+'
-        ];
-
-        if (!validRatings.includes(rating)) {
-          res.status(400).json({ error: 'invalidRating' });
-        }
-
-        processedFields.rating = rating;
+      if (!fields.rating) {
+        res.status(400).json({ error: 'invalidRating' });
       }
-    }
 
-    let comicData: ComicModel = {};
+      let comicData: Comic = {};
 
-    const {
-      title,
-      subdomain,
-      description, 
-      thumbnail,
-      comments,
-      is_unlisted,
-      is_private,
-      moderate_comments,
-      likes,
-      rating 
-    } = processedFields
+      const {
+        title,
+        subdomain,
+        description, 
+        thumbnail,
+        comments,
+        is_unlisted,
+        is_private,
+        moderate_comments,
+        likes,
+        rating 
+      } = processedFields
 
-    comicData = {
-      title,
-      subdomain,
-      description, 
-      thumbnail,
-      comments,
-      is_unlisted,
-      is_private,
-      moderate_comments,
-      likes,
-      rating 
-    };
+      comicData = {
+        title,
+        subdomain,
+        description, 
+        thumbnail,
+        comments,
+        is_unlisted,
+        is_private,
+        moderate_comments,
+        likes,
+        rating 
+      };
 
-    const newComic = await createComic(comicData);
-    const id = parseInt(newComic.id);
+      id = await createComic(comicData);
+      if (id) {
+        if (processedFields.genres) {
+           await addGenresToComic(id, processedFields.genres);
+        }
+       
+        if (processedFields.content) {
+          await addContentWarningsToComic(id, processedFields.content);
+        }
+     
+        const userID = await extractUserIdFromToken(req, false);
+        await addAuthorToComic(id, parseInt(userID)); 
+        return res.status(201).send("Comic created successfully");
 
-    console.log(processedFields) 
-
-    if (processedFields.genres) {
-       await addGenresToComic(id, processedFields.genres);
-    }
-   
-    if (processedFields.content) {
-      await addContentWarningsToComic(id, processedFields.content);
-    }
- 
-    const userID = await extractUserIdFromToken(req, false);
-    await addAuthorToComic(id, parseInt(userID)); 
-    return res.status(201).send("Comic created successfully");
-  }
-  catch (error) {
-    console.error(`Error during comic creation:`, error);
+      } else {
+        logger.error(new Error("No comic ID created"));
+        return res.status(500).send("Failed to create comic.");
+      }
+    } 
+  } 
+  catch (error: any) {
+    logger.error(new Error(`Error during comic creation: ${error}`));
     if (id) {
       try {
         await removeGenresFromComic(id);
@@ -247,10 +231,10 @@ const handler: NextApiHandler = async (req, res) => {
         await removeAuthorsFromComic(id);
         await deleteComic(id);
       } catch (cleanupError) {
-        console.error(`Error during cleanup:`, cleanupError);
+        logger.error(new Error(`Error during cleanup: ${cleanupError}`));
       }
     }
-    return res.status(500).send("Failed to create comic");
+    return res.status(500).send("Failed to create comic.");
   }
 }
 

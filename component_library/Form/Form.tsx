@@ -1,17 +1,21 @@
-import React, { useState, useMemo, ReactNode } from 'react';
-import axios from 'axios';
+import React, { useState, ReactNode } from 'react';
 import './Form.css';
 import { Button } from '../Button';
 import { InteractiveProps, InteractiveDefaults } from '../types/interactive';
 
+type FormValues = {
+  [key: string]: any
+}
+
 export interface FormProps extends InteractiveProps {
-  onSubmit: (formValues: { [key: string]: any }) => Promise<void>;
-  onSuccess?: (res: any) => void;
-  onFailure?: (err: any) => void;
-  submissionError?: string;
+  onSubmit: (formValues: FormValues) => any;
+  onSuccess?: (...params: any) => any;
+  onFailure?: (...params: any) => any;
+  submissionError?: string | null;
   submitLabel?: string;
   children: ReactNode;
   isLoading?: boolean;
+  formValues: FormValues
 }
 
 export const formDefaults: Partial<FormProps> = {
@@ -21,7 +25,6 @@ export const formDefaults: Partial<FormProps> = {
   onFailure: () => {},
   submissionError: '',
   submitLabel: 'Submit',
-  isLoading: false,
 };
 
 const Form: React.FC<FormProps> = (props) => {
@@ -31,12 +34,12 @@ const Form: React.FC<FormProps> = (props) => {
     onSubmit,
     onFailure,
     onSuccess,
+    formValues,
     submissionError,
     submitLabel,
-    isLoading,
   } = props;
 
-  const [formValues, setFormValues] = useState<{ [key: string]: any }>({});
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -45,8 +48,10 @@ const Form: React.FC<FormProps> = (props) => {
 
     if (errorCount === 0) {
       try {
+        setIsLoading(true);
         await onSubmit(formValues);
         onSuccess && onSuccess(formValues);
+        setIsLoading(false);
       } catch (err) {
         onFailure && onFailure(err);
       }

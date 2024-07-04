@@ -56,7 +56,7 @@ export const logActions = {
     logger.info(`${dev ? `User [ID: ${id}] logged in from ${payload.source}` : 'User logged in'}`);
   },
   VERIFY: (payload: UserLoggerTypes.VerifyLoggerPayload) => {
-    const { user } = payload.authenticated;
+    const { user } = payload.auth;
     logger.info(`${dev && user ? `User [ID: ${user.id}] verified as still logged in` : 'User authentication verified'}`)
   },
   LOGOUT: (payload: UserLoggerTypes.LogoutLoggerPayload) => {
@@ -66,10 +66,11 @@ export const logActions = {
     logger.info(`${dev ? `User [ID: ${id}] logged out: ${payload.reason}` : 'User logged out'}`)
   },
   ERROR: (payload: UserLoggerTypes.ErrorLoggerPayload) => {
-    const {message, stack} = payload.authError;
+    const {message, stack} = payload;
     if (dev) {
      logger.log(`Error occured.`)
      console.log(message);
+     console.log(stack);
     }
     logger.log(`Error occurred: ${message}`);
   },
@@ -79,8 +80,8 @@ export const logActions = {
     }
   },
   VIEW_PROFILE: (payload: UserLoggerTypes.ViewProfileLoggerPayload) => {
-    const {email, username} = payload;
-    logger.log(`User profile view for user ${username} (${email})`)
+    const {email} = payload.user;
+    logger.log(`User profile view for user ${email}`)
   },
   UPDATE_PROFILE: (payload: UserLoggerTypes.UpdateProfileLoggerPayload) => {
     // TODO: maybe log the fields updated (not the actual values).

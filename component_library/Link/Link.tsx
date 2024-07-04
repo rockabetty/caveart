@@ -3,9 +3,9 @@ import classNames from 'classnames';
 import '../design/style.css';
 import './Link.css';
 import '../Button/Button.css';
+import { InteractiveProps } from '../types/interactive';
 
-export interface LinkProps {
-  id: string
+export interface LinkProps extends InteractiveProps {
   /**
    * Children for the link
   */
@@ -28,6 +28,10 @@ export interface LinkProps {
    * custom on click event function
   * */
   onClick?: (...params: any) => any
+  /**
+   * Shift the appearance of the link for semantic vs visual presentation needs
+  * */
+  type?: 'inline' | 'default' | 'button'
 }
 
 const Link = ({

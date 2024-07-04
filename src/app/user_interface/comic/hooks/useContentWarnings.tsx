@@ -1,17 +1,21 @@
 import { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 
-type ContentWarning = {
+export type ContentWarning = {
   id: string;
   name: string;
   children: ContentWarning[];
 };
 
-type ContentWarningsUserSelection = {
-  [ContentWarningName: string]: string | undefined;
+export type ContentWarningUserSelection = {
+  [contentWarningName: string]: string | number;
 };
 
-const ratingResults = {
+type RatingResults = {
+  [contentLabel: string]: "Ages 10+" | "Teen (13+)" | "Mature (17+)" | "Adults Only (18+)";
+}
+
+const ratingResults: RatingResults = {
   "someViolence": "Ages 10+",
   "someSuggestiveContent": "Ages 10+",
   "frequentViolence": "Teen (13+)",
@@ -47,18 +51,14 @@ const ratingResults = {
   "frequentHardDrugUse": "Adults Only (18+)"
 };
 
-interface UseContentWarningsProps {
-  initialSelection?: ContentWarningsUserSelection;
-}
-
-export const useContentWarnings = (initialSelection = []) => {
+export const useContentWarnings = (initialSelection = {}) => {
   const [contentWarningsForDisplay, setContentWarningsForDisplay] = useState<ContentWarning[]>([]);
   const [contentWarningOptionList, setContentWarningOptionList] = useState<{[key:number]: string}>();
   const [contentWarningKeys, setContentWarningKeys] = useState<Set<string>>(new Set());
   const [ratingString, setRatingString] = useState<string>("All Ages");
   const [ratingId, setRatingId] = useState<number>(1);
   const [ratings, setRatings] = useState<{[key:string] : number}>({});
-  const [contentWarningUserSelection, setContentWarningUserSelection] = useState<ContentWarningsUserSelection>(initialSelection);
+  const [contentWarningUserSelection, setContentWarningUserSelection] = useState<ContentWarningUserSelection>(initialSelection);
 
   useEffect(() => {
     axios.get('/api/content').then(response => {
@@ -75,45 +75,49 @@ export const useContentWarnings = (initialSelection = []) => {
   }, []);
 
   const onContentChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    let content = { ...contentWarningUserSelection };
-    let contentWarningKeysUpdate = new Set(contentWarningKeys);
-    let value = undefined;
-    let contentWarningName = "";
-    const contentWarningCategory = e.target.name;
+    if (contentWarningOptionList) {
+      let content = { ...contentWarningUserSelection };
+      let contentWarningKeysUpdate = new Set(contentWarningKeys);
+      let value: number | undefined = undefined;
+      let contentWarningName = "";
+      const contentWarningCategory = e.target.name;
 
-    if (e.target.value === "none") {
-      delete content[contentWarningCategory];
-      const contentLabel = contentWarningCategory.charAt(0).toUpperCase() + contentWarningCategory.slice(1);
-      contentWarningKeysUpdate.delete(`some${contentLabel}`);
-      contentWarningKeysUpdate.delete(`frequent${contentLabel}`);
-    } else {
-      value = e.target.value;
-      contentWarningName = contentWarningOptionList[value];
-      contentWarningKeysUpdate.add(contentWarningName);
-      content = { ...content, [contentWarningCategory]: value };
+      if (e.target.value === "none") {
+        delete content[contentWarningCategory];
+        const contentLabel = contentWarningCategory.charAt(0).toUpperCase() + contentWarningCategory.slice(1);
+        contentWarningKeysUpdate.delete(`some${contentLabel}`);
+        contentWarningKeysUpdate.delete(`frequent${contentLabel}`);
+      } else {
+        value = parseInt(e.target.value);
+        contentWarningName = contentWarningOptionList[value];
+        contentWarningKeysUpdate.add(contentWarningName);
+        content = { ...content, [contentWarningCategory]: value };
+      }
+
+      setContentWarningKeys(contentWarningKeysUpdate);
+      const audienceRatings = new Set();
+
+      Array.from(contentWarningKeysUpdate).forEach(key => {
+        const rating: string = ratingResults[key];
+        audienceRatings.add(rating);
+      });
+
+      let ratingUpdate = 'All Ages';
+      if (audienceRatings.has('Adults Only (18+)')) {
+        ratingUpdate = "Adults Only (18+)";
+      } else if (audienceRatings.has('Mature (17+)')) {
+        ratingUpdate = "Mature (17+)";
+      } else if (audienceRatings.has('Teen (13+)')) {
+        ratingUpdate = "Teen (13+)";
+      } else if (audienceRatings.has('Ages 10+')) {
+        ratingUpdate = "Ages 10+";
+      }
+
+      setRatingString(ratingUpdate);
+      setRatingId(ratings[ratingUpdate]);
+      setContentWarningUserSelection(content);
+
     }
-
-    setContentWarningKeys(contentWarningKeysUpdate);
-    const audienceRatings = new Set();
-    for (let key of contentWarningKeysUpdate) {
-      const rating = ratingResults[key];
-      audienceRatings.add(rating);
-    }
-
-    let ratingUpdate = 'All Ages';
-    if (audienceRatings.has('Adults Only (18+)')) {
-      ratingUpdate = "Adults Only (18+)";
-    } else if (audienceRatings.has('Mature (17+)')) {
-      ratingUpdate = "Mature (17+)";
-    } else if (audienceRatings.has('Teen (13+)')) {
-      ratingUpdate = "Teen (13+)";
-    } else if (audienceRatings.has('Ages 10+')) {
-      ratingUpdate = "Ages 10+";
-    }
-
-    setRatingString(ratingUpdate);
-    setRatingId(ratings[ratingUpdate]);
-    setContentWarningUserSelection(content);
   }, [contentWarningUserSelection, contentWarningOptionList, contentWarningKeys, ratings]);
 
   return {

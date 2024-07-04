@@ -4,9 +4,8 @@ import {
   ImageUpload,
   TextArea,
   TextInput,
-  Button, Radio,
+  Radio,
   Checkbox,
-  Accordion,
   Form
 } from '../../../component_library';
 import CaveartLayout from '../../app/user_interface/CaveartLayout';
@@ -14,10 +13,10 @@ import GenreSelector from '../../app/user_interface/comic/GenreSelector';
 import ContentWarningSelector from '../../app/user_interface/comic/ContentWarningSelector';
 import '../../app/user_interface/layout.css';
 import { useTranslation } from 'react-i18next';
-import { useContentWarnings } from '../../app/user_interface/comic/hooks/useContentWarnings';
+import { useContentWarnings, ContentWarningUserSelection } from '../../app/user_interface/comic/hooks/useContentWarnings';
 
 type GenreSelection = {
-  [genreId: string | number]: boolean;
+  [genreId: string]: number;
 }
 
 type FormValues = {
@@ -25,7 +24,7 @@ type FormValues = {
   subdomain: string;
   description: string;
   genres: GenreSelection;
-  content: ContentWarningSelection;
+  content: ContentWarningUserSelection;
   comments: string;
   visibility: string;
   likes: boolean;
@@ -40,16 +39,17 @@ const ComicProfileForm = () => {
 
   const { contentWarningsForDisplay, ratingString, ratingId, contentWarningUserSelection, onContentChange } = useContentWarnings();
   const [genres, setGenres] = useState<any[]>([]);
-  const [contentWarningList, setContentWarningList] = useState<Set>(new Set());
   const [submissionError, setSubmissionError] = useState<string>("")
   const [formValues, setFormValues] = useState<FormValues>({
     title: '',
     subdomain: '',
     description: '',
     genres: {},
+    content: {},
     comments: 'Allowed',
     visibility: 'Public',
     likes: true,
+    rating: 1,
     thumbnail: undefined
   })
 
@@ -114,7 +114,7 @@ const ComicProfileForm = () => {
     if (currentGenres[currentValue]) {
       delete currentGenres[currentValue];
     } else {
-      currentGenres[currentValue] = true;
+      currentGenres[currentValue] = currentValue;
     }
     const updatedFormValues = {
       ...formValues,
@@ -147,6 +147,7 @@ const ComicProfileForm = () => {
       submitLabel={t('comicManagement.create')}
       onSubmit={submitComic}
       submissionError={submissionError}
+      formValues={{formValues}}
     >
        <TextInput
           labelText="Name of comic"
@@ -202,6 +203,7 @@ const ComicProfileForm = () => {
         />
         <p>{ratingString}</p>
         <GenreSelector
+          id="new_comic"
           options={genres}
           selection={formValues.genres}
           onChange={onToggleGenre}

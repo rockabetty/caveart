@@ -15,13 +15,13 @@ export type User = {
 export type UserColumnNames = keyof User;
 export type UserColumnsArray = UserColumnNames[];
 
-export type PasswordResetCredentials = Pick<UserModel, 
+export type PasswordResetCredentials = Pick<User, 
   'id' |
   'password_reset_token' |
   'password_reset_expiry'
 >;
 
-export type UserCredentials = Pick<UserModel,
+export type UserCredentials = Pick<User,
   'id' |
   'username' |
   'email' |

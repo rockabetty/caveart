@@ -7,7 +7,7 @@ import { logger } from '../../../services/logs';
 const handler: NextApiHandler = async (req, res) => {
   try {
     const userID = await extractUserIdFromToken(req, false);
-    const comicsData = await getComicsByAuthor(parseInt(userID), 'id, title, subdomain');
+    const comicsData = await getComicsByAuthor(parseInt(userID), ['id', 'title', 'subdomain']);
     return res.status(200).send(comicsData);
   }
   catch (error: any) {

@@ -4,12 +4,7 @@ import {Link} from '../../../component_library';
 import ComicProfile from '../../app/user_interface/comic/ComicProfile';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-
-interface Comic {
-  title: string;
-  thumbnail: string;
-  subdomain: string;
-}
+import { Comic } from '../../data/types';
 
 function MyComics() {
 
@@ -34,8 +29,7 @@ function MyComics() {
         return (
           <ComicProfile
             key={`comic-${idx}`}
-            comicId={comic.id}
-            subdomain={comic.subdomain}
+            comicId={comic.id || -1}
           />
         )
       })

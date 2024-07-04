@@ -28,7 +28,7 @@ const handler: NextApiHandler = async (req, res) => {
       hashedEmail,
     );
 
-    if (!userCredentials) {
+    if (!userCredentials || !userCredentials.id) {
       return res.status(403).send({error: ErrorKeys.CREDENTIALS_INVALID});
     }
 
@@ -37,7 +37,8 @@ const handler: NextApiHandler = async (req, res) => {
     if (storedPassword) {
       const isMatch = await compareHash(password, storedPassword);
       if (isMatch) {
-        const sessionCookie = await createUserSessionCookie(userCredentials.id);
+        const idString = userCredentials.id.toString();
+        const sessionCookie = await createUserSessionCookie(idString);
         res.setHeader('Set-Cookie', sessionCookie);
         res.status(200).send({ 
           id: userCredentials.id,

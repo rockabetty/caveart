@@ -1,4 +1,4 @@
-import { Pool } from 'pg'
+import { Pool, PoolConfig } from 'pg'
 import { requireEnvVar } from '../services/logs/envcheck'
 
 const user = requireEnvVar('PG_USERNAME');
@@ -6,14 +6,18 @@ const database = requireEnvVar('PG_DATABASE');
 const password = requireEnvVar('PG_PASSWORD');
 const host = requireEnvVar('PG_HOST')
 
-const pgConfig = {
+const portNumber: number = process.env.PG_PORT
+  ? parseInt(process.env.PG_PORT)
+  : 5432
+
+const pgConfig: PoolConfig = {
   max: 20,
   idleTimeoutMillis: 30000,
   user,
   host,
   database,
   password,
-  port: process.env.PG_PORT || 5432
+  port: portNumber
 };
 
 export class PoolConnection {
@@ -25,13 +29,13 @@ export class PoolConnection {
     if (!this.instance) {
       this.instance = new Pool(pgConfig);
 
-      this.instance.on('error', (err, client) => {
+      this.instance.on('error', (err: any, _client) => {
         console.error('Unexpected error on idle client', err);
-        throw new Error(err);
+        throw new Error(err.message);
       });
 
       // Connection check
-      this.instance.connect((err, client, done) => {
+      this.instance.connect((err: any, _client, done) => {
         done();  // release the client back to the pool
         if (err) {
           if (err.code === 'ETIMEDOUT') {

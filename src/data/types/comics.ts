@@ -1,5 +1,5 @@
 export type Comic = {
-    id: number;
+    id?: number;
     title?: string;
     subdomain?: string;
     tagline?: string;
@@ -18,8 +18,7 @@ export type Comic = {
     stylesheet_variables?: string;
 };
 
-export type ComicColumnNames = keyof Comic;
-export type ComicColumnsArray = ComicColumnNames[];
+export type ComicColumnList = Array<keyof Comic>;
 
 export type ComicContentWarning = {
     comic_id: number;

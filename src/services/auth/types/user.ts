@@ -11,7 +11,7 @@ export type UserAuthState = {
     user: User | null;
     isAuthenticated: boolean;
     isLoading: boolean;
-    authError: loggerPayloads.AuthError | null;
+    authError: loggerPayloads.ErrorLoggerPayload | null;
 };
 
 export enum ActionType {

@@ -1,26 +1,29 @@
 import { ImageUpload, Link, Button, Tag } from '../../../../component_library'
 import './ComicProfile.css';
-import { ComicModel, GenreModel } from '../../../types/comics';
-import GenreSelector from './GenreSelector';
+import { Comic, Genre } from '../../../data/types'
+import GenreSelector, { GenreUserSelection } from './GenreSelector';
 import ContentWarningSelector from './ContentWarningSelector';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useContentWarnings } from '../../../app/user_interface/comic/hooks/useContentWarnings';
+import { ContentWarningUserSelection, useContentWarnings } from '../../../app/user_interface/comic/hooks/useContentWarnings';
 
 interface ComicProfileProps {
   comicId: number;
-  subdomain: string
 }
 
-const ContentWarningSection: React.FC = ({
-    selection,
-  }) => {
+interface ComicProfileUpdate extends Comic {
+  genres: GenreUserSelection;
+  content_warnings: ContentWarningUserSelection;
+}
+
+const ContentWarningSection: React.FC<{ selection: ContentWarningUserSelection}> = ({selection}) => {
 
   const {
     contentWarningsForDisplay,
-    ratingString,
-    ratingId,
-    contentWarningUserSelection,
+    // TODO: put rating hoox back in when editing is enabled frfr?
+    // ratingString,
+    // ratingId, 
+    // contentWarningUserSelection,
     onContentChange
   } = useContentWarnings(selection);
 
@@ -33,33 +36,40 @@ const ContentWarningSection: React.FC = ({
   )
 }
 
-const ComicProfile: React.FC<ComicProfileProps> = ({comicId, subdomain}: ComicProfileProps) => {
-  const [genres, setGenres] = useState<GenreModel[]>([]);
+const ComicProfile: React.FC<ComicProfileProps> = ({comicId}: ComicProfileProps) => {
+  const [genres, setGenres] = useState<Genre[]>([]);
   const [editing, setEditing] = useState<boolean>(false);
-  const [comicProfile, setComicProfile] = useState({
-    genres: [],
-    content_warnings: [],
-    name: '',
+  const [comicProfile, setComicProfile] = useState<ComicProfileUpdate>({
+    genres: {},
+    content_warnings: {},
+    title: '',
     description: '',
-    thumbnail: null
+    rating: '',
   });
   const [comicUpdate, setComicUpdate] = useState({
-    genres: {}
+    genres: {},
+    content_warnings: {}
   })
 
   useEffect(() => {
     axios.get(`/api/comic/${comicId}`)
     .then((response) => {
       setComicProfile(response.data)
-      let genreUpdate = {}
+      let genreUpdate: GenreUserSelection = {};
+      let contentUpdate: ContentWarningUserSelection = {};
       for (let genre of response.data.genres) {
-        const {id, name} = genre;
+        const {id} = genre;
         genreUpdate[id] = true;
       }
       for (let label of response.data.content_warnings) {
         const {id, name} = label;
+        contentUpdate[name] = id;
       }
-      setComicUpdate({...comicUpdate, genres: genreUpdate});
+      setComicUpdate({
+        ...comicUpdate,
+        content_warnings: contentUpdate,
+        genres: genreUpdate
+      });
     })
     .catch((error) => {
       console.error(error)
@@ -78,7 +88,7 @@ const ComicProfile: React.FC<ComicProfileProps> = ({comicId, subdomain}: ComicPr
 
   const onUpdateGenre = (e: React.ChangeEvent<HTMLInputElement>) => {
     const currentValue = Number(e.target.value);
-    const currentGenres: GenreSelection = { ...comicUpdate.genres };
+    const currentGenres: GenreUserSelection = { ...comicUpdate.genres };
     if (currentGenres[currentValue]) {
       delete currentGenres[currentValue];
     } else {
@@ -120,8 +130,14 @@ const ComicProfile: React.FC<ComicProfileProps> = ({comicId, subdomain}: ComicPr
               selection={comicUpdate.genres}
               onChange={onUpdateGenre}
             />
-          : comicProfile.genres
-              ? comicProfile.genres.map((genre, idx) => <Tag key={`tag-${comicId}-${idx}`} id={genre.name} label={genre.name} />)
+          : comicProfile.genres && Object.keys(comicProfile.genres).length > 0
+              ? Object.keys(comicProfile.genres).map((label, idx) => (
+                  <Tag
+                    key={`genre-${comicId}-${idx}`}
+                    id={`comic-${comicId}-genre-${idx}`}
+                    label={label}
+                  />
+                ))
               : null
         }
         
@@ -130,15 +146,20 @@ const ComicProfile: React.FC<ComicProfileProps> = ({comicId, subdomain}: ComicPr
         </p>
 
         {editing
-          ? <ContentWarningSection
+          ? (<ContentWarningSection
               selection={comicProfile.content_warnings}
             />
-          : comicProfile.content_warnings
-              ? comicProfile.content_warnings.map((contentLabel, idx) => <Tag key={`tag-${idx}`} id={contentLabel.name} label={contentLabel.name} />)
+            )
+          : comicProfile.content_warnings && Object.keys(comicProfile.content_warnings).length > 0
+              ? Object.keys(comicProfile.content_warnings).map((label, idx) => (
+                  <Tag
+                    key={`genre-${comicId}-${idx}`}
+                    id={`comic-${comicId}-genre-${idx}`}
+                    label={label}
+                  />
+                ))
               : null
          }
-
-        
        
       </div>
     </div>

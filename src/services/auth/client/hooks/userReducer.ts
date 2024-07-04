@@ -67,7 +67,7 @@ const userReducer = (state: UserAuthState, action: UserAction): UserAuthState =>
           ...state, 
           authError: {
             message: action.payload.message,
-            code: action.payload.status,
+            status: action.payload.status,
             stack: action.payload.stack
           },
           isLoading: false

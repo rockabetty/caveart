@@ -1,6 +1,4 @@
-import react, { useEffect, useState} from 'react';
-import axios from 'axios';
-import GenreModel from '../../data/types/models';
+import { Genre } from '../../../data/types';
 import { Checkbox } from '../../../../component_library';
 import '../layout.css';
 
@@ -8,8 +6,12 @@ type GenreSelectorProps = {
   id: string;
   selection: {[key:string]: number };
   onChange: (...params: any) => any;
-  options: GenreModel[];
+  options: Genre[];
 };
+
+export type GenreUserSelection = {
+  [genreName: string]: boolean
+}
 
 const GenreSelector: React.FC<GenreSelectorProps> = (props) => {
 

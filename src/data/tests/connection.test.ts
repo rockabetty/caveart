@@ -27,7 +27,6 @@ describe('PoolConnection', () => {
   });
 
   it('should attach an error listener to the Pool instance', () => {
-    const poolInstanceMock = new Pool();
     PoolConnection.get();
 
     expect(mockOn).toHaveBeenCalledWith('error', expect.any(Function));

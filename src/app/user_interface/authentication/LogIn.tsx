@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TextInput, Button, Form } from '../../../../component_library';
+import { TextInput, Form } from '../../../../component_library';
 import { useUser } from '../../../services/auth/client/hooks/useUser';
-import { ActionType } from '../../../services/auth/types/user.d.ts';
 import { ErrorKeys } from '../../../services/auth/types/errors';
 
-const SignUp: React.FC<AuthProps> = () => {
+const Login: React.FC= () => {
   const { t } = useTranslation();
  
   const {loginUser, isLoading, authError} = useUser();
@@ -18,7 +16,6 @@ const SignUp: React.FC<AuthProps> = () => {
   const [passwordError, setPasswordError] = useState<string>("");
   
   const isEmailValid = () => /^([\w.%+-]+)@([\w-]+).([\w]{2,})$/i.test(email);
-
   const onInputEmail = function (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setEmail(e.target.value)
   }
@@ -52,11 +49,11 @@ const SignUp: React.FC<AuthProps> = () => {
         id="login-modal"
         onSubmit={handleLogin}
         submitLabel={t('authenticationForm.buttonLabels.logIn')}
-        submissionError={authError.status === 403
+        submissionError={authError && authError.status === 403
           ? t(authError.message)
           : null
         }
-        loading={isLoading}
+        formValues={{email, password}}
       >
         <fieldset>
           <TextInput
@@ -84,4 +81,4 @@ const SignUp: React.FC<AuthProps> = () => {
   );
 };
 
-export default SignUp;
+export default Login;

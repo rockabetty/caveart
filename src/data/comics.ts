@@ -1,10 +1,14 @@
-import {queryDbConnection, getParentsAndChildren, buildOneToManyRowValues, removeOneToManyAssociations, editTable, getTable} from './queryFunctions';
-import {Comic, ComicColumnList} from './types';
+import {
+  queryDbConnection,
+  removeOneToManyAssociations,
+  editTable,
+} from "./queryFunctions";
+import { Comic, ComicColumnList, Genre, NestedContentWarning } from "./types";
+import { logger } from "../services/logs";
+import { QueryResult } from "pg";
 
-export async function createComic(
-    comic: ComicModel
-): Promise<QueryResult | Error> {
-    const query = `
+export async function createComic(comic: Comic): Promise<number | null> {
+  const query = `
       INSERT INTO comics (
         title,
         subdomain,
@@ -20,85 +24,93 @@ export async function createComic(
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       RETURNING id
     `;
-    const values = [
-      comic.title,
-      comic.subdomain,
-      comic.description,
-      comic.comments,
-      comic.isUnlisted,
-      comic.isPrivate,
-      comic.moderate_comments,
-      comic.thumbnail,
-      comic.likes,
-      comic.rating
-    ];
+  const values = [
+    comic.title,
+    comic.subdomain,
+    comic.description,
+    comic.comments,
+    comic.is_unlisted,
+    comic.is_private,
+    comic.moderate_comments,
+    comic.thumbnail,
+    comic.likes,
+    comic.rating,
+  ];
+
+  try {
     const result = await queryDbConnection(query, values);
-    return result.rows[0]
-};
+    return parseInt(result.rows[0].id);
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
+  }
+}
 
 export async function addGenresToComic(
-    comicID: number,
-    genreIDs: number[]
-): Promise<QueryResult[]> {
-    const insertPromises: Promise<QueryResult>[] = [];
-    genreIDs.forEach(genreID => {
-      const query = `
+  comicID: number,
+  genreIDs: number[],
+): Promise<QueryResult[] | null> {
+  const insertPromises: Promise<QueryResult>[] = [];
+  genreIDs.forEach((genreID) => {
+    const query = `
           INSERT INTO comics_to_genres (comic_id, genre_id)
           VALUES ($1, $2)
           RETURNING id
       `;
-      const values = [comicID, genreID];
-      insertPromises.push(queryDbConnection(query, values));
-    });
-    try {
-        const results: QueryResult[] = await Promise.all(insertPromises);
-        return results;
-    } catch (error) {
-        return error;
-    }
-};
+    const values = [comicID, genreID];
+    insertPromises.push(queryDbConnection(query, values));
+  });
+  try {
+    const results: QueryResult[] = await Promise.all(insertPromises);
+    return results;
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
+  }
+}
 
 export async function addContentWarningsToComic(
-    comicID: number,
-    contentIDs: number[]
+  comicID: number,
+  contentIDs: number[],
 ): Promise<QueryResult[]> {
-    const insertPromises: Promise<QueryResult>[] = [];
-    contentIDs.forEach(contentID => {
-      const query = `
+  const insertPromises: Promise<QueryResult>[] = [];
+  contentIDs.forEach((contentID) => {
+    const query = `
           INSERT INTO comics_to_content_warnings (comic_id, content_warning_id)
           VALUES ($1, $2)
           RETURNING id
       `;
-      const values = [comicID, contentID];
-      insertPromises.push(queryDbConnection(query, values));
-    });
-    try {
-        const results: QueryResult[] = await Promise.all(insertPromises);
-        return results;
-    } catch (error) {
-        return error;
-    }
-};
+    const values = [comicID, contentID];
+    insertPromises.push(queryDbConnection(query, values));
+  });
+  try {
+    const results: QueryResult[] = await Promise.all(insertPromises);
+    return results;
+  } catch (error: any) {
+    logger.error(error);
+    return error;
+  }
+}
 
 export async function addAuthorToComic(
-    comicID: number,
-    authorID: number
+  comicID: number,
+  authorID: number,
 ): Promise<QueryResult | Error> {
-    const query = `
+  const query = `
       INSERT INTO comics_to_authors (comic_id, user_id)
       VALUES ($1, $2)
       RETURNING id
-    `
-    const values = [comicID, authorID]
-    const result = await queryDbConnection(query, values);
-    return result.rows[0];
-};
+    `;
+  const values = [comicID, authorID];
+  const result = await queryDbConnection(query, values);
+  return result.rows[0];
+}
 
 export async function isAuthor(
-    author: number,
-    comic: number
-): Promise<QueryResult | Error> {
-    const sql = `SELECT TRUE
+  author: number,
+  comic: number,
+): Promise<boolean | null> {
+  const query = `SELECT TRUE
       FROM comics_to_authors ca
       JOIN comics c
       ON c.id = ca.comic_id
@@ -106,16 +118,17 @@ export async function isAuthor(
         ca.user_id = $1
         AND ca.comic_id = $2`;
 
-    const values = [author, comic]
+  const values = [author, comic];
+  try {
     const result = await queryDbConnection(query, values);
-    return !!data.rows;
-};
+    return !!result.rows;
+  } catch (error: any) {
+    throw error;
+  }
+}
 
-export async function getComic(
-    comicId: number,
-    columns: ComicModel
-): Promise<QueryResult | Error> {
-    const query = `
+export async function getComic(comicId: number): Promise<Comic | null> {
+  const query = `
     SELECT
       title,
       tagline,
@@ -153,26 +166,29 @@ export async function getComic(
       c.id, c.title, c.description, r.name
     `;
 
-    const values = [comicId]
+  const values = [comicId];
+  try {
     const result = await queryDbConnection(query, values);
     if (result.rows && result.rows.length > 0) {
       return result.rows[0];
     }
     return null;
-};
+  } catch (error: any) {
+    throw error;
+  }
+}
 
 export async function getComicsByAuthor(
-    authorID: number,
-    columns?: ComicColumnList,
-    omniscientView: boolean = false
-): Promise<QueryResult | Error> {
- 
-  let conditions = '';
-  let columnString = ''
+  authorID: number,
+  columns?: ComicColumnList,
+  omniscientView: boolean = false,
+): Promise<QueryResult[] | null> {
+  let conditions = "";
+  let columnString = "";
   if (columns) {
-    columnString = 'c.' + columns.split(',').join(',c.')
+    columnString = "c." + columns.join(",c.");
   }
-  const columnSelection = columnString ? columnString : '*';
+  const columnSelection = columnString ? columnString : "*";
   const baseQuery = `
     SELECT ${columnSelection}
     FROM comics c
@@ -184,19 +200,25 @@ export async function getComicsByAuthor(
   // TODO: Add whitelisting behavior so users can mark otehr users as allowed to read private comics
 
   if (!omniscientView) {
-    conditions = ' AND c.is_private IS NOT TRUE'
+    conditions = " AND c.is_private IS NOT TRUE";
   }
-
   const query = baseQuery + conditions;
 
-  const result = await queryDbConnection(query, [authorID]);
-  if (result.rows && result.rows.length > 0) {
-    return result.rows;
+  try {
+    const result = await queryDbConnection(query, [authorID]);
+    if (result.rows && result.rows.length > 0) {
+      return result.rows;
+    }
+    return null;
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
   }
-  return null;
-};
+}
 
-export async function getComicContentWarnings(comicId: number): Promise <QueryResult | Error> {
+export async function getComicContentWarnings(
+  comicId: number,
+): Promise<QueryResult[] | null> {
   const query = `SELECT
     CASE 
         WHEN COUNT(cw.id) = 0 THEN '{}'::jsonb
@@ -212,14 +234,20 @@ export async function getComicContentWarnings(comicId: number): Promise <QueryRe
       WHERE c.id = $1
    `;
 
-   const result = await queryDbConnection(query);
-   if (result.rows && result.rows.length > 0) {
-    return result.rows;
-   }
-   return null;
+  try {
+    const values = [comicId];
+    const result = await queryDbConnection(query, values);
+    if (result.rows && result.rows.length > 0) {
+      return result.rows;
+    }
+    return null;
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
+  }
 }
 
-export async function getFlatContentWarnings(): Promise<QueryResult | Error > {
+export async function getFlatContentWarnings(): Promise<QueryResult | null> {
   const query = `SELECT
     jsonb_object_agg(cw1.id, cw1.name)
     AS comics_json
@@ -228,15 +256,22 @@ export async function getFlatContentWarnings(): Promise<QueryResult | Error > {
       ON cw1.id = cw2.parent_id
     WHERE cw2.id IS NULL`;
 
-  const result = await queryDbConnection(query);
-  if (result.rows && result.rows.length > 0) {
+  try {
+    const result = await queryDbConnection(query);
+    if (result.rows && result.rows.length > 0) {
       return result.rows[0].comics_json;
     }
-  return null;
+    return null;
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
+  }
 }
 
-export async function getNestedContentWarnings(): Promise<QueryResult | Error> {
-    const query = `WITH
+export async function getNestedContentWarnings(): Promise<
+  NestedContentWarning[] | null
+> {
+  const query = `WITH
       Parents AS (
         SELECT id, name
         FROM content_warnings
@@ -267,101 +302,139 @@ export async function getNestedContentWarnings(): Promise<QueryResult | Error> {
       GROUP BY p.id, p.name
       `;
 
+  try {
     const result = await queryDbConnection(query);
     if (result.rows && result.rows.length > 0) {
       return result.rows;
     }
     return null;
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
+  }
 }
 
-export async function getRatingDefs(key: 'name' | 'id'): Promise<QueryResult | Error> {
-  let format = 'name, id';
-  if (key === 'id') {
-    format = 'id, name'
+export async function getRatingDefs(
+  key: "name" | "id",
+): Promise<QueryResult | null> {
+  let format = "name, id";
+  if (key === "id") {
+    format = "id, name";
   }
-  const result = await queryDbConnection(`SELECT jsonb_object_agg(${format}) AS comics_json FROM ratings`);
-  if (result.rows && result.rows.length === 1) {
-    return result.rows[0].comics_json;
+  try {
+    const result = await queryDbConnection(
+      `SELECT jsonb_object_agg(${format}) AS comics_json FROM ratings`,
+    );
+    if (result.rows && result.rows.length === 1) {
+      return result.rows[0].comics_json;
+    }
+    return null;
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
   }
-  return null;
 }
 
-export async function getGenres(): Promise<QueryResult | Error> {
-  const result = await queryDbConnection('SELECT * FROM genres ORDER BY name ASC');
-  if (result.rows && result.rows.length > 0) {
-    return result.rows;
+export async function getGenres(): Promise<Genre[] | null> {
+  try {
+    const result = await queryDbConnection(
+      "SELECT * FROM genres ORDER BY name ASC",
+    );
+    if (result.rows && result.rows.length > 0) {
+      return result.rows;
+    }
+    return null;
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
   }
-  return null;
 }
 
 export async function editComic(
-    comicId: number,
-    update: ComicModel
-): Promise<QueryResult | Error> {
-    return await editTable(
-        'comics',
-        'id',
-        comicId,
-        update
-    );
-};
+  comicId: number,
+  update: Comic,
+): Promise<QueryResult | null> {
+  try {
+    return await editTable("comics", "id", comicId, update);
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
+  }
+}
 
-export async function deleteComic(comic: number): Promise<QueryResult | Error> {
-    const query = `DELETE FROM comics 
-    WHERE id = $1;`
-    const values = [comic]
+export async function deleteComic(comic: number): Promise<boolean | null> {
+  const query = `DELETE FROM comics 
+    WHERE id = $1;`;
+  const values = [comic];
+  try {
     const result = await queryDbConnection(query, values);
     if (result.rowCount > 0) {
       return true;
     } else {
       return false;
     }
-};
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
+  }
+}
 
-export async function removeGenresFromComic(comic: number, genreList: number[] = null): Promise<boolean> {
-    const genreColumn = !!genreList ? 'genre_id' : null;
+export async function removeGenresFromComic(
+  comic: number,
+  genreList: number[] = [],
+): Promise<boolean> {
+  const genreColumn = !!genreList ? "genre_id" : undefined;
+  try {
     const operation = await removeOneToManyAssociations(
-      'comics_to_genres',
-      'comic_id',
+      "comics_to_genres",
+      "comic_id",
       comic,
       genreColumn,
-      genreList
-    )
-    if (operation.rowCount > 0) {
-      return true;
-    } else {
-      return false;
-    }
-};
+      genreList,
+    );
+    return !!operation;
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
+  }
+}
 
-export async function removeContentWarningsFromComic(comic: number, contentList: number[] = null): Promise<boolean> {
-    const warningColumn = !!contentList ? 'content_warning_id' : null;
+export async function removeContentWarningsFromComic(
+  comic: number,
+  contentList: number[] = [],
+): Promise<boolean> {
+  const warningColumn = !!contentList ? "content_warning_id" : undefined;
+  try {
     const operation = await removeOneToManyAssociations(
-      'comics_to_content_warnings',
-      'comic_id',
+      "comics_to_content_warnings",
+      "comic_id",
       comic,
       warningColumn,
-      contentList
-    )
-    if (operation.rowCount > 0) {
-      return true;
-    } else {
-      return false;
-    }
-};
+      contentList,
+    );
+    return !!operation;
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
+  }
+}
 
-export async function removeAuthorsFromComic(comic: number, userList: number[] = null): Promise<boolean> {
-    const userColumn = !!userList ? 'user_id' : null;
+export async function removeAuthorsFromComic(
+  comic: number,
+  userList: number[] = [],
+): Promise<boolean> {
+  const userColumn = !!userList ? "user_id" : undefined;
+  try {
     const operation = await removeOneToManyAssociations(
-      'comics_to_authors',
-      'comic_id',
+      "comics_to_authors",
+      "comic_id",
       comic,
       userColumn,
-      userList
-    )
-    if (operation.rowCount > 0) {
-      return true;
-    } else {
-      return false;
-    }
-};
+      userList,
+    );
+    return !!operation;
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
+  }
+}

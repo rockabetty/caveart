@@ -1,15 +1,21 @@
 import React from 'react'
-import Cookies from "js-cookie";
 import { Button, ButtonSet, Link } from '../../../../component_library'
 import './Navigation.css'
 import { useTranslation } from 'react-i18next';
+
+type SiteHeaderProps = {
+  onLogIn?: (...params: any) => any;
+  onLogout?:  (...params: any) => any;
+  onSignup?:  (...params: any) => any;
+  loggedIn?: boolean;
+}
 
 const SiteHeader = ({
   onLogIn,
   onLogout,
   onSignup,
   loggedIn,
-  ...props}: SiteHeaderProps) => {
+  }: SiteHeaderProps) => {
 
   const { t } = useTranslation();
   

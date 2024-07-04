@@ -14,7 +14,7 @@ export interface TagProps extends InteractiveProps {
   /**
    * Specify the size of the tag
   */
-  size: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg';
   /**
    * Click handler for when you click the close button
   */
@@ -22,15 +22,15 @@ export interface TagProps extends InteractiveProps {
   /**
    * If removable, then a close-button is displayed.
    */
-  removable: boolean;
+  removable?: boolean;
   /**
    * The name of an icon to render inline with the tag. See Icon choices.
    */
-  icon: string;
+  icon?: string;
   /**
    * Determine the appearnce of the tag. Neutral takes on secondary theme, outline takes on text color.
    */
-  look: 'red'
+  look?: 'red'
     | 'orange'
     | 'yellow'
     | 'green'
