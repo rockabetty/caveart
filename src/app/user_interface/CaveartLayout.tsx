@@ -8,6 +8,7 @@ import AuthModal from "./authentication/AuthModal";
 import "./../../../component_library/design/style.css";
 import "../../i18n";
 import "./themes/main.css";
+import { verify } from "crypto";
 
 interface CaveartLayoutProps {
   children: React.ReactNode;
@@ -21,15 +22,13 @@ const CaveartLayout: React.FC<CaveartLayoutProps> = ({
   const router = useRouter();
   const { isAuthenticated, verifyUser, logoutUser } = useUser();
 
-  const [loggedIn, setLoggedIn] = useState<boolean | undefined>(undefined);
   const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
   const [authMode, setAuthMode] = useState<"Sign Up" | "Log In">("Sign Up");
 
   useEffect(() => {
     const authCheck = async () => {
       try {
-        const { isAuthenticated } = await verifyUser();
-        setLoggedIn(isAuthenticated);
+        await verifyUser();
       } catch (error) {
         if (requireLogin) {
           console.log(error);
@@ -40,8 +39,6 @@ const CaveartLayout: React.FC<CaveartLayoutProps> = ({
 
     if (requireLogin) {
       authCheck();
-    } else {
-      setLoggedIn(isAuthenticated);
     }
   }, [requireLogin, verifyUser, router]);
 
@@ -80,7 +77,7 @@ const CaveartLayout: React.FC<CaveartLayoutProps> = ({
         onSignup={() => openAuthModal("Sign Up")}
         onLogIn={() => openAuthModal("Log In")}
         onLogout={logoutUser}
-        loggedIn={loggedIn}
+        loggedIn={isAuthenticated()}
       />
       <AuthModal
         isOpen={authModalOpen}

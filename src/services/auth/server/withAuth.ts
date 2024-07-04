@@ -31,7 +31,6 @@ export const withAuth = (fn: NextApiHandler) => async (req: NextApiRequest, res:
   } catch (err) {
     return res.status(401).json({ error: 'Invalid token' });
   }
-
   return await fn(req, res);
 };
 

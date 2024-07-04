@@ -31,7 +31,7 @@ import {
 import UserContext from "./UserContext";
 import userReducer from "./hooks/userReducer";
 import { dev, loggerMap } from "./hooks/userLogger";
-import { ErrorLoggerPayload } from "../types/userlogger";
+import { ErrorLoggerPayload, LoginLoggerPayload, VerifyLoggerPayload, ViewProfileLoggerPayload } from "../types/userlogger";
 
 const initialState: UserAuthState = {
     user: null,
@@ -41,13 +41,11 @@ const initialState: UserAuthState = {
 };
 
 interface UserProviderProps {
-    children: ReactNode /**< The React children components to be wrapped by the provider */;
+    children: ReactNode
 }
 
 const handleError = (dispatch: React.Dispatch<UserAction>) => (error: any) => {
-    const { stack } = error;
-    const { status } = error.response;
-    const message = error?.response?.data?.error || error.message;
+    const { stack, status, message } = error;
     const errorPayload: ErrorLoggerPayload = {
         message,
         stack,
@@ -55,7 +53,7 @@ const handleError = (dispatch: React.Dispatch<UserAction>) => (error: any) => {
     };
     dispatch({
         type: ActionType.Error,
-        payload: errorPayload,
+        payload: errorPayload
     });
 };
 
@@ -114,7 +112,7 @@ const UserProvider: React.FC<UserProviderProps> = function ({ children }) {
                 const response = await axios.post("/api/auth/login", loginInfo);
                 dispatch({
                     type: ActionType.Login,
-                    payload: response.data,
+                    payload: { user: response.data } as LoginLoggerPayload,
                 });
                 router.push(`/profile`);
             } catch (error: any) {
@@ -147,7 +145,7 @@ const UserProvider: React.FC<UserProviderProps> = function ({ children }) {
             const response = await axios.post("/api/auth/check");
             dispatch({
                 type: ActionType.Verify,
-                payload: response.data,
+                payload: {auth: response.data} as VerifyLoggerPayload,
             });
             return response.data;
         } catch (error: any) {
@@ -200,10 +198,11 @@ const UserProvider: React.FC<UserProviderProps> = function ({ children }) {
             const response = await axios.get(`/api/auth/profile`);
             dispatch({
                 type: ActionType.ViewProfile,
-                payload: response.data,
+                payload: { user: response.data } as ViewProfileLoggerPayload
             });
             return response.data;
         } catch (error: any) {
+            console.log(error);
             handleErrorWithDispatch(error);
         }
     }, [dispatch]);
