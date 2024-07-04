@@ -18,11 +18,11 @@ export interface WriteInFieldProps extends InputProps {
   /**
    * A maximum value when entering dates or numbers
   */
-  max?: string | number;
+  max?: number;
   /**
    * A minimum value when entering dates or numbers
   */
-  min?: string | number;
+  min?: number;
   /*
   * A maximum character length
   */
@@ -34,7 +34,7 @@ export interface WriteInFieldProps extends InputProps {
   /*
   * Restrict valid input
   */
-  pattern?: RegExp;
+  pattern?: string;
   /**
    * Give the user information to understand the field
    */
@@ -49,8 +49,8 @@ export const writeInDefaults: WriteInFieldProps = {
   ...InputDefaults,
   placeholderText: '',
   type: 'text',
-  min: '',
-  max: '',
+  min: undefined,
+  max: undefined,
   maxLength: undefined,
   minLength: undefined,
   helperText: "",
@@ -101,7 +101,7 @@ const WriteInField: React.FC<WriteInFieldProps> = (props) => {
     );
   }
 
-  const textAreaChangeHandler = function (e) {
+  const textAreaChangeHandler = function (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto'; // Reset the height
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // Set the new height
@@ -109,7 +109,7 @@ const WriteInField: React.FC<WriteInFieldProps> = (props) => {
     onChange(e);
   }
 
-  const inputChangeHandler = function (e) {
+  const inputChangeHandler = function (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     onChange(e);
   }
 
@@ -124,13 +124,13 @@ const WriteInField: React.FC<WriteInFieldProps> = (props) => {
     maxLength,
     name,
     min, 
-    onBlur: (e) => {
+    onBlur: (e: React.FocusEvent) => {
       validate();
-      onBlur(e);
+      onBlur && onBlur(e);
     },
     onChange: handleChange,
     onClick,
-    pattern: pattern ? new RegExp(pattern) : undefined,
+    pattern,
     placeholder: placeholderText,
     required,
     type
@@ -154,8 +154,8 @@ const WriteInField: React.FC<WriteInFieldProps> = (props) => {
     >
       <Label
         classes="form-field_label"
-        htmlFor={id}
-        labelText={labelText}
+        htmlFor={id || `label-${labelText}`}
+        labelText={labelText || "MISSING LABEL"}
         required={required}
       />
       {renderInputField()}

@@ -25,7 +25,7 @@ const useImageUploader = ({ maxSize, allowedFileTypes, initialSrc, onChange }: I
 
   const generatePreview = function(e: React.ChangeEvent<HTMLInputElement>) {
     const target = e.target
-    if (target.files.length > 0) {
+    if (target.files && target.files.length > 0) {
       const file = target.files[0]
       const fsize = Math.round(file.size / 1024)
       if (fsize > maxSize) {

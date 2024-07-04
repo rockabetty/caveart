@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUser } from '../../../services/auth/client/hooks/useUser';
 import Login from './LogIn';
 import Signup from './SignUp';
 import { Button, Modal } from '../../../../component_library';
@@ -58,6 +57,10 @@ const AuthModal: React.FC<AuthProps> = ({ isOpen, initial, onClose }) => {
       onClose={onClose}
     >
       {isOpen && renderContent()}
+      { confirmationMessage
+        ? <span>{confirmationMessage}</span>
+        : null
+      }
     </Modal>
   );
 };

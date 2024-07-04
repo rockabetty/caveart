@@ -48,7 +48,7 @@ export const TagDefaults: TagProps = {
   ...InteractiveDefaults,
   label: '',
   size: 'md',
-  onClose: (...params: any) => any,
+  onClose: () => {},
   removable: false,
   icon: '',
   look: 'neutral',

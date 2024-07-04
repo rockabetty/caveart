@@ -154,7 +154,7 @@ const ComicProfileForm = () => {
           name="title"
           type="text"
           id="comic_name"
-          pattern={/^[a-zA-Z0-9 !\-?]+$/}
+          pattern={"/^[a-zA-Z0-9 !\-?]+$/"}
           onChange={onChange}
           value={formValues?.title}
           placeholderText="Unga Bunga Grunga"
@@ -167,7 +167,7 @@ const ComicProfileForm = () => {
           helperText="A-Z, numbers, hyphens and undescores only.  Your comic will be hosted at http://yourChoice.caveartcomics.com"
           id="comic_subdomain"
           onChange={onChange}
-          pattern={/[A-Za-z0-9\-_]{1,}/}
+          pattern={"/[A-Za-z0-9\-_]{1,}/"}
           value={formValues?.subdomain}
           placeholderText="unga-bunga-grunga"
           required={true}
@@ -252,7 +252,7 @@ const ComicProfileForm = () => {
             labelText="Allow likes"
             checked={formValues.likes}
             id={`likes`}
-            value={true}
+            value={formValues.likes ? "true" : "false"}
             onChange={toggleLikes}
           />
         </fieldset>

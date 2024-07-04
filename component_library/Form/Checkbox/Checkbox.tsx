@@ -49,7 +49,7 @@ export interface CheckboxProps {
   /*
   * HTML value attribute to pass down
   */
-  value?: string | boolean
+  value?: string | number | readonly string[] | undefined
 }
 
 const Checkbox = ({
@@ -64,8 +64,7 @@ const Checkbox = ({
   onChange = () => {},
   tabIndex = 0,
   value = '',
-  status,
-  ...props
+  status
 }: CheckboxProps) => {
   
   return(

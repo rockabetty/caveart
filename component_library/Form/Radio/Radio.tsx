@@ -55,7 +55,6 @@ const Radio = ({
   value = '',
   tabIndex = 0,
   onChange,
-  ...props
 }: RadioProps) => {
   
   return(

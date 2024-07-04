@@ -7,7 +7,7 @@ import { ErrorKeys } from '../../../services/auth/types/errors';
 const Login: React.FC= () => {
   const { t } = useTranslation();
  
-  const {loginUser, isLoading, authError} = useUser();
+  const {loginUser, authError} = useUser();
   
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");

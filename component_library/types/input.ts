@@ -1,4 +1,4 @@
-import RefObject from "@types/react"
+import { RefObject } from 'react';
 import { InteractiveProps, InteractiveDefaults } from './interactive'
 
 export interface InputProps extends InteractiveProps {

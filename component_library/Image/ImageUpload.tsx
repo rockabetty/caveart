@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import useImageUploader from './useImageUploader';
 import classNames from 'classnames'
 import './Image.css'
 import '../Form/Form.css'
-import Badge from '../Button/Badge'
 
 export interface ImageUploadProps {
   id?: string;
@@ -19,7 +18,7 @@ export interface ImageUploadProps {
   height?: number;
   required?: boolean;
   flexible?: boolean;
-  name?: boolean;
+  name?: string;
   onChange?: (files: FileList | undefined) => void
 }
 
@@ -32,7 +31,6 @@ const ImageUpload = ({
   editable = false,
   errorText = '',
   helperText = '',
-  value = '',
   required = false,
   flexible = false,
   name = '',
@@ -47,8 +45,7 @@ const ImageUpload = ({
   });
 
   const [editing, setEditing] = useState<boolean>(false)
-  const fileUploadRef = useRef<HTMLInputElement | null>(null);
-
+  
   // Handle custom error text from props
   useEffect(() => {
     if (errorText) {

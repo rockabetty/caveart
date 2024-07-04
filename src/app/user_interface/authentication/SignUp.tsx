@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { TextInput, Button, Form } from '../../../../component_library';
+import { TextInput, Form } from '../../../../component_library';
 import { useUser } from '../../../services/auth/client/hooks/useUser';
-import { ActionType } from '../../../services/auth/types/user.d.ts';
 import { ErrorKeys } from '../../../services/auth/types/errors';
 
-const SignUp: React.FC<AuthProps> = () => {
+const SignUp: React.FC = () => {
   const { t } = useTranslation();
 
-  const {loginUser, isLoading, authError} = useUser();
+  const {loginUser} = useUser();
   
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -78,25 +77,30 @@ const SignUp: React.FC<AuthProps> = () => {
       const userData = {name, email, password}
 
       axios.post('/api/auth/signup', userData)
-        .then((res) => {
+        .then(() => {
           loginUser(email, password);
         })
-        .catch((err) => {
+        .catch((err:any) => {
           console.log(err)
           const {data} = err?.response;
           switch (data.message) {
             case ErrorKeys.USERNAME_MISSING:
               setNameError(t(ErrorKeys.USERNAME_MISSING));
+              break;
             case ErrorKeys.PASSWORD_MISSING:
               setPasswordError(t(ErrorKeys.PASSWORD_MISSING));
+              break;
             case ErrorKeys.EMAIL_INVALID:
               setEmailError(t(ErrorKeys.EMAIL_INVALID));
+              break;
             case ErrorKeys.USERNAME_TAKEN:
               setNameError(t(ErrorKeys.USERNAME_TAKEN));
               setFormError(t(ErrorKeys.USERNAME_TAKEN));
+              break;
             case ErrorKeys.EMAIL_TAKEN:
               setEmailError(t(ErrorKeys.EMAIL_TAKEN));
               setFormError(t(ErrorKeys.EMAIL_TAKEN));
+              break;
             default:
               setFormError(t(ErrorKeys.GENERAL_SUBMISSION_ERROR));
           }
@@ -110,11 +114,12 @@ const SignUp: React.FC<AuthProps> = () => {
       onSubmit={handleSignup}
       submitLabel={t('authenticationForm.buttonLabels.signUp')}
       submissionError={t(formError)}
+      formValues={{name, email, password}}
     >
       <fieldset>
         <TextInput
           labelText={t('authenticationForm.labels.username')}
-          pattern={/^[a-zA-Z0-9_-]+$/}
+          pattern={"/^[a-zA-Z0-9_-]+$/"}
           id="signup_name"
           onChange={(e) => {onInputName(e)}}
           type="text"
