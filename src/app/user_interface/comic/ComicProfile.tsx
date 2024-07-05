@@ -1,6 +1,6 @@
 import { ImageUpload, Link, Button, Tag } from '../../../../component_library'
 import './ComicProfile.css';
-import { Comic, Genre } from '../../../data/types'
+import { Comic, Genre, GenreSelection } from '../../../data/types'
 import GenreSelector, { GenreUserSelection } from './GenreSelector';
 import ContentWarningSelector from './ContentWarningSelector';
 import { useState, useEffect } from 'react';
@@ -9,6 +9,7 @@ import { ContentWarningUserSelection, useContentWarnings } from '../../../app/us
 
 interface ComicProfileProps {
   comicId: number;
+  genres: GenreSelection;
 }
 
 interface ComicProfileUpdate extends Comic {
@@ -23,7 +24,7 @@ const ContentWarningSection: React.FC<{ selection: ContentWarningUserSelection}>
     // TODO: put rating hoox back in when editing is enabled frfr?
     // ratingString,
     // ratingId, 
-    // contentWarningUserSelection,
+    //contentWarningUserSelection,
     onContentChange
   } = useContentWarnings(selection);
 
@@ -37,8 +38,9 @@ const ContentWarningSection: React.FC<{ selection: ContentWarningUserSelection}>
 }
 
 const ComicProfile: React.FC<ComicProfileProps> = ({comicId}: ComicProfileProps) => {
-  const [genres, setGenres] = useState<Genre[]>([]);
   const [editing, setEditing] = useState<boolean>(false);
+  const [fetchedContentWarnings, setFetchedContentWarnings] = useState<string[]>([]);
+  const [fetchedGenres, setFetchedGenres] = useState<string[]>([]);
   const [comicProfile, setComicProfile] = useState<ComicProfileUpdate>({
     genres: {},
     content_warnings: {},
@@ -46,40 +48,34 @@ const ComicProfile: React.FC<ComicProfileProps> = ({comicId}: ComicProfileProps)
     description: '',
     rating: '',
   });
+
   const [comicUpdate, setComicUpdate] = useState({
     genres: {},
     content_warnings: {}
   })
 
   useEffect(() => {
+
     axios.get(`/api/comic/${comicId}`)
     .then((response) => {
       setComicProfile(response.data)
-      let genreUpdate: GenreUserSelection = {};
+      let fetchedContentWarningsUpdate = [];
       let contentUpdate: ContentWarningUserSelection = {};
-      for (let genre of response.data.genres) {
-        const {id} = genre;
-        genreUpdate[id] = true;
-      }
       for (let label of response.data.content_warnings) {
         const {id, name} = label;
-        contentUpdate[name] = id;
+        contentUpdate[id] = name;
+        fetchedContentWarningsUpdate.push(name);
       }
+      setFetchedContentWarnings(fetchedContentWarningsUpdate);
+      console.log(contentUpdate)
       setComicUpdate({
         ...comicUpdate,
         content_warnings: contentUpdate,
-        genres: genreUpdate
       });
     })
     .catch((error) => {
       console.error(error)
     })
-
-    axios
-      .get('/api/genres')
-      .then((response) => {
-        setGenres(response.data)
-    });
   },[]);
 
   const handleEdit = function() {
@@ -130,8 +126,8 @@ const ComicProfile: React.FC<ComicProfileProps> = ({comicId}: ComicProfileProps)
               selection={comicUpdate.genres}
               onChange={onUpdateGenre}
             />
-          : comicProfile.genres && Object.keys(comicProfile.genres).length > 0
-              ? Object.keys(comicProfile.genres).map((label, idx) => (
+          : fetchedGenres.length > 0
+              ? fetchedGenres.map((label, idx) => (
                   <Tag
                     key={`genre-${comicId}-${idx}`}
                     id={`comic-${comicId}-genre-${idx}`}
@@ -150,17 +146,17 @@ const ComicProfile: React.FC<ComicProfileProps> = ({comicId}: ComicProfileProps)
               selection={comicProfile.content_warnings}
             />
             )
-          : comicProfile.content_warnings && Object.keys(comicProfile.content_warnings).length > 0
-              ? Object.keys(comicProfile.content_warnings).map((label, idx) => (
+          : fetchedContentWarnings.length > 0
+              ? fetchedContentWarnings.map((key, idx) => {
+                return (
                   <Tag
                     key={`genre-${comicId}-${idx}`}
                     id={`comic-${comicId}-genre-${idx}`}
-                    label={label}
+                    label={key}
                   />
-                ))
+                )})
               : null
          }
-       
       </div>
     </div>
   )

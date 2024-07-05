@@ -4,19 +4,28 @@ import {Link} from '../../../component_library';
 import ComicProfile from '../../app/user_interface/comic/ComicProfile';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { Comic } from '../../data/types';
+import { Comic, GenreSelection } from '../../data/types';
 
 function MyComics() {
 
   const { t } = useTranslation();
 
   const [comics, setComics] = useState<Comic[]>([]);
+  const [genres, setGenres] = useState<GenreSelection>({});
 
   useEffect(() => {
     axios.get('/api/comics/mine')
       .then((response) => {
         console.log(response.data)
        setComics(response.data)
+      })
+
+    axios.get('/api/genres')
+      .then((response) => {
+        setGenres(response.data)
+      })
+      .catch((error: any) => {
+        console.error(error);
       })
   }, [])
  
@@ -30,6 +39,7 @@ function MyComics() {
           <ComicProfile
             key={`comic-${idx}`}
             comicId={comic.id || -1}
+            genres={genres}
           />
         )
       })

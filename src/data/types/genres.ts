@@ -4,3 +4,7 @@ export type Genre = {
     description?: string;
     path_name?: string;
 };
+
+export type GenreSelection = {
+    [id: string]: string
+}
