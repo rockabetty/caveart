@@ -84,6 +84,7 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
           genresSavedToComic={comicProfile.genres}
           allGenreChoices={genres}
           parentIsEditing={editing}
+          onChange={onUpdateGenre}
         />
         
         <p>

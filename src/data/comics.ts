@@ -130,41 +130,37 @@ export async function isAuthor(
 export async function getComic(comicId: number): Promise<Comic | null> {
   const query = `
     SELECT
-      title,
-      tagline,
+      c.title,
+      c.tagline,
       c.description,
-      thumbnail,
-      comments,
-      is_unlisted,
-      is_private,
-      moderate_comments,
-      view_count,
-      likes,
-      like_count,
+      c.thumbnail,
+      c.comments,
+      c.is_unlisted,
+      c.is_private,
+      c.moderate_comments,
+      c.view_count,
+      c.likes,
+      c.like_count,
       r.name as rating,
-      CASE 
-        WHEN COUNT(g.id) = 0 THEN '[]'::jsonb
-        ELSE jsonb_agg(DISTINCT jsonb_build_object('id', g.id, 'name', g.name))
-      END AS genres,
-      CASE 
-        WHEN COUNT(cw.id) = 0 THEN '[]'::jsonb
-        ELSE jsonb_agg(DISTINCT jsonb_build_object('id', cw.id, 'name', cw.name))
-      END AS content_warnings
+      COALESCE(g.genres, '{}'::jsonb) AS genres
     FROM comics c
-    JOIN ratings r
-      ON c.rating = r.id
-    LEFT JOIN comics_to_genres cg
-      ON cg.comic_id = c.id
-    LEFT JOIN genres g
-      ON g.id = cg.genre_id
-    LEFT JOIN comics_to_content_warnings ccw
-      ON ccw.comic_id = c.id
-    LEFT JOIN content_warnings cw
-      ON cw.id = ccw.content_warning_id
+    JOIN ratings r ON c.rating = r.id
+    LEFT JOIN LATERAL (
+      SELECT 
+        jsonb_object_agg(
+          g.id,
+          jsonb_build_object(
+            'name', g.name,
+            'description', g.description
+          )
+        ) AS genres
+      FROM genres g
+      JOIN comics_to_genres cg ON g.id = cg.genre_id
+      WHERE cg.comic_id = c.id
+    ) g ON true
     WHERE c.id = $1
-      GROUP BY
-      c.id, c.title, c.description, r.name
-    `;
+    GROUP BY
+      c.id, r.name, g.genres;`;
 
   const values = [comicId];
   try {

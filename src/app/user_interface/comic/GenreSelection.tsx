@@ -1,4 +1,4 @@
-import { Tag } from '../../../../component_library';
+import { Badge, Tag, Checkbox } from '../../../../component_library';
 import '../layout.css';
 
 export type Genre = {
@@ -12,22 +12,24 @@ export type GenreUserSelection = {
 }
 
 type GenreSectionProps = {
+  id: string;
   genresSavedToComic: GenreUserSelection,
   allGenreChoices: string[]
   parentIsEditing: boolean;
+  onChange: (...params: any) => any;
 }
 
 const GenreSelection: React.FC<GenreSectionProps> = (props) => {
 
   const {
+    id,
     allGenreChoices,
     parentIsEditing,
-    genresSavedToComic
+    genresSavedToComic,
+    onChange
   } = props;
 
-Object.values(allGenreChoices).map((value) => {
-    console.log(value)
-})
+console.log(genresSavedToComic)
 
   return (
     <div>
@@ -36,6 +38,23 @@ Object.values(allGenreChoices).map((value) => {
           <Tag label={value.name} />
         )
       })}
+     <div className="ReactiveGrid">
+       {Object.values(allGenreChoices).map((genre, idx) =>
+        <Checkbox
+          key={`genre${id ? `-${id}-` : '-'}${idx}`}
+          id={`${id ? `${id}-` : null }option-${genre.id}`} 
+          labelText={genre.name}
+          checked={genresSavedToComic && !!genresSavedToComic[genre.id as string | number]}
+          onChange={onChange}
+          name="genres"
+          value={genre.id.toString()}
+      />)}
+    </div>
+
+      <Badge
+        icon="edit"
+        label="Edit"
+      />
     </div>
   )
 };
@@ -44,20 +63,7 @@ export default GenreSelection;
 
 //   const {} = props;
   
-//   return (
-//     <div className="ReactiveGrid">
-//       {options && options.map((genre, idx) =>
-//         <Checkbox
-//           key={`genre-${id}-${idx}`}
-//           id={`${id}-option-${genre.id}`} 
-//           labelText={genre.name}
-//           checked={selection && !!selection[genre.id as string | number]}
-//           onChange={onChange}
-//           name="genres"
-//           value={genre.id.toString()}
-//       />)}
-//     </div>
-//   )
+
 // }
 
 // export default GenreSelector;
