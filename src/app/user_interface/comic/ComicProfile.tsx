@@ -1,7 +1,7 @@
 import { ImageUpload, Link, Button, Tag } from '../../../../component_library'
 import './ComicProfile.css';
 import { Comic } from '../../../data/types'
-import GenreSelection, { Genre } from './GenreSelection';
+import GenreSelection, { Genre, GenreUserSelection } from './GenreSelection';
 import ContentWarningSelector from './ContentWarningSelector';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -9,7 +9,7 @@ import { ContentWarningUserSelection, useContentWarnings } from '../../../app/us
 
 interface ComicProfileProps {
   comicId: number;
-  genres: Genre[];
+  genres: GenreUserSelection;
 }
 
 const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => {
@@ -25,9 +25,6 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
     rating: '',
   });
 
-  const [comicUpdate, setComicUpdate] = useState({
-    genres: {},
-  })
 
   useEffect(() => {
 
@@ -46,17 +43,17 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
 
   const onUpdateGenre = (e: React.ChangeEvent<HTMLInputElement>) => {
     const currentValue = Number(e.target.value);
-    const currentGenres: GenreUserSelection = { ...comicUpdate.genres };
+    const currentGenres: GenreUserSelection = { ...comicProfile.genres };
     if (currentGenres[currentValue]) {
       delete currentGenres[currentValue];
     } else {
-      currentGenres[currentValue] = true;
+      currentGenres[currentValue] = genres[currentValue];
     }
     const updatedGenres = {
       ...comicProfile,
       genres: currentGenres
     };
-    setComicUpdate(updatedGenres);
+    setComicProfile(updatedGenres);
   };
 
   return (
@@ -83,7 +80,6 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
         <GenreSelection
           comicProfileGenres={comicProfile.genres}
           allGenreChoices={genres}
-          parentIsEditing={editing}
           onChange={onUpdateGenre}
           id={comicId}
         />

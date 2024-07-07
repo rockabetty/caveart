@@ -1,9 +1,7 @@
 import React from 'react'
-import classNames from 'classnames'
-import '../design/style.css'
-import './Button.css'
+import ButtonAtom from './ButtonAtom';
 
-export interface ButtonProps {
+interface ButtonProps {
   id?: string;
   /**
    * Button content.
@@ -15,10 +13,6 @@ export interface ButtonProps {
    * "muted": For coupling with primary buttons as the 'backward' step.
    */
   look?: 'primary' | 'default' | 'muted' | 'warning' | undefined;
-  /**
-   * optional additional styling
-   */
-  classes?: string;
   /**
    * A disabled button renders but can no longer be clicked.
    */
@@ -34,38 +28,11 @@ export interface ButtonProps {
   tabIndex?: number;
   type?: 'button' | 'reset' | 'submit';
   loading?: boolean;
+  inline?: boolean;
 }
 
-const Button = ({
-  id ='',
-  look,
-  children,
-  classes = '',
-  disabled,
-  loading,
-  onClick = () => {},
-  role,
-  tabIndex,
-  type
-  }: ButtonProps) => {
-  return(
-    <button
-      id={id}
-      disabled={disabled}
-      onClick={(e) => {onClick(e)}}
-      className={`button ${classes} ${classNames({
-        'Disabled': !!disabled,
-        'Muted': look === 'muted',
-        'Primary': look ==='primary',
-        'Warning': look === 'warning'
-      })}`.trim()}
-      role={role}
-      tabIndex={tabIndex}
-      type={type}
-    >
-      {loading ? "..." : children}
-    </button>
-  )
+const Button: React.FC<ButtonProps> = (props) => {
+  return <ButtonAtom {...props} />
 }
 
 export default Button

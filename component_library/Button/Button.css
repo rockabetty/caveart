@@ -14,6 +14,10 @@
   border-radius: var(--size-border-radius);
   white-space: nowrap;
 }
+.button.Inline {
+  width: auto;
+  display: inline-block;
+}
 
 .button:hover {
   background-color: var(--col-button-hover);
@@ -77,8 +81,7 @@
 }
 
 .buttonset {
-  display:  flex;
-  width: 100%;
+  display: inline-block;
 }
 
 .buttonset .button {

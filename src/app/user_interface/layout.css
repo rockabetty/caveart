@@ -1,6 +1,8 @@
 .ReactiveGrid {
   display: grid;
+  width: 100%;
   grid-template-columns: repeat(4, 1fr); /* This creates a 5-column grid */
+  padding: var(--spacing-md) 0;
 }
 
 @media (max-width: 767.98px) {
@@ -13,6 +15,15 @@
   .ReactiveGrid {
     grid-template-columns: repeat(2, 1fr); /* This creates a 5-column grid */
   }  
+}
+
+.flex {
+  display: flex;
+}
+
+.FlushRight {
+  display: flex;
+  justify-content: flex-end;
 }
 
 /*

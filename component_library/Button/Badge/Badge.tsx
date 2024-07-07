@@ -1,5 +1,5 @@
 import React from 'react'
-import Button from '../Button'
+import ButtonAtom from '../ButtonAtom'
 import classNames from 'classnames'
 import Icon from '../../Icon'
 import '../../design/style.css'
@@ -13,10 +13,6 @@ export interface BadgeProps {
    * "muted": For coupling with primary buttons as the 'backward' step.
    */
   look?: 'primary' | 'default' | 'muted' | 'warning' | undefined
-  /**
-   * optional additional styling
-   */
-  classes?: string
   /**
    * A disabled button renders but can no longer be clicked.
    */
@@ -50,39 +46,58 @@ export interface BadgeProps {
     * Specify the viewbox of an icon SVG
     */
   viewbox?: string
+  size?: 'md' | 'sm' | 'lg';
 }
 
 const Badge = ({
   id = '',
-  width = 24,
-  height = 24,
   viewbox = "0 0 16 16",
   look,
-  classes = '',
   disabled,
   onClick = () => {},
   tabIndex,
   icon = 'close',
   label,
+  size = 'md',
+  width = undefined,
+  height = undefined,
   showLabel = false
 }: BadgeProps) => {
+
+  let iconWidth, iconHeight = 24;
+
+  if (size === 'lg') {
+    iconWidth = 32;
+    iconHeight = 32;
+  }
+  if (size === 'sm') {
+    iconWidth = 16;
+    iconHeight = 16;
+  }
+  if (height) {
+    iconHeight = height;
+  }
+  if (width) {
+    iconWidth = width;
+  }
+  
   return(
-    <Button
+    <ButtonAtom
       id={id}
       disabled={disabled}
       onClick={(e) => {onClick(e)}}
-      classes={`${classes} ${classNames({
+      classes={classNames({
         'Badge': true,
         'Labeled': showLabel === true
-      })}`.trim()}
-      look={look}
+      })}
+      look='muted'
       role='button'
       tabIndex={tabIndex}
       type='button'
     >
-      <Icon name={icon} title={label} width={width} height={height} viewbox={viewbox}/>
+      <Icon name={icon} title={label} width={iconWidth} height={iconHeight} viewbox={viewbox}/>
       <span className={showLabel ? '' : 'Invisible'}>{label}</span>
-    </Button>
+    </ButtonAtom>
   )
 }
 

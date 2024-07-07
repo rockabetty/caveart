@@ -4,17 +4,14 @@ import './Button.css'
 export interface ButtonSetProps {
   id?: string
   children: React.ReactNode
-  classes?: string
 }
 
 const Button = ({
-  children,
-  classes = '',
+  id,
+  children
 }: ButtonSetProps) => {
   return (
-    <div
-      className={`buttonset ${classes}`.trim()}
-    >
+    <div id={id} className='buttonset'>
       {children}
     </div>
   )
