@@ -59,7 +59,7 @@ export const useContentWarnings = (initialSelection = {}) => {
   const [ratingId, setRatingId] = useState<number>(1);
   const [ratings, setRatings] = useState<{[key:string] : number}>({});
   const [contentWarningUserSelection, setContentWarningUserSelection] = useState<ContentWarningUserSelection>(initialSelection);
-
+  
   useEffect(() => {
     axios.get('/api/content').then(response => {
       setContentWarningsForDisplay(response.data);

@@ -9,7 +9,7 @@ type ContentWarning = {
 
 type ContentWarningProps = {
   options: ContentWarning[];
-  selection: { [key: string]: any };
+  selection: { [key: string]: `${number}` | number };
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
@@ -19,6 +19,8 @@ const ContentWarningSelector: React.FC<ContentWarningProps> = (props) => {
     selection,
     onChange
   } = props;
+
+  console.log(selection)
 
   return (
     <div className="ReactiveGrid">

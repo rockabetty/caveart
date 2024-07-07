@@ -1,9 +1,9 @@
-import { NextApiHandler } from 'next';
-import { getRatingDefs } from '../../../data/comics';
+import { NextApiHandler } from "next";
+import { getRatingDefs } from "../../../data/comics";
 
 const handler: NextApiHandler = async (req, res) => {
-  const {key} = req.query;
-  if (!!key && (key !== 'name' || key !== 'id')) {
+  const { key } = req.query;
+  if (key !== "name" && key !== "id" && key !== undefined ) {
     return res.status(400).send(new Error());
   }
   try {
@@ -13,5 +13,6 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(500).send(error)
   }
 }
+
 
 export default handler;
