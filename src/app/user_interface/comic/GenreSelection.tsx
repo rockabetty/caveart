@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Badge, Tag, Checkbox } from '../../../../component_library';
 import '../layout.css';
 
@@ -13,7 +14,7 @@ export type GenreUserSelection = {
 
 type GenreSectionProps = {
   id: string;
-  genresSavedToComic: GenreUserSelection,
+  comicProfileGenres: GenreUserSelection,
   allGenreChoices: string[]
   parentIsEditing: boolean;
   onChange: (...params: any) => any;
@@ -25,26 +26,27 @@ const GenreSelection: React.FC<GenreSectionProps> = (props) => {
     id,
     allGenreChoices,
     parentIsEditing,
-    genresSavedToComic,
+    comicProfileGenres,
     onChange
   } = props;
 
-console.log(genresSavedToComic)
-
   return (
     <div>
-      {Object.values(genresSavedToComic).map((value) => {
+      {Object.values(comicProfileGenres).map((value, idx) => {
         return (
-          <Tag label={value.name} />
+          <Tag
+            key={`browsing-genre${id ? `-${id}-` : '-'} ${idx}`}
+            label={value.name}
+          />
         )
       })}
      <div className="ReactiveGrid">
        {Object.values(allGenreChoices).map((genre, idx) =>
         <Checkbox
-          key={`genre${id ? `-${id}-` : '-'}${idx}`}
+          key={`selectable-genre${id ? `-${id}-` : '-'}${idx}`}
           id={`${id ? `${id}-` : null }option-${genre.id}`} 
           labelText={genre.name}
-          checked={genresSavedToComic && !!genresSavedToComic[genre.id as string | number]}
+          checked={comicProfileGenres && !!comicProfileGenres[genre.id as string | number]}
           onChange={onChange}
           name="genres"
           value={genre.id.toString()}

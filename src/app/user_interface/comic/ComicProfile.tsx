@@ -81,10 +81,11 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
           </Button>
         </div>
         <GenreSelection
-          genresSavedToComic={comicProfile.genres}
+          comicProfileGenres={comicProfile.genres}
           allGenreChoices={genres}
           parentIsEditing={editing}
           onChange={onUpdateGenre}
+          id={comicId}
         />
         
         <p>
