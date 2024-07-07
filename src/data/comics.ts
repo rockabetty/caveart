@@ -50,6 +50,7 @@ export async function addGenresToComic(
   comicID: number,
   genreIDs: number[],
 ): Promise<QueryResult[] | null> {
+  console.log("adding " + genreIDs + " to " + comicID)
   const insertPromises: Promise<QueryResult>[] = [];
   genreIDs.forEach((genreID) => {
     const query = `

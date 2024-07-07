@@ -247,7 +247,6 @@ const ComicProfileForm = () => {
             )
           })}
         </fieldset>
-
         <fieldset>
           <legend>User ratings</legend>
           <Checkbox

@@ -25,12 +25,14 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
     rating: '',
   });
 
+  const [genreUpdate, setGenreUpdate] = useState<GenreUserSelection | undefined>(undefined);
 
   useEffect(() => {
 
     axios.get(`/api/comic/${comicId}`)
     .then((response) => {
       setComicProfile(response.data)
+      setGenreUpdate(response.data.genres);
     })
     .catch((error) => {
       console.error(error)
@@ -38,22 +40,30 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
   },[]);
 
   const handleEdit = function() {
+    if (editing) {
+      axios.post(`/api/comics/${comicId}/genres`, {
+        current: comicProfile.genres,
+        update: genreUpdate
+      })
+      .then((res) => {
+        console.log(res.data)
+      })
+      .catch((error: any) => {
+        console.error(error)
+      })
+    }
     setEditing(!editing);
   }
 
   const onUpdateGenre = (e: React.ChangeEvent<HTMLInputElement>) => {
     const currentValue = Number(e.target.value);
-    const currentGenres: GenreUserSelection = { ...comicProfile.genres };
-    if (currentGenres[currentValue]) {
-      delete currentGenres[currentValue];
+    const newGenres: GenreUserSelection = { ...genreUpdate };
+    if (newGenres[currentValue]) {
+      delete newGenres[currentValue];
     } else {
-      currentGenres[currentValue] = genres[currentValue];
-    }
-    const updatedGenres = {
-      ...comicProfile,
-      genres: currentGenres
+      newGenres[currentValue] = genres[currentValue];
     };
-    setComicProfile(updatedGenres);
+    setGenreUpdate(newGenres);
   };
 
   return (
@@ -78,10 +88,11 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
           </Button>
         </div>
         <GenreSelection
-          comicProfileGenres={comicProfile.genres}
+          comicProfileGenres={genreUpdate}
           allGenreChoices={genres}
           onChange={onUpdateGenre}
           id={comicId}
+          parentIsEditing={editing}
         />
         
         <p>
