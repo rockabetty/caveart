@@ -16,9 +16,9 @@ type GenreSectionProps = {
   id: string;
   comicProfileGenres: GenreUserSelection,
   allGenreChoices: string[]
-  parentIsEditing: boolean | undefined;
   onChange: (...params: any) => any;
-  onSave: (...params: any) => any;
+  parentIsEditing?: boolean;
+  onSave?: (...params: any) => any;
 }
 
 const GenreSelection: React.FC<GenreSectionProps> = (props) => {
@@ -44,7 +44,7 @@ const GenreSelection: React.FC<GenreSectionProps> = (props) => {
 
   const handleSave = async () => {
     try {
-      // await onSave();
+      await onSave();
       setEditing(false);
     }
     catch (error: any) {
@@ -83,7 +83,7 @@ const GenreSelection: React.FC<GenreSectionProps> = (props) => {
   }, [allGenreChoices, comicProfileGenres, onChange]);
 
   const renderComicProfileGenres = useCallback(() => {
-    const selectedGenres = Object.values(comicProfileGenres);
+    const selectedGenres = comicProfileGenres ? Object.values(comicProfileGenres) : [];
 
     return (
       <div>
@@ -110,7 +110,7 @@ const GenreSelection: React.FC<GenreSectionProps> = (props) => {
 
   return (
     <div>
-      { !parentIsEditing && editing
+      { parentIsEditing || editing
         ? renderGenreSelector()
         : renderComicProfileGenres()
       }

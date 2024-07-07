@@ -31,8 +31,6 @@ const ButtonAtom = ({
   classes
   }: ButtonAtomProps) => {
 
-  console.log(look)
-
   return(
     <button
       id={id}

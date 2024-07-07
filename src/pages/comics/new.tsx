@@ -9,7 +9,7 @@ import {
   Form
 } from '../../../component_library';
 import CaveartLayout from '../../app/user_interface/CaveartLayout';
-import GenreSelector from '../../app/user_interface/comic/GenreSelector';
+import GenreSelection from '../../app/user_interface/comic/GenreSelection';
 import ContentWarningSelector from '../../app/user_interface/comic/ContentWarningSelector';
 import '../../app/user_interface/layout.css';
 import { useTranslation } from 'react-i18next';
@@ -154,7 +154,7 @@ const ComicProfileForm = () => {
           name="title"
           type="text"
           id="comic_name"
-          pattern={"/^[a-zA-Z0-9 !\-?]+$/"}
+          pattern="^[a-zA-Z0-9 !\-?]+$"
           onChange={onChange}
           value={formValues?.title}
           placeholderText="Unga Bunga Grunga"
@@ -167,7 +167,7 @@ const ComicProfileForm = () => {
           helperText="A-Z, numbers, hyphens and undescores only.  Your comic will be hosted at http://yourChoice.caveartcomics.com"
           id="comic_subdomain"
           onChange={onChange}
-          pattern={"/[A-Za-z0-9\-_]{1,}/"}
+          pattern="[A-Za-z0-9\-_]{1,}"
           value={formValues?.subdomain}
           placeholderText="unga-bunga-grunga"
           required={true}
@@ -202,11 +202,13 @@ const ComicProfileForm = () => {
           onChange={onContentChange}
         />
         <p>{ratingString}</p>
-        <GenreSelector
+        <h2>Genres</h2>
+        <GenreSelection
           id="new_comic"
-          options={genres}
-          selection={formValues.genres}
+          allGenreChoices={genres}
+          comicProfileGenres={formValues.genres}
           onChange={onToggleGenre}
+          parentIsEditing
         />
 
         <h2>Settings</h2>
