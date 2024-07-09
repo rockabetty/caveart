@@ -27,13 +27,18 @@ const ComicProfileEditor: React.FC<ComicProfileEditorProps> = (props: ComicProfi
         onChange={onTextChange}
         labelText="Title"
         id={`title-edit-${comicId}`}
+        pattern="^[a-zA-Z0-9 !\-?]+$"
+        placeholderText="Unga Bunga: The Grunga of UNGA"
         name="title"
         value={profile?.title}
        />
        <TextInput
         onChange={onTextChange}
         labelText="Subdomain"
+        helperText="A-Z, numbers, hyphens and undescores only.  Your comic will be hosted at http://yourChoice.caveartcomics.com"
         name="subdomain"
+        pattern="[A-Za-z0-9\-_]{1,}"
+        placeholderText="ungabunga"
         id={`subdomain-edit-${comicId}`}
         value={profile?.subdomain}
        />
@@ -41,6 +46,7 @@ const ComicProfileEditor: React.FC<ComicProfileEditorProps> = (props: ComicProfi
         onChange={onTextChange}
         labelText="Description"
         name="description"
+        placeholderText="Tell us about your comic!"
         id={`description-edit-${comicId}`}
         value={profile?.description}
       />
