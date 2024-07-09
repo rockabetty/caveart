@@ -1,4 +1,4 @@
-import { ImageUpload, Link, Button, TextArea, TextInput } from '../../../../component_library'
+import { ImageUpload, Link, Button, Badge, TextArea, TextInput, ButtonSet } from '../../../../component_library'
 import './ComicProfile.css';
 import GenreSelection, { GenreUserSelection } from './GenreSelection';
 import { useState, useEffect } from 'react';
@@ -34,8 +34,8 @@ const emptyProfile: ComicData = {
 const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => {
 
   const {genres, comicId} = props;
-
   const [editing, setEditing] = useState<boolean>(false);
+  const [canEdit, setCanEdit] = useState<boolean>(false);
   const [comicProfile, setComicProfile] = useState<ComicData>(emptyProfile);
   const [comicUpdate, setComicUpdate] = useState<ComicData>(emptyProfile);
 
@@ -47,23 +47,38 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
     })
     .catch((error) => {
       console.error(error)
-    })    
+    })
+
+    axios.get(`/api/comics/${comicId}/permissions`)
+      .then((response) => {
+        setCanEdit(response.data?.edit)
+      })
+      .catch((error) => {
+        console.error(error);
+      })
   },[]);
 
-  const handleEdit = function() {
-    if (editing) {
-      axios.post(`/api/comics/${comicId}/genres`, {
-        current: comicProfile.genres,
-        update: comicUpdate.genres
-      })
-      .then((res) => {
-        console.log(res.data)
-      })
-      .catch((error: any) => {
-        console.error(error)
-      })
-    }
-    setEditing(!editing);
+  const submitEdit = function() {
+    axios.post(`/api/comics/${comicId}/genres`, {
+      current: comicProfile.genres,
+      update: comicUpdate.genres
+    })
+    .then((res) => {
+      console.log(res.data)
+    })
+    .catch((error: any) => {
+      console.error(error)
+    })
+    setEditing(false);
+  }
+
+  const cancelEdit = function () {
+    setComicUpdate(comicProfile);
+    setEditing(false);
+  }
+
+  const startEdit = function () {
+    setEditing(true);
   }
 
   const onUpdateGenre = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,12 +150,16 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
           parentIsEditing={editing}
         />
 
-        <Button
-          id={`edit-comic-${comicProfile.id}`}
-          onClick={handleEdit}
-        >
-          {editing ? 'Save' : 'Edit'}
-        </Button>
+        {canEdit 
+          ? editing
+            ? (<ButtonSet>
+                <Button inline onClick={cancelEdit} id={`cancel-edit-${comicProfile.subdomain}`}>Cancel editing</Button>
+                <Button inline look="primary" onClick={submitEdit} id={`submit-edit-${comicProfile.subdomain}`}>Save changes</Button>
+              </ButtonSet>
+              )
+            : <Badge onClick={startEdit} showLabel id={`edit-${comicProfile.subdomain}`} icon="edit" label="Edit profile" />
+          : null
+        }
       </div>
     </div>
   )
