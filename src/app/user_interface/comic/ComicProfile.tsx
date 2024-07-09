@@ -1,15 +1,34 @@
-import { ImageUpload, Link, Button, Tag } from '../../../../component_library'
+import { ImageUpload, Link, Button, TextArea, TextInput } from '../../../../component_library'
 import './ComicProfile.css';
-import { Comic } from '../../../data/types'
-import GenreSelection, { Genre, GenreUserSelection } from './GenreSelection';
-import ContentWarningSelector from './ContentWarningSelector';
+import GenreSelection, { GenreUserSelection } from './GenreSelection';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { ContentWarningUserSelection, useContentWarnings } from '../../../app/user_interface/comic/hooks/useContentWarnings';
 
 interface ComicProfileProps {
   comicId: number;
   genres: GenreUserSelection;
+}
+
+interface ComicData {
+  id: string;
+  genres: GenreUserSelection;
+  description: string;
+  title: string;
+  subdomain: string;
+  thumbnail: string;
+  rating: string;
+}
+
+type ComicTextInputField = Extract<keyof ComicData, 'title' | 'description' | 'subdomain'>;
+
+const emptyProfile: ComicData = {
+    id: '',
+    genres: {},
+    title: '',
+    description: '',
+    subdomain: '',
+    rating: '',
+    thumbnail: ''
 }
 
 const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => {
@@ -17,22 +36,14 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
   const {genres, comicId} = props;
 
   const [editing, setEditing] = useState<boolean>(false);
-  const [comicProfile, setComicProfile] = useState<ComicProfileUpdate>({
-    genres: {},
-    content_warnings: {},
-    title: '',
-    description: '',
-    rating: '',
-  });
-
-  const [genreUpdate, setGenreUpdate] = useState<GenreUserSelection | undefined>(undefined);
+  const [comicProfile, setComicProfile] = useState<ComicData>(emptyProfile);
+  const [comicUpdate, setComicUpdate] = useState<ComicData>(emptyProfile);
 
   useEffect(() => {
-
     axios.get(`/api/comic/${comicId}`)
     .then((response) => {
       setComicProfile(response.data)
-      setGenreUpdate(response.data.genres);
+      setComicUpdate(response.data)
     })
     .catch((error) => {
       console.error(error)
@@ -43,7 +54,7 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
     if (editing) {
       axios.post(`/api/comics/${comicId}/genres`, {
         current: comicProfile.genres,
-        update: genreUpdate
+        update: comicUpdate.genres
       })
       .then((res) => {
         console.log(res.data)
@@ -57,13 +68,19 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
 
   const onUpdateGenre = (e: React.ChangeEvent<HTMLInputElement>) => {
     const currentValue = Number(e.target.value);
-    const newGenres: GenreUserSelection = { ...genreUpdate };
+    const newGenres: GenreUserSelection = { ...comicUpdate.genres };
     if (newGenres[currentValue]) {
       delete newGenres[currentValue];
     } else {
       newGenres[currentValue] = genres[currentValue];
     };
-    setGenreUpdate(newGenres);
+    setComicUpdate({...comicUpdate, genres: newGenres});
+  };
+
+  const onTextChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    const key: ComicTextInputField = name as ComicTextInputField;
+    setComicUpdate(prev => ({ ...prev, [key]: value }));
   };
 
   return (
@@ -74,32 +91,56 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
           : <ImageUpload src='/img/brand/kraugak.png' />
         }
       </a>
-      <div>
-        <h1>
-        {comicProfile.title}
-        </h1>
-        <div>
-          <Link id="link-add_pages" href={`pages/new`}>Add pages</Link>
-          <Button
-            id={`edit-comic-${comicProfile.id}`}
-            onClick={handleEdit}
-          >
-            {editing ? 'Save' : 'Edit'}
-          </Button>
-        </div>
+      <div className="FullWidth">
+        {editing
+          ? (
+              <div>
+                <TextInput
+                  onChange={onTextChange}
+                  labelText="Title"
+                  id={`title-edit-${comicId}`}
+                  name="title"
+                  value={comicUpdate?.title}
+                 />
+                 <TextInput
+                  onChange={onTextChange}
+                  labelText="Subdomain"
+                  name="subdomain"
+                  id={`subdomain-edit-${comicId}`}
+                  value={comicUpdate?.subdomain}
+                 />
+                <TextArea
+                  onChange={onTextChange}
+                  labelText="Description"
+                  name="description"
+                  id={`description-edit-${comicId}`}
+                  value={comicUpdate?.description}
+                />
+              </div>
+            )
+          : (
+              <div>
+                <h1>{comicProfile.title}</h1>
+                <Link href={`/comic/${comicProfile.subdomain}`}>{comicProfile.subdomain}.caveartwebcomics.com</Link>  
+                <div>{comicProfile.description}</div>
+              </div>
+            )
+        }
+
         <GenreSelection
-          comicProfileGenres={genreUpdate}
+          comicProfileGenres={comicUpdate?.genres}
           allGenreChoices={genres}
           onChange={onUpdateGenre}
-          id={comicId}
+          id={comicProfile.subdomain}
           parentIsEditing={editing}
         />
-        
-        <p>
-         {comicProfile.description}
-        </p>
 
-        
+        <Button
+          id={`edit-comic-${comicProfile.id}`}
+          onClick={handleEdit}
+        >
+          {editing ? 'Save' : 'Edit'}
+        </Button>
       </div>
     </div>
   )

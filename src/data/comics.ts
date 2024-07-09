@@ -111,7 +111,7 @@ export async function isAuthor(
   author: number,
   comic: number,
 ): Promise<boolean | null> {
-  const query = `SELECT TRUE
+  const query = `SELECT TRUE as isauthor
       FROM comics_to_authors ca
       JOIN comics c
       ON c.id = ca.comic_id
@@ -120,9 +120,13 @@ export async function isAuthor(
         AND ca.comic_id = $2`;
 
   const values = [author, comic];
+
+  console.log(query)
+  console.log(author)
+  console.log(comic)
   try {
     const result = await queryDbConnection(query, values);
-    return !!result.rows;
+    return !!result.rows[0]?.isauthor;
   } catch (error: any) {
     throw error;
   }
@@ -132,6 +136,7 @@ export async function getComic(comicId: number): Promise<Comic | null> {
   const query = `
     SELECT
       c.title,
+      c.subdomain,
       c.tagline,
       c.description,
       c.thumbnail,
