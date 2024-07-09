@@ -54,6 +54,8 @@ const GenreSelection: React.FC<GenreSectionProps> = (props) => {
     }
   }
 
+  console.log(parentIsEditing)
+
   const renderGenreSelector = useCallback(() => {
     return (
       <div>
@@ -103,7 +105,7 @@ const GenreSelection: React.FC<GenreSectionProps> = (props) => {
           </div>)
       }
       {parentIsEditing === undefined
-        ?  <Badge icon={editing ? "close" : "edit"} label={editing ? "Cancel editing" : "Edit genres"} onClick={toggleEditing} />
+        ? <Badge icon={editing ? "close" : "edit"} label={editing ? "Cancel editing" : "Edit genres"} onClick={toggleEditing} />
         : null
       }
       </div>

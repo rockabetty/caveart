@@ -3,13 +3,14 @@ import './ComicProfile.css';
 import GenreSelection, { GenreUserSelection } from './GenreSelection';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import ComicProfileEditor from './ComicProfileEditor';
 
 interface ComicProfileProps {
   comicId: number;
   genres: GenreUserSelection;
 }
 
-interface ComicData {
+export type ComicData = {
   id: string;
   genres: GenreUserSelection;
   description: string;
@@ -19,9 +20,9 @@ interface ComicData {
   rating: string;
 }
 
-type ComicTextInputField = Extract<keyof ComicData, 'title' | 'description' | 'subdomain'>;
+export type ComicTextInputField = Extract<keyof ComicData, 'title' | 'description' | 'subdomain'>;
 
-const emptyProfile: ComicData = {
+export const emptyProfile: ComicData = {
     id: '',
     genres: {},
     title: '',
@@ -100,7 +101,7 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
 
   return (
     <div className="comic-profile">
-      <a href={`/read/${comicId}`}>
+      <a className="comic-profile_cover" href={`/read/${comicId}`}>
         {comicProfile.thumbnail
           ? <ImageUpload src={`/${comicProfile.thumbnail}`} />
           : <ImageUpload src='/img/brand/kraugak.png' />
@@ -108,54 +109,37 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
       </a>
       <div className="FullWidth">
         {editing
-          ? (
-              <div>
-                <TextInput
-                  onChange={onTextChange}
-                  labelText="Title"
-                  id={`title-edit-${comicId}`}
-                  name="title"
-                  value={comicUpdate?.title}
-                 />
-                 <TextInput
-                  onChange={onTextChange}
-                  labelText="Subdomain"
-                  name="subdomain"
-                  id={`subdomain-edit-${comicId}`}
-                  value={comicUpdate?.subdomain}
-                 />
-                <TextArea
-                  onChange={onTextChange}
-                  labelText="Description"
-                  name="description"
-                  id={`description-edit-${comicId}`}
-                  value={comicUpdate?.description}
-                />
-              </div>
-            )
+          ? <ComicProfileEditor
+              id={comicId}
+              profile={comicUpdate}
+              onTextChange={onTextChange}
+              genres={genres}
+              onUpdateGenre={onUpdateGenre}
+            />
           : (
               <div>
                 <h1>{comicProfile.title}</h1>
                 <Link href={`/comic/${comicProfile.subdomain}`}>{comicProfile.subdomain}.caveartwebcomics.com</Link>  
                 <div>{comicProfile.description}</div>
+                <GenreSelection
+                  comicProfileGenres={comicUpdate?.genres}
+                  allGenreChoices={genres}
+                  onChange={onUpdateGenre}
+                  id={comicProfile.subdomain}
+                  parentIsEditing={false}
+                />
               </div>
             )
         }
 
-        <GenreSelection
-          comicProfileGenres={comicUpdate?.genres}
-          allGenreChoices={genres}
-          onChange={onUpdateGenre}
-          id={comicProfile.subdomain}
-          parentIsEditing={editing}
-        />
-
         {canEdit 
           ? editing
-            ? (<ButtonSet>
-                <Button inline onClick={cancelEdit} id={`cancel-edit-${comicProfile.subdomain}`}>Cancel editing</Button>
-                <Button inline look="primary" onClick={submitEdit} id={`submit-edit-${comicProfile.subdomain}`}>Save changes</Button>
-              </ButtonSet>
+            ? (<div className="flexrow FlushRight">
+                <ButtonSet>
+                  <Button inline onClick={cancelEdit} id={`cancel-edit-${comicProfile.subdomain}`}>Cancel editing</Button>
+                  <Button inline look="primary" onClick={submitEdit} id={`submit-edit-${comicProfile.subdomain}`}>Save changes</Button>
+                </ButtonSet>
+              </div>
               )
             : <Badge onClick={startEdit} showLabel id={`edit-${comicProfile.subdomain}`} icon="edit" label="Edit profile" />
           : null
