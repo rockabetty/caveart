@@ -81,7 +81,7 @@
 }
 
 .buttonset {
-  display: inline-block;
+  display: flex;
 }
 
 .buttonset .button {

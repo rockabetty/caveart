@@ -1,8 +1,0 @@
-.comic-profile {
-    display: flex;
-    flex-direction: row;
-}
-
-.comic-profile.Editor {
-   flex-direction: column;
-}

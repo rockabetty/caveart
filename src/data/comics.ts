@@ -120,10 +120,6 @@ export async function isAuthor(
         AND ca.comic_id = $2`;
 
   const values = [author, comic];
-
-  console.log(query)
-  console.log(author)
-  console.log(comic)
   try {
     const result = await queryDbConnection(query, values);
     return !!result.rows[0]?.isauthor;
@@ -204,7 +200,7 @@ export async function getComicsByAuthor(
   if (!omniscientView) {
     conditions = " AND c.is_private IS NOT TRUE";
   }
-  const query = baseQuery + conditions;
+  const query = baseQuery + conditions + " ORDER BY c.id";
 
   try {
     const result = await queryDbConnection(query, [authorID]);
@@ -366,6 +362,7 @@ export async function editComic(
   update: Comic,
 ): Promise<QueryResult | null> {
   try {
+    console.log('comic ID:' + comicId)
     return await editTable("comics", "id", comicId, update);
   } catch (error: any) {
     logger.error(error);

@@ -35,7 +35,7 @@
 }
 
 .checkbox_control:checked + label::after {
-  border-color: var(--col-text);
+  border-color: var(--col-button-label);
   border-top: 2px solid transparent;
   border-right: 2px solid transparent;
   border-radius:  2px;

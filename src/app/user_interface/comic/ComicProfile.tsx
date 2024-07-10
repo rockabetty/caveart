@@ -1,5 +1,5 @@
-import { ImageUpload, Link, Button, Badge, TextArea, TextInput, ButtonSet } from '../../../../component_library'
-import './ComicProfile.css';
+import { ImageUpload, Link, Button, Badge, Form, TextArea, TextInput, ButtonSet } from '../../../../component_library'
+import './ComicProfiles.css';
 import GenreSelection, { GenreUserSelection } from './GenreSelection';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -39,6 +39,7 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [comicProfile, setComicProfile] = useState<ComicData>(emptyProfile);
   const [comicUpdate, setComicUpdate] = useState<ComicData>(emptyProfile);
+  const [submissionError, setSubmissionError] = useState<string>("");
 
   useEffect(() => {
     axios.get(`/api/comic/${comicId}`)
@@ -59,18 +60,43 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
       })
   },[]);
 
-  const submitEdit = function() {
-    axios.post(`/api/comics/${comicId}/genres`, {
-      current: comicProfile.genres,
-      update: comicUpdate.genres
-    })
-    .then((res) => {
-      console.log(res.data)
-    })
-    .catch((error: any) => {
-      console.error(error)
-    })
-    setEditing(false);
+  const submitEdit = async function() {
+    const updates: Promise[] = [];
+
+    updates.push(
+      axios.post(`/api/comics/${comicId}/genres`, {
+        current: comicProfile.genres,
+       update: comicUpdate.genres
+      })
+    )
+
+    if (comicProfile.title !== comicUpdate.title) {
+      updates.push(axios
+        .post(`/api/comics/${comicId}/title`,
+        {update: comicUpdate.title})
+      )
+    }
+
+    if (comicProfile.subdomain !== comicUpdate.subdomain) {
+      updates.push(axios
+        .post(`/api/comics/${comicId}/subdomain`,
+        {update: comicUpdate.subdomain})
+      )
+    }
+
+    if (comicProfile.description !== comicUpdate.description) {
+      updates.push(axios
+        .post(`/api/comics/${comicId}/description`,
+        {update: comicUpdate.description})
+      )
+    }
+
+    try {
+      await Promise.all(updates)
+      setEditing(false);
+    } catch (error: any) {
+      setSubmissionError(error.message)
+    }
   }
 
   const cancelEdit = function () {
@@ -99,52 +125,64 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
     setComicUpdate(prev => ({ ...prev, [key]: value }));
   };
 
+  const onFileChange = (files: FileList | undefined) => {
+    setFormValues({
+      ...formValues,
+      thumbnail: files
+    }) 
+  };
+
   return (
     <div className="comic-profile">
-      <a className="comic-profile_cover" href={`/read/${comicId}`}>
-        {comicProfile.thumbnail
-          ? <ImageUpload src={`/${comicProfile.thumbnail}`} />
-          : <ImageUpload src='/img/brand/kraugak.png' />
-        }
-      </a>
-      <div className="FullWidth">
-        {editing
-          ? <ComicProfileEditor
-              id={comicId}
-              profile={comicUpdate}
-              onTextChange={onTextChange}
-              genres={genres}
-              onUpdateGenre={onUpdateGenre}
-            />
-          : (
-              <div>
-                <h1>{comicProfile.title}</h1>
-                <Link href={`/comic/${comicProfile.subdomain}`}>{comicProfile.subdomain}.caveartwebcomics.com</Link>  
-                <div>{comicProfile.description}</div>
-                <GenreSelection
-                  comicProfileGenres={comicUpdate?.genres}
-                  allGenreChoices={genres}
-                  onChange={onUpdateGenre}
-                  id={comicProfile.subdomain}
-                  parentIsEditing={false}
-                />
-              </div>
-            )
-        }
-
-        {canEdit 
-          ? editing
-            ? (<div className="flexrow FlushRight">
-                <ButtonSet>
-                  <Button inline onClick={cancelEdit} id={`cancel-edit-${comicProfile.subdomain}`}>Cancel editing</Button>
-                  <Button inline look="primary" onClick={submitEdit} id={`submit-edit-${comicProfile.subdomain}`}>Save changes</Button>
-                </ButtonSet>
-              </div>
-              )
-            : <Badge onClick={startEdit} showLabel id={`edit-${comicProfile.subdomain}`} icon="edit" label="Edit profile" />
+      <div className="comic-profile_header">
+        <h1 className="comic-profile_title">{comicProfile.title}</h1>
+        {canEdit && !editing 
+          ? <Badge onClick={startEdit} showLabel id={`edit-${comicProfile.subdomain}`} icon="edit" label="Edit profile" />
           : null
         }
       </div>
+    
+        {editing
+          ?(<Form
+              id={`editform-${comicId}`}
+              onSubmit={submitEdit}
+              submissionError={submissionError}
+              submitLabel="Save"
+              formValues={comicUpdate}
+              cancelLabel="Cancel"
+              onCancel={cancelEdit}
+            >
+              <ComicProfileEditor
+                id={comicId}
+                profile={comicUpdate}
+                onTextChange={onTextChange}
+                genres={genres}
+                onUpdateGenre={onUpdateGenre}
+              />
+            </Form>
+            )
+          : (
+              <div className="comic-profile_body">
+                <a className="comic-profile_cover" href={`/read/${comicId}`}>
+                  {comicProfile.thumbnail
+                    ? <ImageUpload src={`/${comicProfile.thumbnail}`} />
+                    : <ImageUpload src='/img/brand/kraugak.png' />
+                  }
+                </a>
+                <div>
+                  <Link href={`/comic/${comicProfile.subdomain}`}>{comicProfile.subdomain}.caveartwebcomics.com</Link>  
+                  <pre>{comicProfile.description}</pre>
+                  <GenreSelection
+                    comicProfileGenres={comicUpdate?.genres}
+                    allGenreChoices={genres}
+                    onChange={onUpdateGenre}
+                    id={comicProfile.subdomain}
+                    parentIsEditing={false}
+                  />
+                </div>
+              </div>
+            )
+        }
     </div>
   )
 }

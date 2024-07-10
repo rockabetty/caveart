@@ -60,7 +60,7 @@ const ImageUpload = ({
 
   if (editable) {
     return (
-      <>
+      <div>
         <div id={id} className={classNames({
           "image" : true,
           "Editable" : true,
@@ -87,7 +87,7 @@ const ImageUpload = ({
         <span className={`form-field_helpertext ${fileError ? 'Error' : ''}`.trim()}>
           {fileError ? fileError : helperText}
         </span>
-      </>
+      </div>
     )
   }
 

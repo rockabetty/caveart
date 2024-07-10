@@ -16,6 +16,7 @@ function MyComics() {
   useEffect(() => {
     axios.get('/api/comics/mine')
       .then((response) => {
+        console.log(response.data)
        setComics(response.data)
       })
 

@@ -1,6 +1,6 @@
 import React, { useState, ReactNode } from 'react';
 import './Form.css';
-import { Button } from '../Button';
+import { Button, ButtonSet } from '../Button';
 import { InteractiveProps, InteractiveDefaults } from '../types/interactive';
 
 type FormValues = {
@@ -9,10 +9,12 @@ type FormValues = {
 
 export interface FormProps extends InteractiveProps {
   onSubmit: (formValues: FormValues) => any;
+  onCancel?: (...params: any) => any;
   onSuccess?: (...params: any) => any;
   onFailure?: (...params: any) => any;
   submissionError?: string | null;
-  submitLabel?: string;
+  cancelLabel?: string;
+  submitLabel: string;
   children: ReactNode;
   isLoading?: boolean;
   formValues: FormValues
@@ -23,8 +25,10 @@ export const formDefaults: Partial<FormProps> = {
   onSubmit: () => {},
   onSuccess: () => {},
   onFailure: () => {},
+  onCancel: () => {},
   submissionError: '',
   submitLabel: 'Submit',
+  cancelLabel: '',
 };
 
 const Form: React.FC<FormProps> = (props) => {
@@ -37,6 +41,8 @@ const Form: React.FC<FormProps> = (props) => {
     formValues,
     submissionError,
     submitLabel,
+    cancelLabel,
+    onCancel
   } = props;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -64,14 +70,38 @@ const Form: React.FC<FormProps> = (props) => {
       {submissionError ? (
         <p className="form-feedback Error">{submissionError}</p>
       ) : null}
-      <Button
-        id={`${id}-form-submit`}
-        type="submit"
-        look="primary"
-        loading={isLoading}
-      >
-        {submitLabel}
-      </Button>
+
+      {cancelLabel
+        ? (
+            <ButtonSet>
+              <Button
+                loading={isLoading}
+                onClick={onCancel}
+                id={`cancel-${id}`}
+              >
+                {cancelLabel}
+              </Button>
+
+              <Button
+                loading={isLoading}
+                look="primary"
+                type="submit"
+                id={`submit-${id}`}
+              >
+                {submitLabel}
+              </Button>
+            </ButtonSet>
+          )
+        : <Button
+            id={`${id}-form-submit`}
+            type="submit"
+            look="primary"
+            loading={isLoading}
+          >
+            {submitLabel}
+          </Button>
+      }
+
     </form>
   );
 };

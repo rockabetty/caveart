@@ -158,15 +158,6 @@ const ComicProfileForm = () => {
          onUpdateGenre={onToggleGenre}
        />
 
-        <ImageUpload
-          labelText="Cover Image"
-          helperText="Cover images can be up to 1MB."
-          editable={true}
-          maxSize={1000}
-          src="/img/brand/kraugak.png"
-          onChange={onFileChange}
-        />
-
         <h2>Content Warnings</h2>
         <p>
           Please put content warnings on your comic so that we can show our users appropriate content.
@@ -177,15 +168,7 @@ const ComicProfileForm = () => {
           onChange={onContentChange}
         />
         <p>{ratingString}</p>
-        <h2>Genres</h2>
-        <GenreSelection
-          id="new_comic"
-          allGenreChoices={genres}
-          comicProfileGenres={formValues.genres}
-          onChange={onToggleGenre}
-          parentIsEditing
-        />
-
+        
         <h2>Settings</h2>
         <fieldset>
           <legend>Visibility</legend>
