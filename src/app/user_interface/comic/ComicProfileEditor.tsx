@@ -1,5 +1,5 @@
 import { ImageUpload, Link, Button, Badge, TextArea, TextInput, ButtonSet } from '../../../../component_library'
-import './comicProfile.css';
+import './ComicProfiles.css';
 import GenreSelection, { GenreUserSelection } from './GenreSelection';
 import { emptyProfile, ComicData, ComicTextInputField } from './ComicProfile';
 
@@ -42,6 +42,7 @@ const ComicProfileEditor: React.FC<ComicProfileEditorProps> = (props: ComicProfi
           pattern="^[a-zA-Z0-9 !:_\-?]+$"
           placeholderText="Unga Bunga: The Grunga of UNGA"
           name="title"
+          required
           value={profile?.title}
          />
          <TextInput
@@ -53,6 +54,7 @@ const ComicProfileEditor: React.FC<ComicProfileEditorProps> = (props: ComicProfi
           placeholderText="ungabunga"
           id={`subdomain-edit-${comicId}`}
           value={profile?.subdomain}
+          required
          />
         <TextArea
           onChange={onTextChange}

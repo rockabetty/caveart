@@ -23,7 +23,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       await editComic(comicId, { subdomain: update })
       return res.status(200).json({ message: 'Subdomain updated successfully' });
     } catch (error) {
-      console.error('Error updating title:', error);
+      if (error.code === '23505' ) {
+        return res.status(400).json({message: 'A comic with this subdomain already exists.'})
+      }
       return res.status(500).json({ message: 'Failed to update subdomain' });
     }
   } else {

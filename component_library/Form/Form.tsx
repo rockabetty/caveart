@@ -49,7 +49,7 @@ const Form: React.FC<FormProps> = (props) => {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const form = document.querySelector(`#${id}`);
+    const form = document.querySelector(`#form_content-${id}`);
     const errorCount = form ? form.getElementsByClassName('Error').length : 0;
 
     if (errorCount === 0) {
@@ -66,7 +66,9 @@ const Form: React.FC<FormProps> = (props) => {
 
   return (
     <form id={id} className="form" noValidate onSubmit={handleSubmit}>
-      {children}
+      <div id={`form_content-${id}`}>
+        {children}
+      </div>
       {submissionError ? (
         <p className="form-feedback Error">{submissionError}</p>
       ) : null}

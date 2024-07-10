@@ -203,6 +203,15 @@ bdi, bdo, s, kbd, wbr, pre, textarea {
   font-family: Tahoma,Verdana,Segoe,sans-serif; 
 }
 
+/* 
+If a Code component is made, style that to not do pre-wrap
+instead of removing this rule
+*/
+pre {
+  white-space: pre-wrap;
+}
+
+
 p {
   margin-block-end:  var(--spacing-md);
   margin-block-start:  var(--spacing-sm);

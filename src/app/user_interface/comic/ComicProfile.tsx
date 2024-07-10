@@ -62,6 +62,7 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
 
   const submitEdit = async function() {
     const updates: Promise[] = [];
+    setSubmissionError("");
 
     updates.push(
       axios.post(`/api/comics/${comicId}/genres`, {
@@ -92,10 +93,13 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
     }
 
     try {
-      await Promise.all(updates)
+      await Promise.all(updates);
+      setComicProfile(comicUpdate);
       setEditing(false);
     } catch (error: any) {
-      setSubmissionError(error.message)
+      console.log(error)
+      const {message} = error.response?.data
+      setSubmissionError(message)
     }
   }
 
