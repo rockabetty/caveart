@@ -111,7 +111,7 @@ export async function isAuthor(
   author: number,
   comic: number,
 ): Promise<boolean | null> {
-  const query = `SELECT TRUE
+  const query = `SELECT TRUE as isauthor
       FROM comics_to_authors ca
       JOIN comics c
       ON c.id = ca.comic_id
@@ -122,7 +122,7 @@ export async function isAuthor(
   const values = [author, comic];
   try {
     const result = await queryDbConnection(query, values);
-    return !!result.rows;
+    return !!result.rows[0]?.isauthor;
   } catch (error: any) {
     throw error;
   }
@@ -132,6 +132,7 @@ export async function getComic(comicId: number): Promise<Comic | null> {
   const query = `
     SELECT
       c.title,
+      c.subdomain,
       c.tagline,
       c.description,
       c.thumbnail,
@@ -199,7 +200,7 @@ export async function getComicsByAuthor(
   if (!omniscientView) {
     conditions = " AND c.is_private IS NOT TRUE";
   }
-  const query = baseQuery + conditions;
+  const query = baseQuery + conditions + " ORDER BY c.id";
 
   try {
     const result = await queryDbConnection(query, [authorID]);
@@ -361,6 +362,7 @@ export async function editComic(
   update: Comic,
 ): Promise<QueryResult | null> {
   try {
+    console.log('comic ID:' + comicId)
     return await editTable("comics", "id", comicId, update);
   } catch (error: any) {
     logger.error(error);

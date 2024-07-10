@@ -15,7 +15,7 @@ export type GenreUserSelection = {
 type GenreSectionProps = {
   id: string;
   comicProfileGenres: GenreUserSelection,
-  allGenreChoices: string[]
+  allGenreChoices: GenreUserSelection,
   onChange: (...params: any) => any;
   parentIsEditing?: boolean;
   onSave?: (...params: any) => any;
@@ -43,14 +43,18 @@ const GenreSelection: React.FC<GenreSectionProps> = (props) => {
   }
 
   const handleSave = async () => {
-    try {
-      await onSave();
-      setEditing(false);
-    }
-    catch (error: any) {
-      console.error(error);
+    if (onSave) {
+       try {
+        await onSave();
+        setEditing(false);
+      }
+      catch (error: any) {
+        console.error(error);
+      }
     }
   }
+
+  console.log(parentIsEditing)
 
   const renderGenreSelector = useCallback(() => {
     return (
@@ -61,7 +65,7 @@ const GenreSelection: React.FC<GenreSectionProps> = (props) => {
             key={`selectable-genre${id ? `-${id}-` : '-'}${idx}`}
             id={`${id ? `${id}-` : null }option-${genre.id}`} 
             labelText={genre.name}
-            checked={comicProfileGenres && !!comicProfileGenres[genre.id as string | number]}
+            checked={comicProfileGenres && !!comicProfileGenres[Number(genre.id)]}
             onChange={onChange}
             name="genres"
             value={genre.id.toString()}
@@ -70,7 +74,7 @@ const GenreSelection: React.FC<GenreSectionProps> = (props) => {
       {parentIsEditing === undefined
            ?(
             <div className="flexrow FlushRight">
-              <ButtonSet classes="FlushRight">
+              <ButtonSet>
                 <Button inline={true} onClick={cancelEdit}>Cancel</Button>
                 <Button inline={true} onClick={handleSave} look="primary">Save</Button>
               </ButtonSet>
@@ -101,7 +105,7 @@ const GenreSelection: React.FC<GenreSectionProps> = (props) => {
           </div>)
       }
       {parentIsEditing === undefined
-        ?  <Badge icon={editing ? "close" : "edit"} label={editing ? "Cancel editing" : "Edit genres"} onClick={toggleEditing} />
+        ? <Badge icon={editing ? "close" : "edit"} label={editing ? "Cancel editing" : "Edit genres"} onClick={toggleEditing} />
         : null
       }
       </div>

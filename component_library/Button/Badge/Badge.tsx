@@ -52,7 +52,7 @@ export interface BadgeProps {
 const Badge = ({
   id = '',
   viewbox = "0 0 16 16",
-  look,
+  look = "secondary",
   disabled,
   onClick = () => {},
   tabIndex,
@@ -90,7 +90,7 @@ const Badge = ({
         'Badge': true,
         'Labeled': showLabel === true
       })}
-      look='muted'
+      look={look}
       role='button'
       tabIndex={tabIndex}
       type='button'

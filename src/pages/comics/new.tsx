@@ -10,6 +10,7 @@ import {
 } from '../../../component_library';
 import CaveartLayout from '../../app/user_interface/CaveartLayout';
 import GenreSelection from '../../app/user_interface/comic/GenreSelection';
+import ComicProfileEditor from '../../app/user_interface/comic/ComicProfileEditor';
 import ContentWarningSelector from '../../app/user_interface/comic/ContentWarningSelector';
 import '../../app/user_interface/layout.css';
 import { useTranslation } from 'react-i18next';
@@ -149,48 +150,13 @@ const ComicProfileForm = () => {
       submissionError={submissionError}
       formValues={{formValues}}
     >
-       <TextInput
-          labelText="Name of comic"
-          name="title"
-          type="text"
-          id="comic_name"
-          pattern="^[a-zA-Z0-9 !\-?]+$"
-          onChange={onChange}
-          value={formValues?.title}
-          placeholderText="Unga Bunga Grunga"
-          required={true}
-        />
-
-        <TextInput
-          labelText="Subdomain"
-          name="subdomain"
-          helperText="A-Z, numbers, hyphens and undescores only.  Your comic will be hosted at http://yourChoice.caveartcomics.com"
-          id="comic_subdomain"
-          onChange={onChange}
-          pattern="[A-Za-z0-9\-_]{1,}"
-          value={formValues?.subdomain}
-          placeholderText="unga-bunga-grunga"
-          required={true}
-        />
-
-        <TextArea
-          labelText="Description"
-          name="description"
-          id="comic_description"
-          placeholderText="Tell us about your comic!"
-          onChange={onChange}
-          value={formValues?.description}
-          required={false}
-        />
-
-        <ImageUpload
-          labelText="Cover Image"
-          helperText="Cover images can be up to 1MB."
-          editable={true}
-          maxSize={1000}
-          src="/img/brand/kraugak.png"
-          onChange={onFileChange}
-        />
+       <ComicProfileEditor
+         comicId="new"
+         profile={formValues}
+         onTextChange={onChange}
+         genres={genres}
+         onUpdateGenre={onToggleGenre}
+       />
 
         <h2>Content Warnings</h2>
         <p>
@@ -202,15 +168,7 @@ const ComicProfileForm = () => {
           onChange={onContentChange}
         />
         <p>{ratingString}</p>
-        <h2>Genres</h2>
-        <GenreSelection
-          id="new_comic"
-          allGenreChoices={genres}
-          comicProfileGenres={formValues.genres}
-          onChange={onToggleGenre}
-          parentIsEditing
-        />
-
+        
         <h2>Settings</h2>
         <fieldset>
           <legend>Visibility</legend>

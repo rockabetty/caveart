@@ -159,7 +159,7 @@
   --col-button: var(--color-button, var(--theme-secondary-20));
   --col-button-hover: var(--color-button-hover, var(--theme-secondary-30));
   --col-button-active: var(--color-button-active, var(--theme-secondary-30));
-  --col-button-label: var(--color-button-label, var(--col-text));
+  --col-button-label: var(--color-button-label, var(--theme-secondary-00));
 
   --col-button-primary: var(--color-button-primary, var(--theme-primary-60));
   --col-button-primary-hover: var(--color-button-primary-hover, var(--theme-primary-70));
@@ -199,9 +199,18 @@ body {
 
 div, p, span, a, rt, rp, dfn, abbr, q, cite, em, time, var,
 samp, i, b, sub, sup, small, strong, mark, ruby, ins, del,
-bdi, bdo, s, kbd, wbr {
+bdi, bdo, s, kbd, wbr, pre, textarea {
   font-family: Tahoma,Verdana,Segoe,sans-serif; 
 }
+
+/* 
+If a Code component is made, style that to not do pre-wrap
+instead of removing this rule
+*/
+pre {
+  white-space: pre-wrap;
+}
+
 
 p {
   margin-block-end:  var(--spacing-md);

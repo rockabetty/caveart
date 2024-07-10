@@ -35,7 +35,6 @@ export const useValidation = (options: ValidationOptions) => {
         const regexPattern = new RegExp(pattern);
         const invalidCharacterSet = new Set();
         for (const char of value) {
-          console.log(regexPattern)
           if (!regexPattern.test(char)) {
             invalidCharacterSet.add(char.replace(" ", "spaces"));
           }
