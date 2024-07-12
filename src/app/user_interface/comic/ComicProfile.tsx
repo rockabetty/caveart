@@ -1,6 +1,6 @@
-import { ImageUpload, Link, Button, Badge, Form, TextArea, TextInput, ButtonSet } from '../../../../component_library'
+import { ImageUpload, Link, Button, Badge, Form, TextArea, TextInput, Tag, ButtonSet } from '../../../../component_library'
 import './ComicProfiles.css';
-import GenreSelection, { GenreUserSelection } from './GenreSelection';
+import GenreSelector, { GenreUserSelection } from './GenreSelector';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import ComicProfileEditor from './ComicProfileEditor';
@@ -176,13 +176,15 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
                 <div>
                   <Link href={`/comic/${comicProfile.subdomain}`}>{comicProfile.subdomain}.caveartwebcomics.com</Link>  
                   <pre>{comicProfile.description}</pre>
-                  <GenreSelection
+                  <Tag label={comicProfile.rating} />
+                  <GenreSelector
                     comicProfileGenres={comicUpdate?.genres}
                     allGenreChoices={genres}
                     onChange={onUpdateGenre}
                     id={comicProfile.subdomain}
-                    parentIsEditing={false}
+                    editing={false}
                   />
+                  
                 </div>
               </div>
             )

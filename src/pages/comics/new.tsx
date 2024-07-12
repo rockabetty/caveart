@@ -162,11 +162,6 @@ const ComicProfileForm = () => {
         <p>
           Please put content warnings on your comic so that we can show our users appropriate content.
         </p>
-        <ContentWarningSelector
-          selection={contentWarningUserSelection}
-          options={contentWarningsForDisplay}
-          onChange={onContentChange}
-        />
         <p>{comicRating}</p>
         
         <h2>Settings</h2>

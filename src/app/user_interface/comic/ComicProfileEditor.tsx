@@ -1,6 +1,8 @@
 import { ImageUpload, Link, Button, Badge, TextArea, TextInput, ButtonSet } from '../../../../component_library'
 import './ComicProfiles.css';
-import GenreSelection, { GenreUserSelection } from './GenreSelection';
+import GenreSelector, { GenreUserSelection } from './GenreSelector';
+import ContentWarningSelector from './ContentWarningSelector';
+import { useContentWarnings, RatingName, ContentWarningUserSelection } from './hooks/useContentWarnings';
 import { emptyProfile, ComicData, ComicTextInputField } from './ComicProfile';
 
 type ComicProfileEditorProps = {
@@ -8,6 +10,7 @@ type ComicProfileEditorProps = {
   profile: ComicData,
   onTextChange: (...params: any) => any,
   genres: GenreUserSelection,
+  content: ContentWarningUserSelection,
   onUpdateGenre: (...params: any) => any,
   onFileChange: (...params: any) => any,
 }
@@ -22,6 +25,8 @@ const ComicProfileEditor: React.FC<ComicProfileEditorProps> = (props: ComicProfi
     onUpdateGenre,
     onFileChange
   } = props;
+
+  const { contentWarningsForDisplay, comicRating, contentWarningUserSelection, onContentChange } = useContentWarnings();
 
   return (
     <div className="comic-profile_body">
@@ -65,12 +70,21 @@ const ComicProfileEditor: React.FC<ComicProfileEditorProps> = (props: ComicProfi
           value={profile?.description}
         />
         <h2>Genres</h2>
-        <GenreSelection
+        <GenreSelector
           comicProfileGenres={profile?.genres}
           allGenreChoices={genres}
           onChange={onUpdateGenre}
           id={profile.subdomain}
-          parentIsEditing={true}
+          editing
+        />
+        <h2>Content Warnings</h2>
+        <p>Help users filter out unwanted content (such as for personal preferences, NSFW controls, and so on) by selecting any content warning labels that apply.
+        </p>
+        <ContentWarningSelector
+          selection={contentWarningUserSelection}
+          options={contentWarningsForDisplay}
+          onChange={onContentChange}
+          id={profile.subdomain}
         />
       </div>
     </div>
