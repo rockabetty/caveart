@@ -14,7 +14,7 @@ import ComicProfileEditor from '../../app/user_interface/comic/ComicProfileEdito
 import ContentWarningSelector from '../../app/user_interface/comic/ContentWarningSelector';
 import '../../app/user_interface/layout.css';
 import { useTranslation } from 'react-i18next';
-import { useContentWarnings, ContentWarningUserSelection } from '../../app/user_interface/comic/hooks/useContentWarnings';
+import { useContentWarnings, RatingName, ContentWarningUserSelection } from '../../app/user_interface/comic/hooks/useContentWarnings';
 
 type GenreSelection = {
   [genreId: string]: number;
@@ -29,7 +29,7 @@ type FormValues = {
   comments: string;
   visibility: string;
   likes: boolean;
-  rating: number;
+  rating: RatingName;
   thumbnail: FileList | undefined
 };
 
@@ -38,7 +38,7 @@ const ComicProfileForm = () => {
 
   const { t } = useTranslation();
 
-  const { contentWarningsForDisplay, ratingString, ratingId, contentWarningUserSelection, onContentChange } = useContentWarnings();
+  const { contentWarningsForDisplay, comicRating, contentWarningUserSelection, onContentChange } = useContentWarnings();
   const [genres, setGenres] = useState<any[]>([]);
   const [submissionError, setSubmissionError] = useState<string>("")
   const [formValues, setFormValues] = useState<FormValues>({
@@ -50,12 +50,13 @@ const ComicProfileForm = () => {
     comments: 'Allowed',
     visibility: 'Public',
     likes: true,
-    rating: 1,
+    rating: 'All Ages',
     thumbnail: undefined
   })
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)  => {
     setSubmissionError("")
+    console.log(formValues)
     setFormValues({ ...formValues, [e.target.name]: e.target.value })
   }
 
@@ -91,7 +92,7 @@ const ComicProfileForm = () => {
       }
     }
     formData.append('content', JSON.stringify(contentWarningUserSelection));
-    formData.append('rating', ratingId.toString());
+    formData.append('rating', comicRating);
 
     if (formValues.thumbnail) {
       for (let i = 0; i < formValues.thumbnail.length; i++) {
@@ -167,7 +168,7 @@ const ComicProfileForm = () => {
           options={contentWarningsForDisplay}
           onChange={onContentChange}
         />
-        <p>{ratingString}</p>
+        <p>{comicRating}</p>
         
         <h2>Settings</h2>
         <fieldset>

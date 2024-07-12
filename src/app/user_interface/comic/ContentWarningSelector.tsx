@@ -20,8 +20,6 @@ const ContentWarningSelector: React.FC<ContentWarningProps> = (props) => {
     onChange
   } = props;
 
-  console.log(selection)
-
   return (
     <div className="ReactiveGrid">
       {options && options.map((warning: ContentWarning, idx: number) => {

@@ -9,7 +9,12 @@ Caveart is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-n
 * **client vs. server in the auth directory:** This separation indicates the context intended for specific functions.  Some functions, such as those handling cookies, could apply to both the server and browser but interact differently in each context. Items within client are specific to React (usable in both the user_interface and pages directory), while those within server are exclusive to the server.
 
 ## Contribution Guidelines
-We utilize a RESTful API and highly recommend descriptive naming for files and folders. Avoid generic names like 'misc' or 'utils' to ensure clarity. Though this README includes a brief GIT tutorial, we encourage adhering to [Git's best practices](https://www.freecodecamp.org/news/how-to-use-git-best-practices-for-beginners/#:~:text=To%20get%20the%20most%20out,pull%20requests%20for%20code%20reviews.) to maintain code clarity and project integrity! 
+### API naming strategy
+We utilize a RESTful API and highly recommend descriptive naming for files and folders. Avoid generic names like 'misc' or 'utils' to ensure clarity. Check out [Git's best practices](https://www.freecodecamp.org/news/how-to-use-git-best-practices-for-beginners/#:~:text=To%20get%20the%20most%20out,pull%20requests%20for%20code%20reviews.).
+
+* Use sub-paths when creating an endpoint that returns data in a significantly different format than available endpoints.  For instance, there's `/api/content` which returns content warning definintions in a specific, nested format, but sometimes getting it in a nested format introduces un-necessary complexity: `/api/content/flat` is in a different format (all entries, no children) to accommodate that and avoid client-side revisions of the shape the data is in.
+
+* Use query parameters for fine-tuning a response in an overall not-that-different format or behavior.  For example, there's `/api/ratings` which takes a query parameter 'key' that determines which column you want to use for the key names of the data returned.   For instance, `/api/ratings?key=name`.
 
 # First Time Set Up
 ## Install Git

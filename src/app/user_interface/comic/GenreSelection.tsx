@@ -54,8 +54,6 @@ const GenreSelection: React.FC<GenreSectionProps> = (props) => {
     }
   }
 
-  console.log(parentIsEditing)
-
   const renderGenreSelector = useCallback(() => {
     return (
       <div>

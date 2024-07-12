@@ -1,3 +1,8 @@
+/* On top of being used to define a comic profile, users are going to be
+able to set content warning preferences to filter out what they don't 
+want to read and content warnings and ratings will be used as search 
+filters as well, so, a hook seems reasonable. */
+
 import { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 
@@ -11,53 +16,78 @@ export type ContentWarningUserSelection = {
   [contentWarningName: string]: string | number;
 };
 
-type RatingResults = {
-  [contentLabel: string]: "Ages 10+" | "Teen (13+)" | "Mature (17+)" | "Adults Only (18+)";
+export type RatingName = {
+  [contentLabel: string]: "Everyone" | "Ages 10+" | "Teen (13+)" | "Mature (17+)" | "Adults Only (18+)";
 }
 
-const ratingResults: RatingResults = {
-  "someViolence": "Ages 10+",
-  "someSuggestiveContent": "Ages 10+",
-  "frequentViolence": "Teen (13+)",
-  "someRealisticInjuries": "Teen (13+)",
-  "frequentSuggestiveContent": "Teen (13+)",
-  "someBlood": "Teen (13+)",
-  "someThreats": "Teen (13+)",
-  "someSwearing": "Teen (13+)",
-  "someSlurs": "Teen (13+)",
-  "someSexualLanguage": "Teen (13+)",
-  "someReferencesToSubstances": "Teen (13+)",
-  "someAlcoholUse": "Teen (13+)",
-  "someCommonDrugUse": "Teen (13+)",
-  "frequentRealisticInjuries": "Mature (17+)",
-  "frequentBlood": "Mature (17+)",
-  "someGore": "Mature (17+)",
-  "somePartialNudity": "Teen (13+)",
-  "frequentPartialNudity": "Mature (17+)",
-  "someFullNudity": "Mature (17+)",
-  "someSexScenes": "Mature (17+)",
-  "frequentThreats": "Mature (17+)",
-  "frequentSwearing": "Mature (17+)",
-  "frequentSlurs": "Mature (17+)",
-  "frequentSexualLanguage": "Mature (17+)",
-  "frequentReferencesToSubstances": "Mature (17+)",
-  "frequentAlcoholUse": "Mature (17+)",
-  "someHardDrugUse": "Mature (17+)",
-  "frequentGore": "Adults Only (18+)",
-  "frequentFullNudity": "Adults Only (18+)",
-  "frequentSexScenes": "Adults Only (18+)",
-  "someSexualViolence": "Adults Only (18+)",
-  "frequentSexualViolence": "Adults Only (18+)",
-  "frequentHardDrugUse": "Adults Only (18+)"
+type RatingLevelRules = {
+  [key: RatingName]: string[]
+}
+
+const ratingLevels: RatingLevelRules = {
+  "Ages 10+": new Set([
+    "someViolence",
+    "someSuggestiveContent"
+  ]),
+  "Teen (13+)": new Set([
+    "frequentSuggestiveContent",
+    "someBlood",
+    "someThreats",
+    "someSwearing",
+    "someSlurs",
+    "someSexualLanguage",
+    "someReferencesToSubstances",
+    "someAlcoholUse",
+    "someCommonDrugUse",
+    "somePartialNudity",
+  ]),
+  "Mature (17+)": new Set([
+    "frequentRealisticInjuries",
+    "frequentBlood",
+    "someGore",
+    "frequentPartialNudity",
+    "someFullNudity",
+    "someSexScenes",
+    "frequentThreats",
+    "frequentSwearing",
+    "frequentSlurs",
+    "frequentSexualLanguage",
+    "frequentReferencesToSubstances",
+    "frequentAlcoholUse",
+    "someHardDrugUse",
+  ]),
+  "Adults Only (18+)": new Set([
+    "frequentGore",
+    "frequentFullNudity",
+    "frequentSexScenes",
+    "someSexualViolence",
+    "frequentSexualViolence",
+    "frequentHardDrugUse"
+  ])
 };
+
+const determineComicRating = function(content): RatingName {
+  if (!content.isDisjointFrom(ratingLevels["Adults Only (18+)"])) {
+    return "Adults Only (18+)";
+  }
+  if (!content.isDisjointFrom(ratingLevels["Mature (17+)"])) {
+    return "Mature (17+)";
+  }
+  if (!content.isDisjointFrom(ratingLevels["Teen (13+)"])) {
+    return "Teen (13+)";
+  }
+  if (!content.isDisjointFrom(ratingLevels["Ages 10+"])) {
+    return "Ages 10+";
+  }
+  return 'All Ages';
+}
 
 export const useContentWarnings = (initialSelection = {}) => {
   const [contentWarningsForDisplay, setContentWarningsForDisplay] = useState<ContentWarning[]>([]);
   const [contentWarningOptionList, setContentWarningOptionList] = useState<{[key:number]: string}>();
-  const [contentWarningKeys, setContentWarningKeys] = useState<Set<string>>(new Set());
-  const [ratingString, setRatingString] = useState<string>("All Ages");
-  const [ratingId, setRatingId] = useState<number>(1);
-  const [ratings, setRatings] = useState<{[key:string] : number}>({});
+  const [contentWarningKeysForRating, setContentWarningKeysForRating] = useState<Set<string>>(new Set());
+  const [comicRating, setComicRating] = useState<RatingName>('All Ages');
+  const [ratings, setRatings] = useState<{[key:RatingName] : number}>({});
   const [contentWarningUserSelection, setContentWarningUserSelection] = useState<ContentWarningUserSelection>(initialSelection);
   
   useEffect(() => {
@@ -69,7 +99,7 @@ export const useContentWarnings = (initialSelection = {}) => {
       setContentWarningOptionList(response.data);
     });
 
-    axios.get('/api/ratings').then(response => {
+    axios.get('/api/ratings?key=name').then(response => {
       setRatings(response.data);
     });
   }, []);
@@ -77,11 +107,10 @@ export const useContentWarnings = (initialSelection = {}) => {
   const onContentChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (contentWarningOptionList) {
       let content = { ...contentWarningUserSelection };
-      let contentWarningKeysUpdate = new Set(contentWarningKeys);
+      let contentWarningKeysUpdate = new Set(contentWarningKeysForRating);
       let value: number | undefined = undefined;
       let contentWarningName = "";
       const contentWarningCategory = e.target.name;
-
       if (e.target.value === "none") {
         delete content[contentWarningCategory];
         const contentLabel = contentWarningCategory.charAt(0).toUpperCase() + contentWarningCategory.slice(1);
@@ -94,37 +123,20 @@ export const useContentWarnings = (initialSelection = {}) => {
         content = { ...content, [contentWarningCategory]: value };
       }
 
-      setContentWarningKeys(contentWarningKeysUpdate);
-      const audienceRatings = new Set();
-
-      Array.from(contentWarningKeysUpdate).forEach(key => {
-        const rating: string = ratingResults[key];
-        audienceRatings.add(rating);
-      });
-
-      let ratingUpdate = 'All Ages';
-      if (audienceRatings.has('Adults Only (18+)')) {
-        ratingUpdate = "Adults Only (18+)";
-      } else if (audienceRatings.has('Mature (17+)')) {
-        ratingUpdate = "Mature (17+)";
-      } else if (audienceRatings.has('Teen (13+)')) {
-        ratingUpdate = "Teen (13+)";
-      } else if (audienceRatings.has('Ages 10+')) {
-        ratingUpdate = "Ages 10+";
-      }
-
-      setRatingString(ratingUpdate);
-      setRatingId(ratings[ratingUpdate]);
+      setContentWarningKeysForRating(contentWarningKeysUpdate);
       setContentWarningUserSelection(content);
-
+      setComicRating(determineComicRating(contentWarningKeysUpdate));
     }
-  }, [contentWarningUserSelection, contentWarningOptionList, contentWarningKeys, ratings]);
+  }, [
+      contentWarningUserSelection,
+      contentWarningOptionList,
+      contentWarningKeysForRating
+  ]);
 
   return {
     contentWarningsForDisplay,
-    ratingString,
-    ratingId,
     contentWarningUserSelection,
-    onContentChange
+    onContentChange,
+    comicRating
   };
 };
