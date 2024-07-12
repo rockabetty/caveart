@@ -100,7 +100,7 @@ const ComicProfileForm = () => {
       }
     }
 
-    await axios.post('/api/comics/new', formData)
+    await axios.post('/api/comic/new', formData)
     .then((res) => {
       console.log(res)
     })
