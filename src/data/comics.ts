@@ -333,6 +333,20 @@ export async function getRatingDefs(
   }
 }
 
+export async function getRatingId(name: string): Promise<QueryResult | null> {
+  try {
+    const result = await queryDbConnection(`SELECT id FROM ratings WHERE name = $1`, [name])
+    console.log(result)
+    if (result.rows && result.rows.length > 0) {
+    return result.rows[0].id
+    }
+  return null
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
+  }
+}
+
 export async function getGenres(): Promise<GenreSelection | null> {
   try {
     const result = await queryDbConnection(

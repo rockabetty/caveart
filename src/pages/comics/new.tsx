@@ -25,11 +25,11 @@ type FormValues = {
   subdomain: string;
   description: string;
   genres: GenreSelection;
-  content: ContentWarningUserSelection;
+  content?: ContentWarningUserSelection;
   comments: string;
   visibility: string;
   likes: boolean;
-  rating: RatingName;
+  rating?: RatingName;
   thumbnail: FileList | undefined
 };
 
@@ -46,11 +46,9 @@ const ComicProfileForm = () => {
     subdomain: '',
     description: '',
     genres: {},
-    content: {},
     comments: 'Allowed',
     visibility: 'Public',
     likes: true,
-    rating: 'All Ages',
     thumbnail: undefined
   })
 
@@ -93,6 +91,7 @@ const ComicProfileForm = () => {
     }
     formData.append('content', JSON.stringify(contentWarningUserSelection));
     formData.append('rating', comicRating);
+
 
     if (formValues.thumbnail) {
       for (let i = 0; i < formValues.thumbnail.length; i++) {

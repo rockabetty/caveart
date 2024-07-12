@@ -12,7 +12,8 @@ import {
   deleteComic,
   removeGenresFromComic,
   removeContentWarningsFromComic,
-  removeAuthorsFromComic
+  removeAuthorsFromComic,
+  getRatingId
 } from '../../../data/comics';
 import { Comic } from '../../../data/types';
 import { logger } from '../../../services/logs';
@@ -170,9 +171,14 @@ const handler: NextApiHandler = async (req, res) => {
         processedFields.likes = selectedLikesOption === 'true';
       }
 
+      let rating: number = 0;
       if (!fields.rating) {
         res.status(400).json({ error: 'invalidRating' });
       }
+      console.log('---------------------------------------')
+      console.log(fields.rating)
+      rating = await getRatingId(fields.rating[0]);
+      console.log(rating)
 
       let comicData: Comic = {};
 
@@ -185,8 +191,7 @@ const handler: NextApiHandler = async (req, res) => {
         is_unlisted,
         is_private,
         moderate_comments,
-        likes,
-        rating 
+        likes
       } = processedFields
 
       comicData = {

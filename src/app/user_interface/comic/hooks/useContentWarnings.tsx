@@ -32,6 +32,8 @@ const ratingLevels: RatingLevelRules = {
   "Teen (13+)": new Set([
     "frequentSuggestiveContent",
     "someBlood",
+    "someRealisticInjuries",
+    "frequentViolence",
     "someThreats",
     "someSwearing",
     "someSlurs",
@@ -51,6 +53,7 @@ const ratingLevels: RatingLevelRules = {
     "frequentThreats",
     "frequentSwearing",
     "frequentSlurs",
+    "frequentRealisticInjuries",
     "frequentSexualLanguage",
     "frequentReferencesToSubstances",
     "frequentAlcoholUse",
