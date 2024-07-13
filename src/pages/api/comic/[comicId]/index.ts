@@ -1,12 +1,12 @@
 import { NextApiHandler } from 'next';
-import { getComic } from '../../../data/comics';
-import { logger } from '../../../services/logs';
+import { getComic } from '../../../../data/comics';
+import { logger } from '../../../../services/logs';
 
 const handler: NextApiHandler = async (req, res) => {
   try {
-    const {id} = req.query;
-    if (typeof id === 'string' && parseInt(id)) {
-      const idNumber = parseInt(id)
+    const {comicId} = req.query;
+    if (typeof comicId === 'string' && parseInt(comicId)) {
+      const idNumber = parseInt(comicId)
       const comicData = await getComic(idNumber);
       return res.status(200).send(comicData)
     } else {
