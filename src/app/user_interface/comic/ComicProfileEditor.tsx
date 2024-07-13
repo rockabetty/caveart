@@ -26,9 +26,7 @@ const ComicProfileEditor: React.FC<ComicProfileEditorProps> = (props: ComicProfi
     onFileChange
   } = props;
 
-  console.log(profile.content_warnings)
-
-  const { contentWarningsForDisplay, comicRating, onContentChange, contentWarningUserSelection } = useContentWarnings();
+  const { contentWarningsForDisplay, comicRating, onContentChange, contentWarningUserSelection } = useContentWarnings(profile.content_warnings);
 
   return (
     <div className="comic-profile_body">
@@ -83,7 +81,7 @@ const ComicProfileEditor: React.FC<ComicProfileEditorProps> = (props: ComicProfi
         <p>Help users filter out unwanted content (such as for personal preferences, NSFW controls, and so on) by selecting any content warning labels that apply.
         </p>
         <ContentWarningSelector
-          selection={profile?.content_warnings}
+          selection={contentWarningUserSelection}
           options={contentWarningsForDisplay}
           onChange={onContentChange}
           id={profile.subdomain}
