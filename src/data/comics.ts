@@ -135,7 +135,7 @@ export async function getComic(comicId: number): Promise<Comic | null> {
     SELECT
       c.id AS comic_id,
       COALESCE(
-          jsonb_object_agg(cwparent.name, cw.id) FILTER (WHERE cw.id IS NOT NULL),
+          jsonb_object_agg(cwparent.name, json_build_object('id', cw.id, 'name', cw.name)) FILTER (WHERE cw.id IS NOT NULL),
           '{}'::jsonb
       ) AS content_warnings
     FROM comics c

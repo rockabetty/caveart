@@ -6,6 +6,7 @@ import axios from 'axios';
 import ComicProfileEditor from './ComicProfileEditor';
 import { useComicProfile } from './hooks/useComicProfile'; 
 import ComicProfileProvider from './hooks/ComicProfileProvider';
+import { useTranslation } from 'react-i18next';
 
 export const emptyProfile: ComicData = {
     id: '',
@@ -19,6 +20,7 @@ export const emptyProfile: ComicData = {
 }
 
 const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => {
+  const { t } = useTranslation();
   const {comicId} = props;
   const {state, loadProfile, getUserPermissions} = useComicProfile(comicId);
   const {profile, permissions, update} = state;
@@ -28,7 +30,7 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
     getUserPermissions()
   }, [])
 
-  const renderComicProfileGenres = useCallback(() => {
+  const renderGenres = useCallback(() => {
     const selectedGenres = profile?.genres 
     ? Object.values(profile.genres)
     : [];
@@ -41,8 +43,35 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
           {selectedGenres.map((value, idx) => {
             return (
               <Tag
-                key={`browsing-genre${comicId}-${idx}`}
+                key={`browsing-genre-${comicId}-${idx}`}
                 label={value.name}
+              />
+            )
+          })}
+          </>)
+      }
+      </>
+    );
+  }, [profile]);
+
+  const renderContentWarnings = useCallback(() => {
+    const contentWarnings = profile?.content_warnings 
+    ? Object.keys(profile.content_warnings)
+    : [];
+
+    console.log(profile.content_warnings)
+
+   
+    return (
+      <>
+      {contentWarnings.length === 0
+        ? null
+        : (<>
+          {contentWarnings.map((key, idx) => {
+            return (
+              <Tag
+                key={`browsing-content_warning-${comicId}-${idx}`}
+                label={t(`contentWarnings.${key}.${profile.content_warnings[key].name}`)}
               />
             )
           })}
@@ -74,8 +103,8 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
               <Link href={`/comic/${profile?.subdomain}`}>{profile?.subdomain}.caveartwebcomics.com</Link>  
               <pre>{profile?.description}</pre>
               <Tag label={profile?.rating} />
-              {renderComicProfileGenres()}
-
+              {renderGenres()}
+              {renderContentWarnings()}
             </div>
           </div>
       </div>
