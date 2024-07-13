@@ -1,7 +1,14 @@
 import axios from 'axios';
-import { ComicProfileState, Action, ComicData } from '../types';
+import { ComicProfileState, ComicData } from '../types';
+import { ComicProfileAction } from './comicProfileReducer';
 
-export const getProfile = (comicID: number) => async(dispatch: React.Dispatch<Action>) => {
+const handleError = function(error:any) {
+  // TODO- error logging and such, in the meantime handleError is called in each action
+  // for future convenience
+  console.error(error)
+}
+
+export const getProfile = (comicID: number) => async(dispatch: React.Dispatch<ComicProfileAction>) => {
     try {
       const comic = await axios.get(`/api/comic/${comicID}`);
       dispatch({
@@ -9,6 +16,19 @@ export const getProfile = (comicID: number) => async(dispatch: React.Dispatch<Ac
         payload: { profile: comic.data },
     });
   } catch (error: any ) {
-    console.error(error)
+    handleError(error)
   }
 };
+
+export const getPermissions = (comicID: number) => async(dispatch: React.Dispatch<ComicProfileAction>) => {
+  try {
+    const permissions = await axios.get(`/api/comic/${comicID}/permissions`);
+    dispatch({
+      type: 'GET_COMIC_PERMISSIONS',
+      payload: { permissions: permissions.data },
+    });
+  }
+  catch (error: any) {
+    handleError(error)
+  }
+}

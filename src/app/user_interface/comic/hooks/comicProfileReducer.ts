@@ -1,10 +1,10 @@
-import { ComicData } from '../types';
+import { ComicData, ComicPermissions } from '../types';
 
 export type ComicProfileState = {
   profile: ComicData;
   update: ComicData;
   editing: boolean;
-  canEdit: boolean;
+  permissions: ComicPermissions;
   submissionError: string;
 }
 
@@ -28,7 +28,6 @@ export const initialState: ComicProfileState = {
 }
 
 // type Action =
-//   | { type: 'GET_COMIC_PROFILE', payload: ComicData }
 //   | { type: 'SET_COMIC_UPDATE', payload: ComicData }
 //   | { type: 'SET_EDITING', payload: boolean }
 //   | { type: 'SET_CAN_EDIT', payload: boolean }
@@ -43,6 +42,7 @@ export const initialState: ComicProfileState = {
 
 export type ComicProfileAction =
   | { type: 'GET_COMIC_PROFILE', payload: ComicData }
+  | { type: 'GET_COMIC_PERMISSIONS', payload: ComicPermissions }
 
 export const comicProfileReducer = (state: ComicProfileState, action: ComicProfileAction): ComicProfileState => {
   switch (action.type) {
@@ -50,6 +50,11 @@ export const comicProfileReducer = (state: ComicProfileState, action: ComicProfi
       return {
         ...state,
         profile: action.payload.profile, 
+      };
+    case 'GET_COMIC_PERMISSIONS':
+      return {
+        ...state,
+        permissions: action.payload.permissions,
       };
     default:
       return state;

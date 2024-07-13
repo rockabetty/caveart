@@ -4,6 +4,7 @@ export type Genre = {
   description?: string;
 };
 
+
 export type GenreUserSelection = {
   [key: `${number}` | number]: Genre;
 };
@@ -20,6 +21,10 @@ export type ComicData = {
   subdomain: string;
   thumbnail: string;
   rating: string;
+}
+
+export type ComicPermissions = {
+  edit: boolean
 }
 
 export type ComicTextInputField = Extract<keyof ComicData, 'title' | 'description' | 'subdomain'>;

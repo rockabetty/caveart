@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { ComicProfileContext } from './ComicProfileProvider';
-import { getProfile } from './comicProfileActions';
+import { getProfile, getPermissions } from './comicProfileActions';
 
 export const useComicProfile = (comicID: number) => {
   const context = useContext(ComicProfileContext);
@@ -16,8 +16,13 @@ export const useComicProfile = (comicID: number) => {
     getProfile(comicID)(dispatch);
   }
 
+  const getUserPermissions = () => {
+    getPermissions(comicID)(dispatch);
+  }
+
   return {
     state,
     loadProfile,
+    getUserPermissions,
   };
 };
