@@ -23,6 +23,7 @@ const ContentWarningSelector: React.FC<ContentWarningProps> = (props) => {
   return (
     <div className="ReactiveGrid">
       {options && options.map((warning: ContentWarning, idx: number) => {
+        console.log(selection)
         return (
           <Accordion key={idx}>
             {warning.name}
@@ -35,7 +36,7 @@ const ContentWarningSelector: React.FC<ContentWarningProps> = (props) => {
                     id={`no-cw-${name}`}
                     onChange={onChange}
                     labelText="No"
-                    checked={selection[name] === undefined}
+                    checked={selection && selection[name] === undefined}
                     name={name}
                     value="none"
                   />
@@ -47,7 +48,7 @@ const ContentWarningSelector: React.FC<ContentWarningProps> = (props) => {
                         onChange={onChange}
                         labelText={["Some", "Frequent"][idx]}
                         name={name}
-                        checked={selection[name] == option.id}
+                        checked={selection && selection[name] == option.id}
                         value={option.id}
                       />
                     );

@@ -86,6 +86,7 @@ const determineComicRating = function(content): RatingName {
 }
 
 export const useContentWarnings = (initialSelection = {}) => {
+  console.log(initialSelection)
   const [contentWarningsForDisplay, setContentWarningsForDisplay] = useState<ContentWarning[]>([]);
   const [contentWarningOptionList, setContentWarningOptionList] = useState<{[key:number]: string}>();
   const [contentWarningKeysForRating, setContentWarningKeysForRating] = useState<Set<string>>(new Set());

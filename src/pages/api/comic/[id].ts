@@ -14,7 +14,7 @@ const handler: NextApiHandler = async (req, res) => {
     }
   }
   catch (error: any) {
-    return res.status(500).send("Failed to fetch comic data");
+    return res.status(500).send(error.message);
     logger.error(error);
   }
 }
