@@ -5,6 +5,7 @@ import ComicProfile from '../../app/user_interface/comic/ComicProfile';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { Comic, GenreSelection } from '../../data/types';
+import ComicProfileProvider from '../../app/user_interface/comic/hooks/ComicProfileProvider'
 
 function MyComics() {
 
@@ -36,11 +37,13 @@ function MyComics() {
     {comics
       ? comics.map((comic, idx) => {
         return (
+          <ComicProfileProvider>
           <ComicProfile
             key={`comic-${idx}`}
             comicId={comic.id || -1}
             genres={genres}
           />
+          </ComicProfileProvider>
         )
       })
       : <p>{t('comicManagement.noComics')}</p>

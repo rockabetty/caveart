@@ -1,74 +1,57 @@
-export type Genre = {
-  id: string;
-  name: string;
-  description?: string;
-}
+import { ComicData } from '../types';
 
-export type GenreUserSelection = {
-  [key: `${number}` | number]: Genre
-}
-
-export type ContentWarningUserSelection = {
-  [contentWarningName: string]: string | number;
-};
-
-export type ComicData = {
-  id: string;
-  genres: GenreUserSelection;
-  content_warnings: 
-  description: string;
-  title: string;
-  subdomain: string;
-  thumbnail: string;
-  rating: string;
-}
-
-export type ComicTextInputField = Extract<keyof ComicData, 'title' | 'description' | 'subdomain'>;
-
-type ComicProfileState = {
+export type ComicProfileState = {
   profile: ComicData;
   update: ComicData;
   editing: boolean;
+  canEdit: boolean;
   submissionError: string;
 }
 
-const emptyProfile: ComicProfileState = {
-  id: '',
-  genres: {},
-  content_warnings: {},
-  title: '',
-  description: '',
-  subdomain: '',
-  rating: '',
-  thumbnail: ''
+const emptyProfile: ComicData = {
+    id: '',
+    genres: {},
+    content_warnings: {},
+    title: '',
+    description: '',
+    subdomain: '',
+    rating: '',
+    thumbnail: ''
 }
 
-type Action =
-  | { type: 'SET_COMIC_PROFILE', payload: ComicData }
-  | { type: 'SET_COMIC_UPDATE', payload: ComicData }
-  | { type: 'SET_EDITING', payload: boolean }
-  | { type: 'SET_CAN_EDIT', payload: boolean }
-  | { type: 'SET_SUBMISSION_ERROR', payload: string }
-  | { type: 'RESET_UPDATE' }
-  | { type: 'START_EDIT' }
-  | { type: 'CANCEL_EDIT' }
-  | { type: 'UPDATE_GENRE', payload: GenreUserSelection }
-  | { type: 'UPDATE_TEXT', payload: { key: ComicTextInputField, value: string } }
-  | { type: 'UPDATE_FILE', payload: string }
-  | { type: 'UPDATE_CONTENT_WARNINGS', payload: { current: ContentWarningUserSelection, update: ContentWarningUserSelection } };
+export const initialState: ComicProfileState = {
+  profile: emptyProfile,
+  update: emptyProfile,
+  editing: false,
+  canEdit: false,
+  submissionError: ''
+}
 
-const comicProfileReducer = (state: ComicProfileState, action: Action): ComicProfileState => {
+// type Action =
+//   | { type: 'GET_COMIC_PROFILE', payload: ComicData }
+//   | { type: 'SET_COMIC_UPDATE', payload: ComicData }
+//   | { type: 'SET_EDITING', payload: boolean }
+//   | { type: 'SET_CAN_EDIT', payload: boolean }
+//   | { type: 'SET_SUBMISSION_ERROR', payload: string }
+//   | { type: 'RESET_UPDATE' }
+//   | { type: 'START_EDIT' }
+//   | { type: 'CANCEL_EDIT' }
+//   | { type: 'UPDATE_GENRE', payload: GenreUserSelection }
+//   | { type: 'UPDATE_TEXT', payload: { key: ComicTextInputField, value: string } }
+//   | { type: 'UPDATE_FILE', payload: string }
+//   | { type: 'UPDATE_CONTENT_WARNINGS', payload: { current: ContentWarningUserSelection, update: ContentWarningUserSelection } };
+
+export type ComicProfileAction =
+  | { type: 'GET_COMIC_PROFILE', payload: ComicData }
+
+export const comicProfileReducer = (state: ComicProfileState, action: ComicProfileAction): ComicProfileState => {
   switch (action.type) {
-    case 'SET_COMIC_PROFILE':
+    case 'GET_COMIC_PROFILE':
       return {
         ...state,
-        profile: action.payload.comicProfile, 
-        update: action.payload.comicProfile, 
-        canEdit: action.payload.canEdit 
+        profile: action.payload.profile, 
       };
     default:
       return state;
   }
 }
-
-export default comicProfileReducer;
