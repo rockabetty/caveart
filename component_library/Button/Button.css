@@ -17,6 +17,7 @@
 .button.Inline {
   width: auto;
   display: inline-block;
+  margin: 0 var(--spacing-md);
 }
 
 .button:hover {

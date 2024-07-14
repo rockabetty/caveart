@@ -5,3 +5,4 @@ export { Modal } from './Modal';
 export { Accordion } from './Accordion';
 export { ImageUpload, useImageUploader } from './Image';
 export { Tag } from './Tag';
+export { LoadingSpinner } from './LoadingSpinner';

@@ -1,11 +1,7 @@
-import { ImageUpload, Link, Button, Badge, Form, TextArea, TextInput, Tag, ButtonSet } from '../../../../component_library'
+import { ImageUpload, Link, Tag } from '../../../../component_library'
 import './ComicProfiles.css';
-import GenreSelector, { GenreUserSelection } from './GenreSelector';
-import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
-import ComicProfileEditor from './ComicProfileEditor';
+import { useEffect, useCallback } from 'react';
 import { useComicProfile } from './hooks/useComicProfile'; 
-import ComicProfileProvider from './hooks/ComicProfileProvider';
 import { useTranslation } from 'react-i18next';
 
 export const emptyProfile: ComicData = {
@@ -58,9 +54,6 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
     const contentWarnings = profile?.content_warnings 
     ? Object.keys(profile.content_warnings)
     : [];
-
-    console.log(profile.content_warnings)
-
    
     return (
       <>
@@ -84,24 +77,22 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
 
   return (
       <div className="comic-profile">
-        <div className="comic-profile_header">
-          <h1 className="comic-profile_title">{profile?.title}</h1>
-            {permissions?.edit
-              ? <Badge showLabel id={`edit-${profile?.subdomain}`} icon="edit" label="Edit profile" />
-              : null
-            }
-        </div>
-      
           <div className="comic-profile_body">
-            <a className="comic-profile_cover" href={`/read/${comicId}`}>
+            <a className="comic-profile_cover" href={`/read/${profile?.subdomain}`}>
               {profile?.thumbnail
                 ? <ImageUpload src={`/${profile?.thumbnail}`} />
                 : <ImageUpload src='/img/brand/kraugak.png' />
               }
             </a>
             <div>
-              <Link href={`/comic/${profile?.subdomain}`}>{profile?.subdomain}.caveartwebcomics.com</Link>  
-              <pre>{profile?.description}</pre>
+             <div className="comic-profile_header">
+                <h1 className="comic-profile_title">{profile?.title}</h1>
+                  {permissions?.edit
+                    ? <Link type="inline button" href={`/comic/${comicId}/edit`} id={`edit-${profile?.subdomain}`}>{t('comicManagement.edit')}</Link>
+                    : null
+                  }
+              </div>
+              <pre className="comic-profile_description">{profile?.description}</pre>
               <Tag label={profile?.rating} />
               {renderGenres()}
               {renderContentWarnings()}

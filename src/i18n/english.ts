@@ -147,6 +147,9 @@ const english = {
         "someReferencesToSubstances": "Occasional substance references",
         "frequentReferencesToSubstances": "Frequent substance references",
       }
+    },
+    "statusCodes": {
+      "403": "You don't have permission to access this page."
     }
   }
 };

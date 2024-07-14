@@ -65,7 +65,7 @@ const Tag:React.FC<TagProps> = (props) => {
     return (
       <div
         id={id}
-        className={`tag ${classes} ${classNames({
+        className={`tag ${classNames({
           Removable: !!removable
         })}`}
       >
