@@ -12,7 +12,7 @@ export type GenreUserSelection = {
 }
 
 type GenreSectionProps = {
-  id: string;
+  id?: string;
   selection: GenreUserSelection,
   options: Genre[],
   onChange: (...params: any) => any;

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ComicProfileAction } from "./comicProfileReducer";
-import { ComicPermissions, ComicData, ComicField } from "../types";
+import { ComicPermissions, ComicData, ComicField, GenreUserSelection } from "../types";
 
 const handleError = function (error: any) {
   // TODO- error logging and such, in the meantime handleError is called in each action
@@ -54,11 +54,11 @@ export const fetchProfileToUpdate =
     }
   };
 
-export const updateTextfield =
-  (fieldName: ComicField, value: string) =>
+export const updateFormfield =
+  (fieldName: ComicField, value: string | GenreUserSelection) =>
   (dispatch: React.Dispatch<ComicProfileAction>) => {
     dispatch({
-      type: "EDIT_TEXT_FIELD",
+      type: "EDIT_FORM_FIELD",
       fieldName,
       value,
     });

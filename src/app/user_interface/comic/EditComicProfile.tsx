@@ -1,58 +1,79 @@
-import { Form, LoadingSpinner, TextInput, TextArea } from '../../../../component_library'
-import './ComicProfiles.css';
-import { useEffect, useState } from 'react';
-import { useComicProfile } from './hooks/useComicProfile'; 
-import GenreSelector from './GenreSelector';
-import ContentWarningSelector from './ContentWarningSelector';
-import { useTranslation } from 'react-i18next';
-import axios from 'axios';
+import {
+  Form,
+  LoadingSpinner,
+  TextInput,
+  TextArea,
+} from "../../../../component_library";
+import "./ComicProfiles.css";
+import { useEffect, useState } from "react";
+import { useComicProfile } from "./hooks/useComicProfile";
+import GenreSelector from "./GenreSelector";
+import ContentWarningSelector from "./ContentWarningSelector";
+import { useTranslation } from "react-i18next";
+import axios from "axios";
+import { ComicData } from "./types";
 
-const EditComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => {
+type EditComicProfileProps = {
+  comicId: number
+}
+
+const EditComicProfile: React.FC<EditComicProfileProps> = (
+  props: EditComicProfileProps,
+) => {
   const { t } = useTranslation();
-  const {comicId} = props;
-  const {state,
-    enableEditing,
-    setTextField,
-  } = useComicProfile(comicId);
-  const {update, permissions} = state;
+  const { comicId } = props;
+  const { state, enableEditing, setField } = useComicProfile(comicId);
+  const { update, permissions } = state;
   const [genres, setGenres] = useState([]);
 
   useEffect(() => {
     const getGenres = async () => {
       try {
         const genres = await axios.get(`/api/genres`);
-        setGenres(genres.data)
-        console.log(genres.data)
+        setGenres(genres.data);
+        console.log(genres.data);
       } catch (error: any) {
         console.error(error);
       }
-    }
+    };
     getGenres();
-  },[])
+  }, []);
 
   useEffect(() => {
-   enableEditing()
-  }, [comicId])
+    enableEditing();
+  }, [comicId]);
 
-  const handleTextInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleTextInput = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { value, name } = e.target;
-    setTextField(name, value);
+    setField(name as keyof ComicData, value);
+  };
+
+  const handleCategorySelection = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const newSelection = update.genres;
+    const genreID: number = Number(e.target.value);
+    if (!newSelection[genreID]) {
+      newSelection[genreID] = genres[genreID];
+    } else {
+      delete newSelection[genreID];
+    }
+    setField('genres', newSelection)
   };
 
   if (permissions === undefined) {
-    return <LoadingSpinner />
+    return <LoadingSpinner />;
   }
 
   if (permissions?.edit === false) {
-    return (<div>{t('statusCodes.403')}</div>)
+    return <div>{t("statusCodes.403")}</div>;
   }
 
   return (
     <div className="comic-profile">
-      <Form
-        id={`editform-${comicId}`}
-        formValues={update}
-      >
+      <Form id={`editform-${comicId}`} formValues={update}>
         <h2>Basic Info</h2>
         <TextInput
           onChange={handleTextInput}
@@ -74,7 +95,7 @@ const EditComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps)
           id={`subdomain-edit-${comicId}`}
           value={update?.subdomain}
           required
-         />
+        />
         <TextArea
           onChange={handleTextInput}
           labelText="Description"
@@ -87,17 +108,19 @@ const EditComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps)
         <GenreSelector
           selection={update?.genres}
           options={genres}
+          onChange={handleCategorySelection}
         />
         <h2>Content Warnings</h2>
-        <p>Help users filter out unwanted content (such as for personal preferences, NSFW controls, and so on) by selecting any content warning labels that apply.
+        <p>
+          Help users filter out unwanted content (such as for personal
+          preferences, NSFW controls, and so on) by selecting any content
+          warning labels that apply.
         </p>
-        <ContentWarningSelector
-          selection={update?.content_warnings}
-        />
+        <ContentWarningSelector selection={update?.content_warnings} />
       </Form>
     </div>
-  )
-}
+  );
+};
 /*
   <Form
               id={`editform-${comicId}`}

@@ -1,17 +1,17 @@
-import { ComicData, ComicPermissions } from "../types";
+import { ComicData, ComicPermissions, GenreUserSelection } from "../types";
 
 export type ComicProfileState = {
   profile: ComicData;
   update: ComicData;
   editing: boolean;
-  permissions: ComicPermissions;
+  permissions: ComicPermissions | undefined;
   submissionError: string;
 };
 
 const emptyProfile: ComicData = {
   id: "",
   genres: {},
-  content_warnings: {},
+//  content_warnings: {},
   title: "",
   description: "",
   subdomain: "",
@@ -23,22 +23,9 @@ export const initialState: ComicProfileState = {
   profile: emptyProfile,
   update: emptyProfile,
   editing: false,
-  canEdit: false,
+  permissions: undefined,
   submissionError: "",
 };
-
-// type Action =
-//   | { type: 'SET_COMIC_UPDATE', payload: ComicData }
-//   | { type: 'SET_EDITING', payload: boolean }
-//   | { type: 'SET_CAN_EDIT', payload: boolean }
-//   | { type: 'SET_SUBMISSION_ERROR', payload: string }
-//   | { type: 'RESET_UPDATE' }
-//   | { type: 'START_EDIT' }
-//   | { type: 'CANCEL_EDIT' }
-//   | { type: 'UPDATE_GENRE', payload: GenreUserSelection }
-//   | { type: 'UPDATE_TEXT', payload: { key: ComicTextInputField, value: string } }
-//   | { type: 'UPDATE_FILE', payload: string }
-//   | { type: 'UPDATE_CONTENT_WARNINGS', payload: { current: ContentWarningUserSelection, update: ContentWarningUserSelection } };
 
 export type ComicProfileAction =
   | { 
@@ -53,9 +40,9 @@ export type ComicProfileAction =
       payload: { profile: ComicData; update: ComicData };
     }
   | {
-      type: "EDIT_TEXT_FIELD",
+      type: "EDIT_FORM_FIELD",
       fieldName: string,
-      value: string
+      value: string | GenreUserSelection
     }
 
 export const comicProfileReducer = (
@@ -79,7 +66,7 @@ export const comicProfileReducer = (
         profile: action.payload.profile,
         update: action.payload.profile,
       };
-    case "EDIT_TEXT_FIELD":
+    case "EDIT_FORM_FIELD":
       return {
         ...state,
         update: {

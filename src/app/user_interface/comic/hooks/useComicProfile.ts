@@ -4,8 +4,9 @@ import {
   fetchProfile,
   fetchProfileToUpdate,
   fetchPermissions,
-  updateTextfield
+  updateFormfield
 } from "./comicProfileActions";
+import { ComicData, GenreUserSelection } from "../types";
 
 export const useComicProfile = (comicID: number) => {
   const context = useContext(ComicProfileContext);
@@ -39,8 +40,8 @@ export const useComicProfile = (comicID: number) => {
     }
   };
 
-  const setTextField = (key, value) => {
-    updateTextfield(key, value)(dispatch);
+  const setField = (key: keyof ComicData, value: string | GenreUserSelection) => {
+    updateFormfield(key, value)(dispatch);
   };
 
   return {
@@ -48,6 +49,6 @@ export const useComicProfile = (comicID: number) => {
     getProfile,
     getUserPermissions,
     enableEditing,
-    setTextField,
+    setField,
   };
 };
