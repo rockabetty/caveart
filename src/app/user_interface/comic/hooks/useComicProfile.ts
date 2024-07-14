@@ -4,9 +4,14 @@ import {
   fetchProfile,
   fetchProfileToUpdate,
   fetchPermissions,
-  updateFormfield
+  updateFormfield,
+  updateRating,
 } from "./comicProfileActions";
-import { ComicData, ContentWarningUserSelection, GenreUserSelection } from "../types";
+import {
+  ComicData,
+  ContentWarningUserSelection,
+  GenreUserSelection,
+} from "../types";
 
 export const useComicProfile = (comicID: number) => {
   const context = useContext(ComicProfileContext);
@@ -40,9 +45,15 @@ export const useComicProfile = (comicID: number) => {
     }
   };
 
-  const setField = (key: keyof ComicData, value: string | ContentWarningUserSelection | GenreUserSelection) => {
+  const setField = (
+    key: keyof ComicData,
+    value: string | ContentWarningUserSelection | GenreUserSelection,
+  ) => {
     updateFormfield(key, value)(dispatch);
-    console.log(key, value)
+  };
+
+  const updateComicRating = (contentWarnings: ContentWarningUserSelection) => {
+    updateRating(contentWarnings)(dispatch);
   };
 
   return {
@@ -51,5 +62,6 @@ export const useComicProfile = (comicID: number) => {
     getUserPermissions,
     enableEditing,
     setField,
+    updateComicRating,
   };
 };

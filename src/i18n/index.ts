@@ -4,11 +4,13 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import english from './english';
 import polish from './polish';
 import spanish from './spanish';
+import russian from './russian';
 
 const resources = {
   en: english,
   es: spanish,
-  pl: polish
+  pl: polish,
+  ru: russian,
 };
 
 i18n
@@ -16,7 +18,7 @@ i18n
   .use(LanguageDetector)
   .init({
     resources,
-    lng: "en",
+    lng: "ru",
     fallbackLng: "en",
     interpolation: {
       escapeValue: false

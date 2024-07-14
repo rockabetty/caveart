@@ -141,8 +141,7 @@ export async function getComic(comicId: number): Promise<Comic | null> {
     FROM comics c
     LEFT JOIN comics_to_content_warnings ccw ON ccw.comic_id = c.id
     LEFT JOIN content_warnings cw ON cw.id = ccw.content_warning_id
-    JOIN content_warnings cwparent on cwparent.id = cw.parent_id 
-    
+    JOIN content_warnings cwparent on cwparent.id = cw.parent_id
     WHERE c.id = $1
     GROUP BY c.id
   ),
@@ -173,8 +172,8 @@ export async function getComic(comicId: number): Promise<Comic | null> {
     c.likes,
     c.like_count,
     r.name as rating,
-    cg.genres,
-    cw.content_warnings 
+    COALESCE(cg.genres, '{}'::jsonb) AS genres,
+    COALESCE(cw.content_warnings, '{}'::jsonb) AS content_warnings
   FROM comics c
   JOIN ratings r ON r.id = c.rating
   LEFT JOIN ComicGenres cg ON cg.comic_id = c.id

@@ -12,6 +12,16 @@ const english = {
       "edit": "Edit",
       "delete": "Delete"
     },
+    "comicProfile": {
+      "title": "Title",
+      "basicInfo": "Overview",
+      "subdomain": "Subdomain",
+      "description": "Description",
+      "helperTexts": {
+        "subdomain": "A-Z, numbers, hyphens and undescores only.  Your comic will be hosted at http://{{domain}}.caveartwebcomics.com",
+        "description": "Tell us about your comic!"
+      },
+    },
     "authenticationForm": {
       "labels" : {
         "username": "Username",
@@ -44,30 +54,60 @@ const english = {
       "signUpSuccessful": "You are signed up",
       "enterSite": "Into the cave!"
     },
+    "genres": {
+      "title": "Genres",
+      "Action": "Action",
+      "Adventure": "Adventure",
+      "Comedy": "Comedy",
+      "Drama": "Drama",
+      "Fantasy": "Fantasy",
+      "Horror": "Horror",
+      "Mystery": "Mystery",
+      "Romance": "Romance",
+      "Sci-Fi": "Science Fiction",
+      "Slice of Life": "Slice of Life",
+      "Superhero":"Superhero",
+      "Thriller": "Thriller",
+      "Historical": "Historical",
+      "Western": "Western",
+      "Noir": "Noir",
+      "Dystopian": "Dystopian",
+      "Mecha": "Mecha",
+      "Magical Girl": "Magical Girl",
+      "Pokemon": "Pokemon",
+      "Fandom": "Fandom"
+    },
     "contentWarnings": {
-      "nudity": {
+      "title": "Content warnings",
+      "description": "Help users filter out unwanted content (such as for personal preferences, NSFW controls, and so on) by selecting any content warning labels that apply.",
+      "absent": "None",
+      "sexualContent": "Sexual/Suggestive content",
+      "violentContent": "Death/violence",
+      "languageContent": "Sensitive content",
+      "substanceContent": "Drugs/alcohol",
+      "Nudity": {
         "name": "Nudity",
         "definition": "Naked bodies with no censorship wahtsoever.  If there are depictions of genitalia then you need to mark it 'frontal nudity'.",
-        "someFullNudity": "Partial or mild nudity",
-        "frequentFullNudity": "Frontal nudity"
+        "someNudity": "Partial or mild nudity",
+        "frequentNudity": "Frontal nudity"
       },
       "sexScenes": {
         "name": "Sex scenes",
         "definition": "Consensual sexual activity on screen (oral, penetrative, etc).",
-        "somesexScenes": "Occasional or censored sex scenes",
-        "frequentsexScenes": "Frequent or graphic sex scenes"
+        "someSexScenes": "Occasional or censored sex scenes",
+        "frequentSexScenes": "Frequent or graphic sex scenes"
       },
       "sexualViolence": {
         "name": "Sexual violence",
         "definition": "Non-consensual sexual activity on screen (rape, assault, sexual touching/contact, harrassment, exploitation, exposure).",
-        "somesexualViolence": "Occasional or censored sexual violence",
-        "frequentsexualViolence": "Frequent or graphic sexual violence"
+        "someSexualViolence": "Occasional or censored sexual violence",
+        "frequentSexualViolence": "Frequent or graphic sexual violence"
       },
       "suggestiveContent": {
         "name": "Suggestive content",
         "definition": "Mild provocative sexual references or materials such as innuendos, sexual remarks, lingerie, or sex toys.",
-        "some": "Some suggestive content",
-        "frequent": "Frequent suggestive content"
+        "someSuggestiveContent": "Some suggestive content",
+        "frequentSuggestiveContent": "Frequent suggestive content"
       },
       "violence": {
         "name": "Violence",
@@ -78,20 +118,20 @@ const english = {
       "gore": {
         "name": "Gore",
         "definition": "Injuries include not just blood but rendered flesh, exposure of organs and/or bones, or bloody dismemberment. This includes cartoony depictions.",
-        "someViolence": "Occasional gore",
-        "frequentViolence": "Frequent gore",
+        "someGore": "Occasional gore",
+        "frequentGore": "Frequent gore",
       },
       "blood": {
         "name": "Blood",
-        "definition": "Injuries bleed but no gore is depicted. This includes cartoony blood.",
-        "someViolence": "Occasional blood",
-        "frequentViolence": "Frequent blood",
+        "definition": "Injuries bleed but no gore is depicted. This includes cartoony blood or non-human blood that isn't red.",
+        "someBlood": "Mild/cartoony blood depictions",
+        "frequentBlood": "Gratuitous blood depictions",
       },
-      "realisticInjuries": {
-        "name": "Realistic injuries",
-        "definition": "Any blood and gore depicted is realistic, not cartoony or abstracted.",
-        "someRealisticInjuries": "Occasional realistic injuries",
-        "frequentRealisticInjuries": "Frequent realistic injuries"
+      "deathAndSuicide": {
+        "name": "Death and suicide",
+        "definition": "Death of characters enters the plot at all.",
+        "someDeathAndSuicide": "Deaths and/or suicides occur",
+        "frequentDeathAndSuicide": "Frequent, intense, or traumatic death and/or suicide"
       },
       "sexualLanguage": {
         "name": "Sexual language",
@@ -111,11 +151,11 @@ const english = {
         "someSlurs": "Occasional use of slurs",
         "frequentSlurs": "Frequent or intense use of slurs"
       },
-      "threats": {
-        "name": "Threats of violence",
-        "definition": "Expressions of detailed, specific intent to inflict harm in a manner intended to cause distress. Ambiguous threats ('You'll regret it!') don't count. Figures of speech ('You're dead meat!') don't count. Statements like 'I'll break your legs if you come here again' would count.",
-        "someThreats": "Violent threats",
-        "frequentThreats": "Frequent or graphic threats of violence",
+      "abusiveLanguage": {
+        "name": "Emotional Abuse",
+        "definition": "One or more characters humiliate, insult, manipulate and/or generally instill fear and insecurity in another character as part of an abusive character dynamic.",
+        "someAbusiveLanguage": "Some emotional abuse",
+        "frequentAbusiveLanguage": "Extreme or recurring emotional abuse",
       },
       "hardDrugUse": {
         "name": "Hard drug use",

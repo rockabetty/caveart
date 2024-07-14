@@ -44,6 +44,10 @@ export type ComicProfileAction =
       fieldName: string,
       value: string | GenreUserSelection
     }
+  | {
+      type: "EDIT_COMIC_RATING",
+      payload: { rating: string }
+    }
 
 export const comicProfileReducer = (
   state: ComicProfileState,
@@ -72,6 +76,14 @@ export const comicProfileReducer = (
         update: {
           ...state.update,
           [action.fieldName]: action.value 
+        }
+      }
+    case "EDIT_COMIC_RATING":
+      return {
+        ...state,
+        update: {
+          ...state.update,
+          rating: action.payload.rating
         }
       }
     default:

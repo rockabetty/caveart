@@ -4,13 +4,18 @@ export type Genre = {
   description?: string;
 };
 
+export type ContentWarning = {
+  id: number;
+  name: string;
+  description?: string;
+}
 
 export type GenreUserSelection = {
   [key: number]: Genre;
 };
 
 export type ContentWarningUserSelection = {
-  [contentWarningName: string]: string | number;
+  [contentWarningName: string]: ContentWarning;
 };
 
 export type ComicData = {

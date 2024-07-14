@@ -1,5 +1,6 @@
 import { Checkbox } from '../../../../component_library';
 import '../layout.css';
+import { useTranslation } from "react-i18next"
 
 export type Genre = {
   id: string;
@@ -19,6 +20,7 @@ type GenreSectionProps = {
 }
 
 const GenreSelector: React.FC<GenreSectionProps> = (props) => {
+  const { t } = useTranslation();
 
   const {
     id,
@@ -33,7 +35,7 @@ const GenreSelector: React.FC<GenreSectionProps> = (props) => {
         <Checkbox
           key={`selectable-genre${id ? `-${id}-` : '-'}${idx}`}
           id={`${id ? `${id}-` : null }option-${genre.id}`} 
-          labelText={genre.name}
+          labelText={t(`genres.${genre.name}`)}
           checked={selection && !!selection[Number(genre.id)]}
           onChange={onChange}
           name="genres"

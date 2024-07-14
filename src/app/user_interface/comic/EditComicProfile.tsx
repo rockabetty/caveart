@@ -16,7 +16,6 @@ import {
   ContentWarningUserSelection,
   GenreUserSelection,
 } from "./types";
-import { GenreSelection } from "../../../data/types";
 
 type EditComicProfileProps = {
   comicId: number;
@@ -60,7 +59,7 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (
   const handleGenreSelection = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    let newSelection = update.genres;
+    let newSelection: GenreUserSelection = update.genres;
     const value: string = e.target.value;
     const idNumber = Number(value);
     if (!newSelection[idNumber]) {
@@ -71,18 +70,24 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (
     setField("genres", newSelection);
   };
 
+
   const handleContentWarningSelection = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     let field: string = e.target.name;
     let newSelection: ContentWarningUserSelection = update.content_warnings;
-    const value: string = e.target.value as string;
+    const value = e.target.value;
     if (value === "none") {
       delete newSelection[field];
     } else {
-      newSelection[field] = value;
+      const entry = {
+        id: Number(value),
+        name: e.target.id
+      }
+      newSelection[field] = entry;
     }
     setField("content_warnings", newSelection);
+    setComicRating(newSelection);
   };
 
   if (permissions === undefined) {
@@ -96,10 +101,10 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (
   return (
     <div className="comic-profile">
       <Form id={`editform-${comicId}`} formValues={update}>
-        <h2>Basic Info</h2>
+        <h2>{t('comicProfile.basicInfo')}</h2>
         <TextInput
           onChange={handleTextInput}
-          labelText="Title"
+          labelText={t('comicProfile.title')}
           id={`title-edit-${comicId}`}
           pattern="^[a-zA-Z0-9 !:_\-?]+$"
           placeholderText="Unga Bunga: The Grungas of Wunga"
@@ -109,8 +114,8 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (
         />
         <TextInput
           onChange={handleTextInput}
-          labelText="Subdomain"
-          helperText="A-Z, numbers, hyphens and undescores only.  Your comic will be hosted at http://yourChoice.caveartcomics.com"
+          labelText={t('comicProfile.subdomain')}
+          helperText={t('comicProfile.helperTexts.subdomain', {domain: update?.subdomain || 'XYZ' })}
           name="subdomain"
           pattern="[A-Za-z0-9\-_]{1,}"
           placeholderText="ungabunga"
@@ -120,29 +125,28 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (
         />
         <TextArea
           onChange={handleTextInput}
-          labelText="Description"
+          labelText={t('comicProfile.description')}
           name="description"
-          placeholderText="Tell us about your comic!"
+          placeholderText={t('comicProfile.helperTexts.description')}
           id={`description-edit-${comicId}`}
           value={update?.description}
         />
-        <h2>Genres</h2>
+        <h2>{t('genres.title')}</h2>
         <GenreSelector
           selection={update?.genres}
           options={genres}
           onChange={handleGenreSelection}
         />
-        <h2>Content Warnings</h2>
+        <h2>{t('contentWarnings.title')}</h2>
         <p>
-          Help users filter out unwanted content (such as for personal
-          preferences, NSFW controls, and so on) by selecting any content
-          warning labels that apply.
+          {t('contentWarnings.description')}
         </p>
         <ContentWarningSelector
           selection={update?.content_warnings}
           options={contentWarnings}
           onChange={handleContentWarningSelection}
         />
+         {update.rating}
       </Form>
     </div>
   );
@@ -160,3 +164,7 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (
 */
 
 export default EditComicProfile;
+function setComicRating(newselection: any) {
+    throw new Error("Function not implemented.");
+}
+

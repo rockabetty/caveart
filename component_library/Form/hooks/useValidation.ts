@@ -11,11 +11,12 @@ type ValidationOptions = {
 };
 
 export const useValidation = (options: ValidationOptions) => {
+
   const { value, required, pattern, minLength, maxLength, min, max } = options;
 
   const [valid, setValid] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
-
+ 
   const validateValue = () => {
     setValid(false);
     if (required && !value) {
