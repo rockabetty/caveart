@@ -4,25 +4,18 @@ import { useEffect, useCallback } from 'react';
 import { useComicProfile } from './hooks/useComicProfile'; 
 import { useTranslation } from 'react-i18next';
 
-export const emptyProfile: ComicData = {
-    id: '',
-    genres: {},
-    content_warnings: {},
-    title: '',
-    description: '',
-    subdomain: '',
-    rating: '',
-    thumbnail: ''
+type ComicProfileProps = {
+  comicId: number
 }
 
 const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => {
   const { t } = useTranslation();
   const {comicId} = props;
-  const {state, loadProfile, getUserPermissions} = useComicProfile(comicId);
+  const {state, getProfile, getUserPermissions} = useComicProfile(comicId);
   const {profile, permissions, update} = state;
  
   useEffect(() => {
-    loadProfile()
+    getProfile()
     getUserPermissions()
   }, [])
 

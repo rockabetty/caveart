@@ -1,29 +1,25 @@
-import { ImageUpload, Link, Tag, LoadingSpinner } from '../../../../component_library'
+import { Form, LoadingSpinner, TextInput, TextArea } from '../../../../component_library'
 import './ComicProfiles.css';
-import { useEffect, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useComicProfile } from './hooks/useComicProfile'; 
+import GenreSelector from './GenreSelector';
+import ContentWarningSelector from './ContentWarningSelector';
 import { useTranslation } from 'react-i18next';
-
-export const emptyProfile: ComicData = {
-    id: '',
-    genres: {},
-    content_warnings: {},
-    title: '',
-    description: '',
-    subdomain: '',
-    rating: '',
-    thumbnail: ''
-}
 
 const EditComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => {
   const { t } = useTranslation();
   const {comicId} = props;
-  const {state, getUserPermissions} = useComicProfile(comicId);
-  const {permissions} = state;
- 
-  // useEffect(() => {
-  //   getUserPermissions()
-  // }, [])
+  const {state,
+    getUserPermissions,
+    enableEditing,
+    onTextChange,
+  } = useComicProfile(comicId);
+  const {profile, update, permissions} = state;
+
+  useEffect(() => {
+    getUserPermissions()
+    enableEditing()
+  }, [comicId])
 
   if (permissions === undefined) {
     return <LoadingSpinner />
@@ -35,30 +31,61 @@ const EditComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps)
 
   return (
     <div className="comic-profile">
-        {permissions.edit}
-        <div className="comic-profile_body">
-          <a className="comic-profile_cover" href={`/read/${profile?.subdomain}`}>
-            {profile?.thumbnail
-              ? <ImageUpload src={`/${profile?.thumbnail}`} />
-              : <ImageUpload src='/img/brand/kraugak.png' />
-            }
-          </a>
-          <div>
-           <div className="comic-profile_header">
-              <h1 className="comic-profile_title">{profile?.title}</h1>
-                {permissions?.edit
-                  ? <Link type="inline button" href={`/comic/${comicId}/edit`} id={`edit-${profile?.subdomain}`}>{t('comicManagement.edit')}</Link>
-                  : null
-                }
-            </div>
-            <pre className="comic-profile_description">{profile?.description}</pre>
-            <Tag label={profile?.rating} />
-            {renderGenres()}
-            {renderContentWarnings()}
-          </div>
-        </div>
+      <Form
+        id={`editform-${comicId}`}
+        formValues={update}
+      >
+        <h2>Basic Info</h2>
+        <TextInput
+          labelText="Title"
+          id={`title-edit-${comicId}`}
+          pattern="^[a-zA-Z0-9 !:_\-?]+$"
+          placeholderText="Unga Bunga: The Grungas of Wunga"
+          name="title"
+          required
+          value={update?.title}
+        />
+        <TextInput
+          labelText="Subdomain"
+          helperText="A-Z, numbers, hyphens and undescores only.  Your comic will be hosted at http://yourChoice.caveartcomics.com"
+          name="subdomain"
+          pattern="[A-Za-z0-9\-_]{1,}"
+          placeholderText="ungabunga"
+          id={`subdomain-edit-${comicId}`}
+          value={update?.subdomain}
+          required
+         />
+        <TextArea
+          labelText="Description"
+          name="description"
+          placeholderText="Tell us about your comic!"
+          id={`description-edit-${comicId}`}
+          value={update?.description}
+        />
+        <h2>Genres</h2>
+        <GenreSelector
+          comicProfileGenres={update?.genres}
+        />
+        <h2>Content Warnings</h2>
+        <p>Help users filter out unwanted content (such as for personal preferences, NSFW controls, and so on) by selecting any content warning labels that apply.
+        </p>
+        <ContentWarningSelector
+          selection={update?.content_warnings}
+        />
+      </Form>
     </div>
   )
 }
+/*
+  <Form
+              id={`editform-${comicId}`}
+              onSubmit={}
+              submissionError=""
+              submitLabel="Save"
+              formValues={}
+              cancelLabel="Cancel"
+              onCancel={}
+        >
+*/
 
 export default EditComicProfile;

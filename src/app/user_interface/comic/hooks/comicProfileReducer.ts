@@ -43,6 +43,7 @@ export const initialState: ComicProfileState = {
 export type ComicProfileAction =
   | { type: 'GET_COMIC_PROFILE', payload: ComicData }
   | { type: 'GET_COMIC_PERMISSIONS', payload: ComicPermissions }
+  | { type: 'GET_COMIC_PROFILE_TO_UPDATE', payload: Pick<ComicProfileState, "profile" | "update"> }
 
 export const comicProfileReducer = (state: ComicProfileState, action: ComicProfileAction): ComicProfileState => {
   switch (action.type) {
@@ -55,6 +56,12 @@ export const comicProfileReducer = (state: ComicProfileState, action: ComicProfi
       return {
         ...state,
         permissions: action.payload.permissions,
+      };
+    case 'GET_COMIC_PROFILE_TO_UPDATE':
+      return {
+        ...state,
+        profile: action.payload.profile,
+        update: action.payload.profile
       };
     default:
       return state;

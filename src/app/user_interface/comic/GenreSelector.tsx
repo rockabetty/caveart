@@ -25,15 +25,14 @@ const GenreSelector: React.FC<GenreSectionProps> = (props) => {
 
   const {
     id,
-    allGenreChoices,
+    allGenreChoices = [],
     comicProfileGenres,
     onChange,
     onSave,
     editing
   } = props;
 
-  const renderGenreSelector = useCallback(() => {
-    return (
+  return (
       <div className="ReactiveGrid">
         {Object.values(allGenreChoices).map((genre, idx) =>
         <Checkbox
@@ -46,39 +45,8 @@ const GenreSelector: React.FC<GenreSectionProps> = (props) => {
           value={genre.id.toString()}
         />)}
       </div>
-    );
-  }, [allGenreChoices, comicProfileGenres, onChange]);
-
-  const renderComicProfileGenres = useCallback(() => {
-    const selectedGenres = comicProfileGenres ? Object.values(comicProfileGenres) : [];
-
-    return (
-      <>
-      {selectedGenres.length === 0
-        ? <span>No genres.</span>
-        : (<>
-          {selectedGenres.map((value, idx) => {
-            return (
-              <Tag
-                key={`browsing-genre${id ? `-${id}-` : '-'} ${idx}`}
-                label={value.name}
-              />
-            )
-          })}
-          </>)
-      }
-      </>
-    );
-  }, [comicProfileGenres]);
-
-  return (
-    <>
-      { editing
-        ? renderGenreSelector()
-        : renderComicProfileGenres()
-      }
-    </>
-  )
+  );
+  
 };
 
 export default GenreSelector;
