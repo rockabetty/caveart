@@ -100,8 +100,8 @@ const english = {
       "sexualViolence": {
         "name": "Sexual violence",
         "definition": "Non-consensual sexual activity on screen (rape, assault, sexual touching/contact, harrassment, exploitation, exposure).",
-        "someSexualViolence": "Occasional or censored sexual violence",
-        "frequentSexualViolence": "Frequent or graphic sexual violence"
+        "someSexualViolence": "Sexual violence excluding rape",
+        "frequentSexualViolence": "Graphic sexual violence or rape"
       },
       "suggestiveContent": {
         "name": "Suggestive content",

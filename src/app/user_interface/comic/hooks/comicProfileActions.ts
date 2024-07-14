@@ -42,12 +42,12 @@ const ratingLevels = {
     "frequentReferencesToSubstances",
     "frequentAlcoholUse",
     "someHardDrugUse",
+    "someSexualViolence",
   ]),
   "Adults Only (18+)": new Set([
     "frequentGore",
     "frequentFullNudity",
     "frequentSexScenes",
-    "someSexualViolence",
     "frequentSexualViolence",
     "frequentHardDrugUse"
   ])

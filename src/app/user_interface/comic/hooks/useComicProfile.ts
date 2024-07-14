@@ -52,7 +52,7 @@ export const useComicProfile = (comicID: number) => {
     updateFormfield(key, value)(dispatch);
   };
 
-  const updateComicRating = (contentWarnings: ContentWarningUserSelection) => {
+  const setRating = (contentWarnings: ContentWarningUserSelection) => {
     updateRating(contentWarnings)(dispatch);
   };
 
@@ -62,6 +62,6 @@ export const useComicProfile = (comicID: number) => {
     getUserPermissions,
     enableEditing,
     setField,
-    updateComicRating,
+    setRating,
   };
 };

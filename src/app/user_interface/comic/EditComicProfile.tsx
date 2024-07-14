@@ -26,7 +26,7 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (
 ) => {
   const { t } = useTranslation();
   const { comicId } = props;
-  const { state, enableEditing, setField } = useComicProfile(comicId);
+  const { state, enableEditing, setField, setRating } = useComicProfile(comicId);
   const { update, permissions } = state;
   const [genres, setGenres] = useState([]);
   const [contentWarnings, setContentWarnings] = useState([]);
@@ -87,7 +87,7 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (
       newSelection[field] = entry;
     }
     setField("content_warnings", newSelection);
-    setComicRating(newSelection);
+    setRating(newSelection);
   };
 
   if (permissions === undefined) {
@@ -164,7 +164,4 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (
 */
 
 export default EditComicProfile;
-function setComicRating(newselection: any) {
-    throw new Error("Function not implemented.");
-}
 
