@@ -7,9 +7,14 @@ type ComicProfileContextProps = {
   dispatch: React.Dispatch<ComicProfileAction>;
 }
 
-export const ComicProfileContext = createContext<ComicProfileContextProps | undefined>();
+export const ComicProfileContext = createContext<ComicProfileContextProps | undefined>(undefined);
 
-const ComicProfileProvider: React.FC = ({ children }) => {
+type ComicProfileProviderProps = {
+  children: React.ReactNode;
+}
+
+const ComicProfileProvider = ( props: ComicProfileProviderProps ) => {
+  const {children} = props;
   const [state, dispatch] = useReducer(comicProfileReducer, initialState);
 
   return (

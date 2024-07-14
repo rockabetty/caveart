@@ -37,9 +37,8 @@ function MyComics() {
     {comics
       ? comics.map((comic, idx) => {
         return (
-          <ComicProfileProvider>
+          <ComicProfileProvider key={`comicProfile-${idx}`}>
           <ComicProfile
-            key={`comic-${idx}`}
             comicId={comic.id || -1}
             genres={genres}
           />

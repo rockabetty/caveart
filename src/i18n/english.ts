@@ -45,17 +45,11 @@ const english = {
       "enterSite": "Into the cave!"
     },
     "contentWarnings": {
-      "partialNudity": {
-        "name": "Mild nudity",
-        "definiton": "Bare butts and/or chests, regardless of gender, but not depictions of genitalia.",
-        "somePartialNudity": "Some partial nudity",
-        "frequentPartialNudity": "Frequent partial nudity",
-      },
-      "fullNudity": {
-        "name": "Full nudity",
-        "definition": "Naked bodies with no censorship wahtsoever, depictions of genitalia.",
-        "someFullNudity": "Some full nudity",
-        "frequentFullNudity": "Frequent/graphic full nudity"
+      "nudity": {
+        "name": "Nudity",
+        "definition": "Naked bodies with no censorship wahtsoever.  If there are depictions of genitalia then you need to mark it 'frontal nudity'.",
+        "someFullNudity": "Partial or mild nudity",
+        "frequentFullNudity": "Frontal nudity"
       },
       "sexScenes": {
         "name": "Sex scenes",

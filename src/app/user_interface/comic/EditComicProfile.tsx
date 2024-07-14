@@ -5,21 +5,25 @@ import { useComicProfile } from './hooks/useComicProfile';
 import GenreSelector from './GenreSelector';
 import ContentWarningSelector from './ContentWarningSelector';
 import { useTranslation } from 'react-i18next';
+import { ComicField } from './types';
 
 const EditComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => {
   const { t } = useTranslation();
   const {comicId} = props;
   const {state,
-    getUserPermissions,
     enableEditing,
-    onTextChange,
+    setTextField,
   } = useComicProfile(comicId);
-  const {profile, update, permissions} = state;
+  const {update, permissions} = state;
 
   useEffect(() => {
-    getUserPermissions()
-    enableEditing()
+   enableEditing()
   }, [comicId])
+
+  const handleTextInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { value, name } = e.target;
+    setTextField(name, value);
+  };
 
   if (permissions === undefined) {
     return <LoadingSpinner />
@@ -37,6 +41,7 @@ const EditComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps)
       >
         <h2>Basic Info</h2>
         <TextInput
+          onChange={handleTextInput}
           labelText="Title"
           id={`title-edit-${comicId}`}
           pattern="^[a-zA-Z0-9 !:_\-?]+$"
@@ -46,6 +51,7 @@ const EditComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps)
           value={update?.title}
         />
         <TextInput
+          onChange={handleTextInput}
           labelText="Subdomain"
           helperText="A-Z, numbers, hyphens and undescores only.  Your comic will be hosted at http://yourChoice.caveartcomics.com"
           name="subdomain"
@@ -56,6 +62,7 @@ const EditComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps)
           required
          />
         <TextArea
+          onChange={handleTextInput}
           labelText="Description"
           name="description"
           placeholderText="Tell us about your comic!"

@@ -1,6 +1,6 @@
 import { ImageUpload, Link, Tag } from '../../../../component_library'
 import './ComicProfiles.css';
-import { useEffect, useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useComicProfile } from './hooks/useComicProfile'; 
 import { useTranslation } from 'react-i18next';
 
@@ -11,13 +11,12 @@ type ComicProfileProps = {
 const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => {
   const { t } = useTranslation();
   const {comicId} = props;
-  const {state, getProfile, getUserPermissions} = useComicProfile(comicId);
-  const {profile, permissions, update} = state;
- 
+  const {state} = useComicProfile(comicId);
+  const {profile, permissions} = state;
+
   useEffect(() => {
-    getProfile()
-    getUserPermissions()
-  }, [])
+    console.log(state);
+  },[state])
 
   const renderGenres = useCallback(() => {
     const selectedGenres = profile?.genres 

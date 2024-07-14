@@ -23,6 +23,8 @@ export type ComicData = {
   rating: string;
 }
 
+export type ComicField = keyof ComicData;
+
 export type ComicPermissions = {
   edit: boolean
 }
