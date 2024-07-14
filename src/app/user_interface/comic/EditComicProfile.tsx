@@ -1,11 +1,11 @@
 import { Form, LoadingSpinner, TextInput, TextArea } from '../../../../component_library'
 import './ComicProfiles.css';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useComicProfile } from './hooks/useComicProfile'; 
 import GenreSelector from './GenreSelector';
 import ContentWarningSelector from './ContentWarningSelector';
 import { useTranslation } from 'react-i18next';
-import { ComicField } from './types';
+import axios from 'axios';
 
 const EditComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => {
   const { t } = useTranslation();
@@ -15,6 +15,20 @@ const EditComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps)
     setTextField,
   } = useComicProfile(comicId);
   const {update, permissions} = state;
+  const [genres, setGenres] = useState([]);
+
+  useEffect(() => {
+    const getGenres = async () => {
+      try {
+        const genres = await axios.get(`/api/genres`);
+        setGenres(genres.data)
+        console.log(genres.data)
+      } catch (error: any) {
+        console.error(error);
+      }
+    }
+    getGenres();
+  },[])
 
   useEffect(() => {
    enableEditing()
@@ -71,7 +85,8 @@ const EditComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps)
         />
         <h2>Genres</h2>
         <GenreSelector
-          comicProfileGenres={update?.genres}
+          selection={update?.genres}
+          options={genres}
         />
         <h2>Content Warnings</h2>
         <p>Help users filter out unwanted content (such as for personal preferences, NSFW controls, and so on) by selecting any content warning labels that apply.

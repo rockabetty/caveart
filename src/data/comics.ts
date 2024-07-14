@@ -3,7 +3,7 @@ import {
   removeOneToManyAssociations,
   editTable,
 } from "./queryFunctions";
-import { Comic, ComicColumnList, GenreSelection, NestedContentWarning } from "./types";
+import { Comic, ComicColumnList, Genre, NestedContentWarning } from "./types";
 import { logger } from "../services/logs";
 import { QueryResult } from "pg";
 
@@ -365,22 +365,24 @@ export async function getRatingId(name: string): Promise<QueryResult | null> {
   }
 }
 
-export async function getGenres(): Promise<GenreSelection | null> {
+export async function getGenres(): Promise<Genre[] | null> {
   try {
+     // `SELECT jsonb_object_agg(
+      //     id, 
+      //     jsonb_build_object(
+      //         'id', id,
+      //         'name', name,
+      //         'description', description
+      //     )
+      // ) AS genres
+      // FROM genres;
+      // `
+      
     const result = await queryDbConnection(
-      `SELECT jsonb_object_agg(
-          id, 
-          jsonb_build_object(
-              'id', id,
-              'name', name,
-              'description', description
-          )
-      ) AS genres
-      FROM genres;
-      `
+      `SELECT id, name FROM genres`
     );
     if (result.rows && result.rows.length > 0) {
-      return result.rows[0].genres;
+      return result.rows;
     }
     return null;
   } catch (error: any) {
