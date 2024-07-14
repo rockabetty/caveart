@@ -6,7 +6,7 @@ import {
   fetchPermissions,
   updateFormfield
 } from "./comicProfileActions";
-import { ComicData, GenreUserSelection } from "../types";
+import { ComicData, ContentWarningUserSelection, GenreUserSelection } from "../types";
 
 export const useComicProfile = (comicID: number) => {
   const context = useContext(ComicProfileContext);
@@ -40,8 +40,9 @@ export const useComicProfile = (comicID: number) => {
     }
   };
 
-  const setField = (key: keyof ComicData, value: string | GenreUserSelection) => {
+  const setField = (key: keyof ComicData, value: string | ContentWarningUserSelection | GenreUserSelection) => {
     updateFormfield(key, value)(dispatch);
+    console.log(key, value)
   };
 
   return {

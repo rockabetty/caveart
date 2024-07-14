@@ -11,7 +11,7 @@ export type ComicProfileState = {
 const emptyProfile: ComicData = {
   id: "",
   genres: {},
-//  content_warnings: {},
+  content_warnings: {},
   title: "",
   description: "",
   subdomain: "",

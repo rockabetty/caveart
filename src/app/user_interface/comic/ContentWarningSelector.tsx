@@ -23,7 +23,6 @@ const ContentWarningSelector: React.FC<ContentWarningProps> = (props) => {
   return (
     <div className="ReactiveGrid">
       {options && options.map((warning: ContentWarning, idx: number) => {
-        console.log(selection)
         return (
           <Accordion key={idx}>
             {warning.name}

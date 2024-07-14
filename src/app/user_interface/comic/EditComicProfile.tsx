@@ -11,11 +11,16 @@ import GenreSelector from "./GenreSelector";
 import ContentWarningSelector from "./ContentWarningSelector";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
-import { ComicData } from "./types";
+import {
+  ComicData,
+  ContentWarningUserSelection,
+  GenreUserSelection,
+} from "./types";
+import { GenreSelection } from "../../../data/types";
 
 type EditComicProfileProps = {
-  comicId: number
-}
+  comicId: number;
+};
 
 const EditComicProfile: React.FC<EditComicProfileProps> = (
   props: EditComicProfileProps,
@@ -25,18 +30,20 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (
   const { state, enableEditing, setField } = useComicProfile(comicId);
   const { update, permissions } = state;
   const [genres, setGenres] = useState([]);
+  const [contentWarnings, setContentWarnings] = useState([]);
 
   useEffect(() => {
-    const getGenres = async () => {
+    const getOptions = async () => {
       try {
         const genres = await axios.get(`/api/genres`);
+        const content = await axios.get(`/api/content`);
         setGenres(genres.data);
-        console.log(genres.data);
+        setContentWarnings(content.data);
       } catch (error: any) {
         console.error(error);
       }
     };
-    getGenres();
+    getOptions();
   }, []);
 
   useEffect(() => {
@@ -50,17 +57,32 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (
     setField(name as keyof ComicData, value);
   };
 
-  const handleCategorySelection = (
+  const handleGenreSelection = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    const newSelection = update.genres;
-    const genreID: number = Number(e.target.value);
-    if (!newSelection[genreID]) {
-      newSelection[genreID] = genres[genreID];
+    let newSelection = update.genres;
+    const value: string = e.target.value;
+    const idNumber = Number(value);
+    if (!newSelection[idNumber]) {
+      newSelection[idNumber] = genres[idNumber];
     } else {
-      delete newSelection[genreID];
+      delete newSelection[idNumber];
     }
-    setField('genres', newSelection)
+    setField("genres", newSelection);
+  };
+
+  const handleContentWarningSelection = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    let field: string = e.target.name;
+    let newSelection: ContentWarningUserSelection = update.content_warnings;
+    const value: string = e.target.value as string;
+    if (value === "none") {
+      delete newSelection[field];
+    } else {
+      newSelection[field] = value;
+    }
+    setField("content_warnings", newSelection);
   };
 
   if (permissions === undefined) {
@@ -108,7 +130,7 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (
         <GenreSelector
           selection={update?.genres}
           options={genres}
-          onChange={handleCategorySelection}
+          onChange={handleGenreSelection}
         />
         <h2>Content Warnings</h2>
         <p>
@@ -116,7 +138,11 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (
           preferences, NSFW controls, and so on) by selecting any content
           warning labels that apply.
         </p>
-        <ContentWarningSelector selection={update?.content_warnings} />
+        <ContentWarningSelector
+          selection={update?.content_warnings}
+          options={contentWarnings}
+          onChange={handleContentWarningSelection}
+        />
       </Form>
     </div>
   );

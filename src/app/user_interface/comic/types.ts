@@ -6,7 +6,7 @@ export type Genre = {
 
 
 export type GenreUserSelection = {
-  [key: `${number}` | number]: Genre;
+  [key: number]: Genre;
 };
 
 export type ContentWarningUserSelection = {
@@ -16,6 +16,7 @@ export type ContentWarningUserSelection = {
 export type ComicData = {
   id: string;
   genres: GenreUserSelection;
+  content_warnings: ContentWarningUserSelection;
   description: string;
   title: string;
   subdomain: string;
