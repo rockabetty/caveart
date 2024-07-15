@@ -14,15 +14,13 @@ const AuthModal: React.FC<AuthProps> = ({ isOpen, initial, onClose }) => {
   const { t } = useTranslation();
   
   const [authMode, setAuthMode] = useState<'Log In' | 'Sign Up' | ''>(initial);
-  const [confirmationMessage, setConfirmationMessage] = useState<string>('');
-
+  
   useEffect(() => {
     setAuthMode(initial)
   }, [initial]);
 
   useEffect(() => {
     const message = authMode === 'Log In' ? t('authenticationForm.logInSuccessful') : t('authenticationForm.signUpSuccessful');
-    setConfirmationMessage(message);
   }, [authMode]);
 
   const renderContent = () => {
@@ -57,10 +55,6 @@ const AuthModal: React.FC<AuthProps> = ({ isOpen, initial, onClose }) => {
       onClose={onClose}
     >
       {isOpen && renderContent()}
-      { confirmationMessage
-        ? <span>{confirmationMessage}</span>
-        : null
-      }
     </Modal>
   );
 };

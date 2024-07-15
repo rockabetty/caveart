@@ -12,44 +12,35 @@ function MyComics() {
   const { t } = useTranslation();
 
   const [comics, setComics] = useState<Comic[]>([]);
-  const [genres, setGenres] = useState<GenreSelection>({});
-
+ 
   useEffect(() => {
     axios.get('/api/comics/mine')
-      .then((response) => {
-        console.log(response.data)
-       setComics(response.data)
-      })
-
-    axios.get('/api/genres')
-      .then((response) => {
-        setGenres(response.data)
-      })
-      .catch((error: any) => {
-        console.error(error);
-      })
+       .then((response) => {
+        console.log(response)
+         setComics(response.data)
+       })
+       .catch((error) => {
+         console.error(error)
+       })
   }, [])
  
   return (
     <CaveartLayout requireLogin={true}>
-    <h1>{t('headerNavigation.myWebcomics')}</h1>
-   
-    {comics
-      ? comics.map((comic, idx) => {
-        return (
-          <ComicProfileProvider key={`comicProfile-${idx}`}>
-          <ComicProfile
-            comicId={comic.id || -1}
-            genres={genres}
-          />
-          </ComicProfileProvider>
-        )
-      })
-      : <p>{t('comicManagement.noComics')}</p>
-    }
-
+      <h1>{t('headerNavigation.myWebcomics')}</h1>
+        {comics
+          ? comics.map((comic, idx) => {
+            return (
+              <ComicProfileProvider key={`comicProfile-${idx}`}>
+              <ComicProfile
+                comicId={comic.id || -1}
+              />
+              </ComicProfileProvider>
+            )
+          })
+          : <p>{t('comicManagement.noComics')}</p>
+        }
       <Link type="button" id="link-create_comic" href="/comic/new">{t('comicManagement.create')}</Link>
-     </CaveartLayout>
+    </CaveartLayout>
   )
 }
 

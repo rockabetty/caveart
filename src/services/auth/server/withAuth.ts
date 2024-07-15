@@ -15,7 +15,7 @@ export const withAuth = (fn: NextApiHandler) => async (req: NextApiRequest, res:
   const token = req.cookies[USER_AUTH_TOKEN_NAME];
   
   if (!token) {
-    return res.status(401).json({ error: 'Unauthorized' });
+    return res.status(401).json({ error: 'Unauthorized - no token' });
   }
 
   try {
