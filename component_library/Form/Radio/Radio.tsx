@@ -10,10 +10,6 @@ export interface RadioProps {
   */
   id?: string
   labelText: string
-  /** 
-   * Optional additional styling
-  */
-  classes?: string
   /**
    * If something should be rendered checked by default, indicate so here.
    */
@@ -67,7 +63,7 @@ const Radio = ({
     >
       <input
         checked={checked}
-        className={`radio_control ${classes} ${classNames({
+        className={`radio_control ${classNames({
           'Valid' : status === 'valid',
           'Error' : status === 'error'
         })}`.trim()}

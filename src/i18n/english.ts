@@ -24,6 +24,24 @@ const english = {
         "description": "Tell us about your comic!"
       },
     },
+    "comicSettings": {
+      "visibility": {
+        "name": "Visibility",
+        "public": "Public (Accessible through a search)",
+        "unlisted": "Unlisted (Hidden from search engines)",
+        "private": "Private (only invitees and admins)"
+      },
+      "likes": {
+        "name": "Likes",
+        "enabled": "Users can like comic pages",
+      },
+      "comments": {
+        "name": "Comments",
+        "allowed": "Users can comment freely",
+        "moderated": "Comments are moderated",
+        "disabled": "Comments are disabled"
+      }
+    },
     "authenticationForm": {
       "labels" : {
         "username": "Username",
