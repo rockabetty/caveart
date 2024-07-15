@@ -17,6 +17,11 @@ const emptyProfile: ComicData = {
   subdomain: "",
   rating: "",
   thumbnail: "",
+  likes: true,
+  comments: true,
+  moderate_comments: false,
+  is_unlisted: false,
+  is_private: false
 };
 
 export const initialState: ComicProfileState = {

@@ -27,6 +27,10 @@ export type ComicData = {
   subdomain: string;
   thumbnail: string;
   rating: string;
+  likes?: boolean;
+  moderate_comments?: boolean;
+  is_unlisted?: boolean;
+  is_private?: boolean;
 }
 
 export type ComicField = keyof ComicData;

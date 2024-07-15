@@ -117,6 +117,7 @@ export const fetchProfileToUpdate =
     try {
       const comic = await axios.get(`/api/comic/${comicID}`);
       const permissions = await axios.get(`/api/comic/${comicID}/permissions`);
+      console.log(comic)
       if (permissions.data?.edit) {
         dispatch({
           type: "GET_COMIC_PROFILE_TO_UPDATE",
