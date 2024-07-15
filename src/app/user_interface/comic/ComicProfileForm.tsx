@@ -1,6 +1,7 @@
 import {
   TextInput,
   TextArea,
+  ImageUpload
 } from "../../../../component_library";
 import "./ComicProfiles.css";
 import { useEffect, useState } from "react";
@@ -24,7 +25,7 @@ const ComicProfileForm: React.FC<EditComicProfileProps> = (
 ) => {
   const { t } = useTranslation();
   const { comicId } = props;
-  const { state, enableEditing, setField, setRating } = useComicProfile(comicId);
+  const { state, enableEditing, setField, setRating, setThumbnail } = useComicProfile(comicId);
   const { update } = state;
   const [genres, setGenres] = useState([]);
   const [contentWarnings, setContentWarnings] = useState([]);
@@ -87,38 +88,78 @@ const ComicProfileForm: React.FC<EditComicProfileProps> = (
     setRating(newSelection);
   };
 
+  const handleImageChange = (file: File) => {
+    setThumbnail(file)
+    console.log(update)
+  }
+
+  /*
+   id?: string;
+  alt?: string;
+  src?: string;
+  maxSize?: number;
+  editable?: boolean;
+  helperText?: string;
+  errorText?: string;
+  labelText?: string;
+  value?: any;
+  width?: number;
+  height?: number;
+  required?: boolean;
+  flexible?: boolean;
+  name?: string;
+  onChange?: (files: FileList | undefined) => void
+  */
+
   return (
     <div className="comic-profile">
-      <h2>{t('comicProfile.basicInfo')}</h2>
-      <TextInput
-        onChange={handleTextInput}
-        labelText={t('comicProfile.title')}
-        id={`title-edit-${comicId}`}
-        pattern="^[a-zA-Z0-9 !:_\-?]+$"
-        placeholderText="Unga Bunga: The Grungas of Wunga"
-        name="title"
-        required
-        value={update?.title}
-      />
-      <TextInput
-        onChange={handleTextInput}
-        labelText={t('comicProfile.subdomain')}
-        helperText={t('comicProfile.helperTexts.subdomain', {domain: update?.subdomain || 'XYZ' })}
-        name="subdomain"
-        pattern="[A-Za-z0-9\-_]{1,}"
-        placeholderText="ungabunga"
-        id={`subdomain-edit-${comicId}`}
-        value={update?.subdomain}
-        required
-      />
-      <TextArea
-        onChange={handleTextInput}
-        labelText={t('comicProfile.description')}
-        name="description"
-        placeholderText={t('comicProfile.helperTexts.description')}
-        id={`description-edit-${comicId}`}
-        value={update?.description}
-      />
+      <div className="comic-profile_body">
+        <ImageUpload
+          editable
+          helperText={t('comicProfile.coverImageSize')}
+          id={`${comicId ? `${comicId}-` : ''}cover_image`}
+          src={`${update?.thumbnail}` || "/img/brand/kraugak.png"}
+          alt="Preview cover image"
+          maxSize={1000}
+          labelText={t('comicProfile.coverImage')}
+          value={update.thumbnail}
+          onChange={handleImageChange}
+         />
+
+        <div className="comic-profile_description">
+          <h2>{t('comicProfile.basicInfo')}</h2>
+          <TextInput
+            onChange={handleTextInput}
+            labelText={t('comicProfile.title')}
+            id={`title-edit-${comicId}`}
+            pattern="^[a-zA-Z0-9 !:_\-?]+$"
+            placeholderText="Unga Bunga: The Grungas of Wunga"
+            name="title"
+            required
+            value={update?.title}
+          />
+          <TextInput
+            onChange={handleTextInput}
+            labelText={t('comicProfile.subdomain')}
+            helperText={t('comicProfile.helperTexts.subdomain', {domain: update?.subdomain || 'XYZ' })}
+            name="subdomain"
+            pattern="[A-Za-z0-9\-_]{1,}"
+            placeholderText="ungabunga"
+            id={`subdomain-edit-${comicId}`}
+            value={update?.subdomain}
+            required
+          />
+          <TextArea
+            onChange={handleTextInput}
+            labelText={t('comicProfile.description')}
+            name="description"
+            placeholderText={t('comicProfile.helperTexts.description')}
+            id={`description-edit-${comicId}`}
+            value={update?.description}
+          />
+        </div>
+      </div>
+      
       <h2>{t('genres.title')}</h2>
       <GenreSelector
         selection={update?.genres}

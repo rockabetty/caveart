@@ -91,10 +91,15 @@ const NewComicForm: React.FC = () => {
     }
   }
 
+  const handleFormSubmit = () => {
+
+  }
+
   return (
     <Form
       submitLabel={t('comicManagement.create')}
       formValues={update}
+      onSubmit={handleFormSubmit}
     >
       <ComicProfileForm />
       <div className="comic-profile_settings">

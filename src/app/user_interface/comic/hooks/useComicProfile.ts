@@ -6,6 +6,7 @@ import {
   fetchPermissions,
   updateFormfield,
   updateRating,
+  handleFileChange
 } from "./comicProfileActions";
 import {
   ComicData,
@@ -58,6 +59,10 @@ export const useComicProfile = (comicID?: number) => {
     updateRating(contentWarnings)(dispatch);
   };
 
+  const setThumbnail = (file: File) => {
+    handleFileChange(file)(dispatch)
+  }
+
   return {
     state,
     getProfile,
@@ -65,5 +70,6 @@ export const useComicProfile = (comicID?: number) => {
     enableEditing,
     setField,
     setRating,
+    setThumbnail
   };
 };

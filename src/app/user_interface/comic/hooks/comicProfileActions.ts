@@ -152,4 +152,10 @@ export const updateRating =
         rating
       }
     })
-}
+  };
+
+export const handleFileChange = 
+  (file: File) =>
+  (dispatch: React.Dispatch<ComicProfileAction>) => {
+    dispatch({ type: 'SET_COVER_IMAGE', file });
+  };

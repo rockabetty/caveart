@@ -16,7 +16,7 @@ const emptyProfile: ComicData = {
   description: "",
   subdomain: "",
   rating: "",
-  thumbnail: "",
+  thumbnail: null,
   likes: true,
   comments: true,
   moderate_comments: false,
@@ -53,6 +53,10 @@ export type ComicProfileAction =
       type: "EDIT_COMIC_RATING",
       payload: { rating: string }
     }
+  | {
+      type: "SET_COVER_IMAGE",
+      file: File
+  }
 
 export const comicProfileReducer = (
   state: ComicProfileState,
@@ -89,6 +93,14 @@ export const comicProfileReducer = (
         update: {
           ...state.update,
           rating: action.payload.rating
+        }
+      }
+    case 'SET_COVER_IMAGE':
+      return {
+        ...state,
+        update: {
+          ...state.update,
+          thumbnail: action.file
         }
       }
     default:

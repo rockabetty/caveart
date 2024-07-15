@@ -16,6 +16,8 @@ const english = {
     },
     "comicProfile": {
       "title": "Title",
+      "coverImage": "Cover image",
+      "coverImageSize": "Cover images can be up to 1 MB.",
       "basicInfo": "Overview",
       "subdomain": "Subdomain",
       "description": "Description",
