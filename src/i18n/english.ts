@@ -7,9 +7,11 @@ const english = {
       "notifications": "Notifications"
     },
     "comicManagement": {
-      "create": "Create a Comic",
+      "create": "Create a comic",
       "noComics": "You don't have any comics yet.",
       "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel",
       "delete": "Delete"
     },
     "comicProfile": {

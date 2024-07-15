@@ -14,25 +14,11 @@ import {
   GenreUserSelection,
 } from "./types";
 
-type EditComicProfileProps = {
-  comicId: number;
-};
 
-const EditComicProfile: React.FC<EditComicProfileProps> = (
-  props: EditComicProfileProps,
-) => {
+const NewComicForm: React.FC = () => {
   const { t } = useTranslation();
-  const { comicId } = props;
-  const { state, enableEditing, setField, setRating } = useComicProfile(comicId);
-  const { update, permissions } = state;
-
-  if (permissions === undefined) {
-    return <LoadingSpinner />;
-  }
-
-  if (permissions?.edit === false) {
-    return <div>{t("statusCodes.403")}</div>;
-  }
+  const { state, setField, setRating } = useComicProfile();
+  const { update } = state;
 
   /*
   onSubmit: (formValues: FormValues) => any;
@@ -44,13 +30,13 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (
 
   return (
     <Form
-      submitLabel={t('comicManagement.save')}
+      submitLabel={t('comicManagement.create')}
       formValues={update}
     >
-      <ComicProfileForm comicId={comicId} />
+      <ComicProfileForm />
     </Form>
   );
 };
 
-export default EditComicProfile;
+export default NewComicForm;
 

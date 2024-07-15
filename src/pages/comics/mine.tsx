@@ -48,7 +48,7 @@ function MyComics() {
       : <p>{t('comicManagement.noComics')}</p>
     }
 
-      <Link type="button" id="link-create_comic" href="new">{t('comicManagement.create')}</Link>
+      <Link type="button" id="link-create_comic" href="/comic/new">{t('comicManagement.create')}</Link>
      </CaveartLayout>
   )
 }

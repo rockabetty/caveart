@@ -13,7 +13,7 @@ import {
   GenreUserSelection,
 } from "../types";
 
-export const useComicProfile = (comicID: number) => {
+export const useComicProfile = (comicID?: number) => {
   const context = useContext(ComicProfileContext);
   if (!context) {
     throw new Error(
@@ -23,8 +23,10 @@ export const useComicProfile = (comicID: number) => {
   const { state, dispatch } = context;
 
   useEffect(() => {
-    getProfile();
-    getUserPermissions();
+    if (comicID !== undefined) {
+      getProfile();
+      getUserPermissions();
+    }
   }, [comicID]);
 
   const getProfile = () => {
