@@ -33,24 +33,7 @@ const NewComicForm: React.FC = () => {
   const toggleLikes = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-
   }
-
-  /*
-    const handleGenreSelection = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    let newSelection: GenreUserSelection = update.genres;
-    const value: string = e.target.value;
-    const idNumber = Number(value);
-    if (!newSelection[idNumber]) {
-      newSelection[idNumber] = genres[idNumber];
-    } else {
-      delete newSelection[idNumber];
-    }
-    setField("genres", newSelection);
-  };
-  */
 
   const handleLikesChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -63,36 +46,33 @@ const NewComicForm: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { value } = event.target;
-    if (value === 'moderated') { 
-      setField('comments', true);
-      setField('moderate_comments', true);
-    } else if (value === 'on') {
-      setField('comments', true);
-      setField('moderate_comments', false);
-    } else {
-      setField('comments', false);
-      setField('moderate_comments', false);
-    }
+    setField('comments', value);
   }
 
   const handleVisibilityChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { value } = event.target;
-    if (value === 'unlisted') {
-      setField('is_unlisted', true);
-      setField('is_private', false);
-    } else if (value === 'private') {
-      setField('is_private', true);
-      setField('is_unlisted', false);
-    } else {
-      setField('is_private', false);
-      setField('is_unlisted', false);
-    }
+    setField('visibility', value);
   }
 
-  const handleFormSubmit = () => {
-
+  const handleFormSubmit = async () => {
+    console.log("sbmit function")
+    const submission = {...update};
+    submission.genres = Object.keys(update.genres)
+    let content = [];
+    Object.keys(submission.content_warnings).forEach(key => {
+      content.push(submission.content_warnings[key].id)
+    })
+    submission.content = content;
+    console.log(submission)
+    await axios.post(`/api/comic/new`, submission)
+      .then((response) => {
+        console.log(response)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
 
   return (
@@ -107,25 +87,25 @@ const NewComicForm: React.FC = () => {
           <legend>Comments</legend>
           <Radio
             onChange={handleCommentsChange}
-            checked={!!update.comments && !update.moderate_comments}
+            checked={update.comments ==='Allowed'}
             name="comments"
-            value="on"
+            value="Allowed"
             id="comments_on"
             labelText={t('comicSettings.comments.allowed')}
           />
           <Radio
             onChange={handleCommentsChange}
-            checked={!!update.moderate_comments}
+            checked={update.comments ==='Moderated'}
             name="comments"
-            value="moderated"
+            value="Moderated"
             id="comments_moderated"
             labelText={t('comicSettings.comments.moderated')}
           />
           <Radio
             onChange={handleCommentsChange}
-            checked={!update.comments && !update.moderate_comments}
+            checked={update.comments ==='Disabled'}
             name="comments"
-            value="off"
+            value="Disabled"
             id="comments_off"
             labelText={t('comicSettings.comments.disabled')}
           />
@@ -144,25 +124,25 @@ const NewComicForm: React.FC = () => {
           <legend>Visibility</legend>
           <Radio
             onChange={handleVisibilityChange}
-            checked={!update.is_private && !update.is_unlisted}
+            checked={update.visibility === "Public"}
             name="visibility"
-            value="public"
+            value="Public"
             id="visibility_public"
             labelText={t('comicSettings.visibility.public')}
           />
           <Radio
             onChange={handleVisibilityChange}
-            checked={update.is_unlisted}
+            checked={update.visibility === "Unlisted"}
             name="visibility"
-            value="unlisted"
+            value="Unlisted"
             id="visibility_unlisted"
             labelText={t('comicSettings.visibility.unlisted')}
           />
           <Radio
             onChange={handleVisibilityChange}
-            checked={update.is_private}
+            checked={update.visibility === "Invite-Only"}
             name="visibility"
-            value="private"
+            value="Invite-Only"
             id="visibility_private"
             labelText={t('comicSettings.visibility.private')}
           />

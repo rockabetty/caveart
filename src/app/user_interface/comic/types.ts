@@ -28,9 +28,8 @@ export type ComicData = {
   thumbnail: string | File;
   rating: string;
   likes?: boolean;
-  moderate_comments?: boolean;
-  is_unlisted?: boolean;
-  is_private?: boolean;
+  comments?: 'Allowed' | 'Moderated' | 'Disabled';
+  visibility?: 'Public' | 'Unlisted' | 'Private';
 }
 
 export type ComicField = keyof ComicData;

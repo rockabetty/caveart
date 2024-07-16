@@ -56,11 +56,12 @@ const readForm = (req: NextApiRequest)
 }
 
 const handler: NextApiHandler = async (req, res) => {
+  console.log("endpoint reached")
 
  let id: number | null = null;
  
   try {
-     ensureUploadDirectoryExists();
+    ensureUploadDirectoryExists();
     const submission = await readForm(req)
     const fields = submission.fields;
     const processedFields: ProcessedFields = {};
@@ -71,16 +72,12 @@ const handler: NextApiHandler = async (req, res) => {
        processedFields.thumbnail = `uploads/${newFilename}`;
     }
 
-    /*
-    When form data is parsed by formidable, it will return each form field
-    value as an array, even if it's a single value. This is because the same
-    field name can theoretically appear multiple times in multipart/form-data.
-    */
-
     if (fields) {
+      console.log(fields)
 
       if (fields.title) {
-        const title = fields.title[0];
+        console.log("fields title")
+        const title = fields.title;
         // Validating that the title is alpahnumeric or has !, -, ?
         const titleRegex = /^[a-zA-Z0-9 !\-?]+$/;
         if (!titleRegex.test(title)) {
@@ -90,35 +87,33 @@ const handler: NextApiHandler = async (req, res) => {
       }
 
       if (fields.genres) {
-        const genres = JSON.parse(fields.genres[0]);
-        let genreList: number[] = [];
-
-        Object.keys(genres).map(key => {
-          const num = parseInt(key, 10);
-          if (isNaN(num)) {
-              return res.status(400).json({ error: 'invalidGenreFormat' });
+        const { genres } = fields;
+        if (!Array.isArray(genres)) {
+          return res.status(400).json({ error: 'invalidGenreFormat' })
+        }
+        for (let entry of genres) {
+          if (isNaN(entry)) {
+            return res.status(400).json({ error: 'invalidGenreFormat' })
           }
-          genreList.push(num);
-        });
-        processedFields.genres = genreList;
+        }
+        processedFields.genres = genres;
       }
 
       if (fields.content) {
-        const content = JSON.parse(fields.content[0]);
-        let contentWarningList: number[] = [];
-        Object.values(content).map(value => {
-          const num = parseInt(value as string, 10);
-          if (isNaN(num)) {
-            return res.status(400).json({ error: 'invalidContentWarningFormat' });
+        const { content } = fields;
+        if (!Array.isArray(content)) {
+          return res.status(400).json({ error: 'invalidContentWarningFormat' })
+        }
+        for (let entry of content) {
+          if (isNaN(entry)) {
+            return res.status(400).json({ error: 'invalidContentWarningFormat' })
           }
-          contentWarningList.push(num)
-        });
-
-        processedFields.content = contentWarningList;
+        }
+        processedFields.content = content;
       }
 
       if (fields.subdomain) {
-        const subdomain = fields.subdomain[0]
+        const subdomain = fields.subdomain;
         // Validating that subdomain is purely alphanumeric with hyphens or underscores only
         const subdomainRegex = /^[a-zA-Z0-9_-]+$/;
         if (!subdomainRegex.test(subdomain)) {
@@ -128,19 +123,20 @@ const handler: NextApiHandler = async (req, res) => {
       }
 
       if (fields.description) {
-        const description = fields.description[0];
+        const description = fields.description;
         if (description.length > 1024) {
+          console.log(fields)
           return res.status(400).json({ error: 'invalidDescriptionLength' });
         }
         processedFields.description = description;
       }
 
       if (fields.comments) {
-        const selectedCommentsOption = fields.comments[0]
+        const selectedCommentsOption = fields.comments
 
         const validComments = ['Allowed', 'Moderated', 'Disabled'];
         if (!validComments.includes(selectedCommentsOption)) {
-          return res.status(400).json({ error: 'invalidCommentOption' });
+          return res.status(400).json({ error: `invalidCommentOption ${selectedCommentsOption}` });
         }
 
         processedFields.comments = selectedCommentsOption !== 'Disabled'
@@ -150,8 +146,8 @@ const handler: NextApiHandler = async (req, res) => {
       }
 
       if (fields.visibility) {
-        const selectedVisibilityOption = fields.visibility[0];
-        const validVisibilities = ['Public', 'Private', 'Invite-Only'];
+        const selectedVisibilityOption = fields.visibility;
+        const validVisibilities = ['Public', 'Unlisted', 'Invite-Only'];
         if (!validVisibilities.includes(selectedVisibilityOption)) {
           return res.status(400).json({ error: 'invalidVisibilityOption' });
         }
@@ -164,8 +160,8 @@ const handler: NextApiHandler = async (req, res) => {
       }
 
       if (fields.likes) {
-        const selectedLikesOption = fields.likes[0];
-        if (selectedLikesOption !== 'true' && selectedLikesOption !== 'false') {
+        const selectedLikesOption = fields.likes;
+        if (selectedLikesOption !== true && selectedLikesOption !== false) {
           return res.status(400).json({ error: 'invalidLikesOption' }); 
         }
         processedFields.likes = selectedLikesOption === 'true';
@@ -177,8 +173,8 @@ const handler: NextApiHandler = async (req, res) => {
       }
       console.log('---------------------------------------')
       console.log(fields.rating)
-      rating = await getRatingId(fields.rating[0]);
-      console.log(rating)
+      rating = await getRatingId(fields.rating);
+      console.log("rating")
 
       let comicData: Comic = {};
 
@@ -188,9 +184,7 @@ const handler: NextApiHandler = async (req, res) => {
         description, 
         thumbnail,
         comments,
-        is_unlisted,
-        is_private,
-        moderate_comments,
+        visibility,
         likes
       } = processedFields
 
@@ -199,13 +193,16 @@ const handler: NextApiHandler = async (req, res) => {
         subdomain,
         description, 
         thumbnail,
-        comments,
-        is_unlisted,
-        is_private,
-        moderate_comments,
         likes,
         rating 
       };
+
+      comicData.is_unlisted = visibility === "Unlisted";
+      comicData.is_private = visibility === "Private";
+      comicData.moderate_comments = comments === "Moderated";
+      comicData.comments = comments !== "Disabled";
+
+      console.log("Create call")
 
       id = await createComic(comicData);
       if (id) {

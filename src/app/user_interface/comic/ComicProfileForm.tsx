@@ -90,7 +90,6 @@ const ComicProfileForm: React.FC<EditComicProfileProps> = (
 
   const handleImageChange = (file: File) => {
     setThumbnail(file)
-    console.log(update)
   }
 
   /*

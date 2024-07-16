@@ -18,10 +18,8 @@ const emptyProfile: ComicData = {
   rating: "",
   thumbnail: null,
   likes: true,
-  comments: true,
-  moderate_comments: false,
-  is_unlisted: false,
-  is_private: false
+  comments: 'Allowed',
+  visibility: 'Public'
 };
 
 export const initialState: ComicProfileState = {
@@ -56,7 +54,18 @@ export type ComicProfileAction =
   | {
       type: "SET_COVER_IMAGE",
       file: File
+    }
+  | {
+      type: "LOADING",
+      payload: { action: ComicProfileAction }
   }
+  | {
+      type: "CREATE-UPDATE_NEW_COMIC_SUCCESS",
+    }
+  | {
+      type: "CREATE-UPDATE_NEW_COMIC_FAILURE",
+      error: string
+    }
 
 export const comicProfileReducer = (
   state: ComicProfileState,
