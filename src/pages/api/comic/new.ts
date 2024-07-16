@@ -56,7 +56,6 @@ const readForm = (req: NextApiRequest)
 }
 
 const handler: NextApiHandler = async (req, res) => {
-  console.log("endpoint reached")
 
  let id: number | null = null;
  
@@ -67,17 +66,23 @@ const handler: NextApiHandler = async (req, res) => {
     const processedFields: ProcessedFields = {};
 
     let newFilename = "";
-    if (submission?.files?.files) {
-       newFilename = submission?.files?.files[0].newFilename || '';
-       processedFields.thumbnail = `uploads/${newFilename}`;
+    if (submission?.files) {
+        const processedFiles: any = {};
+        try {
+          const files = submission.files
+          await Promise.all(Object.keys(files).map(async (key) => {
+            const file = files[key][0];
+            processedFields.thumbnail = `/uploads/${file.newFilename}`;
+          }));
+        } catch (fileErr) {
+          return res.status(500).json({error: fileErr });
+        }
     }
 
     if (fields) {
-      console.log(fields)
-
+  
       if (fields.title) {
-        console.log("fields title")
-        const title = fields.title;
+        const title = fields.title[0];
         // Validating that the title is alpahnumeric or has !, -, ?
         const titleRegex = /^[a-zA-Z0-9 !\-?]+$/;
         if (!titleRegex.test(title)) {
@@ -113,7 +118,7 @@ const handler: NextApiHandler = async (req, res) => {
       }
 
       if (fields.subdomain) {
-        const subdomain = fields.subdomain;
+        const subdomain = fields.subdomain[0];
         // Validating that subdomain is purely alphanumeric with hyphens or underscores only
         const subdomainRegex = /^[a-zA-Z0-9_-]+$/;
         if (!subdomainRegex.test(subdomain)) {
@@ -123,20 +128,19 @@ const handler: NextApiHandler = async (req, res) => {
       }
 
       if (fields.description) {
-        const description = fields.description;
+        const description = fields.description[0];
         if (description.length > 1024) {
-          console.log(fields)
-          return res.status(400).json({ error: 'invalidDescriptionLength' });
+           return res.status(400).json({ error: 'invalidDescriptionLength' });
         }
         processedFields.description = description;
       }
 
       if (fields.comments) {
-        const selectedCommentsOption = fields.comments
+        const selectedCommentsOption = fields.comments[0]
 
         const validComments = ['Allowed', 'Moderated', 'Disabled'];
         if (!validComments.includes(selectedCommentsOption)) {
-          return res.status(400).json({ error: `invalidCommentOption ${selectedCommentsOption}` });
+          return res.status(400).json({ error: `invalidCommentOption` });
         }
 
         processedFields.comments = selectedCommentsOption !== 'Disabled'
@@ -146,7 +150,7 @@ const handler: NextApiHandler = async (req, res) => {
       }
 
       if (fields.visibility) {
-        const selectedVisibilityOption = fields.visibility;
+        const selectedVisibilityOption = fields.visibility[0];
         const validVisibilities = ['Public', 'Unlisted', 'Invite-Only'];
         if (!validVisibilities.includes(selectedVisibilityOption)) {
           return res.status(400).json({ error: 'invalidVisibilityOption' });
@@ -160,22 +164,19 @@ const handler: NextApiHandler = async (req, res) => {
       }
 
       if (fields.likes) {
-        const selectedLikesOption = fields.likes;
-        if (selectedLikesOption !== true && selectedLikesOption !== false) {
+        const selectedLikesOption = fields.likes[0];
+        if (selectedLikesOption !== 'true' && selectedLikesOption !== 'false') {
           return res.status(400).json({ error: 'invalidLikesOption' }); 
         }
         processedFields.likes = selectedLikesOption === 'true';
       }
 
-      let rating: number = 0;
-      if (!fields.rating) {
+      let rating: string = '';
+      if (!fields.rating[0]) {
         res.status(400).json({ error: 'invalidRating' });
       }
-      console.log('---------------------------------------')
-      console.log(fields.rating)
-      rating = await getRatingId(fields.rating);
-      console.log("rating")
-
+      rating = await getRatingId(fields.rating[0]);
+   
       let comicData: Comic = {};
 
       const {
@@ -183,8 +184,10 @@ const handler: NextApiHandler = async (req, res) => {
         subdomain,
         description, 
         thumbnail,
+        is_private,
+        is_unlisted,
         comments,
-        visibility,
+        moderate_comments,
         likes
       } = processedFields
 
@@ -193,16 +196,13 @@ const handler: NextApiHandler = async (req, res) => {
         subdomain,
         description, 
         thumbnail,
+        is_private,
+        is_unlisted,
+        comments,
+        moderate_comments,
         likes,
         rating 
       };
-
-      comicData.is_unlisted = visibility === "Unlisted";
-      comicData.is_private = visibility === "Private";
-      comicData.moderate_comments = comments === "Moderated";
-      comicData.comments = comments !== "Disabled";
-
-      console.log("Create call")
 
       id = await createComic(comicData);
       if (id) {

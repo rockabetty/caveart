@@ -92,24 +92,6 @@ const ComicProfileForm: React.FC<EditComicProfileProps> = (
     setThumbnail(file)
   }
 
-  /*
-   id?: string;
-  alt?: string;
-  src?: string;
-  maxSize?: number;
-  editable?: boolean;
-  helperText?: string;
-  errorText?: string;
-  labelText?: string;
-  value?: any;
-  width?: number;
-  height?: number;
-  required?: boolean;
-  flexible?: boolean;
-  name?: string;
-  onChange?: (files: FileList | undefined) => void
-  */
-
   return (
     <div className="comic-profile">
       <div className="comic-profile_body">

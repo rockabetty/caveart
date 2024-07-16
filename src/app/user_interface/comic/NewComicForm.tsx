@@ -57,7 +57,6 @@ const NewComicForm: React.FC = () => {
   }
 
   const handleFormSubmit = async () => {
-    console.log("sbmit function")
     const submission = {...update};
     submission.genres = Object.keys(update.genres)
     let content = [];
@@ -65,8 +64,13 @@ const NewComicForm: React.FC = () => {
       content.push(submission.content_warnings[key].id)
     })
     submission.content = content;
+    
     console.log(submission)
-    await axios.post(`/api/comic/new`, submission)
+    await axios.post(`/api/comic/new`, submission,{
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
       .then((response) => {
         console.log(response)
       })

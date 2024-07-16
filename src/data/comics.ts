@@ -8,6 +8,8 @@ import { logger } from "../services/logs";
 import { QueryResult } from "pg";
 
 export async function createComic(comic: Comic): Promise<number | null> {
+  console.log(comic);
+  
   const query = `
       INSERT INTO comics (
         title,
