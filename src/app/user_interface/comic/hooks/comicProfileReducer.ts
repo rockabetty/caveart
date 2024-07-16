@@ -112,6 +112,11 @@ export const comicProfileReducer = (
           thumbnail: action.file
         }
       }
+    case 'CREATE-UPDATE_NEW_COMIC_FAILURE':
+      return {
+        ...state,
+        submissionError: action.payload.error
+      }
     default:
       return state;
   }

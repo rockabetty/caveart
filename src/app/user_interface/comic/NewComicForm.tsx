@@ -19,8 +19,8 @@ import {
 
 const NewComicForm: React.FC = () => {
   const { t } = useTranslation();
-  const { state, setField, setRating } = useComicProfile();
-  const { update } = state;
+  const { state, setField, setRating, setSubmissionError } = useComicProfile();
+  const { update, submissionError } = state;
 
   /*
   onSubmit: (formValues: FormValues) => any;
@@ -64,8 +64,6 @@ const NewComicForm: React.FC = () => {
       content.push(submission.content_warnings[key].id)
     })
     submission.content = content;
-    
-    console.log(submission)
     await axios.post(`/api/comic/new`, submission,{
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -76,6 +74,9 @@ const NewComicForm: React.FC = () => {
       })
       .catch((error) => {
         console.log(error)
+        const message = error.response.data.error;
+        console.log(message)
+        setSubmissionError(message)
       })
   }
 
@@ -84,6 +85,7 @@ const NewComicForm: React.FC = () => {
       submitLabel={t('comicManagement.create')}
       formValues={update}
       onSubmit={handleFormSubmit}
+      submissionError={submissionError}
     >
       <ComicProfileForm />
       <div className="comic-profile_settings">

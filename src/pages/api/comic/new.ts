@@ -218,9 +218,6 @@ const handler: NextApiHandler = async (req, res) => {
         await addAuthorToComic(id, parseInt(userID)); 
         return res.status(201).send("Comic created successfully");
 
-      } else {
-        logger.error(new Error("No comic ID created"));
-        return res.status(500).send("Failed to create comic.");
       }
     } 
   } 
@@ -236,7 +233,15 @@ const handler: NextApiHandler = async (req, res) => {
         logger.error(new Error(`Error during cleanup: ${cleanupError}`));
       }
     }
-    return res.status(500).send("Failed to create comic.");
+    let errorMessage = "generalServerError";
+    if (error.code === "23505") {
+      if (error.constraint === 'comics_title_key') {
+         errorMessage = "comicTitleTaken"
+      } else {
+        errorMessage = "comicSubdomainTaken"
+      }
+    }
+    return res.status(500).send({ error: errorMessage});
   }
 }
 

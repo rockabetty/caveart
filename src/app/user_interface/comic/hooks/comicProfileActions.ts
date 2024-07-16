@@ -159,3 +159,12 @@ export const handleFileChange =
   (dispatch: React.Dispatch<ComicProfileAction>) => {
     dispatch({ type: 'SET_COVER_IMAGE', file });
   };
+
+export const handleSubmissionError = 
+  (errorMessage) =>
+  (dispatch: React.Dispatch<ComicProfileAction>) => {
+    dispatch({
+      type: 'CREATE-UPDATE_NEW_COMIC_FAILURE',
+      payload: { error: errorMessage }
+    });
+  };
