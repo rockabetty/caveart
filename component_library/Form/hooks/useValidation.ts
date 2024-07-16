@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 type ValidationOptions = {
   value?: string | number;
@@ -10,6 +10,7 @@ type ValidationOptions = {
   max?: number;
 };
 
+
 export const useValidation = (options: ValidationOptions) => {
 
   const { value, required, pattern, minLength, maxLength, min, max } = options;
@@ -17,7 +18,8 @@ export const useValidation = (options: ValidationOptions) => {
   const [valid, setValid] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
  
-  const validateValue = () => {
+  // This function calls itself in an onBlur event
+  const validate = useCallback(() => {
     setValid(false);
     if (required && !value) {
       return "This field is required";
@@ -59,13 +61,7 @@ export const useValidation = (options: ValidationOptions) => {
 
     return "";
     setValid(true);
-  };
-
-  const validate = () => {
-    const error = validateValue();
-    setError(error);
-    setValid(!error);
-  };
+  }, [value, required, pattern, minLength, maxLength, min, max]);
 
   return { valid, setValid, error, setError, validate };
 };

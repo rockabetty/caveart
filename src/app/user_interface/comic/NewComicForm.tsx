@@ -2,10 +2,11 @@ import {
   LoadingSpinner,
   Form,
   Radio,
-  Checkbox
+  Checkbox,
+  useValidation
 } from "../../../../component_library";
 import "./ComicProfiles.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useComicProfile } from "./hooks/useComicProfile";
 import ComicProfileForm from './ComicProfileForm';
 import { useTranslation } from "react-i18next";
@@ -15,11 +16,12 @@ import {
   ContentWarningUserSelection,
   GenreUserSelection,
 } from "./types";
+import { useRouter } from 'nxt/router'
 
 
 const NewComicForm: React.FC = () => {
   const { t } = useTranslation();
-  const { state, setField, setRating, setSubmissionError } = useComicProfile();
+  const { state, setField, setRating, setSubmissionError, confirmCreation } = useComicProfile();
   const { update, submissionError } = state;
 
   /*
@@ -58,6 +60,14 @@ const NewComicForm: React.FC = () => {
 
   const handleFormSubmit = async () => {
     const submission = {...update};
+
+    if(!update.title) {
+      return setSubmissionError('comicManagement.errors.titleMissing')
+    }
+    if (!update.subdomain) {
+      return setSubmissionError('comicManagement.errors.subdomainMissing')
+    }
+
     submission.genres = Object.keys(update.genres)
     let content = [];
     Object.keys(submission.content_warnings).forEach(key => {
@@ -70,18 +80,18 @@ const NewComicForm: React.FC = () => {
       }
     })
       .then((response) => {
-        console.log(response)
+        confirmCreation(response.data)
       })
       .catch((error) => {
-        console.log(error)
         const message = error.response.data.error;
-        console.log(message)
         setSubmissionError(message)
       })
+    
   }
 
   return (
     <Form
+      id="new_comic"
       submitLabel={t('comicManagement.create')}
       formValues={update}
       onSubmit={handleFormSubmit}

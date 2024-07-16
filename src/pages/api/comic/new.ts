@@ -216,7 +216,7 @@ const handler: NextApiHandler = async (req, res) => {
      
         const userID = await extractUserIdFromToken(req, false);
         await addAuthorToComic(id, parseInt(userID)); 
-        return res.status(201).send("Comic created successfully");
+        return res.status(201).send({ message: "success", id });
 
       }
     } 

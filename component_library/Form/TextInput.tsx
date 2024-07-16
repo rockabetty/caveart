@@ -1,14 +1,30 @@
-import React from 'react'
+
+
+
+import React, {useRef, useImperativeHandle, forwardRef} from 'react'
 import WriteInField, {WriteInFieldProps, writeInDefaults} from './atoms/WriteInField'
 
-const TextArea: React.FC<WriteInFieldProps> = (props) => {
+const TextInput: React.FC<WriteInFieldProps> = forwardRef((props, ref) => {
   const {type} = props
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useImperativeHandle(ref, () => ({
+    focus() {
+      internalRef.current?.focus();
+    },
+    scrollIntoView() {
+      internalRef.current?.scrollIntoView();
+    },
+    validate() {
+      return internalRef.current?.validate();
+    },
+  }));
 
   return(
-    <WriteInField {...props} type={type} />
+    <WriteInField ref={inputRef} {...props} type={type} />
   )
-}
+},[]);
 
-TextArea.defaultProps = writeInDefaults;
+TextInput.defaultProps = writeInDefaults;
 
-export default TextArea;
+export default TextInput;

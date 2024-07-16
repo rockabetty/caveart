@@ -1,4 +1,6 @@
-import React, {useRef} from 'react'
+
+
+import React, {useRef } from 'react'
 import { InputProps, InputDefaults } from '../../types/input'
 import classNames from 'classnames'
 import '../../design/style.css'
@@ -42,7 +44,7 @@ export interface WriteInFieldProps extends InputProps {
   /**
    * Give the user feedback on why their input is wrong
    */ 
-  errorText?: string; 
+  errorText?: string;
 }
 
 export const writeInDefaults: WriteInFieldProps = {
@@ -95,7 +97,7 @@ const WriteInField: React.FC<WriteInFieldProps> = (props) => {
   const renderHelperOrErrorText = () => {
     if (!helperText && !errorText && !error) return null;
     return (
-      <p className={classNames({ "form-field_helpertext": true, "Error": !!errorText })}>
+      <p id={`helpertext_${id || labelText}`} className={classNames({ "form-field_helpertext": true, "Error": !!errorText })}>
         { errorText || error || helperText }
       </p>
     );
@@ -140,7 +142,7 @@ const WriteInField: React.FC<WriteInFieldProps> = (props) => {
     if (type === 'textarea') {
       return <textarea ref={textareaRef} {...inputProps} />;
     } else {
-      return <input {...inputProps} />
+      return <input {...inputProps} aria-describedby={`helpertext_${id || labelText}`} />
     }
   }
 

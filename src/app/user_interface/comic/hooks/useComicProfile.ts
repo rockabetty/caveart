@@ -7,15 +7,18 @@ import {
   updateFormfield,
   updateRating,
   handleFileChange,
-  handleSubmissionError
+  handleSubmissionError,
+  handleSubmissionSuccess
 } from "./comicProfileActions";
 import {
   ComicData,
   ContentWarningUserSelection,
   GenreUserSelection,
 } from "../types";
+import { useRouter } from 'next/router';
 
 export const useComicProfile = (comicID?: number) => {
+  const router = useRouter();
   const context = useContext(ComicProfileContext);
   if (!context) {
     throw new Error(
@@ -54,6 +57,7 @@ export const useComicProfile = (comicID?: number) => {
     value: string | ContentWarningUserSelection | GenreUserSelection,
   ) => {
     updateFormfield(key, value)(dispatch);
+    setSubmissionError('')
   };
 
   const setRating = (contentWarnings: ContentWarningUserSelection) => {
@@ -68,6 +72,11 @@ export const useComicProfile = (comicID?: number) => {
     handleSubmissionError(error)(dispatch)
   }
 
+  const confirmCreation = (data: ComicData) => {
+    handleSubmissionSuccess()(dispatch)
+    router.push(`/comic/${data.id}`)
+  }
+
   return {
     state,
     getProfile,
@@ -76,6 +85,7 @@ export const useComicProfile = (comicID?: number) => {
     setField,
     setRating,
     setThumbnail,
-    setSubmissionError
+    setSubmissionError,
+    confirmCreation
   };
 };

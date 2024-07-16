@@ -15,7 +15,7 @@ const emptyProfile: ComicData = {
   title: "",
   description: "",
   subdomain: "",
-  rating: "",
+  rating: "All Ages",
   thumbnail: null,
   likes: true,
   comments: 'Allowed',

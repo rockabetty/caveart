@@ -1,6 +1,8 @@
-import React, { useState, ReactNode } from 'react';
+
+
+import React, {  createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
 import './Form.css';
-import { Button, ButtonSet } from '../Button';
+import { Button, ButtonSet, TextInput } from '../Button';
 import { InteractiveProps, InteractiveDefaults } from '../types/interactive';
 
 type FormValues = {
@@ -50,9 +52,8 @@ const Form: React.FC<FormProps> = (props) => {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = document.querySelector(`#form_content-${id}`);
-    const errorCount = form ? form.getElementsByClassName('Error').length : 0;
-
-    if (errorCount === 0) {
+    let errorCount = form ? form.getElementsByClassName('Error').length : 0;
+    if (errorCount === 0 ) {
       try {
         setIsLoading(true);
         await onSubmit(formValues);
@@ -64,14 +65,21 @@ const Form: React.FC<FormProps> = (props) => {
     }
   }
 
+  const validateAllInputs = () => {
+    const errors = inputRefs.current.map(ref => ref.current?.validate());
+    return errors.filter(error => error).length === 0;
+  };
+
   return (
     <form id={id} className="form" noValidate onSubmit={handleSubmit}>
       <div id={`form_content-${id}`}>
-        {children}
+          {children}
       </div>
-      {submissionError ? (
-        <p className="form-feedback Error">{submissionError}</p>
-      ) : null}
+      <div aria-live="assertive" id="form-feedback">
+        {submissionError && !isLoading ? (
+          <p className="form-feedback Error">{submissionError}</p>
+        ) : null}
+      </div>
 
       {cancelLabel
         ? (

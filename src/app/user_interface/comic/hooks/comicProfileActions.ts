@@ -165,6 +165,14 @@ export const handleSubmissionError =
   (dispatch: React.Dispatch<ComicProfileAction>) => {
     dispatch({
       type: 'CREATE-UPDATE_NEW_COMIC_FAILURE',
-      payload: { error: errorMessage }
+      payload: { error: errorMessage ? `comicManagement.errors.${errorMessage}` : '' }
+    });
+  };
+
+export const handleSubmissionSuccess = 
+  (errorMessage) =>
+  (dispatch: React.Dispatch<ComicProfileAction>) => {
+    dispatch({
+      type: 'CREATE-UPDATE_NEW_COMIC_SUCCESS'
     });
   };
