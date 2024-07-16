@@ -1,3 +1,5 @@
+
+
 import CaveartLayout from '../../app/user_interface/CaveartLayout'
 import {useEffect, useState} from 'react';
 import {Link} from '../../../component_library';
@@ -27,6 +29,7 @@ function MyComics() {
   return (
     <CaveartLayout requireLogin={true}>
       <h1>{t('headerNavigation.myWebcomics')}</h1>
+   
         {comics
           ? comics.map((comic, idx) => {
             return (
@@ -39,6 +42,7 @@ function MyComics() {
           })
           : <p>{t('comicManagement.noComics')}</p>
         }
+
       <Link type="button" id="link-create_comic" href="/comic/new">{t('comicManagement.create')}</Link>
     </CaveartLayout>
   )

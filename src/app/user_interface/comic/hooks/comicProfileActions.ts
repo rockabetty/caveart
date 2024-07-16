@@ -112,25 +112,26 @@ export const fetchPermissions =
     }
   };
 
-export const fetchProfileToUpdate =
-  (comicID: number) => async (dispatch: React.Dispatch<ComicProfileAction>) => {
-    try {
-      const comic = await axios.get(`/api/comic/${comicID}`);
-      const permissions = await axios.get(`/api/comic/${comicID}/permissions`);
-      console.log(comic)
-      if (permissions.data?.edit) {
-        dispatch({
-          type: "GET_COMIC_PROFILE_TO_UPDATE",
-          payload: {
-            profile: comic.data as ComicData,
-            update: comic.data as ComicData,
-          },
-        });
-      }
-    } catch (error: any) {
-      handleError(error);
+export const fetchProfileToUpdate = (comicID: number) => async (dispatch: React.Dispatch<ComicProfileAction>) => {
+  try {
+    const [comic, permissions] = await Promise.all([
+      axios.get(`/api/comic/${comicID}`),
+      axios.get(`/api/comic/${comicID}/permissions`)
+    ]);
+    
+    if (permissions.data?.edit) {
+      dispatch({
+        type: "GET_COMIC_PROFILE_TO_UPDATE",
+        payload: {
+          profile: comic.data as ComicData,
+          update: comic.data as ComicData,
+        },
+      });
     }
-  };
+  } catch (error: any) {
+    handleError(error);
+  }
+};
 
 export const updateFormfield =
   (fieldName: ComicField, value: string | ContentWarningUserSelection | GenreUserSelection) =>

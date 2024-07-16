@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ message: "Invalid comic ID" });
     }
 
-    const { current, update } = req.body;
+    const { update } = req.body;
 
     if (typeof current !== 'object' || typeof update !== 'object') {
       return res.status(400).json({ message: "Invalid request body" });

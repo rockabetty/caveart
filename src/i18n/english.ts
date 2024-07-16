@@ -12,7 +12,10 @@ const english = {
       "edit": "Edit",
       "save": "Save",
       "cancel": "Cancel",
-      "delete": "Delete"
+      "delete": "Delete",
+      "errors": {
+        "invalidTitleFormat": "Please choose a different title."
+      }
     },
     "comicProfile": {
       "title": "Title",
