@@ -43,7 +43,6 @@ export interface RadioProps {
 const Radio = ({
   id,
   labelText = 'Label',
-  classes = '',
   checked = false,
   disabled = false,
   status = '',

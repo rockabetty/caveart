@@ -52,7 +52,7 @@ export interface BadgeProps {
 const Badge = ({
   id = '',
   viewbox = "0 0 16 16",
-  look = "secondary",
+  look = "default",
   disabled,
   onClick = () => {},
   tabIndex,

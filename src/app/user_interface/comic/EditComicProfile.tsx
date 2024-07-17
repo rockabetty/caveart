@@ -4,18 +4,18 @@ import { useComicProfile } from "./hooks/useComicProfile";
 import ComicProfileForm from "./ComicProfileForm";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
+import React from "react";
 
 type EditComicProfileProps = {
   comicId: number;
 };
 
-const EditComicProfile: React.FC<EditComicProfileProps> = (
-  props
-) => {
+const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
   const { t } = useTranslation();
   const { comicId } = props;
   const { state, setSubmissionError, confirmEdit } = useComicProfile(comicId);
-  const { update, permissions, profile, submissionError, successMessage} = state;
+  const { update, permissions, profile, submissionError, successMessage } =
+    state;
 
   if (permissions === undefined) {
     return <LoadingSpinner />;
@@ -88,7 +88,7 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (
 
     await Promise.all(updates)
       .then(() => {
-        confirmEdit()
+        confirmEdit();
       })
       .catch((error) => {
         console.log(error);

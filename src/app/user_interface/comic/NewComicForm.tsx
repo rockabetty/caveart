@@ -4,6 +4,7 @@ import { useComicProfile } from "./hooks/useComicProfile";
 import ComicProfileForm from "./ComicProfileForm";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
+import React from "react";
 
 const NewComicForm: React.FC = () => {
   const { t } = useTranslation();

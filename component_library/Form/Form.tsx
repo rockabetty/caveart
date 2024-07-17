@@ -1,8 +1,6 @@
-
-
-import React, {  createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
+import React, { useState, ReactNode } from 'react';
 import './Form.css';
-import { Button, ButtonSet, TextInput } from '../Button';
+import { Button, ButtonSet } from '../Button';
 import { InteractiveProps, InteractiveDefaults } from '../types/interactive';
 
 type FormValues = {
@@ -67,11 +65,6 @@ const Form: React.FC<FormProps> = (props) => {
       }
     }
   }
-
-  const validateAllInputs = () => {
-    const errors = inputRefs.current.map(ref => ref.current?.validate());
-    return errors.filter(error => error).length === 0;
-  };
 
   return (
     <form id={id} className="form" noValidate onSubmit={handleSubmit}>
