@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { TextInput, Form } from '../../../../component_library';
+import { TextInput, Form } from '@components';
 import { useUser } from '../../../services/auth/client/hooks/useUser';
 import { ErrorKeys } from '../../../services/auth/types/errors';
 

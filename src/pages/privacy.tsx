@@ -1,6 +1,6 @@
 import React from 'react';
 import CaveartLayout from '../app/user_interface/CaveartLayout';
-import { Link } from '../../component_library';
+import { Link } from '@components';
 
 function PrivacyPolicy() {
   return (

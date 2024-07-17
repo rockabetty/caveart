@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, ButtonSet, Link } from '../../../../component_library'
+import { Button, ButtonSet, Link } from '@components'
 import './Navigation.css'
 import { useTranslation } from 'react-i18next';
 

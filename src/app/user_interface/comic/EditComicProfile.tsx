@@ -1,4 +1,4 @@
-import { LoadingSpinner, Form } from "../../../../component_library";
+import { LoadingSpinner, Form } from "@components";
 import "./ComicProfiles.css";
 import { useComicProfile } from "./hooks/useComicProfile";
 import ComicProfileForm from "./ComicProfileForm";

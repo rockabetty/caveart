@@ -5,7 +5,7 @@ import { useUser } from "../../services/auth/client/hooks/useUser";
 import SiteHeader from "./navigation/SiteHeader";
 import SiteFooter from "./navigation/SiteFooter";
 import AuthModal from "./authentication/AuthModal";
-import "./../../../component_library/design/style.css";
+import "@components/design/style.css";
 import "../../i18n";
 import "./themes/main.css";
 import { verify } from "crypto";

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from '../../../../component_library'
+import { Link } from '@components'
 import './Navigation.css'
 
 const SiteFooter = () => {

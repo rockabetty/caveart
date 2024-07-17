@@ -5,6 +5,7 @@
     "types",
     ".next/types/**/*.ts"
   ],
+
   "compilerOptions": {
     "target": "es2015",
     "module": "esnext",
@@ -12,6 +13,12 @@
       "dom",
       "esnext"
     ],
+    "baseUrl": "./src",
+    "paths": {
+      "@components": ["../component_library"],
+      "@components/*": ["../component_library/*"],
+      "@data/*": ["./data/*"]
+    },
     "importHelpers": true,
     // output .d.ts declaration files for consumers
     "declaration": true,

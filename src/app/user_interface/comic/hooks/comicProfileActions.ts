@@ -133,7 +133,7 @@ export const fetchProfileToUpdate = (comicID: number) => async (dispatch: React.
 };
 
 export const updateFormfield =
-  (fieldName: ComicField, value: string | ContentWarningUserSelection | GenreUserSelection | boolean) =>
+  (fieldName: ComicField, value: string | Readonly<ContentWarningUserSelection> | Readonly<GenreUserSelection> | boolean) =>
   (dispatch: React.Dispatch<ComicProfileAction>) => {
     dispatch({
       type: "EDIT_FORM_FIELD",

@@ -1,5 +1,5 @@
 import React from "react";
-import { Accordion, Radio } from "../../../../component_library";
+import { Accordion, Radio } from "@components";
 import { useTranslation } from 'react-i18next';
 
 type ContentWarning = {

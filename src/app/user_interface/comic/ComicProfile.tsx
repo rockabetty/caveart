@@ -1,4 +1,4 @@
-import { ImageUpload, Link, Tag } from '../../../../component_library'
+import { ImageUpload, Link, Tag } from '@components'
 import './ComicProfiles.css';
 import { useCallback } from 'react';
 import { useComicProfile } from './hooks/useComicProfile'; 

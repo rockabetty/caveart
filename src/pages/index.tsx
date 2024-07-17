@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import CaveartLayout from '../app/user_interface/CaveartLayout'
+import CaveartLayout from '@components'
 
 export default function CaveArt() {
   return (

@@ -2,7 +2,7 @@ import {
   TextInput,
   TextArea,
   ImageUpload
-} from "../../../../component_library";
+} from "@components";
 import "./ComicProfiles.css";
 import { useEffect, useState } from "react";
 import { useComicProfile } from "./hooks/useComicProfile";

@@ -1,4 +1,4 @@
-import { Form, Radio, Checkbox } from "../../../../component_library";
+import { Form, Radio, Checkbox } from "@components";
 import "./ComicProfiles.css";
 import { useComicProfile } from "./hooks/useComicProfile";
 import ComicProfileForm from "./ComicProfileForm";

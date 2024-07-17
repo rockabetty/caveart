@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Login from './LogIn';
 import Signup from './SignUp';
-import { Button, Modal } from '../../../../component_library';
+import { Button, Modal } from '@components';
 
 interface AuthProps {
   isOpen: boolean;
