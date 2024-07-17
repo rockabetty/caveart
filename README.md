@@ -1,7 +1,7 @@
 # Overview
 Caveart is an invite-only comics hosting platform that allows users to create an account, host their webcomics, and engage with other creators. The repo also is intended to serve as a learning resource for aspiring developers.
 
-Caveart is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Caveart is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) because I didn't realize Vite existed, I'm very sorry.
 
 ## Directory Structure
 ### Notable Structural Decisions 
