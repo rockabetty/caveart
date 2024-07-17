@@ -13,6 +13,7 @@ const english = {
       "save": "Save",
       "cancel": "Cancel",
       "delete": "Delete",
+      "editSuccessful": "Your changes have been saved.",
       "errors": {
         "invalidTitleFormat": "Please choose a different title."
       }

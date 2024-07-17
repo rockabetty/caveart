@@ -8,7 +8,8 @@ import {
   updateRating,
   handleFileChange,
   handleSubmissionError,
-  handleSubmissionSuccess
+  handleSubmissionSuccess,
+  handleEditSuccess
 } from "./comicProfileActions";
 import {
   ComicData,
@@ -77,6 +78,11 @@ export const useComicProfile = (comicID?: number) => {
     router.push(`/comic/${data.id}`)
   }
 
+  const confirmEdit = () => {
+    handleEditSuccess()(dispatch)
+  }
+
+
   return {
     state,
     getProfile,
@@ -86,6 +92,7 @@ export const useComicProfile = (comicID?: number) => {
     setRating,
     setThumbnail,
     setSubmissionError,
-    confirmCreation
+    confirmCreation,
+    confirmEdit
   };
 };

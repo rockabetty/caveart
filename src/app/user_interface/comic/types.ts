@@ -25,7 +25,7 @@ export type ComicData = {
   description: string;
   title: string;
   subdomain: string;
-  thumbnail: string | File;
+  thumbnail?: string | File;
   rating: string;
   likes?: boolean;
   comments?: 'Allowed' | 'Moderated' | 'Disabled';

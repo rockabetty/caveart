@@ -19,6 +19,7 @@ export interface FormProps extends InteractiveProps {
   submitLabel: string;
   children: ReactNode;
   isLoading?: boolean;
+  successMessage?: string;
   formValues: FormValues
 }
 
@@ -29,6 +30,7 @@ export const formDefaults: Partial<FormProps> = {
   onFailure: () => {},
   onCancel: () => {},
   submissionError: '',
+  successMessage: '',
   submitLabel: 'Submit',
   cancelLabel: '',
 };
@@ -42,6 +44,7 @@ const Form: React.FC<FormProps> = (props) => {
     onSuccess,
     formValues,
     submissionError,
+    successMessage,
     submitLabel,
     cancelLabel,
     onCancel
@@ -79,6 +82,10 @@ const Form: React.FC<FormProps> = (props) => {
         {submissionError && !isLoading ? (
           <p className="form-feedback Error">{submissionError}</p>
         ) : null}
+        { successMessage
+          ? <p className="form-feedback">{successMessage}</p>
+          : null
+        }
       </div>
 
       {cancelLabel

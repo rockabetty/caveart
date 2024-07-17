@@ -1,17 +1,19 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { isAuthor } from '../../../../data/comics';
-import { USER_AUTH_TOKEN_NAME } from '../../../../../constants';
-import jwt from 'jsonwebtoken';
-import { requireEnvVar } from '../../../../services/logs/envcheck';
-import { ErrorKeys } from '../../../../services/auth/types/errors';
+import { NextApiRequest, NextApiResponse } from "next";
+import { isAuthor } from "../../../../data/comics";
+import { USER_AUTH_TOKEN_NAME } from "../../../../../constants";
+import jwt from "jsonwebtoken";
+import { requireEnvVar } from "../../../../services/logs/envcheck";
+import { ErrorKeys } from "../../../../services/auth/types/errors";
 
-const SECRET_KEY_JWT = requireEnvVar('SECRET_KEY_JWT');
+const SECRET_KEY_JWT = requireEnvVar("SECRET_KEY_JWT");
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   const { comicId } = req.query;
 
-  if (req.method === 'GET') {
-
+  if (req.method === "GET") {
     const comic = parseInt(comicId);
     if (isNaN(comic)) {
       return res.status(400).json({ message: "Invalid comic ID" });
@@ -21,7 +23,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!token) {
       return res.status(500).json(ErrorKeys.TOKEN_MISSING);
     }
-    const decodedRequestToken = jwt.verify(token, SECRET_KEY_JWT) as { sub: string } | null;
+    const decodedRequestToken = jwt.verify(token, SECRET_KEY_JWT) as {
+      sub: string;
+    } | null;
     if (!decodedRequestToken) {
       return res.status(500).json(ErrorKeys.TOKEN_INVALID);
     }
@@ -33,16 +37,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const canEdit = await isAuthor(userId, comic);
       const permissions = {
-        edit: canEdit
-      }
-      return res.status(200).json(permissions)
-
+        edit: canEdit,
+      };
+      return res.status(200).json(permissions);
     } catch (error) {
-      console.error('Error checking permissions:', error);
-      return res.status(500).json({ message: 'Error while checking permissions' });
+      return res
+        .status(500)
+        .json({ message: "Error while checking permissions" });
     }
   } else {
-    res.setHeader('Allow', ['GET']);
+    res.setHeader("Allow", ["GET"]);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }

@@ -124,7 +124,7 @@ export const fetchProfileToUpdate = (comicID: number) => async (dispatch: React.
         type: "GET_COMIC_PROFILE_TO_UPDATE",
         payload: {
           profile: comic.data as ComicData,
-          update: comic.data as ComicData,
+          update: JSON.parse(JSON.stringify(comic.data)) as ComicData,
         },
       });
     }
@@ -170,6 +170,14 @@ export const handleSubmissionError =
     });
   };
 
+export const handleEditSuccess = () =>
+  (dispatch: React.Dispatch<ComicProfileAction>) => {
+    dispatch({
+      type: "EDIT_COMIC_SUCCESS",
+      payload: { successMessage: "comicManagement.editSuccessful" }
+    })
+  }
+
 export const handleSubmissionSuccess = 
   (errorMessage) =>
   (dispatch: React.Dispatch<ComicProfileAction>) => {
@@ -177,3 +185,4 @@ export const handleSubmissionSuccess =
       type: 'CREATE-UPDATE_NEW_COMIC_SUCCESS'
     });
   };
+

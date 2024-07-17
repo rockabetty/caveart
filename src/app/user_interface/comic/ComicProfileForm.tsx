@@ -26,7 +26,7 @@ const ComicProfileForm: React.FC<EditComicProfileProps> = (
   const { t } = useTranslation();
   const { comicId } = props;
   const { state, enableEditing, setField, setRating, setThumbnail } = useComicProfile(comicId);
-  const { update } = state;
+  const { update, profile } = state;
   const [genres, setGenres] = useState([]);
   const [contentWarnings, setContentWarnings] = useState([]);
 

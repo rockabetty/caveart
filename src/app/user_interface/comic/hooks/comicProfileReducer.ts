@@ -6,6 +6,7 @@ export type ComicProfileState = {
   editing: boolean;
   permissions: ComicPermissions | undefined;
   submissionError: string;
+  successMessage: string;
 };
 
 const emptyProfile: ComicData = {
@@ -66,6 +67,10 @@ export type ComicProfileAction =
       type: "CREATE-UPDATE_NEW_COMIC_FAILURE",
       error: string
     }
+  | {
+      type: 'EDIT_COMIC_SUCCESS',
+      payload: { successMessage: string }
+  }
 
 export const comicProfileReducer = (
   state: ComicProfileState,
@@ -86,7 +91,7 @@ export const comicProfileReducer = (
       return {
         ...state,
         profile: action.payload.profile,
-        update: action.payload.profile,
+        update: action.payload.update,
       };
     case "EDIT_FORM_FIELD":
       return {
@@ -115,8 +120,14 @@ export const comicProfileReducer = (
     case 'CREATE-UPDATE_NEW_COMIC_FAILURE':
       return {
         ...state,
-        submissionError: action.payload.error
+        submissionError: action.error
       }
+    case 'EDIT_COMIC_SUCCESS':
+      return {
+        ...state,
+        successMessage: action.payload.successMessage
+      }
+
     default:
       return state;
   }

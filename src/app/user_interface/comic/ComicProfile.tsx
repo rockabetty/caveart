@@ -14,10 +14,6 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
   const {state} = useComicProfile(comicId);
   const {profile, permissions} = state;
 
-  useEffect(() => {
-    console.log(state);
-  },[state])
-
   const renderGenres = useCallback(() => {
     const selectedGenres = profile?.genres 
     ? Object.values(profile.genres)
@@ -72,7 +68,7 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
           <div className="comic-profile_body">
             <a className="comic-profile_cover" href={`/read/${profile?.subdomain}`}>
               {profile?.thumbnail
-                ? <ImageUpload src={`/${profile?.thumbnail}`} />
+                ? <ImageUpload src={profile?.thumbnail} />
                 : <ImageUpload src='/img/brand/kraugak.png' />
               }
             </a>
@@ -86,7 +82,10 @@ const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => 
               </div>
               <pre className="comic-profile_description">{profile?.description}</pre>
               <Tag label={profile?.rating} />
-              {renderGenres()}
+              {profile?.genres
+                ? renderGenres()
+                : null
+              }
               {renderContentWarnings()}
             </div>
           </div>
