@@ -38,9 +38,6 @@ const handler: NextApiHandler = async (req, res) => {
     );
 
     if (newUser) {
-      const userId = newUser.id;
-      const userSessionCookie = await createUserSessionCookie(userId.toString());
-      res.setHeader('Set-Cookie', userSessionCookie);
       return res.status(200).send({ message: "Signup successful" });
     }
   }
