@@ -42,12 +42,6 @@ const CaveartLayout: React.FC<CaveartLayoutProps> = ({
     }
   }, [requireLogin, verifyUser, router]);
 
-  useEffect(() => {
-    if (requireLogin && !isAuthenticated) {
-      router.push("/");
-    }
-  }, [requireLogin, isAuthenticated, router]);
-
   const closeAuthModal = () => {
     setAuthModalOpen(false);
   };

@@ -1,26 +1,32 @@
 .comic-profile {
-  background-color: var(--theme-interface-10);
-  border: 1px solid var(--theme-interface-30);
   padding: var(--spacing-md);
   box-sizing: border-box;
   margin-block-end: var(--spacing-lg);
-  border-radius: var(--border-radius);
 }
 
 .comic-profile_header {
   display: flex;
   align-items: center;
   width:  100%;
+  margin-bottom: var(--spacing-md);
 }
 
 .comic-profile_title {
   margin-block-start: 0;
 }
+.comic-profile_cover {
+  margin-inline-end: var(--spacing-md);
+}
 .comic-profile_body {
   display: flex;
   flex-direction: row;   
 }
-.comic-profile_descriptions {
+.comic-profile_description {
   flex-grow: 1;
-  padding: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
+}
+
+.comic-profile_settings {
+  display: flex;
+  justify-content: space-between;
 }

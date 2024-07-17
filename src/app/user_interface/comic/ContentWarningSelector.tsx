@@ -1,5 +1,6 @@
-import React from 'react';
-import { Accordion, Radio } from '../../../../component_library';
+import React from "react";
+import { Accordion, Radio } from "../../../../component_library";
+import { useTranslation } from 'react-i18next';
 
 type ContentWarning = {
   id: string;
@@ -9,57 +10,67 @@ type ContentWarning = {
 
 type ContentWarningProps = {
   options: ContentWarning[];
-  selection: { [key: string]: `${number}` | number };
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  selection: { [key: string]: { id: number; name: string } };
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => any;
 };
 
 const ContentWarningSelector: React.FC<ContentWarningProps> = (props) => {
-  const {
-    options,
-    selection,
-    onChange
-  } = props;
-
-  console.log(selection)
+  const { options, selection, onChange } = props;
+  const { t } = useTranslation();
 
   return (
     <div className="ReactiveGrid">
-      {options && options.map((warning: ContentWarning, idx: number) => {
-        return (
-          <Accordion key={idx}>
-            {warning.name}
-            {warning.children.map((child: ContentWarning, idx: number) => {
-              const name = child.name;
-              return (
-                <fieldset className="form-field" key={`content-warning-${idx}`}>
-                  <legend><strong>{child.name}:</strong></legend>
-                  <Radio
-                    id={`no-cw-${name}`}
-                    onChange={onChange}
-                    labelText="No"
-                    checked={selection[name] === undefined}
-                    name={name}
-                    value="none"
-                  />
-                  {child.children.map((option: ContentWarning, idx: number) => {
-                    return (
-                      <Radio
-                        id={`cw-${name}-${option.id}`}
-                        key={`cw-key-${idx}`}
-                        onChange={onChange}
-                        labelText={["Some", "Frequent"][idx]}
-                        name={name}
-                        checked={selection[name] == option.id}
-                        value={option.id}
-                      />
-                    );
-                  })}
-                </fieldset>
-              );
-            })}
-          </Accordion>
-        );
-      })}
+      {options &&
+        options.map((warning: ContentWarning, idx: number) => {
+          return (
+            <Accordion key={idx}>
+              {t(`contentWarnings.${warning.name}`)}
+              {warning.children.map((child: ContentWarning, idx: number) => {
+                const name = child.name;
+                return (
+                  <fieldset
+                    className="form-field"
+                    key={`content-warning-${idx}`}
+                  >
+                    <legend>
+                      <strong>{t(`contentWarnings.${child.name}.name`)}</strong>
+                    </legend>
+                     <p>{t(`contentWarnings.${child.name}.definition`)}</p>
+                    <Radio
+                      id={`${name}Absent`}
+                      onChange={onChange}
+                      labelText={t('contentWarnings.absent')}
+                      checked={selection && selection[name] === undefined}
+                      name={name}
+                      value="none"
+                    />
+                    {child.children.map(
+                      (option: ContentWarning, idx: number) => {
+                        const labelString = `${["some", "frequent"][idx]}${name
+                          .charAt(0)
+                          .toUpperCase()}${name.substr(1)}`;
+                        return (
+                          <Radio
+                            id={labelString}
+                            key={`cw-key-${idx}`}
+                            onChange={onChange}
+                            labelText={t(`contentWarnings.${child.name}.${labelString}`)}
+                            name={name}
+                            checked={
+                              selection[name] &&
+                              selection[name].id == Number(option.id)
+                            }
+                            value={option.id}
+                          />
+                        );
+                      },
+                    )}
+                  </fieldset>
+                );
+              })}
+            </Accordion>
+          );
+        })}
     </div>
   );
 };

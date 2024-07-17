@@ -14,10 +14,6 @@ export interface LinkProps extends InteractiveProps {
    * Pass the `href` attribute for the <a> element
    */
   href: string
-  /**
-   * Optional additional styling
-  * */
-  classes?: string
   inline?: boolean
   /**
    * Pass the <a> element target attribute
@@ -31,7 +27,8 @@ export interface LinkProps extends InteractiveProps {
   /**
    * Shift the appearance of the link for semantic vs visual presentation needs
   * */
-  type?: 'inline' | 'default' | 'button'
+  type?: 'inline' | 'default' | 'button' | 'inline button'
+  look?: 'primary' | 'default' | 'muted' | 'warning' | undefined;
 }
 
 const Link = ({
@@ -39,10 +36,10 @@ const Link = ({
   children = 'Link',
   href = '#',
   target = '_self',
-  classes = '',
   disabled,
   type,
   onClick,
+  look = 'default'
 }:LinkProps) => {
 
   return(
@@ -50,13 +47,16 @@ const Link = ({
       id={id}
       href={href}
       target={target}
-      className={`${classes} ${classNames({
-        'Inline': type === 'inline',
+      className={classNames({
+        'Inline': type === 'inline' || type === 'inline button',
         'Disabled': !!disabled,
-        'button': type === 'button',
-        'link': type !== 'button',
+        'button': type === 'button' || type === 'inline button',
+        'Muted': look === 'muted',
+        'Primary': look ==='primary',
+        'Warning': look === 'warning',
+        'link': type !== 'button' && type !== 'inline button',
         'Primary': type === 'button'
-      })}`.trim()}
+      })}
       onClick={onClick}
     >
       {children}

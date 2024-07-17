@@ -149,7 +149,7 @@ const UserProvider: React.FC<UserProviderProps> = function ({ children }) {
             });
             return response.data;
         } catch (error: any) {
-            handleErrorWithDispatch(error);
+            handleErrorWithDispatch("error");
         }
     }, [dispatch]);
 

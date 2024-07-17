@@ -145,6 +145,7 @@ legend, .legend {
 
 .form-feedback {
   text-align: center;
+  font-size: var(--size-font-lg);
 }
 .form-feedback.Error {
   color: var(--col-error);

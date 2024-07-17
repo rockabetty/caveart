@@ -3,11 +3,13 @@ import {
   removeOneToManyAssociations,
   editTable,
 } from "./queryFunctions";
-import { Comic, ComicColumnList, GenreSelection, NestedContentWarning } from "./types";
+import { Comic, ComicColumnList, Genre, NestedContentWarning } from "./types";
 import { logger } from "../services/logs";
 import { QueryResult } from "pg";
 
 export async function createComic(comic: Comic): Promise<number | null> {
+  console.log(comic);
+  
   const query = `
       INSERT INTO comics (
         title,
@@ -129,40 +131,57 @@ export async function isAuthor(
 }
 
 export async function getComic(comicId: number): Promise<Comic | null> {
+ 
   const query = `
+  WITH ContentWarnings AS (
     SELECT
-      c.title,
-      c.subdomain,
-      c.tagline,
-      c.description,
-      c.thumbnail,
-      c.comments,
-      c.is_unlisted,
-      c.is_private,
-      c.moderate_comments,
-      c.view_count,
-      c.likes,
-      c.like_count,
-      r.name as rating,
-      COALESCE(g.genres, '{}'::jsonb) AS genres
+      c.id AS comic_id,
+      COALESCE(
+          jsonb_object_agg(cwparent.name, json_build_object('id', cw.id, 'name', cw.name)) FILTER (WHERE cw.id IS NOT NULL),
+          '{}'::jsonb
+      ) AS content_warnings
     FROM comics c
-    JOIN ratings r ON c.rating = r.id
-    LEFT JOIN LATERAL (
-      SELECT 
-        jsonb_object_agg(
-          g.id,
-          jsonb_build_object(
-            'name', g.name,
-            'description', g.description
-          )
-        ) AS genres
-      FROM genres g
-      JOIN comics_to_genres cg ON g.id = cg.genre_id
-      WHERE cg.comic_id = c.id
-    ) g ON true
+    LEFT JOIN comics_to_content_warnings ccw ON ccw.comic_id = c.id
+    LEFT JOIN content_warnings cw ON cw.id = ccw.content_warning_id
+    JOIN content_warnings cwparent on cwparent.id = cw.parent_id
     WHERE c.id = $1
-    GROUP BY
-      c.id, r.name, g.genres;`;
+    GROUP BY c.id
+  ),
+  ComicGenres AS (
+    SELECT
+      c.id AS comic_id,
+      COALESCE(
+        jsonb_object_agg(g.id, jsonb_build_object('description', g.description, 'name', g.name)) FILTER (WHERE g.id IS NOT NULL),
+        '{}'::jsonb
+    ) AS genres
+    FROM comics c
+    LEFT JOIN comics_to_genres cg ON cg.comic_id = c.id
+    LEFT JOIN genres g ON g.id = cg.genre_id
+    WHERE c.id = $1
+    GROUP BY c.id
+  )
+  SELECT 
+    c.title,
+    c.subdomain,
+    c.tagline,
+    c.description,
+    c.thumbnail,
+    c.comments,
+    c.is_unlisted,
+    c.is_private,
+    c.moderate_comments,
+    c.view_count,
+    c.likes,
+    c.like_count,
+    r.name as rating,
+    COALESCE(cg.genres, '{}'::jsonb) AS genres,
+    COALESCE(cw.content_warnings, '{}'::jsonb) AS content_warnings
+  FROM comics c
+  JOIN ratings r ON r.id = c.rating
+  LEFT JOIN ComicGenres cg ON cg.comic_id = c.id
+  LEFT JOIN ContentWarnings cw ON cw.comic_id = c.id
+  WHERE c.id = $1
+  GROUP BY c.id, cw.content_warnings, cg.genres, r.name`
 
   const values = [comicId];
   try {
@@ -333,22 +352,38 @@ export async function getRatingDefs(
   }
 }
 
-export async function getGenres(): Promise<GenreSelection | null> {
+export async function getRatingId(name: string): Promise<QueryResult | null> {
   try {
+    const result = await queryDbConnection(`SELECT id FROM ratings WHERE name = $1`, [name])
+    console.log(result)
+    if (result.rows && result.rows.length > 0) {
+    return result.rows[0].id
+    }
+  return null
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
+  }
+}
+
+export async function getGenres(): Promise<Genre[] | null> {
+  try {
+     // `SELECT jsonb_object_agg(
+      //     id, 
+      //     jsonb_build_object(
+      //         'id', id,
+      //         'name', name,
+      //         'description', description
+      //     )
+      // ) AS genres
+      // FROM genres;
+      // `
+      
     const result = await queryDbConnection(
-      `SELECT jsonb_object_agg(
-          id, 
-          jsonb_build_object(
-              'id', id,
-              'name', name,
-              'description', description
-          )
-      ) AS genres
-      FROM genres;
-      `
+      `SELECT id, name FROM genres`
     );
     if (result.rows && result.rows.length > 0) {
-      return result.rows[0].genres;
+      return result.rows;
     }
     return null;
   } catch (error: any) {

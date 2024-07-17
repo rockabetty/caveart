@@ -18,8 +18,6 @@ const SiteHeader = ({
   }: SiteHeaderProps) => {
 
   const { t } = useTranslation();
-
-  console.log(loggedIn)
   
   return (
     <div className="horizontal-nav">

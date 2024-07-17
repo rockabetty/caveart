@@ -1,27 +1,33 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { addGenresToComic, removeGenresFromComic } from '../../../../data/comics';
+import { NextApiRequest, NextApiResponse } from "next";
+import {
+  addGenresToComic,
+  removeGenresFromComic,
+} from "../../../../data/comics";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   const { comicId } = req.query;
 
-  if (req.method === 'POST') {
+  if (req.method === "POST") {
     const comic = Number(comicId);
-    
+
     if (!comic) {
       return res.status(400).json({ message: "Invalid comic ID" });
     }
 
-    const { current, update } = req.body;
+    const { old, update } = req.body;
 
-    if (typeof current !== 'object' || typeof update !== 'object') {
+    if (typeof old !== "object" || typeof update !== "object") {
       return res.status(400).json({ message: "Invalid request body" });
     }
-    
+
     try {
       let deleteIDs: number[] = [];
       let addIDs: number[] = [];
 
-      for (let key in current) {
+      for (let key in old) {
         if (!update[key]) {
           deleteIDs.push(Number(key));
         }
@@ -32,7 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       for (let key in update) {
-        if (!current[key]) {
+        if (!old[key]) {
           addIDs.push(Number(key));
         }
       }
@@ -41,13 +47,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         await addGenresToComic(comic, addIDs);
       }
 
-      return res.status(200).json({ message: 'Genres updated successfully' });
+      return res.status(200).json({ message: "Genres updated successfully" });
     } catch (error) {
-      console.error('Error updating genres:', error);
-      return res.status(500).json({ message: 'Failed to update genres' });
+      console.error("Error updating genres:", error);
+      return res.status(500).json({ message: "Failed to update genres" });
     }
   } else {
-    res.setHeader('Allow', ['POST']);
+    res.setHeader("Allow", ["POST"]);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }

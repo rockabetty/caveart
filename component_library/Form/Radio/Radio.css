@@ -79,3 +79,8 @@
 label.radio_label:not([for]) {
   color: red !important;
 }
+
+label.radio_label:not([for]):after {
+  content: "This radio button needs an ID.";
+  top: -20px;
+}
