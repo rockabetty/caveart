@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import {
   addGenresToComic,
   removeGenresFromComic,
-} from "../../../../data/comics";
+} from "@data/comics";
 
 export default async function handler(
   req: NextApiRequest,

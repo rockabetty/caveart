@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { isAuthor } from "../../../../data/comics";
+import { isAuthor } from "@data/comics";
 import { USER_AUTH_TOKEN_NAME } from "../../../../../constants";
 import jwt from "jsonwebtoken";
 import { requireEnvVar } from "../../../../services/logs/envcheck";

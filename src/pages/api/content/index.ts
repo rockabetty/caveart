@@ -1,6 +1,6 @@
 import { NextApiHandler } from 'next';
-import { getNestedContentWarnings } from '../../../data/comics';
-import { NestedContentWarning } from '../../../data/types';
+import { getNestedContentWarnings } from '@data/comics';
+import { NestedContentWarning } from '@data/types';
 
 
 const handler: NextApiHandler = async (_req, res) => {

@@ -1,5 +1,3 @@
-
-
 import CaveartLayout from '../../../app/user_interface/CaveartLayout'
 import {useEffect, useState} from 'react';
 import {Link} from '../../../../component_library';

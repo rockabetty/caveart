@@ -1,5 +1,5 @@
 import { NextApiHandler } from 'next';
-import { getFlatContentWarnings } from '../../../data/comics';
+import { getFlatContentWarnings } from '@data/comics';
 
 const handler: NextApiHandler = async (_req, res) => {
   try {

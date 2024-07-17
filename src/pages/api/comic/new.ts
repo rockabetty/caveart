@@ -15,7 +15,7 @@ import {
   removeAuthorsFromComic,
   getRatingId,
 } from "../../../data/comics";
-import { Comic } from "../../../data/types";
+import { Comic } from "@data/types";
 import { logger } from "../../../services/logs";
 
 export const config = {
