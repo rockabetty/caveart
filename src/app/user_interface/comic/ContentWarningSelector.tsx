@@ -21,11 +21,11 @@ const ContentWarningSelector: React.FC<ContentWarningProps> = (props) => {
   return (
     <div className="ReactiveGrid">
       {options &&
-        options.map((warning: ContentWarning, idx: number) => {
+        options.map((warning, idx) => {
           return (
             <Accordion key={idx}>
               {t(`contentWarnings.${warning.name}`)}
-              {warning.children.map((child: ContentWarning, idx: number) => {
+              {warning.children.map((child, idx) => {
                 const name = child.name;
                 return (
                   <fieldset
@@ -45,7 +45,7 @@ const ContentWarningSelector: React.FC<ContentWarningProps> = (props) => {
                       value="none"
                     />
                     {child.children.map(
-                      (option: ContentWarning, idx: number) => {
+                      (option, idx) => {
                         const labelString = `${["some", "frequent"][idx]}${name
                           .charAt(0)
                           .toUpperCase()}${name.substr(1)}`;

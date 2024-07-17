@@ -9,22 +9,20 @@ import {
   handleFileChange,
   handleSubmissionError,
   handleSubmissionSuccess,
-  handleEditSuccess
+  handleEditSuccess,
 } from "./comicProfileActions";
 import {
   ComicData,
   ContentWarningUserSelection,
   GenreUserSelection,
 } from "../types";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 
 export const useComicProfile = (comicID?: number) => {
   const router = useRouter();
   const context = useContext(ComicProfileContext);
   if (!context) {
-    throw new Error(
-      "useComicProfile must be used within a ComicProfileProvider",
-    );
+    throw new Error("useComicProfile must be used within a ComicProfileProvider");
   }
   const { state, dispatch } = context;
 
@@ -55,33 +53,32 @@ export const useComicProfile = (comicID?: number) => {
 
   const setField = (
     key: keyof ComicData,
-    value: string | ContentWarningUserSelection | GenreUserSelection,
+    value: string | ContentWarningUserSelection | GenreUserSelection | boolean,
   ) => {
     updateFormfield(key, value)(dispatch);
-    setSubmissionError('')
+    setSubmissionError('');
   };
 
   const setRating = (contentWarnings: ContentWarningUserSelection) => {
     updateRating(contentWarnings)(dispatch);
   };
 
-  const setThumbnail = (file: File) => {
-    handleFileChange(file)(dispatch)
-  }
+  const setThumbnail = (file: File | FileList) => {
+    handleFileChange(file)(dispatch);
+  };
 
-  const setSubmissionError = (error: any ) => {
-    handleSubmissionError(error)(dispatch)
-  }
+  const setSubmissionError = (error: any) => {
+    handleSubmissionError(error)(dispatch);
+  };
 
   const confirmCreation = (data: ComicData) => {
-    handleSubmissionSuccess()(dispatch)
-    router.push(`/comic/${data.id}`)
-  }
+    handleSubmissionSuccess()(dispatch);
+    router.push(`/comic/${data.id}`);
+  };
 
   const confirmEdit = () => {
-    handleEditSuccess()(dispatch)
-  }
-
+    handleEditSuccess()(dispatch);
+  };
 
   return {
     state,
@@ -93,6 +90,6 @@ export const useComicProfile = (comicID?: number) => {
     setThumbnail,
     setSubmissionError,
     confirmCreation,
-    confirmEdit
+    confirmEdit,
   };
 };

@@ -12,7 +12,6 @@ import { useTranslation } from "react-i18next";
 import axios from "axios";
 import {
   ComicData,
-  ContentWarningUserSelection,
   GenreUserSelection,
 } from "./types";
 
@@ -20,13 +19,13 @@ type ComicProfileFormProps = {
   comicId?: number;
 };
 
-const ComicProfileForm: React.FC<EditComicProfileProps> = (
-  props: EditComicProfileProps,
+const ComicProfileForm: React.FC<ComicProfileFormProps> = (
+  props
 ) => {
   const { t } = useTranslation();
   const { comicId } = props;
   const { state, enableEditing, setField, setRating, setThumbnail } = useComicProfile(comicId);
-  const { update, profile } = state;
+  const { update } = state;
   const [genres, setGenres] = useState([]);
   const [contentWarnings, setContentWarnings] = useState([]);
 
@@ -59,7 +58,7 @@ const ComicProfileForm: React.FC<EditComicProfileProps> = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     let newSelection: GenreUserSelection = update.genres;
-    const value: string = e.target.value;
+    const value = e.target.value;
     const idNumber = Number(value);
     if (!newSelection[idNumber]) {
       newSelection[idNumber] = genres[idNumber];
@@ -72,8 +71,8 @@ const ComicProfileForm: React.FC<EditComicProfileProps> = (
   const handleContentWarningSelection = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    let field: string = e.target.name;
-    let newSelection: ContentWarningUserSelection = update.content_warnings;
+    let field = e.target.name;
+    let newSelection = update.content_warnings;
     const value = e.target.value;
     if (value === "none") {
       delete newSelection[field];
@@ -88,7 +87,7 @@ const ComicProfileForm: React.FC<EditComicProfileProps> = (
     setRating(newSelection);
   };
 
-  const handleImageChange = (file: File) => {
+  const handleImageChange = (file: FileList) => {
     setThumbnail(file)
   }
 

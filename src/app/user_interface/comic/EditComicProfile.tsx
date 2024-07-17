@@ -10,7 +10,7 @@ type EditComicProfileProps = {
 };
 
 const EditComicProfile: React.FC<EditComicProfileProps> = (
-  props: EditComicProfileProps,
+  props
 ) => {
   const { t } = useTranslation();
   const { comicId } = props;

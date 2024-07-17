@@ -1,12 +1,12 @@
-import { ComicData, ComicPermissions, GenreUserSelection } from "../types";
+import { ComicData, ComicPermissions, ContentWarningUserSelection, GenreUserSelection } from "../types";
 
 export type ComicProfileState = {
   profile: ComicData;
   update: ComicData;
   editing: boolean;
   permissions: ComicPermissions | undefined;
-  submissionError: string;
-  successMessage: string;
+  submissionError?: string;
+  successMessage?: string;
 };
 
 const emptyProfile: ComicData = {
@@ -17,7 +17,7 @@ const emptyProfile: ComicData = {
   description: "",
   subdomain: "",
   rating: "All Ages",
-  thumbnail: null,
+  thumbnail: undefined,
   likes: true,
   comments: 'Allowed',
   visibility: 'Public'
@@ -29,6 +29,7 @@ export const initialState: ComicProfileState = {
   editing: false,
   permissions: undefined,
   submissionError: "",
+  successMessage: ""
 };
 
 export type ComicProfileAction =
@@ -46,7 +47,7 @@ export type ComicProfileAction =
   | {
       type: "EDIT_FORM_FIELD",
       fieldName: string,
-      value: string | GenreUserSelection
+      value:  string | ContentWarningUserSelection | GenreUserSelection | boolean
     }
   | {
       type: "EDIT_COMIC_RATING",
@@ -54,18 +55,19 @@ export type ComicProfileAction =
     }
   | {
       type: "SET_COVER_IMAGE",
-      file: File
+      file: File | FileList
     }
   | {
       type: "LOADING",
       payload: { action: ComicProfileAction }
   }
   | {
-      type: "CREATE-UPDATE_NEW_COMIC_SUCCESS",
+      type: "CREATE_OR_EDIT_COMIC_SUCCESS",
+      payload: { successMessage: string }
     }
   | {
-      type: "CREATE-UPDATE_NEW_COMIC_FAILURE",
-      error: string
+      type: "CREATE_OR_EDIT_COMIC_FAILURE",
+      payload: { error: string }
     }
   | {
       type: 'EDIT_COMIC_SUCCESS',
@@ -117,12 +119,12 @@ export const comicProfileReducer = (
           thumbnail: action.file
         }
       }
-    case 'CREATE-UPDATE_NEW_COMIC_FAILURE':
+    case 'CREATE_OR_EDIT_COMIC_FAILURE':
       return {
         ...state,
         submissionError: action.error
       }
-    case 'EDIT_COMIC_SUCCESS':
+    case 'CREATE_OR_EDIT_COMIC_SUCCESS':
       return {
         ...state,
         successMessage: action.payload.successMessage

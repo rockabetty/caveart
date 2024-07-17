@@ -1,6 +1,6 @@
 import { ImageUpload, Link, Tag } from '../../../../component_library'
 import './ComicProfiles.css';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { useComicProfile } from './hooks/useComicProfile'; 
 import { useTranslation } from 'react-i18next';
 
@@ -8,7 +8,7 @@ type ComicProfileProps = {
   comicId: number
 }
 
-const ComicProfile: React.FC<ComicProfileProps> = (props: ComicProfileProps) => {
+const ComicProfile: React.FC<ComicProfileProps> = (props) => {
   const { t } = useTranslation();
   const {comicId} = props;
   const {state} = useComicProfile(comicId);

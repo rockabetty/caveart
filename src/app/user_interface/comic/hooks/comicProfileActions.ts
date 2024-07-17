@@ -54,8 +54,7 @@ const ratingLevels = {
 };
 
 // isDisjointFrom is brand new so here's one that typescript won't sneer at
-const isDisjointFrom = (setA: Set<string>, setB: Set<string>): boolean => {
-   // @ts-ignore: 2802
+const isDisjointFrom = (setA: Set<string>, setB: Set<string>) => {
   for (let elem of setA) {
     if (setB.has(elem)) {
       return false;
@@ -156,16 +155,16 @@ export const updateRating =
   };
 
 export const handleFileChange = 
-  (file: File) =>
+  (file: File | FileList) =>
   (dispatch: React.Dispatch<ComicProfileAction>) => {
     dispatch({ type: 'SET_COVER_IMAGE', file });
   };
 
 export const handleSubmissionError = 
-  (errorMessage) =>
+  (errorMessage: string) =>
   (dispatch: React.Dispatch<ComicProfileAction>) => {
     dispatch({
-      type: 'CREATE-UPDATE_NEW_COMIC_FAILURE',
+      type: 'CREATE_OR_EDIT_COMIC_FAILURE',
       payload: { error: errorMessage ? `comicManagement.errors.${errorMessage}` : '' }
     });
   };
@@ -173,16 +172,16 @@ export const handleSubmissionError =
 export const handleEditSuccess = () =>
   (dispatch: React.Dispatch<ComicProfileAction>) => {
     dispatch({
-      type: "EDIT_COMIC_SUCCESS",
+      type: "CREATE_OR_EDIT_COMIC_SUCCESS",
       payload: { successMessage: "comicManagement.editSuccessful" }
     })
   }
 
-export const handleSubmissionSuccess = 
-  (errorMessage) =>
+export const handleSubmissionSuccess = () =>
   (dispatch: React.Dispatch<ComicProfileAction>) => {
     dispatch({
-      type: 'CREATE-UPDATE_NEW_COMIC_SUCCESS'
+      type: 'CREATE_OR_EDIT_COMIC_SUCCESS',
+      payload: { successMessage: "comicManagement.comicCreated" }
     });
   };
 

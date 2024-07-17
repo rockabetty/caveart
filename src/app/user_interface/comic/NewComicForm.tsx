@@ -1,45 +1,21 @@
 import {
-  LoadingSpinner,
   Form,
   Radio,
-  Checkbox,
-  useValidation
+  Checkbox
 } from "../../../../component_library";
 import "./ComicProfiles.css";
-import { useEffect, useState, useRef } from "react";
 import { useComicProfile } from "./hooks/useComicProfile";
 import ComicProfileForm from './ComicProfileForm';
 import { useTranslation } from "react-i18next";
 import axios from "axios";
-import {
-  ComicData,
-  ContentWarningUserSelection,
-  GenreUserSelection,
-} from "./types";
-import { useRouter } from 'nxt/router'
-
 
 const NewComicForm: React.FC = () => {
   const { t } = useTranslation();
-  const { state, setField, setRating, setSubmissionError, confirmCreation } = useComicProfile();
+  const { state, setField, setSubmissionError, confirmCreation } = useComicProfile();
   const { update, submissionError } = state;
 
-  /*
-  onSubmit: (formValues: FormValues) => any;
-  onCancel?: (...params: any) => any;
-  onSuccess?: (...params: any) => any;
-  onFailure?: (...params: any) => any;
-  submissionError?: string | null;
-  */
 
-  const toggleLikes = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-  }
-
-  const handleLikesChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
+  const handleLikesChange = () => {
     const enabled = !update.likes
     setField('likes', enabled)
   }
@@ -47,19 +23,28 @@ const NewComicForm: React.FC = () => {
   const handleCommentsChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    const { value } = event.target;
+    const { value } = e.target;
     setField('comments', value);
   }
 
   const handleVisibilityChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    const { value } = event.target;
+    const { value } = e.target;
     setField('visibility', value);
   }
 
   const handleFormSubmit = async () => {
-    const submission = {...update};
+    let submission = {
+      title: update.title,
+      subdomain: update.subdomain,
+      description: update.description,
+      genres: [] as string[],
+      content: [] as number[],
+      visibility: update.visibility,
+      comments: update.comments,
+      rating: update.rating
+    };
 
     if(!update.title) {
       return setSubmissionError('comicManagement.errors.titleMissing')
@@ -69,11 +54,10 @@ const NewComicForm: React.FC = () => {
     }
 
     submission.genres = Object.keys(update.genres)
-    let content = [];
-    Object.keys(submission.content_warnings).forEach(key => {
-      content.push(submission.content_warnings[key].id)
-    })
-    submission.content = content;
+    for (const value of Object.values(update.content_warnings)) {
+      submission.content.push(value.id)
+    }
+
     await axios.post(`/api/comic/new`, submission,{
       headers: {
         'Content-Type': 'multipart/form-data'

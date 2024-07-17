@@ -7,7 +7,7 @@ import '../Form/Form.css'
 export interface ImageUploadProps {
   id?: string;
   alt?: string;
-  src?: string;
+  src?: string | File;
   maxSize?: number;
   editable?: boolean;
   helperText?: string;
