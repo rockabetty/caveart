@@ -57,7 +57,7 @@ const isDisjointFrom = (setA: Set<string>, setB: Set<string>): boolean => {
   return true;
 };
 
-export const determineComicRating = function(selection: ContentWarningUserSelection) {
+export const determineComicRating = function(selection: Readonly<ContentWarningUserSelection>) {
 
   const warningsChosen: string[] = [];
   Object.keys(selection).forEach((warning) => {

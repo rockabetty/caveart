@@ -63,11 +63,11 @@ const isDisjointFrom = (setA: Set<string>, setB: Set<string>) => {
   return true;
 };
 
-const determineComicRating = function(selection: ContentWarningUserSelection) {
+const determineComicRating = function (selection: Readonly<ContentWarningUserSelection>): string {
   const warningsChosen: string[] = [];
   Object.keys(selection).forEach((warning) => {
     warningsChosen.push(selection[warning]['name']);
-  })
+  });
   const content = new Set(warningsChosen);
   if (!isDisjointFrom(content, ratingLevels["Adults Only (18+)"])) {
     return "Adults Only (18+)";
