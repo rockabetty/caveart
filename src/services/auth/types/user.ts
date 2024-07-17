@@ -9,7 +9,7 @@ export interface User {
 
 export type UserAuthState = {
     user: User | null;
-    isAuthenticated: boolean;
+    isAuthenticated?: boolean;
     isLoading: boolean;
     authError: loggerPayloads.ErrorLoggerPayload | null;
 };

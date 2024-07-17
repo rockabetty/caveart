@@ -35,7 +35,7 @@ import { ErrorLoggerPayload, LoginLoggerPayload, VerifyLoggerPayload, ViewProfil
 
 const initialState: UserAuthState = {
     user: null,
-    isAuthenticated: false,
+    isAuthenticated: undefined,
     isLoading: false,
     authError: null,
 };
