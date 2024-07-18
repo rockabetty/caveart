@@ -73,7 +73,6 @@ export const logActions = {
   },
   LOGOUT: (payload: UserLoggerTypes.LogoutLoggerPayload) => {
     // TODO: maybe log logout reason, e.g. session expiry or deliberate
-    console.log(payload);
     const { id } = payload.user;
     logger.info(
       `${
@@ -86,9 +85,8 @@ export const logActions = {
   ERROR: (payload: UserLoggerTypes.ErrorLoggerPayload) => {
     const { message, stack } = payload;
     if (dev) {
-      logger.log(`Error occured.`);
-      console.log(message);
-      console.log(stack);
+      logger.log(`Error occured: ${message}`);
+      logger.log(stack);
     }
     logger.log(`Error occurred: ${message}`);
   },

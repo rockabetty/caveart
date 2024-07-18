@@ -63,7 +63,6 @@ const handleError = (dispatch: React.Dispatch<UserAction>) => (error: any) => {
 };
 
 const UserProvider: React.FC<UserProviderProps> = function ({ children }) {
-    console.log("User provider")
     const [state, _dispatch] = useReducer(userReducer, initialState);
     const router = useRouter();
 
@@ -155,7 +154,7 @@ const UserProvider: React.FC<UserProviderProps> = function ({ children }) {
             });
             return response.data;
         } catch (error: any) {
-            handleErrorWithDispatch("error");
+            handleErrorWithDispatch(error);
         }
     }, [dispatch]);
 

@@ -19,7 +19,7 @@ const loginHandler: NextApiHandler = async (req, res) => {
 
     const result = await loginUser(email, password);
 
-    if (result.success) {
+    if (result.success && result.sessionCookie) {
       res.setHeader('Set-Cookie', result.sessionCookie);
       return res.status(200).send({
         id: result.userId,

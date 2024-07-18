@@ -22,6 +22,7 @@ import { encrypt, decrypt } from "../outbound/encrypt";
 import { sendSingleEmail } from "../../../services/emailer";
 
 const SECRET_KEY_JWT = requireEnvVar("SECRET_KEY_JWT");
+console.log("User SErvice SKJ:" + SECRET_KEY_JWT)
 
 export const registerUser = async (
   password: string,

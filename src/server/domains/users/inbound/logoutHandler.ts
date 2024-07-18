@@ -4,8 +4,7 @@ import { requireEnvVar } from '../../../services/logger/envcheck';
 import { ErrorKeys } from '../errors.types';
 import { withAuth } from '../middleware/withAuth';
 
-const USER_AUTH_TOKEN_NAME = requireEnvVar("USER_AUTH_TOKEN_NAME");
-
+const USER_AUTH_TOKEN_NAME = requireEnvVar("NEXT_PUBLIC_USER_AUTH_TOKEN_NAME");
 const logoutHandler: NextApiHandler = async (req, res) => {
   const token = req.cookies[USER_AUTH_TOKEN_NAME];
   if (!token) {

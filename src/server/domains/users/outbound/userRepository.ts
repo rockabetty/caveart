@@ -2,7 +2,7 @@ import {queryDbConnection,
  editTable,
   getTable, 
   getOneRowResult } from '../../../sql-helpers/queryFunctions';
-import { convertUTCStringToDate } from '../../../timestamps';
+import { convertUTCStringToDate } from '../../../services/timestamps';
 import { QueryResult } from 'pg';
 import { ErrorKeys, ClientError } from '../errors.types';
 import {
@@ -79,7 +79,6 @@ export async function getUserCredentials(
   try {
     return getOneRowResult(result) as UserCredentials | null
   } catch (error: any) {
-    console.log("Get user credentials error", error);
     throw error;
   }
 };
@@ -164,7 +163,6 @@ export async function clearUserSession(
   
   try {
     const deletions = result.rowCount;
-    console.log(deletions);
     return deletions === 1; 
   }
   catch (error) {

@@ -4,8 +4,7 @@ import { ErrorKeys } from '../errors.types';
 import { getUserProfile } from '../core/userService';
 import { withAuth } from '../middleware/withAuth';
 
-const USER_AUTH_TOKEN_NAME = requireEnvVar('USER_AUTH_TOKEN_NAME');
-
+const USER_AUTH_TOKEN_NAME = requireEnvVar('NEXT_PUBLIC_USER_AUTH_TOKEN_NAME');
 const profileHandler: NextApiHandler = async (req, res) => {
 
   if (req.method !== 'GET') {

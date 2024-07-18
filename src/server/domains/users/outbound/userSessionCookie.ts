@@ -33,7 +33,8 @@ import {generateToken} from './jwt';
 import {createUserSession} from  './userRepository';
 import {requireEnvVar} from '../../../services/logger/envcheck';
 
-const USER_AUTH_TOKEN_NAME = requireEnvVar('USER_AUTH_TOKEN_NAME');
+const USER_AUTH_TOKEN_NAME = requireEnvVar('NEXT_PUBLIC_USER_AUTH_TOKEN_NAME');
+console.log("USC:" + USER_AUTH_TOKEN_NAME)
 
 export async function createUserSessionCookie ( userId:string ): Promise<string> {
   const {token, expirationDate} = generateToken(userId);
