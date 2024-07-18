@@ -1,1 +1,1 @@
-export {checkAuthHandler as default} from '../../../services/auth/server/api';
+export {checkAuthHandler as default} from '../../../server/domains/users/inbound';

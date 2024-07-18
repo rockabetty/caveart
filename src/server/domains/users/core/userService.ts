@@ -14,7 +14,7 @@ import {
   editUser
 } from '../outbound/userRepository';
 import jwt from 'jsonwebtoken';
-import { requireEnvVar } from '../../services/logs/envcheck'
+import { requireEnvVar } from '../../services/logger/envcheck'
 import { ErrorKeys } from '../errors.types';
 import logger from '../../services/logger';
 import { UserColumnsArray, User, UserCredentials } from '../user.types';
@@ -84,7 +84,7 @@ export const resetPassword = async (newPassword, resetToken, email) => {
     if (!emailRegex.test(email)) {
       return {
         success: false,
-        error: ErrorKeys.EMAIL_INVALID);
+        error: ErrorKeys.EMAIL_INVALID
       }
     }
    
@@ -239,9 +239,8 @@ export const loginUser = async (email, password) => {
       }
     }
   } catch (error: any) {
-    logger.error(error);
+    logger.error(error);  
     return {
-      logger.error('loginUser - general server error')
       success: false,
       error: errorKeys.GENERAL_SERVER_ERROR
     }
@@ -300,7 +299,7 @@ export const getUserProfile = async (token) => {
     logger.error(`getUserProfile: Request token yields invalid user ID [${userId}]`)
     return {
       success: false,
-      error: ErrorKeys.USER_INVALID)
+      error: ErrorKeys.USER_INVALID
     }
   }
 
@@ -317,7 +316,7 @@ export const getUserProfile = async (token) => {
       logger.error(`Login attempt with invalid user ID - not found in database [${userId}]`)
       return {
         success: false,
-        error: ErrorKeys.USER_INVALID);
+        error: ErrorKeys.USER_INVALID
       }
     }
 

@@ -1,4 +1,4 @@
-import {queryDbConnection, editTable, getTable, getOneRowResult } from './queryFunctions';
+import {queryDbConnection, editTable, getTable, getOneRowResult } from '../server/sql-helpers/queryFunctions';
 import { convertUTCStringToDate } from '../services/timestamps';
 import { QueryResult } from 'pg';
 import { ErrorKeys } from '../services/auth/types/errors';

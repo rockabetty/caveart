@@ -1,1 +1,1 @@
-export {signupHandler as default} from '../../../services/auth/server/api';
+export {signupHandler as default} from  '../../../server/domains/users/inbound';
