@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, ButtonSet, Link } from '../../../../component_library'
+import { Button, ButtonSet, Link } from '@components'
 import './Navigation.css'
 import { useTranslation } from 'react-i18next';
 
@@ -35,9 +35,8 @@ const SiteHeader = ({
           : ""
         }
         <div className="horizontal-nav_authentication">
-          {
-            loggedIn === true ?
-              (
+          {loggedIn === true 
+              ? (
                 <Button look="muted" id="header-logout" onClick={onLogout}>{t('authenticationForm.buttonLabels.logOut')}</Button>
               )
               :

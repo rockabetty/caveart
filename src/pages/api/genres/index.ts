@@ -1,5 +1,5 @@
 import { NextApiHandler } from 'next';
-import { getGenres } from '../../../data/comics';
+import { getGenres } from '@data/comics';
 
 const handler: NextApiHandler = async (_req, res) => {
   try {

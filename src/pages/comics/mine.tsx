@@ -1,13 +1,11 @@
-
-
 import CaveartLayout from '../../app/user_interface/CaveartLayout'
 import {useEffect, useState} from 'react';
-import {Link} from '../../../component_library';
-import ComicProfile from '../../app/user_interface/comic/ComicProfile';
+import {Link} from '@components';
+import ComicProfile from '../../app/user_interface/comic/profiles/ComicProfile';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { Comic, GenreSelection } from '../../data/types';
-import ComicProfileProvider from '../../app/user_interface/comic/hooks/ComicProfileProvider'
+import ComicProfileProvider from '../../app/user_interface/comic/profiles/hooks/ComicProfileProvider'
 
 function MyComics() {
 

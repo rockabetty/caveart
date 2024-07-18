@@ -2,14 +2,14 @@ import {
   queryDbConnection,
   removeOneToManyAssociations,
   editTable,
-} from "./queryFunctions";
+} from "../server/sql-helpers/queryFunctions";
 import { Comic, ComicColumnList, Genre, NestedContentWarning } from "./types";
 import { logger } from "../services/logs";
 import { QueryResult } from "pg";
 
 export async function createComic(comic: Comic): Promise<number | null> {
   console.log(comic);
-  
+
   const query = `
       INSERT INTO comics (
         title,
@@ -52,7 +52,7 @@ export async function addGenresToComic(
   comicID: number,
   genreIDs: number[],
 ): Promise<QueryResult[] | null> {
-  console.log("adding " + genreIDs + " to " + comicID)
+  console.log("adding " + genreIDs + " to " + comicID);
   const insertPromises: Promise<QueryResult>[] = [];
   genreIDs.forEach((genreID) => {
     const query = `
@@ -131,7 +131,6 @@ export async function isAuthor(
 }
 
 export async function getComic(comicId: number): Promise<Comic | null> {
- 
   const query = `
   WITH ContentWarnings AS (
     SELECT
@@ -181,7 +180,7 @@ export async function getComic(comicId: number): Promise<Comic | null> {
   LEFT JOIN ComicGenres cg ON cg.comic_id = c.id
   LEFT JOIN ContentWarnings cw ON cw.comic_id = c.id
   WHERE c.id = $1
-  GROUP BY c.id, cw.content_warnings, cg.genres, r.name`
+  GROUP BY c.id, cw.content_warnings, cg.genres, r.name`;
 
   const values = [comicId];
   try {
@@ -332,7 +331,7 @@ export async function getNestedContentWarnings(): Promise<
 }
 
 export async function getRatingDefs(
-  key?: "name" | "id" 
+  key?: "name" | "id",
 ): Promise<QueryResult | null> {
   let format = "id, name";
   if (key === "name") {
@@ -354,12 +353,15 @@ export async function getRatingDefs(
 
 export async function getRatingId(name: string): Promise<QueryResult | null> {
   try {
-    const result = await queryDbConnection(`SELECT id FROM ratings WHERE name = $1`, [name])
-    console.log(result)
+    const result = await queryDbConnection(
+      `SELECT id FROM ratings WHERE name = $1`,
+      [name],
+    );
+    console.log(result);
     if (result.rows && result.rows.length > 0) {
-    return result.rows[0].id
+      return result.rows[0].id;
     }
-  return null
+    return null;
   } catch (error: any) {
     logger.error(error);
     throw error;
@@ -368,20 +370,18 @@ export async function getRatingId(name: string): Promise<QueryResult | null> {
 
 export async function getGenres(): Promise<Genre[] | null> {
   try {
-     // `SELECT jsonb_object_agg(
-      //     id, 
-      //     jsonb_build_object(
-      //         'id', id,
-      //         'name', name,
-      //         'description', description
-      //     )
-      // ) AS genres
-      // FROM genres;
-      // `
-      
-    const result = await queryDbConnection(
-      `SELECT id, name FROM genres`
-    );
+    // `SELECT jsonb_object_agg(
+    //     id,
+    //     jsonb_build_object(
+    //         'id', id,
+    //         'name', name,
+    //         'description', description
+    //     )
+    // ) AS genres
+    // FROM genres;
+    // `
+
+    const result = await queryDbConnection(`SELECT id, name FROM genres`);
     if (result.rows && result.rows.length > 0) {
       return result.rows;
     }
@@ -397,7 +397,7 @@ export async function editComic(
   update: Comic,
 ): Promise<QueryResult | null> {
   try {
-    console.log('comic ID:' + comicId)
+    console.log("comic ID:" + comicId);
     return await editTable("comics", "id", comicId, update);
   } catch (error: any) {
     logger.error(error);

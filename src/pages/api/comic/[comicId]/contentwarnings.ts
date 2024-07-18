@@ -4,7 +4,7 @@ import {
   editComic,
   getRatingId,
   removeContentWarningsFromComic,
-} from "../../../../data/comics";
+} from "@data/comics";
 
 export default async function handler(
   req: NextApiRequest,

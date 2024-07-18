@@ -1,5 +1,5 @@
 import { NextApiHandler } from "next";
-import { getRatingDefs } from "../../../data/comics";
+import { getRatingDefs } from "@data/comics";
 
 const handler: NextApiHandler = async (req, res) => {
   try {

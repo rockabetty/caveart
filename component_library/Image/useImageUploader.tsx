@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 type ImageUploaderProps = {
   maxSize: number;
   allowedFileTypes: string[];
-  initialSrc: string;
+  initialSrc: string | File;
   onChange: (files: FileList | undefined) => void; // Updated type
 }
 
@@ -13,7 +13,7 @@ const useImageUploader = ({ maxSize, allowedFileTypes, initialSrc, onChange }: I
   const fileTypes = allowedFileTypes || DEFAULT_FILE_TYPES;
   const [fileError, setFileError] = useState<string>("");
   const [files, setFiles] = useState<FileList | undefined>();
-  const [img, setImg] = useState<string | undefined>(initialSrc);
+  const [img, setImg] = useState<string | File | undefined>(initialSrc);
 
   useEffect(() => {
     setImg(initialSrc)

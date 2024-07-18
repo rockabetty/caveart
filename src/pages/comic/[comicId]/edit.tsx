@@ -1,5 +1,5 @@
 import CaveartLayout from '../../../app/user_interface/CaveartLayout'
-import EditComicProfile from '../../../app/user_interface/comic/EditComicProfile';
+import EditComicProfile from '../../../app/user_interface/comic/profiles/EditComicProfile';
 import ComicProfileProvider from '../../../app/user_interface/comic/hooks/ComicProfileProvider'
 import { useRouter } from 'next/router';
 import { useTranslation} from 'react-i18next';

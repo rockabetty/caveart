@@ -1,1 +1,1 @@
-export {loginHandler as default} from '../../../services/auth/server/api';
+export {loginHandler as default} from  '../../../server/domains/users/inbound';

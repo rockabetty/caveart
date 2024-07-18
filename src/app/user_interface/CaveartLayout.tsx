@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import { useUser } from "../../services/auth/client/hooks/useUser";
+import { useUser } from "./users/hooks/useUser";
 import SiteHeader from "./navigation/SiteHeader";
 import SiteFooter from "./navigation/SiteFooter";
-import AuthModal from "./authentication/AuthModal";
-import "./../../../component_library/design/style.css";
+import AuthModal from "./users/AuthModal";
+import "@components/design/style.css";
 import "../../i18n";
-import "./themes/main.css";
-import { verify } from "crypto";
+import "../themes/main.css";
 
 interface CaveartLayoutProps {
   children: React.ReactNode;
@@ -36,10 +35,9 @@ const CaveartLayout: React.FC<CaveartLayoutProps> = ({
         }
       }
     };
+   
+    authCheck();
 
-    if (requireLogin) {
-      authCheck();
-    }
   }, [requireLogin, verifyUser, router]);
 
   const closeAuthModal = () => {
@@ -50,6 +48,7 @@ const CaveartLayout: React.FC<CaveartLayoutProps> = ({
     setAuthMode(whichMode);
     setAuthModalOpen(true);
   };
+
 
   return (
     <>

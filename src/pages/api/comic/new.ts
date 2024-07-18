@@ -15,7 +15,7 @@ import {
   removeAuthorsFromComic,
   getRatingId,
 } from "../../../data/comics";
-import { Comic } from "../../../data/types";
+import { Comic } from "@data/types";
 import { logger } from "../../../services/logs";
 
 export const config = {
@@ -65,9 +65,11 @@ const handler: NextApiHandler = async (req, res) => {
 
     let newFilename = "";
     if (submission?.files) {
+      console.log("##############################")
       const processedFiles: any = {};
       try {
         const files = submission.files;
+        console.log(files)
         await Promise.all(
           Object.keys(files).map(async (key) => {
             const file = files[key][0];
@@ -80,6 +82,7 @@ const handler: NextApiHandler = async (req, res) => {
     }
 
     if (fields) {
+      console.log("PRocessing fields")
       if (fields.title) {
         const title = fields.title[0];
         // Validating that the title is alpahnumeric or has !, -, ?
@@ -89,6 +92,8 @@ const handler: NextApiHandler = async (req, res) => {
         }
         processedFields.title = title;
       }
+
+      console.log("Genres")
 
       if (fields.genres) {
         const { genres } = fields;
@@ -103,6 +108,7 @@ const handler: NextApiHandler = async (req, res) => {
         processedFields.genres = genres;
       }
 
+  console.log("Content warnigns")
       if (fields.content) {
         const { content } = fields;
         if (!Array.isArray(content)) {
@@ -118,6 +124,7 @@ const handler: NextApiHandler = async (req, res) => {
         processedFields.content = content;
       }
 
+console.log("Subdo")
       if (fields.subdomain) {
         const subdomain = fields.subdomain[0];
         // Validating that subdomain is purely alphanumeric with hyphens or underscores only
@@ -128,6 +135,7 @@ const handler: NextApiHandler = async (req, res) => {
         processedFields.subdomain = subdomain;
       }
 
+console.log("Desc")
       if (fields.description) {
         const description = fields.description[0];
         if (description.length > 1024) {
@@ -136,6 +144,7 @@ const handler: NextApiHandler = async (req, res) => {
         processedFields.description = description;
       }
 
+console.log("Comments")
       if (fields.comments) {
         const selectedCommentsOption = fields.comments[0];
 
@@ -149,6 +158,7 @@ const handler: NextApiHandler = async (req, res) => {
           processedFields.moderate_comments = true;
         }
       }
+      console.log("visibo")
 
       if (fields.visibility) {
         const selectedVisibilityOption = fields.visibility[0];
@@ -163,6 +173,7 @@ const handler: NextApiHandler = async (req, res) => {
           processedFields.is_unlisted = true;
         }
       }
+      console.log("raiku")
 
       if (fields.likes) {
         const selectedLikesOption = fields.likes[0];
@@ -171,7 +182,7 @@ const handler: NextApiHandler = async (req, res) => {
         }
         processedFields.likes = selectedLikesOption === "true";
       }
-
+console.log("rating")
       let rating: string = "";
       if (!fields.rating[0]) {
         res.status(400).json({ error: "invalidRating" });
@@ -204,6 +215,7 @@ const handler: NextApiHandler = async (req, res) => {
         likes,
         rating,
       };
+      console.log("creation call")
 
       id = await createComic(comicData);
       if (id) {

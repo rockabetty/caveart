@@ -1,6 +1,4 @@
-
-
-import React, {useRef } from 'react'
+import React, { useRef } from 'react'
 import { InputProps, InputDefaults } from '../../types/input'
 import classNames from 'classnames'
 import '../../design/style.css'

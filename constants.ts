@@ -1,1 +1,0 @@
-export const USER_AUTH_TOKEN_NAME="caveartWebcomicsSession";

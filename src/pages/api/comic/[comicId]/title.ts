@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { editComic } from "../../../../data/comics";
+import { editComic } from "@data/comics";
 
 export default async function handler(
   req: NextApiRequest,

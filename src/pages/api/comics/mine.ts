@@ -1,7 +1,7 @@
 import { NextApiHandler } from 'next';
 import { withAuth } from '../../../services/auth/server/withAuth';
 import { extractUserIdFromToken } from  '../../../services/auth/server/extractUserIDFromToken';
-import { getComicsByAuthor } from '../../../data/comics';
+import { getComicsByAuthor } from '@data/comics';
 import { logger } from '../../../services/logs';
 
 const handler: NextApiHandler = async (req, res) => {
