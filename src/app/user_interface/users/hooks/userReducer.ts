@@ -35,7 +35,7 @@
  * // newState will now reflect that a user is logged in with their profile.
  */
 
-import {UserAuthState, UserAction, ActionType} from "../types/user";
+import {UserAuthState, UserAction, ActionType} from "../user.types";
 
 const userReducer = (state: UserAuthState, action: UserAction): UserAuthState => {
     switch (action.type) {

@@ -3,7 +3,7 @@ import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { TextInput, Form } from "@components";
 import { useUser } from "./hooks/useUser";
-import { ErrorKeys } from "./types/errors";
+import { ErrorKeys } from "./errors.types";
 
 const SignUp: React.FC = () => {
   const { t } = useTranslation();

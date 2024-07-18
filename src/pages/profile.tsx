@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import CaveartLayout from '../app/user_interface/CaveartLayout';
-import { useUser } from '../services/auth/client/hooks/useUser';
+import { useUser } from '../app/user_interface/users/hooks/useUser';
 import { UserProfile } from '../services/auth/types/user';
 
 const Profile: React.FC = () => {

@@ -5,7 +5,7 @@
  */
 
 import { createContext } from "react";
-import { UserContextType } from "./types/user";
+import { UserContextType } from "./user.types";
 
 /**
  * UserContext is the main React context for user management and actions.

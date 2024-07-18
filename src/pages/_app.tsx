@@ -1,5 +1,5 @@
 import { AppProps } from 'next/app';
-import UserProvider from '../services/auth/client/UserProvider';
+import UserProvider from '../app/user_interface/users/UserProvider';
 
 export default function App({ Component, pageProps} : AppProps ) {
   return (

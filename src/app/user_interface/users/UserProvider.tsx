@@ -27,7 +27,7 @@ import {
     UserAction,
     ActionType,
     UserContextType,
-} from "./types/user";
+} from "./user.types";
 import UserContext from "./UserContext";
 import userReducer from "./hooks/userReducer";
 import { dev, loggerMap } from "./hooks/userLogger";
