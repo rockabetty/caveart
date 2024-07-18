@@ -1,6 +1,6 @@
 import { NextApiHandler } from "next";
 import { getComic } from "@data/comics";
-import { logger } from "../../../../services/logs";
+import logger from "../../../../server/services/logger";
 
 const handler: NextApiHandler = async (req, res) => {
   try {

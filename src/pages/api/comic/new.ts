@@ -2,8 +2,8 @@ import { NextApiHandler, NextApiRequest } from "next";
 import formidable from "formidable";
 import imageOptions from "../../../services/uploader/imagedefaults";
 import ensureUploadDirectoryExists from "../../../services/uploader/ensureUploadDirectoryExists";
-import { withAuth } from "../../../services/auth/server/withAuth";
-import { extractUserIdFromToken } from "../../../services/auth/server/extractUserIDFromToken";
+import { withAuth } from "../../../server/domains/users/middleware/withAuth";
+import { extractUserIdFromToken } from "../../../server/domains/users/utils/extractUserIdFromToken";
 import {
   createComic,
   addGenresToComic,

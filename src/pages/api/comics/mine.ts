@@ -1,6 +1,6 @@
 import { NextApiHandler } from 'next';
-import { withAuth } from '../../../services/auth/server/withAuth';
-import { extractUserIdFromToken } from  '../../../services/auth/server/extractUserIDFromToken';
+import { withAuth } from '../../../server/domains/users/middleware/withAuth';
+import { extractUserIdFromToken } from  '../../../server/domains/users/utils/extractUserIdFromToken';
 import { getComicsByAuthor } from '@data/comics';
 import { logger } from '../../../services/logs';
 

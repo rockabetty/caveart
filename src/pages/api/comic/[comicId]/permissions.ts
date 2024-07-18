@@ -1,11 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { isAuthor } from "@data/comics";
-import { USER_AUTH_TOKEN_NAME } from "../../../../../constants";
 import jwt from "jsonwebtoken";
 import { requireEnvVar } from "../../../../services/logs/envcheck";
-import { ErrorKeys } from "../../../../services/auth/types/errors";
+import { ErrorKeys } from "../../../../server/domains/users/errors.types";
 
 const SECRET_KEY_JWT = requireEnvVar("SECRET_KEY_JWT");
+const USER_AUTH_TOKEN_NAME = requireEnvVar('NEXT_PUBLIC_USER_AUTH_TOKEN_NAME')
 
 export default async function handler(
   req: NextApiRequest,
