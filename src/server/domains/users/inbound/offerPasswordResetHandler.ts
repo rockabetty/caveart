@@ -1,10 +1,6 @@
 import { NextApiHandler } from 'next';
 import { offerPasswordReset } from '../core/userService';
-import { ErrorKeys } from '../../types/errors';
-import { logger } from '../../../logs';
-import { sendSingleEmail } from '../../../emailer';
-import { requireEnvVar } from '../../../logs/envcheck';
-import { UserCredentials } from '../../../../data/types';
+import { ErrorKeys } from '../errors.types';
 
 const offerPasswordResetHandler: NextApiHandler = async (req, res) => {
   if (req.method !== 'POST') {

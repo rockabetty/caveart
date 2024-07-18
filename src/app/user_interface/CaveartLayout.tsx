@@ -8,7 +8,6 @@ import AuthModal from "./users/AuthModal";
 import "@components/design/style.css";
 import "../../i18n";
 import "../themes/main.css";
-import { verify } from "crypto";
 
 interface CaveartLayoutProps {
   children: React.ReactNode;
@@ -36,10 +35,9 @@ const CaveartLayout: React.FC<CaveartLayoutProps> = ({
         }
       }
     };
+   
+    authCheck();
 
-    if (requireLogin) {
-      authCheck();
-    }
   }, [requireLogin, verifyUser, router]);
 
   const closeAuthModal = () => {
@@ -50,6 +48,7 @@ const CaveartLayout: React.FC<CaveartLayoutProps> = ({
     setAuthMode(whichMode);
     setAuthModalOpen(true);
   };
+
 
   return (
     <>

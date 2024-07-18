@@ -19,10 +19,6 @@ const AuthModal: React.FC<AuthProps> = ({ isOpen, initial, onClose }) => {
     setAuthMode(initial)
   }, [initial]);
 
-  useEffect(() => {
-    const message = authMode === 'Log In' ? t('authenticationForm.logInSuccessful') : t('authenticationForm.signUpSuccessful');
-  }, [authMode]);
-
   const renderContent = () => {
     return (
       <>

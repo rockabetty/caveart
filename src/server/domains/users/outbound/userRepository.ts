@@ -1,17 +1,19 @@
-import {queryDbConnection, editTable, getTable, getOneRowResult } from '../../sql-helpers/queryFunctions';
-import { convertUTCStringToDate } from '../timestamps';
+import {queryDbConnection,
+ editTable,
+  getTable, 
+  getOneRowResult } from '../../../sql-helpers/queryFunctions';
+import { convertUTCStringToDate } from '../../../timestamps';
 import { QueryResult } from 'pg';
-import { ErrorKeys } from './errors';
+import { ErrorKeys, ClientError } from '../errors.types';
 import {
   UserSession,
   CreatedUserResult,
   UserColumnsArray,
   PasswordResetCredentials,
-  ClientError,
   UserCredentials,
   User,
-  GenericStringMap
-} from './types';
+} from '../user.types';
+import { GenericStringMap } from '../../../sql-helpers/queryFunctions'
 
 export async function createUser(
   username: string,

@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
-import { requireEnvVar } from "../logs/envcheck";
-import { logger } from "../logs";
+import { requireEnvVar } from "../logger/envcheck";
+import logger from "../logger";
 
 let transporter = nodemailer.createTransport({
   host: requireEnvVar('EMAIL_SERVER'),

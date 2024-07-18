@@ -1,5 +1,5 @@
 import { NextApiHandler } from 'next';
-import { ErrorKeys } from '../../types/errors'
+import { ErrorKeys } from '../errors.types'
 import { registerUser } from '../core/userService';
 
 const signupHandler: NextApiHandler = async (req, res) => {
@@ -9,7 +9,7 @@ const signupHandler: NextApiHandler = async (req, res) => {
   const {password, name, email} = req.body;
   const result = await registerUser(password, name, email);
   if (result.success) {
-    return res.status(200).send()
+    return res.status(200).send("success")
   } else {
     return res.status(result.error === ErrorKeys.GENERAL_SERVER_ERROR ? 500 : 400).send(result.error);
   }

@@ -1,6 +1,6 @@
 import { NextApiHandler } from 'next';
-import { ErrorKeys } from '../../types/errors';
-import { logger } from '../../../logs';
+import { ErrorKeys } from '../errors.types';
+import logger from '../../../services/logger';
 import { resetPassword } from '../core/userService';
  
 const restPasswordHandler: NextApiHandler = async (req, res) => {
@@ -23,7 +23,7 @@ const restPasswordHandler: NextApiHandler = async (req, res) => {
   }
   const result = await resetPassword(newPassword, resetToken, email)
   if (result.success) {
-    return res.status(200).send()
+    return res.status(200).send("success")
   } else {
      if (result.error) {
       return res.status(result.error === ErrorKeys.GENERAL_SERVER_ERROR ? 500 : 400).send(result.error)

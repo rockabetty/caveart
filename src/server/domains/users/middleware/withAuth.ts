@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse, NextApiHandler } from 'next';
 import jwt from 'jsonwebtoken';
 import { getUserSession } from '../outbound/userRepository';
-import { requireEnvVar } from  '../../services/logs/envcheck';
-import logger from '../../services/logger';
+import { requireEnvVar } from  '../../../services/logger/envcheck';
+import logger from '../../../services/logger';
 
 const SECRET_KEY_JWT = requireEnvVar('SECRET_KEY_JWT');
 const USER_AUTH_TOKEN_NAME = requireEnvVar('USER_AUTH_TOKEN_NAME')
@@ -10,7 +10,7 @@ const USER_AUTH_TOKEN_NAME = requireEnvVar('USER_AUTH_TOKEN_NAME')
 export const withAuth = (handler: NextApiHandler): NextApiHandler => {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     if (!USER_AUTH_TOKEN_NAME) {
-      logger.error('Misconfiguration: USER_AUTH_TOKEN_NAME is not defined');
+      logger.error(new Error('Misconfiguration: USER_AUTH_TOKEN_NAME is not defined'));
       return res.status(500).json({ error: 'Misconfiguration' });
     }
 
@@ -26,12 +26,13 @@ export const withAuth = (handler: NextApiHandler): NextApiHandler => {
       if (!userSession || decoded.sub?.toString() !== userSession.user_id.toString()) {
         return res.status(401).json({ error: 'Unauthorized' });
       }
-
+      
+      //@ts-ignore
       req.user = { id: userSession.user_id };
 
       return handler(req, res);
-    } catch (error) {
-      logger.error('Invalid token', error);
+    } catch (error:any) {
+      logger.error(error);
       return res.status(401).json({ error: 'Invalid token' });
     }
   };

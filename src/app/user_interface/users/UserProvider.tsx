@@ -31,7 +31,12 @@ import {
 import UserContext from "./UserContext";
 import userReducer from "./hooks/userReducer";
 import { dev, loggerMap } from "./hooks/userLogger";
-import { ErrorLoggerPayload, LoginLoggerPayload, VerifyLoggerPayload, ViewProfileLoggerPayload } from "../types/userlogger";
+import {
+    ErrorLoggerPayload,
+    LoginLoggerPayload,
+    VerifyLoggerPayload,
+    ViewProfileLoggerPayload
+} from "./userlogger.types";
 
 const initialState: UserAuthState = {
     user: null,
@@ -58,6 +63,7 @@ const handleError = (dispatch: React.Dispatch<UserAction>) => (error: any) => {
 };
 
 const UserProvider: React.FC<UserProviderProps> = function ({ children }) {
+    console.log("User provider")
     const [state, _dispatch] = useReducer(userReducer, initialState);
     const router = useRouter();
 

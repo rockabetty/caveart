@@ -20,3 +20,15 @@ export enum ErrorKeys {
   RESET_TOKEN_EXPIRED = "authenticationService.requestErrorMessages.resetTokenExpired",
   USER_INVALID = "authenticationService.requestErrorMessages.userInvalid"
 }
+
+export class ClientError extends Error {
+  code?: string;
+  constraint?: string;
+
+  constructor(message: string, code?: string, constraint?: string) {
+    super(message);
+    this.name = 'ClientError';
+    this.code = code;
+    this.constraint = constraint;
+  }
+}

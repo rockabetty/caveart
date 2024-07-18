@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt';
 import crypto from 'crypto';
-import { requireEnvVar } from "../../services/logger/envcheck"
+import { requireEnvVar } from "../../../services/logger/envcheck"
 
 const emailSalt = requireEnvVar('EMAIL_SALT');
 const passwordSalt = Number(requireEnvVar('SALT_ROUNDS_PASSWORD'));

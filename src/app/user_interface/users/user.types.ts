@@ -1,5 +1,5 @@
 import { Dispatch } from "react";
-import * as loggerPayloads from "./userlogger";
+import * as loggerPayloads from "./userlogger.types";
 
 export interface User {
     id: number;

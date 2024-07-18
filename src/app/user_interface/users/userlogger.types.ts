@@ -1,4 +1,4 @@
-import { User, ActionType, UserAuthState } from "./user";
+import { User, ActionType, UserAuthState } from "./user.types";
 
 export type LoginLoggerPayload = {
   user: User;

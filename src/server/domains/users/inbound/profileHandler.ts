@@ -1,7 +1,6 @@
 import { NextApiHandler } from 'next';
-import { requireEnvVar } from '../../../logs/envcheck'
-import { withAuth } from '../withAuth';
-import { ErrorKeys } from '../../types/errors';
+import { requireEnvVar } from '../../../services/logger/envcheck'
+import { ErrorKeys } from '../errors.types';
 import { getUserProfile } from '../core/userService';
 import { withAuth } from '../middleware/withAuth';
 
@@ -24,11 +23,12 @@ const profileHandler: NextApiHandler = async (req, res) => {
     return res.status(200).send(result.data)
   } else {
     const badRequestKeys = [ErrorKeys.USER_INVALID, ErrorKeys.TOKEN_INVALID];
-    if (badRequestKeys.includes(response.error)) {
-      return res.status(404).json(response.error)
+    if (result.error && badRequestKeys.includes(result.error)) {
+      return res.status(404).json(result.error)
     }
-    return res.satus(500).json(response.error)
+    return res.status(500).json(result.error)
   }
+  return res.status(500).json(ErrorKeys.GENERAL_SERVER_ERROR)
 }
 
 export default withAuth(profileHandler)

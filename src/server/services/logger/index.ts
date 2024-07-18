@@ -12,3 +12,5 @@ export const logger = {
       console.log(error)
     }
 }
+
+export default logger;

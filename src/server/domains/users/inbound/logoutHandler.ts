@@ -1,8 +1,10 @@
 import { NextApiHandler } from 'next';
-import { logoutUser } from '../../core/userService';
-import { USER_AUTH_TOKEN_NAME } from '../../constants';
-import { ErrorKeys } from '../../types/errors';
+import { logoutUser } from '../core/userService';
+import { requireEnvVar } from '../../../services/logger/envcheck';
+import { ErrorKeys } from '../errors.types';
 import { withAuth } from '../middleware/withAuth';
+
+const USER_AUTH_TOKEN_NAME = requireEnvVar("USER_AUTH_TOKEN_NAME");
 
 const logoutHandler: NextApiHandler = async (req, res) => {
   const token = req.cookies[USER_AUTH_TOKEN_NAME];
