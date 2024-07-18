@@ -7,7 +7,7 @@ import SiteFooter from "./navigation/SiteFooter";
 import AuthModal from "./authentication/AuthModal";
 import "@components/design/style.css";
 import "../../i18n";
-import "./themes/main.css";
+import "../themes/main.css";
 import { verify } from "crypto";
 
 interface CaveartLayoutProps {

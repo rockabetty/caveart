@@ -4,6 +4,7 @@ const moduleAlias = require('module-alias');
 moduleAlias.addAliases({
   '@components': path.resolve(__dirname, 'src/app/ui/components'),
   '@data': path.resolve(__dirname, 'src/data'),
+  '@logger': path.resolve(__dirname, 'src/services/logs')
 });
 
 /** @type {import('next').NextConfig} */

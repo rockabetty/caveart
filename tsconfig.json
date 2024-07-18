@@ -17,7 +17,8 @@
     "paths": {
       "@components": ["../component_library"],
       "@components/*": ["../component_library/*"],
-      "@data/*": ["./data/*"]
+      "@data/*": ["./data/*"],
+      "@logger": ["./services/logs"],
     },
     "importHelpers": true,
     // output .d.ts declaration files for consumers

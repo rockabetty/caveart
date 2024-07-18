@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TextInput, Form } from '@components';
-import { useUser } from '../../../services/auth/client/hooks/useUser';
-import { ErrorKeys } from '../../../services/auth/types/errors';
+import { useUser } from './hooks/useUser';
+import { ErrorKeys } from './types/errors';
 
 const Login: React.FC= () => {
   const { t } = useTranslation();
