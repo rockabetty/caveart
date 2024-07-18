@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { isAuthor } from "@data/comics";
 import jwt from "jsonwebtoken";
-import { requireEnvVar } from "../../../../services/logs/envcheck";
+import { requireEnvVar } from "../../../../server/services/logger/envcheck";
 import { ErrorKeys } from "../../../../server/domains/users/errors.types";
 
 const SECRET_KEY_JWT = requireEnvVar("SECRET_KEY_JWT");
