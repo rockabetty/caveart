@@ -2,14 +2,13 @@ import { NextApiHandler } from 'next';
 import { logoutUser } from '../../core/userService';
 import { USER_AUTH_TOKEN_NAME } from '../../constants';
 import { ErrorKeys } from '../../types/errors';
+import { withAuth } from '../middleware/withAuth';
 
 const logoutHandler: NextApiHandler = async (req, res) => {
   const token = req.cookies[USER_AUTH_TOKEN_NAME];
-
   if (!token) {
     return res.status(400).send(ErrorKeys.TOKEN_MISSING);
   }
-
   const result = await logoutUser(token);
 
   if (result.success) {
@@ -20,4 +19,4 @@ const logoutHandler: NextApiHandler = async (req, res) => {
   }
 };
 
-export default logoutHandler;
+export default withAuth(logoutHandler);

@@ -32,18 +32,6 @@ export const registerUser = async (password, name, email) => {
         error: ErrorKeys.EMAIL_INVALID
       }
     }
-    if (!name) {
-      return {
-        success: false,
-        error: ErrorKeys.USERNAME_MISSING
-      }
-    }
-    if (!password) {
-      return {
-        success: false,
-        error: ErrorKeys.PASSWORD_MISSING
-      }
-    }
     
     const validUsername = /^[a-zA-Z0-9_-]+$/;
     if (!validUsername.test(name)) {
