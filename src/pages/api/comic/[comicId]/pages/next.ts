@@ -1,0 +1,3 @@
+import nextNewPageNumberHandler from "@domains/comicpages/inbound/nextNewPageNumberHandler"
+
+export nextNewPageNumberHandler

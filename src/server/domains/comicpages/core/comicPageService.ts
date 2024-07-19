@@ -56,7 +56,7 @@ export async function createComicPage (fields: formidable.Fields, files: formida
   }
 }
 
-export async function getNextPageNumber (comicId: number,
+export async function getNextNewPageNumber (comicId: number,
   omniscientPOV = false
   ) {
   try {
