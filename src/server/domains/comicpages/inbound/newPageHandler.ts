@@ -1,5 +1,4 @@
 import { NextApiHandler } from 'next';
-import { ComicPage } from '../comicpage.types';
 import { withAuth } from "@domains/users/middleware/withAuth";
 import { canEditComic } from '@domains/comics/core/comicService';
 import { logger } from "@logger";
@@ -9,7 +8,6 @@ import { ErrorKeys } from '../errors.types';
 import { createComicPage } from '../core/comicPageService';
 import { requireEnvVar } from '@logger/envcheck';
 const USER_AUTH_TOKEN_NAME = requireEnvVar("NEXT_PUBLIC_USER_AUTH_TOKEN_NAME");
-
 
 export const config = {
   api: {

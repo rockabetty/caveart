@@ -59,20 +59,23 @@ export async function editPage(
 
 export async function getLastPageReference(
   comicId: number,
-  omniscientPOV = false
+  omniscientPOV = false,
 ): Promise<PageReference | null> {
   try {
     const query = `
-    SELECT 
-      id,
-      page_number
+    WITH latest_page AS (
+    SELECT page_number
     FROM comic_pages
-    ${omniscientPOV
-      ? 'WHERE comic_id = $1'
-      : 'WHERE comic_id = $1 AND release_date <= NOW()'
+    ${
+      omniscientPOV
+        ? "WHERE comic_id = $1"
+        : "WHERE comic_id = $1 AND release_on <= NOW()"
     }
-    ORDER BY page_number
-    DESC limit 1`;
+    ORDER BY page_number DESC
+    LIMIT 1
+    )
+    SELECT 
+      COALESCE((SELECT page_number FROM latest_page), 0) AS page_number`;
     const values = [comicId];
     const result = await queryDbConnection(query, values);
     return getOneRowResult(result);

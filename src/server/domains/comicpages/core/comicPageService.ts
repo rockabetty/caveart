@@ -61,7 +61,7 @@ export async function getNextNewPageNumber (comicId: number,
   ) {
   try {
     const latestPageRef = await getLastPageReference(comicId, omniscientPOV);
-    const number = latestPageRef?.page_number;
+    const number = latestPageRef?.page_number + 1;
     return {
       success: true,
       number
