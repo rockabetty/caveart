@@ -1,10 +1,15 @@
 import { NextApiHandler } from 'next';
 import { ComicPage } from '../comicpage.types';
 import { withAuth } from "@domains/users/middleware/withAuth";
+import { canEditComic } from '@domains/comics/core/comicService';
 import { logger } from "@logger";
 import { parseForm } from '@services/uploader';
+import { ErrorKeys as UserErrorKeys } from '../../users/errors.types'
 import { ErrorKeys } from '../errors.types';
-import { createPage } from '../core/comicPageService';
+import { createComicPage } from '../core/comicPageService';
+import { requireEnvVar } from '@logger/envcheck';
+const USER_AUTH_TOKEN_NAME = requireEnvVar("NEXT_PUBLIC_USER_AUTH_TOKEN_NAME");
+
 
 export const config = {
   api: {
@@ -13,15 +18,35 @@ export const config = {
 };
 
 const newPageHandler: NextApiHandler = async (req, res) => {
+  
   if (req.method !== 'POST') {
     return res.status(405).end();
+  }
+
+  const { comicId } = req.query;
+  if (!comicId) {
+    return res.status(400).json(ErrorKeys.COMIC_MISSING);
+  }
+
+  const token = req.cookies[USER_AUTH_TOKEN_NAME];
+  if (!token) {
+    return res.status(400).json(UserErrorKeys.TOKEN_MISSING);
+  }
+
+  try {
+    const permissions = await canEditComic(token, Number(comicId))
+    if (!permissions.edit) {
+      return res.status(403).json(ErrorKeys.USER_NOT_AUTHORIZED)
+    }
+  } catch (error:any) {
+    return res.status(500).json(ErrorKeys.GENERAL_SERVER_ERROR)
   }
 
   const { fields, files } = await parseForm(req, 'illustration');
 
   if (!fields.comic_id) {
     return res.status(400).json(ErrorKeys.COMIC_MISSING);
-  }
+  } 
 
   if (!fields.page_number) {
     return res.status(400).json(ErrorKeys.PAGE_NUMBER_MISSING);
@@ -31,29 +56,13 @@ const newPageHandler: NextApiHandler = async (req, res) => {
     return res.status(400).json(ErrorKeys.IMAGE_MISSING);
   }
 
-  const data: ComicPage = {
-    page_number: Number(fields.page_number[0]),
-    img: files.image[0].newFilename,
-    comic_id: Number(fields.comic_id[0])
-  };
-
-  if (fields.chapter_id) {
-    data.chapter_id = Number(fields.chapter_id[0])
-  }
-  if (fields.author_comment) {
-    data.author_comment = fields.author_comment[0]
-  }
-  if (fields.release_on) {
-    data.release_on = new Date(fields.release_on[0])
-  }
-
-  const newPage = await createPage(data);
+  const newPage = await createComicPage(fields, files);
 
   if (newPage.success) {
     return res.status(200).json(newPage); 
   } else {
     logger.error(newPage.error)
-    return res.status(500).json(newPage.error)
+    return res.status(newPage.error === ErrorKeys.INVALID_REQUEST ? 400 : 500).json(newPage.error)
   }
 };
 

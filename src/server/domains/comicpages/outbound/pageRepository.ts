@@ -4,7 +4,7 @@ import {
   getOneRowResult,
 } from "../../../sql-helpers/queryFunctions";
 import { QueryResult } from "pg";
-import { ComicPage } from "../comicpage.types";
+import { ComicPage, PageReference } from "../comicpage.types";
 import logger from "@logger";
 
 export async function createPage(
@@ -57,16 +57,20 @@ export async function editPage(
   }
 }
 
-export async function getLastPage(
+export async function getLastPageReference(
   comicId: number,
-): Promise<Partial<ComicPage> | null> {
+  omniscientPOV = false
+): Promise<PageReference | null> {
   try {
     const query = `
     SELECT 
       id,
       page_number
     FROM comic_pages
-    WHERE comic_id = $1
+    ${omniscientPOV
+      ? 'WHERE comic_id = $1'
+      : 'WHERE comic_id = $1 AND release_date <= NOW()'
+    }
     ORDER BY page_number
     DESC limit 1`;
     const values = [comicId];
@@ -78,7 +82,7 @@ export async function getLastPage(
   }
 }
 
-export async function getAdjacentPages(
+export async function getAdjacentPageReferences(
   comicId: number,
   currentPage: number,
 ): Promise<Partial<ComicPage> | null> {
@@ -115,9 +119,9 @@ export async function getAdjacentPages(
   }
 }
 
-export async function getFirstPage(
+export async function getFirstPageReference(
   comicId: number,
-): Promise<Partial<ComicPage> | null> {
+): Promise<PageReference | null> {
   try {
     const query = `
     SELECT 
