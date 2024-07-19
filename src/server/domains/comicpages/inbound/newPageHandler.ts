@@ -47,7 +47,7 @@ const newPageHandler: NextApiHandler = async (req, res) => {
     data.release_on = new Date(fields.release_on[0])
   }
 
-  const newPage = await createPage(fields, files.image);
+  const newPage = await createPage(data);
 
   if (newPage.success) {
     return res.status(200).json(newPage); 
