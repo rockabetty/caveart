@@ -4,7 +4,7 @@ import {
   editTable,
 } from "../../../../server/sql-helpers/queryFunctions";
 import { Comic, ComicColumnList, Genre, NestedContentWarning } from "../comic.types";
-import { logger } from "../services/logs";
+import { logger } from "@logger";
 import { QueryResult } from "pg";
 
 export async function createComic(comic: Comic): Promise<number | null> {

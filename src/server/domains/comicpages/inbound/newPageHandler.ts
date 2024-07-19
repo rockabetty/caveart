@@ -31,7 +31,7 @@ const newPageHandler: NextApiHandler = async (req, res) => {
     return res.status(400).json(ErrorKeys.IMAGE_MISSING);
   }
 
-  const data: Partial<ComicPage> = {
+  const data: ComicPage = {
     page_number: Number(fields.page_number[0]),
     img: files.image[0].newFilename,
     comic_id: Number(fields.comic_id[0])
