@@ -1,6 +1,9 @@
 import path from "path";
 import formidable from "formidable";
 import { createHash, createRandom } from "@services/encryption/hash";
+import { getUploadDirectory } from ".";
+
+const uploadDir = getUploadDirectory();
 
 export const imageDefaults: formidable.Options = {
   maxFileSize: 2000 * 1024, // 2000 KB
@@ -16,7 +19,7 @@ export const imageDefaults: formidable.Options = {
     }
     return false;
   },
-  uploadDir: path.join(process.cwd(), "public", "uploads"),
+  uploadDir,
   filename: (_name, _ext, part, _form) => {
     const imageHash = createHash(createRandom());
     const fileExt = part.originalFilename?.split(".").pop();
