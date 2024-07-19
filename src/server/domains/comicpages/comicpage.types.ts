@@ -8,7 +8,9 @@ export type ComicPage = {
 	created_at: Readonly<Date>,
 	release_on?: Date,
 	view_count?: number,
-	like_count?: number
+	like_count?: number,
+	next_id?: number,
+	prev_id?: number
 }
 
 export type ComicPageField = keyof ComicPage;
