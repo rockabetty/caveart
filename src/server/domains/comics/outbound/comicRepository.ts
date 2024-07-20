@@ -111,15 +111,16 @@ export async function addAuthorToComic(
 
 export async function isAuthor(
   author: number,
-  comic: number,
+  comic: number | string,
 ): Promise<boolean | null> {
+  const column = typeof comic === "string" ? "subdomain" : "comic_id"
   const query = `SELECT TRUE as isauthor
       FROM comics_to_authors ca
       JOIN comics c
       ON c.id = ca.comic_id
       WHERE
         ca.user_id = $1
-        AND ca.comic_id = $2`;
+        AND ca.${column} = $2`;
 
   const values = [author, comic];
   try {
@@ -130,7 +131,8 @@ export async function isAuthor(
   }
 }
 
-export async function getComic(comicId: number): Promise<Comic | null> {
+export async function getComic(comicId: number | string): Promise<Comic | null> {
+  const identifier = typeof comicId === number ? "id" : "subdomain"
   const query = `
   WITH ContentWarnings AS (
     SELECT
@@ -143,7 +145,7 @@ export async function getComic(comicId: number): Promise<Comic | null> {
     LEFT JOIN comics_to_content_warnings ccw ON ccw.comic_id = c.id
     LEFT JOIN content_warnings cw ON cw.id = ccw.content_warning_id
     JOIN content_warnings cwparent on cwparent.id = cw.parent_id
-    WHERE c.id = $1
+    WHERE c.${identifier} = $1
     GROUP BY c.id
   ),
   ComicGenres AS (
@@ -370,17 +372,6 @@ export async function getRatingId(name: string): Promise<QueryResult | null> {
 
 export async function getGenres(): Promise<Genre[] | null> {
   try {
-    // `SELECT jsonb_object_agg(
-    //     id,
-    //     jsonb_build_object(
-    //         'id', id,
-    //         'name', name,
-    //         'description', description
-    //     )
-    // ) AS genres
-    // FROM genres;
-    // `
-
     const result = await queryDbConnection(`SELECT id, name FROM genres`);
     if (result.rows && result.rows.length > 0) {
       return result.rows;
@@ -393,21 +384,23 @@ export async function getGenres(): Promise<Genre[] | null> {
 }
 
 export async function editComic(
-  comicId: number,
+  identifier: number | string,
   update: Comic,
 ): Promise<QueryResult | null> {
   try {
+    const column = typeof identifer === "string" ? "subdomain" : "id"
     console.log("comic ID:" + comicId);
-    return await editTable("comics", "id", comicId, update);
+    return await editTable("comics", column, identifier, update);
   } catch (error: any) {
     logger.error(error);
     throw error;
   }
 }
 
-export async function deleteComic(comic: number): Promise<boolean | null> {
+export async function deleteComic(identifier: number | string): Promise<boolean | null> {
+  const identifier = typeof identifier === "string" ? "subdomain" :"id" 
   const query = `DELETE FROM comics 
-    WHERE id = $1;`;
+    WHERE ${identifier} = $1;`;
   const values = [comic];
   try {
     const result = await queryDbConnection(query, values);

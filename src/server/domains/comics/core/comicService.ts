@@ -4,7 +4,7 @@ import extractUserIdFromToken from '@domains/users/utils/extractUserIdFromToken'
 
 export async function canEditComic(
   token: string,
-  comicId: number,
+  comicId: number | string,
 ) {
   try {
     const userId = await extractUserIdFromToken(token);
@@ -22,3 +22,4 @@ export async function canEditComic(
     }
   }
 }
+
