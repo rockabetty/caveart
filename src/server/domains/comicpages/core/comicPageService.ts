@@ -14,15 +14,16 @@ export async function createComicPage (fields: formidable.Fields, files: formida
       release_on: new Date().toISOString()
     };
 
-    if (!fields.page_number || !fields.comic_id || !files.image) {
+    if (!fields.newPageNumber || !fields.releaseDate || !files['image[]']) {
       return {
         success: false,
         error: ErrorKeys.INVALID_REQUEST
       }
     } else {
-      data.page_number = Number(fields.page_number[0])
-      data.img = files.image[0].newFilename
-      data.comic_id = Number(fields.comic_id[0])
+      const file = files['image[]']
+      data.page_number = Number(fields.newPageNumber[0])
+      data.img = `/uploads/${file[0].newFilename}`
+      data.comic_id = Number(fields.comicId)
     }
 
     if (fields.chapter_id) {

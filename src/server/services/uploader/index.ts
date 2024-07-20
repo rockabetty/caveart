@@ -11,6 +11,14 @@ import formidable from "formidable";
 import { NextApiRequest } from "next";
 import logger from "@logger";
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+}
+
+const uploadDir = getUploadDirectory();
+
 export const deleteFile = async (filename: string) => {
   const filePath = path.join(process.cwd(), "/public/uploads", filename);
   try {
@@ -22,46 +30,62 @@ export const deleteFile = async (filename: string) => {
   }
 };
 
-export const parseForm = async (
-  req: NextApiRequest,
-  purpose: ImagePurpose,
-):   Promise<{ fields?: formidable.Fields, files?: formidable.Files }> => {
-  let options = imageDefaults;
+export const parseFormWithSingleImage = async (req: NextApiRequest, purpose: string) => {
+  console.log("*********************Parse Form Beginning******************")
+  // Ensure the upload directory exists
+  await fs.ensureDir(uploadDir);
+  
+  console.log("Upload directory ensured:", uploadDir);
 
-  switch (purpose) {
-    case "favicon":
-      options = tinyImageDefaults;
-      break;
-    case "thumbnail":
-      options = smallImageDefaults;
-      break;
-    case "illustration":
-      options = largeImageDefaults;
-      break;
-    case "small":
-      options = smallImageDefaults;
-      break;
-    default:
-      break;
-  }
+  // Configure formidable
+  // const form = formidable({
+  //   uploadDir,
+  //   keepExtensions: true,
+  //   maxFileSize: 5 * 1024 * 1024, // 5MB file size limit, adjust as needed
+  //   filter: ({ name, originalFilename, mimetype }) => {
+  //     // This will only accept image files
+  //     if (mimetype && mimetype.startsWith('image/')) {
+  //       return true;
+  //     }
+  //     return false;
+  //   },
+  // });
+  const form = formidable({
+    uploadDir,
+    keepExtensions: true,
+    maxFileSize: 5 * 1024 * 1024, // 5MB
+  });
 
-  const directory = getUploadDirectory(); 
-  await fs.ensureDir(directory);
 
-  try {
-    await fs.access(directory, fs.constants.R_OK | fs.constants.W_OK);
-  } catch (error) {
-    logger.warn(`Directory ${directory} is not accessible. Setting permissions...`);
-    await fs.chmod(directory, 0o755); // Owner can read/write/execute, others can read/execute
-  }
- 
-  const form = formidable(options);
+  // Debugging event listeners
+  form.on('fileBegin', (name, file) => {
+    console.log(`Starting upload of ${name}: ${file.originalFilename}`);
+  });
 
-  return new Promise((resolve, reject) => {
+  form.on('progress', (bytesReceived, bytesExpected) => {
+    console.log(`Progress: ${bytesReceived} / ${bytesExpected}`);
+  });
+
+  form.on('error', (err) => {
+    console.log('Formidable error:', err);
+  });
+
+  form.on('end', () => {
+    console.log('Formidable parsing finished.');
+  });
+
+  // Parse the form
+  return new Promise<{ fields: formidable.Fields; files: formidable.Files }>((resolve, reject) => {
+    console.log("Calling form.parse.");
     form.parse(req, (err, fields, files) => {
-      if (err) reject(err)
-      resolve({fields, files})  
-    })
-  })
-
+      if (err) {
+        console.log("Error in parsing.")
+        logger.error(err);
+        reject(err);
+        return;
+      }
+      console.log("Resolving time.");
+      resolve({ fields, files });
+    });
+  });
 };
