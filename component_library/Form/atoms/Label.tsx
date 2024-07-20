@@ -18,15 +18,16 @@ export const labelDefaults: LabelProps = {
 
 const Label: React.FC<LabelProps> = (props) => {
 
-  const {labelText, classes, htmlFor, disabled, required, hasError} = props
+  const {labelText, htmlFor, disabled, required, hasError} = props
 
   return ( 
     <label
       htmlFor={htmlFor}
-      className={`form-field ${classes} ${classNames({
+      className={classNames({
+        'form-field': true,
         'Disabled': disabled,
         'Error': hasError,
-      })}`.trim()}
+      })}
     >
       <span>{labelText}</span>
       {required ? <Icon classes="form-field_requirement-icon" width={8} height={8} viewbox="0 0 16 14" name="asterisk" /> : ""}

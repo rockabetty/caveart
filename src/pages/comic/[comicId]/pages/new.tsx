@@ -5,6 +5,7 @@ import { useTranslation} from 'react-i18next';
 import axios from 'axios';
 import { Form, ImageUpload, TextArea } from '@components';
 import { useEffect, useState } from 'react';
+import DateTimepicker from '@components/Form/DateTimepicker';
 
 function AddPage() {
   const router = useRouter()
@@ -42,6 +43,10 @@ function AddPage() {
     console.log('lol')
   }
 
+  const handleDateChange = () => {
+    console.log("ive got gout")
+  }
+
   return (
   <CaveartLayout requireLogin={true}>
     <h1>{t('comicManagement.addPage')}</h1>
@@ -66,6 +71,11 @@ function AddPage() {
           labelText="Author comment"
           value={upload.commentary}
           onChange={handleTextChange}
+        />
+
+        <DateTimepicker
+          labelText="Release date"
+          onDateChange={handleDateChange}
         />
 
       </Form>
