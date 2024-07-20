@@ -8,7 +8,7 @@ export const nextNewPageNumberHandler: NextApiHandler = async(
   res
 ) => {
   acceptGetOnly(req, res);
-  
+
   const { comicId } = req.query;
   const idNum = Number(comicId)
   if (isNaN(idNum)) {
@@ -16,7 +16,6 @@ export const nextNewPageNumberHandler: NextApiHandler = async(
   }
 
   const result = await getNextNewPageNumber(idNum)
-  console.log(result)
   if (result.success) {
     return res.status(200).send({ newPageNumber: result.number});
   }
