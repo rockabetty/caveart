@@ -1,5 +1,5 @@
 import { Checkbox } from "@components";
-import "../layout.css";
+import "../../layout.css";
 import { useTranslation } from "react-i18next";
 import React from "react";
 

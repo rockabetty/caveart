@@ -96,7 +96,7 @@ const ComicProfileForm: React.FC<ComicProfileFormProps> = (
       <div className="comic-profile_body">
         <ImageUpload
           editable
-          helperText={t('comicProfile.coverImageSize')}
+          helperText={t('comicProfile.coverImageSize', {megabytes: '3'})}
           id={`${comicId ? `${comicId}-` : ''}cover_image`}
           src={`${update?.thumbnail}` || "/img/brand/kraugak.png"}
           alt="Preview cover image"

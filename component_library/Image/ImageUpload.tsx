@@ -19,7 +19,7 @@ export interface ImageUploadProps {
   required?: boolean;
   flexible?: boolean;
   name?: string;
-  onChange?: (files: FileList | undefined) => void
+  onChange?: (files: FileList) => void
 }
 
 const ImageUpload = ({

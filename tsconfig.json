@@ -18,7 +18,10 @@
       "@components": ["../component_library"],
       "@components/*": ["../component_library/*"],
       "@data/*": ["./data/*"],
-      "@logger": ["./services/logs"],
+      "@logger": ["./server/services/logger"],
+      "@logger/*": ["./server/services/logger/*"],
+      "@domains/*": ["./server/domains/*"],
+      "@services/*": ["./server/services/*"]
     },
     "importHelpers": true,
     // output .d.ts declaration files for consumers

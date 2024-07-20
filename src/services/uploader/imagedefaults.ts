@@ -1,6 +1,6 @@
 import path from "path";
 import formidable from "formidable";
-import { createHash, createRandom } from '../auth/server/hash';
+import { createHash, createRandom } from '@services/encryption/hash';
 
 const defaultImageUploadOptions: formidable.Options = {
   maxFileSize: 2000 * 1024, // 2000 KB

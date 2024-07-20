@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse, NextApiHandler } from 'next';
 import jwt from 'jsonwebtoken';
 import { getUserSession } from '../outbound/userRepository';
-import logger from '../../../services/logger';
-import { requireEnvVar } from '../../../services/logger/envcheck';
+import logger from '@logger';
+import { requireEnvVar } from '@logger/envcheck';
 
 const SECRET_KEY_JWT = process.env.SECRET_KEY_JWT;
 const USER_AUTH_TOKEN_NAME = requireEnvVar('NEXT_PUBLIC_USER_AUTH_TOKEN_NAME');

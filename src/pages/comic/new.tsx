@@ -1,9 +1,7 @@
 import CaveartLayout from '../../app/user_interface/CaveartLayout'
 import NewComicForm from '../../app/user_interface/comic/profiles/NewComicForm';
-import ComicProfileProvider from '../../app/user_interface/comic/hooks/ComicProfileProvider'
-import { useRouter } from 'next/router';
+import ComicProfileProvider from '../../app/user_interface/comic/profiles/hooks/ComicProfileProvider'
 import { useTranslation} from 'react-i18next';
-import axios from 'axios';
 
 function NewComic() {
 

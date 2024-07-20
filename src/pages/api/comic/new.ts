@@ -1,7 +1,6 @@
 import { NextApiHandler, NextApiRequest } from "next";
 import formidable from "formidable";
 import imageOptions from "../../../services/uploader/imagedefaults";
-import ensureUploadDirectoryExists from "../../../services/uploader/ensureUploadDirectoryExists";
 import { withAuth } from "../../../server/domains/users/middleware/withAuth";
 import { extractUserIdFromToken } from "../../../server/domains/users/utils/extractUserIdFromToken";
 import {
@@ -23,6 +22,10 @@ export const config = {
     bodyParser: false,
   },
 };
+import { requireEnvVar } from "@logger/envcheck";
+import { ErrorKeys } from "@domains/users/errors.types";
+
+const USER_AUTH_TOKEN_NAME = requireEnvVar('NEXT_PUBLIC_USER_AUTH_TOKEN_NAME');
 
 interface SubmissionResult {
   fields?: formidable.Fields;
@@ -58,7 +61,6 @@ const handler: NextApiHandler = async (req, res) => {
   let id: number | null = null;
 
   try {
-    ensureUploadDirectoryExists();
     const submission = await readForm(req);
     const fields = submission.fields;
     const processedFields: ProcessedFields = {};
@@ -227,7 +229,12 @@ console.log("rating")
           await addContentWarningsToComic(id, processedFields.content);
         }
 
-        const userID = await extractUserIdFromToken(req, false);
+        const token = req.cookies[USER_AUTH_TOKEN_NAME];
+        if (!token) {
+          return res.status(400).send(ErrorKeys.TOKEN_MISSING)
+        }
+
+        const userID = await extractUserIdFromToken(token, false);
         await addAuthorToComic(id, parseInt(userID));
         return res.status(201).send({ message: "success", id });
       }

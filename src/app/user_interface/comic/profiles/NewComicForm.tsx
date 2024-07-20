@@ -44,10 +44,10 @@ const NewComicForm: React.FC = () => {
     };
 
     if (!update.title) {
-      return setSubmissionError("comicManagement.errors.titleMissing");
+      return setSubmissionError("comicProfile.errors.titleMissing");
     }
     if (!update.subdomain) {
-      return setSubmissionError("comicManagement.errors.subdomainMissing");
+      return setSubmissionError("comicProfile.errors.subdomainMissing");
     }
 
     submission.genres = Object.keys(update.genres);
@@ -73,7 +73,7 @@ const NewComicForm: React.FC = () => {
   return (
     <Form
       id="new_comic"
-      submitLabel={t("comicManagement.create")}
+      submitLabel={t("comicProfile.create")}
       formValues={update}
       onSubmit={handleFormSubmit}
       submissionError={submissionError}
@@ -88,7 +88,7 @@ const NewComicForm: React.FC = () => {
             name="comments"
             value="Allowed"
             id="comments_on"
-            labelText={t("comicSettings.comments.allowed")}
+            labelText={t("comicProfile.comments.allowed")}
           />
           <Radio
             onChange={handleCommentsChange}
@@ -96,7 +96,7 @@ const NewComicForm: React.FC = () => {
             name="comments"
             value="Moderated"
             id="comments_moderated"
-            labelText={t("comicSettings.comments.moderated")}
+            labelText={t("comicProfile.comments.moderated")}
           />
           <Radio
             onChange={handleCommentsChange}
@@ -104,7 +104,7 @@ const NewComicForm: React.FC = () => {
             name="comments"
             value="Disabled"
             id="comments_off"
-            labelText={t("comicSettings.comments.disabled")}
+            labelText={t("comicProfile.comments.disabled")}
           />
         </fieldset>
         <fieldset>
@@ -114,7 +114,7 @@ const NewComicForm: React.FC = () => {
             checked={update.likes}
             name="likes"
             id="likes"
-            labelText={t("comicSettings.likes.enabled")}
+            labelText={t("comicProfile.likes.enabled")}
           />
         </fieldset>
         <fieldset>
@@ -125,7 +125,7 @@ const NewComicForm: React.FC = () => {
             name="visibility"
             value="Public"
             id="visibility_public"
-            labelText={t("comicSettings.visibility.public")}
+            labelText={t("comicProfile.visibility.public")}
           />
           <Radio
             onChange={handleVisibilityChange}
@@ -133,7 +133,7 @@ const NewComicForm: React.FC = () => {
             name="visibility"
             value="Unlisted"
             id="visibility_unlisted"
-            labelText={t("comicSettings.visibility.unlisted")}
+            labelText={t("comicProfile.visibility.unlisted")}
           />
           <Radio
             onChange={handleVisibilityChange}
@@ -141,7 +141,7 @@ const NewComicForm: React.FC = () => {
             name="visibility"
             value="Invite-Only"
             id="visibility_private"
-            labelText={t("comicSettings.visibility.private")}
+            labelText={t("comicProfile.visibility.private")}
           />
         </fieldset>
       </div>

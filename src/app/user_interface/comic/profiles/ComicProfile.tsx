@@ -76,7 +76,11 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
              <div className="comic-profile_header">
                 <h1 className="comic-profile_title">{profile?.title}</h1>
                   {permissions?.edit
-                    ? <Link type="inline button" href={`/comic/${comicId}/edit`} id={`edit-${profile?.subdomain}`}>{t('comicManagement.edit')}</Link>
+                    ? (<>
+                        <Link type="inline button" href={`/comic/${comicId}/edit`} id={`edit-${profile?.subdomain}`}>{t('comicProfile.edit')}</Link>
+                        <Link type="inline button" look="primary" href={`/comic/${comicId}/pages/new`} id={`newpage-${profile?.subdomain}`}>{t('comicPages.add')}</Link>
+                      </>
+                      )
                     : null
                   }
               </div>

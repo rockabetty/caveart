@@ -175,6 +175,7 @@
   --col-interactive-01: var(--color-interactive-01, var(--theme-primary-70)); /* 4.5:1 ratio */
   --col-interactive-01-hover: var(--color-interactive-01-hover, var(--theme-primary-80)); /* 4.5:1 ratio */
   --col-interactive-02: var(--color-interactive-02, var(--theme-secondary-50)); /*   3:1 ratio */
+  --col-interactive-border: var(--color-interactive-border, var(--theme-primary-50));
   --col-disabled: var(--color-disabled, var(--theme-interface-30));
   --col-error: var(--color-error, var(--theme-tertiary-60));
   --col-success: var(--color-success, var(--theme-success-60));

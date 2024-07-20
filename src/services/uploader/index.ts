@@ -1,5 +1,5 @@
 import { NextApiHandler, NextApiRequest } from "next"
-import {createHash, createRandom} from "../auth/server/hash";
+import {createHash, createRandom} from "@domains/users/outbound/hash";
 import formidable from "formidable"
 import type {File} from "formidable";
 import path from "path"
