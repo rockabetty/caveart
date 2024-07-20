@@ -27,7 +27,7 @@ function AddPage() {
  
   useEffect(() => {
     if (comicId) {
-      axios.get(`/api/comic/${comicId}/pages/next`)
+      axios.get(`/api/comic/${comicId}/page/next`)
       .then((response) => {
         const {newPageNumber} = response.data;
         setUpload({...upload, newPageNumber})
@@ -37,9 +37,6 @@ function AddPage() {
       })
     }
   }, [comicId])
-
-  console.log(Intl.DateTimeFormat().resolvedOptions().timeZone)
-
 
   const handleCommentaryChange= (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -54,29 +51,41 @@ function AddPage() {
   }
 
   const handleSubmit = () => {
-    console.log('lol')
+    setError("");
+    axios.post(`/api/comic/${comicId}/page/new`, {
+      upload
+    })
+    .then((res) => {
+      console.log(res)
+    })
+    .catch((error) => {
+      setError(error.message)
+    })
   }
 
   const handleDateChange = (date: Date) => {
     setUpload({...upload, releaseDate: date})
   }
 
+  const [error, setError] = useState<string>("");
+
   return (
   <CaveartLayout requireLogin={true}>
-    <h1>{t('comicManagement.addPage')}</h1>
+    <h1>{t('comicManagement.addPage.title')}</h1>
       <ComicProfileProvider>
       <p>Next page number: {upload.newPageNumber}</p>
       <Form
-        submitLabel='Create page'
+        submitLabel={t('comicManagement.addPage')}
         formValues={upload}
         onSubmit={handleSubmit}
+        submissionError={error}
       >
         <ImageUpload
           required
           id="new"
           labelText="Upload your comic image"
           editable
-          value={upload.file}
+          value={upload.image}
           maxSize={3000 * 1024}
           onChange={handleImageChange}
         />

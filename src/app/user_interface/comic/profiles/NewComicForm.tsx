@@ -44,10 +44,10 @@ const NewComicForm: React.FC = () => {
     };
 
     if (!update.title) {
-      return setSubmissionError("comicManagement.errors.titleMissing");
+      return setSubmissionError("comicProfile.errors.titleMissing");
     }
     if (!update.subdomain) {
-      return setSubmissionError("comicManagement.errors.subdomainMissing");
+      return setSubmissionError("comicProfile.errors.subdomainMissing");
     }
 
     submission.genres = Object.keys(update.genres);
@@ -73,7 +73,7 @@ const NewComicForm: React.FC = () => {
   return (
     <Form
       id="new_comic"
-      submitLabel={t("comicManagement.create")}
+      submitLabel={t("comicProfile.create")}
       formValues={update}
       onSubmit={handleFormSubmit}
       submissionError={submissionError}

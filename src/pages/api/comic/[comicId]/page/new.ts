@@ -1,0 +1,1 @@
+export { newPageHandler as default } from "@domains/comicpages/inbound/newPageHandler";
