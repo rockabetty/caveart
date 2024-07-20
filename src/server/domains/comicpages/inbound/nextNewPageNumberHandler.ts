@@ -1,15 +1,14 @@
 import { NextApiHandler } from 'next';
 import { ErrorKeys } from '../errors.types'
 import { getNextNewPageNumber } from '../core/comicPageService';
+import { acceptGetOnly } from "@domains/methodGatekeeper";
 
 export const nextNewPageNumberHandler: NextApiHandler = async(
   req,
   res
 ) => {
-  if (req.method !== "GET") {
-    res.setHeader("Allow", ["GET"]);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
-  }
+  acceptGetOnly(req, res);
+  
   const { comicId } = req.query;
   const idNum = Number(comicId)
   if (isNaN(idNum)) {
