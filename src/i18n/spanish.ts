@@ -1,16 +1,13 @@
+import {default as comicFeature} from '../app/user_interface/comic/i18n/spanish'
+
 const spanish = {
   translation: {
+    ...comicFeature,
     "headerNavigation": {
       "myWebcomics": "Mis cómics",
       "mySubscriptions": "Suscripciones",
       "myAccount": "Perfil",
       "notifications": "Avisos"
-    },
-    "comicManagement": {
-      "noComics": "Aún no tienes ningún cómic.",
-      "create": "Crea un cómic",
-      "edit": "Editar",
-      "delete": "Eliminar",
     },
     "authenticationForm": {
       "labels" : {

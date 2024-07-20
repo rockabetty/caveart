@@ -1,16 +1,13 @@
+import {default as comicFeature} from '../app/user_interface/comic/i18n/polish'
+
 const polish = {
   translation: {
+    ...comicFeature,
     "headerNavigation": {
       "myAccount": "Mój Profil",
       "myWebcomics": "Moje Komiksy",
       "mySubscriptions": "Moje Czytelnicze",
       "notifications": "Powiadomienia"
-    },
-    "comicManagement": {
-      "noComics": " Nie masz jeszcze żadnych komiksów.",
-      "create": "Stwórz komiks",
-      "edit": "Edytuj",
-      "delete": "Usuń",
     },
     "authenticationForm": {
       "labels" : {
