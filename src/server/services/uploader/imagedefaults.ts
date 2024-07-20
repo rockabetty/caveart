@@ -1,7 +1,11 @@
 import path from "path";
 import formidable from "formidable";
 import { createHash, createRandom } from "@services/encryption/hash";
-import { getUploadDirectory } from ".";
+
+export const getUploadDirectory = (): string => {
+  // We will fix this up to involve S3 buckets or whatever when we're a REAL BOY
+  return path.join(process.cwd(), 'public', 'uploads');
+};
 
 const uploadDir = getUploadDirectory();
 

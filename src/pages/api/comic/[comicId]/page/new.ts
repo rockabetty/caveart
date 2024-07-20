@@ -1,1 +1,2 @@
-export { newPageHandler as default } from "@domains/comicpages/inbound/newPageHandler";
+import newPageHandler from "@domains/comicpages/inbound/newPageHandler";
+export default newPageHandler

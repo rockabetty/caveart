@@ -40,23 +40,25 @@ const newPageHandler: NextApiHandler = async (req, res) => {
     return res.status(500).json(ErrorKeys.GENERAL_SERVER_ERROR)
   }
 
-  const { fields, files } = await parseForm(req, 'illustration');
+  const result = await parseForm(req, 'illustration');
+  console.log("the form was parst!!!!!!!!!!!!!!")
+  console.log(result)
 
-  if (!fields.comic_id) {
+  if (!result.comic_id) {
     return res.status(400).json(ErrorKeys.COMIC_MISSING);
   } 
 
-  if (!fields.page_number) {
+  if (!result.page_number) {
     return res.status(400).json(ErrorKeys.PAGE_NUMBER_MISSING);
   }
 
-  if (!files.image) {
+  if (!result.image) {
     return res.status(400).json(ErrorKeys.IMAGE_MISSING);
   }
 
-  const newPage = await createComicPage(fields, files);
+  //const newPage = await createComicPage(fields, files);
 
-  if (newPage.success) {
+  if (false) {
     return res.status(200).json(newPage); 
   } else {
     logger.error(newPage.error)

@@ -7,8 +7,8 @@ export async function canEditComic(
   comicId: number,
 ) {
   try {
-    const userId = Number(extractUserIdFromToken(token));
-    const ifOwnsComic = await isAuthor(userId, comicId);
+    const userId = await extractUserIdFromToken(token);
+    const ifOwnsComic = await isAuthor(Number(userId), comicId);
     return {
       success: true,
       edit: ifOwnsComic

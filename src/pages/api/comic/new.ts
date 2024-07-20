@@ -1,7 +1,6 @@
 import { NextApiHandler, NextApiRequest } from "next";
 import formidable from "formidable";
 import imageOptions from "../../../services/uploader/imagedefaults";
-import ensureUploadDirectoryExists from "../../../services/uploader/ensureUploadDirectoryExists";
 import { withAuth } from "../../../server/domains/users/middleware/withAuth";
 import { extractUserIdFromToken } from "../../../server/domains/users/utils/extractUserIdFromToken";
 import {
@@ -58,7 +57,6 @@ const handler: NextApiHandler = async (req, res) => {
   let id: number | null = null;
 
   try {
-    ensureUploadDirectoryExists();
     const submission = await readForm(req);
     const fields = submission.fields;
     const processedFields: ProcessedFields = {};

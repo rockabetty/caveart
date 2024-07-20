@@ -12,17 +12,15 @@
  * @throws Throws an error if decoding the token, getting user session, or any other operation fails.
  *
  */
-import { NextApiRequest } from 'next';
 import jwt from 'jsonwebtoken';
 import { getUserSession } from '../outbound/userRepository';
-import { requireEnvVar } from '../../../services/logger/envcheck';
+import { requireEnvVar } from '@logger/envcheck';
 import { ErrorKeys } from '../errors.types';
 
-const USER_AUTH_TOKEN_NAME = requireEnvVar('NEXT_PUBLIC_USER_AUTH_TOKEN_NAME');
 const SECRET_KEY_JWT = requireEnvVar('SECRET_KEY_JWT');
 
-export async function extractUserIdFromToken (req: NextApiRequest, validateSession: boolean = true): Promise<string> {
-  const token = req.cookies[USER_AUTH_TOKEN_NAME];
+export async function extractUserIdFromToken (token: string, validateSession: boolean = true): Promise<string> {
+  
   if (token) {
     const decodedRequestToken = jwt.verify(token, SECRET_KEY_JWT);
     if (validateSession) {
@@ -31,7 +29,6 @@ export async function extractUserIdFromToken (req: NextApiRequest, validateSessi
         throw new Error(ErrorKeys.SESSION_INVALID);
       }
     }
-
     return decodedRequestToken.sub as string
   }
   

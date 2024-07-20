@@ -59,7 +59,7 @@ function AddPage() {
       console.log(res)
     })
     .catch((error) => {
-      setError(error.message)
+      setError(error.response?.data)
     })
   }
 
