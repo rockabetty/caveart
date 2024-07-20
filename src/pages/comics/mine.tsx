@@ -38,10 +38,10 @@ function MyComics() {
               </ComicProfileProvider>
             )
           })
-          : <p>{t('comicManagement.noComics')}</p>
+          : <p>{t('comicProfile.noComics')}</p>
         }
 
-      <Link type="button" id="link-create_comic" href="/comic/new">{t('comicManagement.create')}</Link>
+      <Link type="button" id="link-create_comic" href="/comic/new">{t('comicProfile.create')}</Link>
     </CaveartLayout>
   )
 }

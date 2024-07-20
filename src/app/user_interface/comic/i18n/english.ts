@@ -3,6 +3,7 @@ const english = {
 		add: "Add pages",
 	},
 	comicProfile: {
+		noComics: "You don't have any comics yet!",
 		create: "Create comic",
 		edit: "Edit profile",
 		save: "Save changes",

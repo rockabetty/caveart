@@ -22,6 +22,10 @@ export const config = {
     bodyParser: false,
   },
 };
+import { requireEnvVar } from "@logger/envcheck";
+import { ErrorKeys } from "@domains/users/errors.types";
+
+const USER_AUTH_TOKEN_NAME = requireEnvVar('NEXT_PUBLIC_USER_AUTH_TOKEN_NAME');
 
 interface SubmissionResult {
   fields?: formidable.Fields;
@@ -225,7 +229,12 @@ console.log("rating")
           await addContentWarningsToComic(id, processedFields.content);
         }
 
-        const userID = await extractUserIdFromToken(req, false);
+        const token = req.cookies[USER_AUTH_TOKEN_NAME];
+        if (!token) {
+          return res.status(400).send(ErrorKeys.TOKEN_MISSING)
+        }
+
+        const userID = await extractUserIdFromToken(token, false);
         await addAuthorToComic(id, parseInt(userID));
         return res.status(201).send({ message: "success", id });
       }
