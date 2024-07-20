@@ -7,6 +7,7 @@ import { ErrorKeys } from '../errors.types';
 import { createComicPage } from '../core/comicPageService';
 import { requireEnvVar } from '@logger/envcheck';
 const USER_AUTH_TOKEN_NAME = requireEnvVar("NEXT_PUBLIC_USER_AUTH_TOKEN_NAME");
+import { acceptPostOnly } from "@domains/methodGatekeeper";
 
 export const config = {
   api: {
@@ -16,9 +17,7 @@ export const config = {
 
 const newPageHandler: NextApiHandler = async (req, res) => {
   
-  if (req.method !== 'POST') {
-    return res.status(405).end();
-  }
+  acceptPostOnly(req,res)
 
   const { comicId } = req.query;
   if (!comicId) {
