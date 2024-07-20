@@ -22,7 +22,7 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
   }
 
   if (permissions?.edit === false) {
-    return <div>{t("statusCodes.403")}</div>;
+    return <div>{t("comicProfile.errors.403")}</div>;
   }
   const handleFormSubmit = async () => {
     let updates: Promise<any>[] = [];
@@ -98,7 +98,7 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
 
   return (
     <Form
-      submitLabel={t("comicManagement.save")}
+      submitLabel={t("comicProfile.save")}
       formValues={update}
       onSubmit={handleFormSubmit}
       submissionError={submissionError}

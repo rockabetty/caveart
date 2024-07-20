@@ -7,16 +7,23 @@ import { Form, ImageUpload, TextArea } from '@components';
 import { useEffect, useState } from 'react';
 import DateTimepicker from '@components/Form/DateTimepicker';
 
+type NewPageSubmission = {
+  image?: FileList | File,
+  newPageNumber: number,
+  releaseDate: Date,
+  commentary?: string
+}
+
 function AddPage() {
   const router = useRouter()
   const {comicId} = router.query;
   console.log(comicId)
   const { t } = useTranslation();
-  const [upload, setUpload] = useState({
+  const [upload, setUpload] = useState<NewPageSubmission>({
     newPageNumber: 0,
-    file: undefined
+    image: undefined,
+    releaseDate: new Date()
   })
-  const [timezone, setTimezone] = useState("")
  
   useEffect(() => {
     if (comicId) {
@@ -28,23 +35,30 @@ function AddPage() {
       .catch((error) => {
         console.log(error)
       })
-
-      setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone);
     }
   }, [comicId])
 
   console.log(Intl.DateTimeFormat().resolvedOptions().timeZone)
 
-  const handleTextChange = () => {
-    console.log("bosom")
+
+  const handleCommentaryChange= (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { value } = e.target;
+    setUpload({...upload, commentary: value});
+    console.log(upload)
+  };
+
+  const handleImageChange = (file: FileList) => {
+    setUpload({...upload, image: file})
   }
 
   const handleSubmit = () => {
     console.log('lol')
   }
 
-  const handleDateChange = () => {
-    console.log("ive got gout")
+  const handleDateChange = (date: Date) => {
+    setUpload({...upload, releaseDate: date})
   }
 
   return (
@@ -64,13 +78,16 @@ function AddPage() {
           editable
           value={upload.file}
           maxSize={3000 * 1024}
+          onChange={handleImageChange}
         />
 
         <TextArea
           id="author_comment"
+          name="commentary"
           labelText="Author comment"
+          placeholderText="Tell us about your favorite part of this page, your process, or whatever comes to mind."
           value={upload.commentary}
-          onChange={handleTextChange}
+          onChange={handleCommentaryChange}
         />
 
         <DateTimepicker
@@ -83,23 +100,5 @@ function AddPage() {
    </CaveartLayout>
   )
 }
-
-/*
-Todo - chapters, release scheduling.
-
-CREATE TABLE IF NOT EXISTS comic_pages (
-    id SERIAL PRIMARY KEY,
-    page_number INT,
-    img TEXT NOT NULL UNIQUE,
-    comic_id INT REFERENCES comics(id) ON DELETE CASCADE,
-    chapter_id INT REFERENCES chapters(id) ON DELETE CASCADE,
-    created_at TIMESTAMP DEFAULT NOW(),
-    release_on TIMESTAMP DEFAULT NOW(),
-    UNIQUE (comic_id, chapter_id, page_number),
-    view_count INT DEFAULT 0,
-    like_count INT DEFAULT 0,
-    author_comment TEXT
-);
-*/
 
 export default AddPage
