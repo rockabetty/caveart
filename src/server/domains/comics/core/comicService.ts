@@ -1,10 +1,17 @@
-import { isAuthor } from '../outbound/comicRepository';
+import { isAuthor, getRatingId } from '../outbound/comicRepository';
 import logger from '@logger';
 import extractUserIdFromToken from '@domains/users/utils/extractUserIdFromToken';
+import formidable from 'formidable'
+
+const invalidRequest = {
+  success: false,
+  error: ErrorKeys.INVALID_REQUEST
+}
 
 export async function canEditComic(
   token: string,
   comicId: number | string,
+  userID: number
 ) {
   try {
     const userId = await extractUserIdFromToken(token);
@@ -23,210 +30,190 @@ export async function canEditComic(
   }
 }
 
+export function validateIDList(list: number[]) {
+  if (!Array.isArray(list)) {
+      return {
+        success: false,
+        error:  ErrorKeys.INVALID_REQUEST
+      }
+  }
+  for (let entry of list) {
+    if (isNaN(entry)) {
+      return {
+        success: false,
+        error: ErrorKeys.INVALID_REQUEST
+      }
+    }
+  }
+  return {
+    success: true,
+    data: list
+  }
+};
 
-/*
-const handler: NextApiHandler = async (req, res) => {
-  let id: number | null = null;
+export async function createComic(
+  fields: formidable.Fields,
+  files: formidable.Files) {
+
+  let profile = {
+    title: "",
+    subdomain: "",
+    description: "",
+    genres: [],
+    content: [],
+    visibility: "Public",
+    likes: true,
+    rating: "All Ages",
+    comments: false,
+    moderate_comments: false,
+    is_unlisted: false,
+    is_private: false
+  }
+
+
+  const requiredFields = [
+    "rating",
+    "title",
+    "subdomain"
+  ]
+
+  for (let field of requiredFields) {
+    if (!fields[field]) {
+      return invalidRequest
+    }
+  }
+
+  profile.title = fields.title[0];
+
+  subdomain = fields.subdomain[0];
+  subdomainFilter = /^(?!-)(?!.*--)[A-Za-z0-9-]{1,63}(?<!-)$/;
+  if (!subdomainFilter.test(subdomain)) {
+    return invalidRequest
+  }
+  profile.subdomain = fields.subdomain[0];
+
+  const ratingId = await getRatingId(fields.rating[0]);
+  if (isNaN(ratingId)) {
+    return invalidRequest
+  }
+  profile.rating = ratingId;
+
+  if (fields.description[0]) {
+    if (fields.description[0].length > 1024) {
+      return invalidRequest
+    }
+    profile.description = fields.description[0]
+  }
+
+  const genresValid = validateIDList(fields.genres[0]);
+  if (genresValid.success) {
+    profile.genres = fields.genres[0]
+  } else {
+    return invalidRequest
+  }
+
+  const contentWarningsValid = validateIDList(fields.content[0]);
+  if (contentWarningsValid.success) {
+    profile.content = fields.content[0]
+  } else {
+    return invalidRequest
+  }
+
+  const selectedCommentsOption = fields.comments[0];
+  const validComments = ["Allowed", "Moderated", "Disabled"];
+  if (!validComments.includes(selectedCommentsOption)) {
+    return invalidRequest
+  }
+  profile.comments = selectedCommentsOption !== "Disabled";
+  if (selectedCommentsOption === "Moderated") {
+    processedFields.moderate_comments = true;
+  }
+
+  if (fields.visibility) {
+    const selectedVisibilityOption = fields.visibility[0];
+    const validVisibilities = ["Public", "Unlisted", "Invite-Only"];
+    if (!validVisibilities.includes(selectedVisibilityOption)) {
+      return invalidRequest
+    }
+    if (selectedVisibilityOption === "Invite-Only") {
+      profile.is_private = true;
+    }
+    if (selectedVisibilityOption === "Unlisted") {
+      profile.is_unlisted = true;
+    }
+  }
+
+  if (fields.likes) {
+    const selectedLikesOption = fields.likes[0];
+    if (selectedLikesOption !== "true" && selectedLikesOption !== "false") {
+      return invalidRequest
+    }
+    profile.likes = selectedLikesOption === "true";
+  }
+
+  if (files) {
+    const processedFiles: any = {};
+    try {
+      await Promise.all(
+        Object.keys(files).map(async (key) => {
+          const file = files[key][0];
+          profile.thumbnail = `/uploads/${file.newFilename}`;
+        })
+      )
+    } catch (fileErr) {
+      return {
+        success: false,
+        error: ErrorKeys.FILE_UPLOAD_ERROR
+      }
+    }
+  }
 
   try {
-    const submission = await readForm(req);
-    const fields = submission.fields;
-    const processedFields: ProcessedFields = {};
+    const id = await createComic(profile);
+    if (id) {
 
-    let newFilename = "";
-    if (submission?.files) {
-      console.log("##############################")
-      const processedFiles: any = {};
-      try {
-        const files = submission.files;
-        console.log(files)
-        await Promise.all(
-          Object.keys(files).map(async (key) => {
-            const file = files[key][0];
-            processedFields.thumbnail = `/uploads/${file.newFilename}`;
-          }),
-        );
-      } catch (fileErr) {
-        return res.status(500).json({ error: fileErr });
-      }
-    }
+      await addAuthorToComic(id, userID);
 
-    if (fields) {
-      console.log("PRocessing fields")
-      if (fields.title) {
-        const title = fields.title[0];
-        // Validating that the title is alpahnumeric or has !, -, ?
-        const titleRegex = /^[a-zA-Z0-9 !\-?]+$/;
-        if (!titleRegex.test(title)) {
-          return res.status(400).json({ error: "invalidTitleFormat" });
-        }
-        processedFields.title = title;
+      if (profile.genres.length > 0) {
+        await addGenresToComic(id, profile.genres);
       }
 
-      console.log("Genres")
-
-      if (fields.genres) {
-        const { genres } = fields;
-        if (!Array.isArray(genres)) {
-          return res.status(400).json({ error: "invalidGenreFormat" });
-        }
-        for (let entry of genres) {
-          if (isNaN(entry)) {
-            return res.status(400).json({ error: "invalidGenreFormat" });
-          }
-        }
-        processedFields.genres = genres;
+      if (profile.content.length > 0) {
+        await addContentWarningsToComic(id, profile.content);
       }
 
-  console.log("Content warnigns")
-      if (fields.content) {
-        const { content } = fields;
-        if (!Array.isArray(content)) {
-          return res.status(400).json({ error: "invalidContentWarningFormat" });
-        }
-        for (let entry of content) {
-          if (isNaN(entry)) {
-            return res
-              .status(400)
-              .json({ error: "invalidContentWarningFormat" });
-          }
-        }
-        processedFields.content = content;
+      return {
+        success: true,
+        data: { id }
       }
-
-console.log("Subdo")
-      if (fields.subdomain) {
-        const subdomain = fields.subdomain[0];
-        // Validating that subdomain is purely alphanumeric with hyphens or underscores only
-        const subdomainRegex = /^[a-zA-Z0-9_-]+$/;
-        if (!subdomainRegex.test(subdomain)) {
-          return res.status(400).json({ error: "invalidSubdomainFormat" });
-        }
-        processedFields.subdomain = subdomain;
-      }
-
-console.log("Desc")
-      if (fields.description) {
-        const description = fields.description[0];
-        if (description.length > 1024) {
-          return res.status(400).json({ error: "invalidDescriptionLength" });
-        }
-        processedFields.description = description;
-      }
-
-console.log("Comments")
-      if (fields.comments) {
-        const selectedCommentsOption = fields.comments[0];
-
-        const validComments = ["Allowed", "Moderated", "Disabled"];
-        if (!validComments.includes(selectedCommentsOption)) {
-          return res.status(400).json({ error: `invalidCommentOption` });
-        }
-
-        processedFields.comments = selectedCommentsOption !== "Disabled";
-        if (selectedCommentsOption === "Moderated") {
-          processedFields.moderate_comments = true;
-        }
-      }
-      console.log("visibo")
-
-      if (fields.visibility) {
-        const selectedVisibilityOption = fields.visibility[0];
-        const validVisibilities = ["Public", "Unlisted", "Invite-Only"];
-        if (!validVisibilities.includes(selectedVisibilityOption)) {
-          return res.status(400).json({ error: "invalidVisibilityOption" });
-        }
-        if (selectedVisibilityOption === "Invite-Only") {
-          processedFields.is_private = true;
-        }
-        if (selectedVisibilityOption === "Unlisted") {
-          processedFields.is_unlisted = true;
-        }
-      }
-      console.log("raiku")
-
-      if (fields.likes) {
-        const selectedLikesOption = fields.likes[0];
-        if (selectedLikesOption !== "true" && selectedLikesOption !== "false") {
-          return res.status(400).json({ error: "invalidLikesOption" });
-        }
-        processedFields.likes = selectedLikesOption === "true";
-      }
-console.log("rating")
-      let rating: string = "";
-      if (!fields.rating[0]) {
-        res.status(400).json({ error: "invalidRating" });
-      }
-      rating = await getRatingId(fields.rating[0]);
-
-      let comicData: Comic = {};
-
-      const {
-        title,
-        subdomain,
-        description,
-        thumbnail,
-        is_private,
-        is_unlisted,
-        comments,
-        moderate_comments,
-        likes,
-      } = processedFields;
-
-      comicData = {
-        title,
-        subdomain,
-        description,
-        thumbnail,
-        is_private,
-        is_unlisted,
-        comments,
-        moderate_comments,
-        likes,
-        rating,
-      };
-      console.log("creation call")
-
-      id = await createComic(comicData);
-      if (id) {
-        if (processedFields.genres) {
-          await addGenresToComic(id, processedFields.genres);
-        }
-
-        if (processedFields.content) {
-          await addContentWarningsToComic(id, processedFields.content);
-        }
-
-        const token = req.cookies[USER_AUTH_TOKEN_NAME];
-        if (!token) {
-          return res.status(400).send(ErrorKeys.TOKEN_MISSING)
-        }
-
-        const userID = await extractUserIdFromToken(token, false);
-        await addAuthorToComic(id, parseInt(userID));
-        return res.status(201).send({ message: "success", id });
-      }
+    } return {
+      success: false,
+      error: ErrorKeys.GENERAL_SERVER_ERROR
     }
   } catch (error: any) {
-    logger.error(new Error(`Error during comic creation: ${error}`));
-    if (id) {
+      logger.error(error)
+      if (error.code === "23505") {
+        let errorMessage = "";
+        if (error.constraint === "comics_title_key") {
+          errorKey = ErrorKeys.TITLE_TAKEN;
+        } else {
+          errorKey = ErrorKeys.SUBDOMAIN_TAKEN;
+        }
+        return {
+          success: false,
+          error: errorKey
+        }
+      }
+      if (id) {
       try {
-        await removeGenresFromComic(id);
-        await removeContentWarningsFromComic(id);
-        await removeAuthorsFromComic(id);
         await deleteComic(id);
       } catch (cleanupError) {
-        logger.error(new Error(`Error during cleanup: ${cleanupError}`));
+        logger.error(cleanupError); 
       }
     }
-    let errorMessage = "generalServerError";
-    if (error.code === "23505") {
-      if (error.constraint === "comics_title_key") {
-        errorMessage = "comicTitleTaken";
-      } else {
-        errorMessage = "comicSubdomainTaken";
-      }
-    }
-    return res.status(500).send({ error: errorMessage });
+    return {
+      success: false,
+      error: ErrorKeys.GENERAL_SERVER_ERROR
+    }    
   }
-};*/
+}

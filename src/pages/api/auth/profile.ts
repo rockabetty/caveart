@@ -1,1 +1,1 @@
-export {profileHandler as default} from  '../../../server/domains/users/inbound';
+export {profileHandler as default} from  '@domains/users/inbound';

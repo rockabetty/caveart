@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { requireEnvVar } from "@logger/requireEnvVar";
+import { requireEnvVar } from "@logger/envcheck";
 
 const USER_AUTH_TOKEN_NAME = requireEnvVar('NEXT_PUBLIC_USER_AUTH_TOKEN_NAME');
 
@@ -23,12 +23,12 @@ export const acceptPostOnly = function (
     }
 };
 
-export const requireButDoNotValidateToken = function (
+export const getUnvalidatedToken = function (
     req: NextApiRequest,
-    res: NextApiRequest,
 ) {
     const token = req.cookies[USER_AUTH_TOKEN_NAME];
     if (!token) {
-        return res.status(400).json(UserErrorKeys.TOKEN_MISSING);
+        throw new Error()
     }
+    return token;
 };

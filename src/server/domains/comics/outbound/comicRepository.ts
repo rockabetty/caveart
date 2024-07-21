@@ -398,9 +398,9 @@ export async function editComic(
 }
 
 export async function deleteComic(identifier: number | string): Promise<boolean | null> {
-  const identifier = typeof identifier === "string" ? "subdomain" :"id" 
+  const column = typeof identifier === "string" ? "subdomain" :"id" 
   const query = `DELETE FROM comics 
-    WHERE ${identifier} = $1;`;
+    WHERE ${column} = $1;`;
   const values = [comic];
   try {
     const result = await queryDbConnection(query, values);

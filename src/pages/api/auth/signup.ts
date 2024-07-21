@@ -1,1 +1,1 @@
-export {signupHandler as default} from  '../../../server/domains/users/inbound';
+export {signupHandler as default} from  '@domains/users/inbound';

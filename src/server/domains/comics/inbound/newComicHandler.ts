@@ -4,8 +4,9 @@ import { createComic } from "../core/comicService";
 import { withAuth } from "@domains/users/middleware/withAuth";
 import { logger } from "@logger";
 import { ErrorKeys } from "../errors.types";
-import { acceptPostOnly, requireButDoNotValidateToken } from "@domains/methodGatekeeper";
+import { acceptPostOnly, getUnvalidatedToken } from "@domains/methodGatekeeper";
 import { parseFormWithSingleImage } from "@services/uploader";
+import { extractUserIdFromToken } from '@domains/users/utils/extractUserIdFromToken';
 
 export const config = {
   api: {
@@ -14,17 +15,20 @@ export const config = {
 };
 
 const readForm = (req: NextApiRequest): Promise<SubmissionResult> => {
-
   acceptPostOnly(req, res);
-  requireButDoNotValidateToken(req, res);
+  try {
+    const token = getUnvalidatedToken(req);
 
-   try {
+    const userID = await Number(extractUserIdFromToken(token, false));
+    if (isNaN(userID)) {
+      return res.status(403).json({ error: ErrorKeys.INVALID_REQUEST })
+    }
     const { files, fields } = await parseFormWithSingleImage(req, 'thumbnail');
-    const newComic = await createComic(fields, files);
+    const newComic = await createComic(fields, files, userID);
     if (newComic.success) {
       return res.status(200).json(newComic.data)
     } else {
-      const statusCode = newComic.error === ErrorKeys.GENERAL_SERVER_ERROR ? 500 : 400
+      const statusCode = newComic.error === ErrorKeys.INVALID_REQUEST ? 400 : 500
       return res.status(statusCode).json({ error: newComic.error });
     }
   } catch (error: any) {

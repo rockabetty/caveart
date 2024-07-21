@@ -5,25 +5,24 @@ import { ErrorKeys as UserErrorKeys } from "../../users/errors.types";
 import { ErrorKeys } from "../errors.types";
 import { withAuth } from "../../users/middleware";
 const SECRET_KEY_JWT = requireEnvVar("SECRET_KEY_JWT");
-const USER_AUTH_TOKEN_NAME = requireEnvVar("NEXT_PUBLIC_USER_AUTH_TOKEN_NAME");
+import { acceptGetOnly, getUnvalidatedToken } from "@domains/methodGatekeeper";
 
 const getComicPermissionsHandler: NextApiHandler = async (req, res) => {
   const { comicId } = req.query;
 
-  if (req.method !== "GET") {
-    res.setHeader("Allow", ["GET"]);
-    res.status(405).end();
-  }
+  acceptGetOnly(req, res)
 
   const comic = parseInt(comicId);
   if (isNaN(comic)) {
-    return res.status(400).json({ message: "Invalid comic ID" });
+    return res.status(400).json(ErrorKeys.COMIC_INVALID);
   }
 
-  const token = req.cookies[USER_AUTH_TOKEN_NAME];
-  if (!token) {
-    return res.status(400).json(UserErrorKeys.TOKEN_MISSING);
-  }
+  let token;
+  try {
+     token = getUnvalidatedToken(req)
+   } catch(error) {
+     return res.status(400).json(UserErrorKeys.TOKEN_MISSING);
+   }
 
   try {
     const permissions = await isAuthor(token, comic);
