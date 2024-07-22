@@ -16,6 +16,12 @@ const invalidRequest = {
   error: ErrorKeys.INVALID_REQUEST,
 };
 
+const isValidSubdomain = function(rawSubdomain) {
+  const subdomain = rawSubdomain.toLowerCase();
+  const subdomainFilter = /^(?!-)(?!.*--)[a-z0-9-]{1,63}(?<!-)$/;
+  return subdomainFilter.test(subdomain)) {
+}
+
 export async function canEditComic(
   token: string,
   comicId: number | string,
@@ -37,19 +43,49 @@ export async function canEditComic(
   }
 }
 
-export function validateIDList(list: number[]) {
+const isValidRating = function (rating:string) {
+  try {
+    const ratingId = await getRatingId(rating);
+    if (isNaN(ratingId)) {
+      return false;
+    }
+  } catch (error) {
+    throw error;
+  }
+  return true;
+}
+
+const isValidIDList = function (list: number[]) {
   if (!Array.isArray(list)) {
-    return invalidRequest;
+    return false;
   }
   for (let entry of list) {
     if (isNaN(entry)) {
-      return invalidRequest;
+      return false;
     }
   }
-  return {
-    success: true,
-    data: list,
-  };
+  return true
+}
+
+const isValidDescription = function (description: string) {
+  return description.length < 1024
+}
+
+const isValidCommentOption = function (option: string) {
+  const validComments = ["Allowed", "Moderated", "Disabled"];
+  return validComments.includes(option);
+} 
+
+const isValidVisibilityOption = function (option: string) {
+  const validVisibilities = ["Public", "Unlisted", "Invite-Only"];
+  return validVisibilities.includes(option)
+}
+
+const isValidLikesOption = function (option: "true" | "false" | boolean) {
+  if (selectedLikesOption !== "true" && selectedLikesOption !== "false") {
+    return typeof option === 'boolean'
+  }
+  return true
 }
 
 export async function createComic(
@@ -82,69 +118,58 @@ export async function createComic(
 
   profile.title = fields.title[0];
  
-  const subdomain = fields.subdomain[0];
-  const subdomainFilter = /^(?!-)(?!.*--)[A-Za-z0-9-]{1,63}(?<!-)$/;
-  if (!subdomainFilter.test(subdomain)) {
-    return invalidRequest;
-  }
-  profile.subdomain = subdomain;
- 
-  try {
-    const ratingId = await getRatingId(fields.rating[0]);
-    if (isNaN(ratingId)) {
-      return invalidRequest;
-    }
-    profile.rating = ratingId;
-  } catch (error) {
+  const subdomain = fields.subdomain[0].toLowerCase();
+  if (!isValidSubdomain(subdomain)) {
     return invalidRequest;
   }
 
-  if (fields.description[0]) {
-    if (fields.description[0].length > 1024) {
-      return invalidRequest;
-    }
-    profile.description = fields.description[0];
+  const rating = fields.rating[0];
+  if (!isValidRating(rating)) {
+    return invalidRequest;
   }
+  const ratingId = getRatingId(rating);
+  profile.rating = ratingId;
 
-  const genresValid = validateIDList(fields["genres[]"]);
-  if (genresValid.success) {
+  const description = fields.description[0];
+  if (!isValidDescription) {
+    return invalidRequest;
+  }
+  profile.description = description;
+
+  const genresValid = isValidIDList(fields["genres[]"]);
+  if (genresValid) {
     profile.genres = fields["genres[]"];
   } else {
     return invalidRequest;
   }
  
-  const contentWarningsValid = validateIDList(fields["content[]"]);
-  if (contentWarningsValid.success) {
+  const contentWarningsValid = isValidIDList(fields["content[]"]);
+  if (contentWarningsValid) {
     profile.content = fields["content[]"];
   } else {
     return invalidRequest;
   }
  
   const selectedCommentsOption = fields.comments[0];
-  const validComments = ["Allowed", "Moderated", "Disabled"];
-  if (!validComments.includes(selectedCommentsOption)) {
+  if (!isValidCommentOption(selectedCommentsOption)) {
     return invalidRequest;
   }
   profile.comments = selectedCommentsOption !== "Disabled";
   profile.moderate_comments = selectedCommentsOption === "Moderated";
  
-  if (fields.visibility) {
-    const selectedVisibilityOption = fields.visibility[0];
-    const validVisibilities = ["Public", "Unlisted", "Invite-Only"];
-    if (!validVisibilities.includes(selectedVisibilityOption)) {
-      return invalidRequest;
-    }
-    profile.is_private = selectedVisibilityOption === "Invite-Only";
-    profile.is_unlisted = selectedVisibilityOption === "Unlisted";
+ 
+  const selectedVisibilityOption = fields.visibility[0];
+  if (!isValidVisibilityOption(selectedVisibilityOption)) {
+    return invalidRequest;
   }
+  profile.is_private = selectedVisibilityOption === "Invite-Only";
+  profile.is_unlisted = selectedVisibilityOption === "Unlisted";
 
-  if (fields.likes) {
-    const selectedLikesOption = fields.likes[0];
-    if (selectedLikesOption !== "true" && selectedLikesOption !== "false") {
-      return invalidRequest;
-    }
-    profile.likes = selectedLikesOption === "true";
+  const selectedLikesOption = fields.likes[0];
+  if (!isValidLikesOption(selectedLikesOption)) {
+    return invalidRequest;
   }
+  profile.likes = selectedLikesOption === "true";
 
   if (files) {
     try {
@@ -155,7 +180,7 @@ export async function createComic(
         })
       );
     } catch (fileErr) {
-      logger.error(`File upload error: ${fileErr}`);
+      logger.error(fileErr);
       return {
         success: false,
         error: ErrorKeys.FILE_UPLOAD_ERROR,
