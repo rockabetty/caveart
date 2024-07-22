@@ -7,9 +7,7 @@ import { Comic, ComicColumnList, Genre, NestedContentWarning } from "../comic.ty
 import { logger } from "@logger";
 import { QueryResult } from "pg";
 
-export async function createComic(comic: Comic): Promise<number | null> {
-  console.log(comic);
-
+export async function addComic(comic: Comic): Promise<number | null> {
   const query = `
       INSERT INTO comics (
         title,
@@ -41,7 +39,8 @@ export async function createComic(comic: Comic): Promise<number | null> {
 
   try {
     const result = await queryDbConnection(query, values);
-    return parseInt(result.rows[0].id);
+    console.log(result.rows[0])
+    return Number(result.rows[0].id);
   } catch (error: any) {
     logger.error(error);
     throw error;
@@ -359,7 +358,6 @@ export async function getRatingId(name: string): Promise<QueryResult | null> {
       `SELECT id FROM ratings WHERE name = $1`,
       [name],
     );
-    console.log(result);
     if (result.rows && result.rows.length > 0) {
       return result.rows[0].id;
     }

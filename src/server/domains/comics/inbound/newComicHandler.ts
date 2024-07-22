@@ -1,11 +1,10 @@
-import { NextApiRequest } from "next";
+import { NextApiHandler } from "next";
 import { parseFormWithSingleImage } from "@services/uploader";
 import { createComic } from "../core/comicService";
 import { withAuth } from "@domains/users/middleware/withAuth";
 import { logger } from "@logger";
 import { ErrorKeys } from "../errors.types";
 import { acceptPostOnly, getUnvalidatedToken } from "@domains/methodGatekeeper";
-import { parseFormWithSingleImage } from "@services/uploader";
 import { extractUserIdFromToken } from '@domains/users/utils/extractUserIdFromToken';
 
 export const config = {
@@ -14,13 +13,13 @@ export const config = {
   },
 };
 
-const readForm = (req: NextApiRequest): Promise<SubmissionResult> => {
+const handler: NextApiHandler = async (req, res): Promise<SubmissionResult> => {
   acceptPostOnly(req, res);
   try {
     const token = getUnvalidatedToken(req);
 
-    const userID = await Number(extractUserIdFromToken(token, false));
-    if (isNaN(userID)) {
+    const userID = await extractUserIdFromToken(token, false);
+    if (isNaN(userID)) { 
       return res.status(403).json({ error: ErrorKeys.INVALID_REQUEST })
     }
     const { files, fields } = await parseFormWithSingleImage(req, 'thumbnail');

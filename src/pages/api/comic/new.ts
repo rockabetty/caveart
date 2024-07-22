@@ -1,266 +1,277 @@
-import { NextApiHandler, NextApiRequest } from "next";
-import formidable from "formidable";
-import imageOptions from "../../../services/uploader/imagedefaults";
-import { withAuth } from "../../../server/domains/users/middleware/withAuth";
-import { extractUserIdFromToken } from "../../../server/domains/users/utils/extractUserIdFromToken";
-import {
-  createComic,
-  addGenresToComic,
-  addContentWarningsToComic,
-  addAuthorToComic,
-  deleteComic,
-  removeGenresFromComic,
-  removeContentWarningsFromComic,
-  removeAuthorsFromComic,
-  getRatingId,
-} from "../../../data/comics";
-import { Comic } from "@data/types";
-import { logger } from "../../../services/logs";
+import { NextApiHandler } from 'next';
+import newComicHandler, {config }from "@domains/comics/inbound/newComicHandler";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-import { requireEnvVar } from "@logger/envcheck";
-import { ErrorKeys } from "@domains/users/errors.types";
+export { config };
 
-const USER_AUTH_TOKEN_NAME = requireEnvVar('NEXT_PUBLIC_USER_AUTH_TOKEN_NAME');
-
-interface SubmissionResult {
-  fields?: formidable.Fields;
-  files?: formidable.Files;
-}
-
-interface ProcessedFields {
-  title?: string;
-  subdomain?: string;
-  description?: string;
-  genres?: number[];
-  content?: number[];
-  moderate_comments?: boolean;
-  comments?: boolean;
-  is_private?: boolean;
-  is_unlisted?: boolean;
-  thumbnail?: string;
-  likes?: boolean;
-  rating?: string;
-}
-
-const readForm = (req: NextApiRequest): Promise<SubmissionResult> => {
-  const form = formidable(imageOptions);
-  return new Promise((resolve, reject) => {
-    form.parse(req, (err, fields, files) => {
-      if (err) reject(err);
-      resolve({ fields, files });
-    });
-  });
+const handler: NextApiHandler = (req, res) => {
+  return newComicHandler(req, res);
 };
 
-const handler: NextApiHandler = async (req, res) => {
-  let id: number | null = null;
+export default handler;
 
-  try {
-    const submission = await readForm(req);
-    const fields = submission.fields;
-    const processedFields: ProcessedFields = {};
+// import { NextApiHandler, NextApiRequest } from "next";
+// import formidable from "formidable";
+// import imageOptions from "../../../services/uploader/imagedefaults";
+// import { withAuth } from "../../../server/domains/users/middleware/withAuth";
+// import { extractUserIdFromToken } from "../../../server/domains/users/utils/extractUserIdFromToken";
+// import {
+//   createComic,
+//   addGenresToComic,
+//   addContentWarningsToComic,
+//   addAuthorToComic,
+//   deleteComic,
+//   removeGenresFromComic,
+//   removeContentWarningsFromComic,
+//   removeAuthorsFromComic,
+//   getRatingId,
+// } from "../../../data/comics";
+// import { Comic } from "@data/types";
+// import { logger } from "../../../services/logs";
 
-    let newFilename = "";
-    if (submission?.files) {
-      console.log("##############################")
-      const processedFiles: any = {};
-      try {
-        const files = submission.files;
-        console.log(files)
-        await Promise.all(
-          Object.keys(files).map(async (key) => {
-            const file = files[key][0];
-            processedFields.thumbnail = `/uploads/${file.newFilename}`;
-          }),
-        );
-      } catch (fileErr) {
-        return res.status(500).json({ error: fileErr });
-      }
-    }
+// export const config = {
+//   api: {
+//     bodyParser: false,
+//   },
+// };
+// import { requireEnvVar } from "@logger/envcheck";
+// import { ErrorKeys } from "@domains/users/errors.types";
 
-    if (fields) {
-      console.log("PRocessing fields")
-      if (fields.title) {
-        const title = fields.title[0];
-        // Validating that the title is alpahnumeric or has !, -, ?
-        const titleRegex = /^[a-zA-Z0-9 !\-?]+$/;
-        if (!titleRegex.test(title)) {
-          return res.status(400).json({ error: "invalidTitleFormat" });
-        }
-        processedFields.title = title;
-      }
+// const USER_AUTH_TOKEN_NAME = requireEnvVar('NEXT_PUBLIC_USER_AUTH_TOKEN_NAME');
 
-      console.log("Genres")
+// interface SubmissionResult {
+//   fields?: formidable.Fields;
+//   files?: formidable.Files;
+// }
 
-      if (fields.genres) {
-        const { genres } = fields;
-        if (!Array.isArray(genres)) {
-          return res.status(400).json({ error: "invalidGenreFormat" });
-        }
-        for (let entry of genres) {
-          if (isNaN(entry)) {
-            return res.status(400).json({ error: "invalidGenreFormat" });
-          }
-        }
-        processedFields.genres = genres;
-      }
+// interface ProcessedFields {
+//   title?: string;
+//   subdomain?: string;
+//   description?: string;
+//   genres?: number[];
+//   content?: number[];
+//   moderate_comments?: boolean;
+//   comments?: boolean;
+//   is_private?: boolean;
+//   is_unlisted?: boolean;
+//   thumbnail?: string;
+//   likes?: boolean;
+//   rating?: string;
+// }
 
-  console.log("Content warnigns")
-      if (fields.content) {
-        const { content } = fields;
-        if (!Array.isArray(content)) {
-          return res.status(400).json({ error: "invalidContentWarningFormat" });
-        }
-        for (let entry of content) {
-          if (isNaN(entry)) {
-            return res
-              .status(400)
-              .json({ error: "invalidContentWarningFormat" });
-          }
-        }
-        processedFields.content = content;
-      }
+// const readForm = (req: NextApiRequest): Promise<SubmissionResult> => {
+//   const form = formidable(imageOptions);
+//   return new Promise((resolve, reject) => {
+//     form.parse(req, (err, fields, files) => {
+//       if (err) reject(err);
+//       resolve({ fields, files });
+//     });
+//   });
+// };
 
-console.log("Subdo")
-      if (fields.subdomain) {
-        const subdomain = fields.subdomain[0];
-        // Validating that subdomain is purely alphanumeric with hyphens or underscores only
-        const subdomainRegex = /^[a-zA-Z0-9_-]+$/;
-        if (!subdomainRegex.test(subdomain)) {
-          return res.status(400).json({ error: "invalidSubdomainFormat" });
-        }
-        processedFields.subdomain = subdomain;
-      }
+// const handler: NextApiHandler = async (req, res) => {
+//   let id: number | null = null;
 
-console.log("Desc")
-      if (fields.description) {
-        const description = fields.description[0];
-        if (description.length > 1024) {
-          return res.status(400).json({ error: "invalidDescriptionLength" });
-        }
-        processedFields.description = description;
-      }
+//   try {
+//     const submission = await readForm(req);
+//     const fields = submission.fields;
+//     const processedFields: ProcessedFields = {};
 
-console.log("Comments")
-      if (fields.comments) {
-        const selectedCommentsOption = fields.comments[0];
+//     let newFilename = "";
+//     if (submission?.files) {
+//       console.log("##############################")
+//       const processedFiles: any = {};
+//       try {
+//         const files = submission.files;
+//         console.log(files)
+//         await Promise.all(
+//           Object.keys(files).map(async (key) => {
+//             const file = files[key][0];
+//             processedFields.thumbnail = `/uploads/${file.newFilename}`;
+//           }),
+//         );
+//       } catch (fileErr) {
+//         return res.status(500).json({ error: fileErr });
+//       }
+//     }
 
-        const validComments = ["Allowed", "Moderated", "Disabled"];
-        if (!validComments.includes(selectedCommentsOption)) {
-          return res.status(400).json({ error: `invalidCommentOption` });
-        }
+//     if (fields) {
+//       console.log("PRocessing fields")
+//       if (fields.title) {
+//         const title = fields.title[0];
+//         // Validating that the title is alpahnumeric or has !, -, ?
+//         const titleRegex = /^[a-zA-Z0-9 !\-?]+$/;
+//         if (!titleRegex.test(title)) {
+//           return res.status(400).json({ error: "invalidTitleFormat" });
+//         }
+//         processedFields.title = title;
+//       }
 
-        processedFields.comments = selectedCommentsOption !== "Disabled";
-        if (selectedCommentsOption === "Moderated") {
-          processedFields.moderate_comments = true;
-        }
-      }
-      console.log("visibo")
+//       console.log("Genres")
 
-      if (fields.visibility) {
-        const selectedVisibilityOption = fields.visibility[0];
-        const validVisibilities = ["Public", "Unlisted", "Invite-Only"];
-        if (!validVisibilities.includes(selectedVisibilityOption)) {
-          return res.status(400).json({ error: "invalidVisibilityOption" });
-        }
-        if (selectedVisibilityOption === "Invite-Only") {
-          processedFields.is_private = true;
-        }
-        if (selectedVisibilityOption === "Unlisted") {
-          processedFields.is_unlisted = true;
-        }
-      }
-      console.log("raiku")
+//       if (fields.genres) {
+//         const { genres } = fields;
+//         if (!Array.isArray(genres)) {
+//           return res.status(400).json({ error: "invalidGenreFormat" });
+//         }
+//         for (let entry of genres) {
+//           if (isNaN(entry)) {
+//             return res.status(400).json({ error: "invalidGenreFormat" });
+//           }
+//         }
+//         processedFields.genres = genres;
+//       }
 
-      if (fields.likes) {
-        const selectedLikesOption = fields.likes[0];
-        if (selectedLikesOption !== "true" && selectedLikesOption !== "false") {
-          return res.status(400).json({ error: "invalidLikesOption" });
-        }
-        processedFields.likes = selectedLikesOption === "true";
-      }
-console.log("rating")
-      let rating: string = "";
-      if (!fields.rating[0]) {
-        res.status(400).json({ error: "invalidRating" });
-      }
-      rating = await getRatingId(fields.rating[0]);
+//   console.log("Content warnigns")
+//       if (fields.content) {
+//         const { content } = fields;
+//         if (!Array.isArray(content)) {
+//           return res.status(400).json({ error: "invalidContentWarningFormat" });
+//         }
+//         for (let entry of content) {
+//           if (isNaN(entry)) {
+//             return res
+//               .status(400)
+//               .json({ error: "invalidContentWarningFormat" });
+//           }
+//         }
+//         processedFields.content = content;
+//       }
 
-      let comicData: Comic = {};
+// console.log("Subdo")
+//       if (fields.subdomain) {
+//         const subdomain = fields.subdomain[0];
+//         // Validating that subdomain is purely alphanumeric with hyphens or underscores only
+//         const subdomainRegex = /^[a-zA-Z0-9_-]+$/;
+//         if (!subdomainRegex.test(subdomain)) {
+//           return res.status(400).json({ error: "invalidSubdomainFormat" });
+//         }
+//         processedFields.subdomain = subdomain;
+//       }
 
-      const {
-        title,
-        subdomain,
-        description,
-        thumbnail,
-        is_private,
-        is_unlisted,
-        comments,
-        moderate_comments,
-        likes,
-      } = processedFields;
+// console.log("Desc")
+//       if (fields.description) {
+//         const description = fields.description[0];
+//         if (description.length > 1024) {
+//           return res.status(400).json({ error: "invalidDescriptionLength" });
+//         }
+//         processedFields.description = description;
+//       }
 
-      comicData = {
-        title,
-        subdomain,
-        description,
-        thumbnail,
-        is_private,
-        is_unlisted,
-        comments,
-        moderate_comments,
-        likes,
-        rating,
-      };
-      console.log("creation call")
+// console.log("Comments")
+//       if (fields.comments) {
+//         const selectedCommentsOption = fields.comments[0];
 
-      id = await createComic(comicData);
-      if (id) {
-        if (processedFields.genres) {
-          await addGenresToComic(id, processedFields.genres);
-        }
+//         const validComments = ["Allowed", "Moderated", "Disabled"];
+//         if (!validComments.includes(selectedCommentsOption)) {
+//           return res.status(400).json({ error: `invalidCommentOption` });
+//         }
 
-        if (processedFields.content) {
-          await addContentWarningsToComic(id, processedFields.content);
-        }
+//         processedFields.comments = selectedCommentsOption !== "Disabled";
+//         if (selectedCommentsOption === "Moderated") {
+//           processedFields.moderate_comments = true;
+//         }
+//       }
+//       console.log("visibo")
 
-        const token = req.cookies[USER_AUTH_TOKEN_NAME];
-        if (!token) {
-          return res.status(400).send(ErrorKeys.TOKEN_MISSING)
-        }
+//       if (fields.visibility) {
+//         const selectedVisibilityOption = fields.visibility[0];
+//         const validVisibilities = ["Public", "Unlisted", "Invite-Only"];
+//         if (!validVisibilities.includes(selectedVisibilityOption)) {
+//           return res.status(400).json({ error: "invalidVisibilityOption" });
+//         }
+//         if (selectedVisibilityOption === "Invite-Only") {
+//           processedFields.is_private = true;
+//         }
+//         if (selectedVisibilityOption === "Unlisted") {
+//           processedFields.is_unlisted = true;
+//         }
+//       }
+//       console.log("raiku")
 
-        const userID = await extractUserIdFromToken(token, false);
-        await addAuthorToComic(id, parseInt(userID));
-        return res.status(201).send({ message: "success", id });
-      }
-    }
-  } catch (error: any) {
-    logger.error(new Error(`Error during comic creation: ${error}`));
-    if (id) {
-      try {
-        await removeGenresFromComic(id);
-        await removeContentWarningsFromComic(id);
-        await removeAuthorsFromComic(id);
-        await deleteComic(id);
-      } catch (cleanupError) {
-        logger.error(new Error(`Error during cleanup: ${cleanupError}`));
-      }
-    }
-    let errorMessage = "generalServerError";
-    if (error.code === "23505") {
-      if (error.constraint === "comics_title_key") {
-        errorMessage = "comicTitleTaken";
-      } else {
-        errorMessage = "comicSubdomainTaken";
-      }
-    }
-    return res.status(500).send({ error: errorMessage });
-  }
-};
+//       if (fields.likes) {
+//         const selectedLikesOption = fields.likes[0];
+//         if (selectedLikesOption !== "true" && selectedLikesOption !== "false") {
+//           return res.status(400).json({ error: "invalidLikesOption" });
+//         }
+//         processedFields.likes = selectedLikesOption === "true";
+//       }
+// console.log("rating")
+//       let rating: string = "";
+//       if (!fields.rating[0]) {
+//         res.status(400).json({ error: "invalidRating" });
+//       }
+//       rating = await getRatingId(fields.rating[0]);
 
-export default withAuth(handler);
+//       let comicData: Comic = {};
+
+//       const {
+//         title,
+//         subdomain,
+//         description,
+//         thumbnail,
+//         is_private,
+//         is_unlisted,
+//         comments,
+//         moderate_comments,
+//         likes,
+//       } = processedFields;
+
+//       comicData = {
+//         title,
+//         subdomain,
+//         description,
+//         thumbnail,
+//         is_private,
+//         is_unlisted,
+//         comments,
+//         moderate_comments,
+//         likes,
+//         rating,
+//       };
+//       console.log("creation call")
+
+//       id = await createComic(comicData);
+//       if (id) {
+//         if (processedFields.genres) {
+//           await addGenresToComic(id, processedFields.genres);
+//         }
+
+//         if (processedFields.content) {
+//           await addContentWarningsToComic(id, processedFields.content);
+//         }
+
+//         const token = req.cookies[USER_AUTH_TOKEN_NAME];
+//         if (!token) {
+//           return res.status(400).send(ErrorKeys.TOKEN_MISSING)
+//         }
+
+//         const userID = await extractUserIdFromToken(token, false);
+//         await addAuthorToComic(id, parseInt(userID));
+//         return res.status(201).send({ message: "success", id });
+//       }
+//     }
+//   } catch (error: any) {
+//     logger.error(new Error(`Error during comic creation: ${error}`));
+//     if (id) {
+//       try {
+//         await removeGenresFromComic(id);
+//         await removeContentWarningsFromComic(id);
+//         await removeAuthorsFromComic(id);
+//         await deleteComic(id);
+//       } catch (cleanupError) {
+//         logger.error(new Error(`Error during cleanup: ${cleanupError}`));
+//       }
+//     }
+//     let errorMessage = "generalServerError";
+//     if (error.code === "23505") {
+//       if (error.constraint === "comics_title_key") {
+//         errorMessage = "comicTitleTaken";
+//       } else {
+//         errorMessage = "comicSubdomainTaken";
+//       }
+//     }
+//     return res.status(500).send({ error: errorMessage });
+//   }
+// };
+
+// export default withAuth(handler);
