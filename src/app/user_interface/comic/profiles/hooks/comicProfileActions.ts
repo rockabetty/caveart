@@ -93,6 +93,7 @@ export const fetchProfile =
   (tenant: string) => async (dispatch: React.Dispatch<ComicProfileAction>) => {
     try {
       const comic = await axios.get(`/api/comic/${tenant}`);
+      console.log(comic.data)
       dispatch({
         type: "GET_COMIC_PROFILE",
         payload: { profile: comic.data },

@@ -131,7 +131,7 @@ export async function isAuthor(
 }
 
 export async function selectComicProfile(comicId: number | string): Promise<Comic | null> {
-  const identifier = typeof comicId === number ? "id" : "subdomain"
+  const identifier = typeof comicId === 'number' ? "id" : "subdomain"
   const query = `
   WITH ContentWarnings AS (
     SELECT
@@ -157,7 +157,7 @@ export async function selectComicProfile(comicId: number | string): Promise<Comi
     FROM comics c
     LEFT JOIN comics_to_genres cg ON cg.comic_id = c.id
     LEFT JOIN genres g ON g.id = cg.genre_id
-    WHERE c.id = $1
+    WHERE c.${identifier} = $1
     GROUP BY c.id
   )
   SELECT 
@@ -180,8 +180,10 @@ export async function selectComicProfile(comicId: number | string): Promise<Comi
   JOIN ratings r ON r.id = c.rating
   LEFT JOIN ComicGenres cg ON cg.comic_id = c.id
   LEFT JOIN ContentWarnings cw ON cw.comic_id = c.id
-  WHERE c.id = $1
+  WHERE c.${identifier} = $1
   GROUP BY c.id, cw.content_warnings, cg.genres, r.name`;
+
+  console.log(query)
 
   const values = [comicId];
   try {

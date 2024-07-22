@@ -5,7 +5,7 @@ import {
   addGenresToComic,
   addContentWarningsToComic,
   addComic,
-  selectComicProfie
+  selectComicProfile
 } from "../outbound/comicRepository";
 import logger from "@logger";
 import extractUserIdFromToken from "@domains/users/utils/extractUserIdFromToken";
@@ -90,7 +90,7 @@ const isValidLikesOption = function (option: "true" | "false" | boolean) {
 }
 
 export async function getComicProfile(identifier: string | number) {
-  const profile = await selectComicProfie(identifier);
+  const profile = await selectComicProfile(identifier);
   if (!!profile) {
     return {
       success: true,
