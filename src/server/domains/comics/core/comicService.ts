@@ -4,7 +4,8 @@ import {
   addAuthorToComic,
   addGenresToComic,
   addContentWarningsToComic,
-  addComic
+  addComic,
+  selectComicProfie
 } from "../outbound/comicRepository";
 import logger from "@logger";
 import extractUserIdFromToken from "@domains/users/utils/extractUserIdFromToken";
@@ -16,10 +17,10 @@ const invalidRequest = {
   error: ErrorKeys.INVALID_REQUEST,
 };
 
-const isValidSubdomain = function(rawSubdomain) {
+export const isValidSubdomain = function(rawSubdomain) {
   const subdomain = rawSubdomain.toLowerCase();
   const subdomainFilter = /^(?!-)(?!.*--)[a-z0-9-]{1,63}(?<!-)$/;
-  return subdomainFilter.test(subdomain)) {
+  return subdomainFilter.test(subdomain)
 }
 
 export async function canEditComic(
@@ -43,7 +44,7 @@ export async function canEditComic(
   }
 }
 
-const isValidRating = function (rating:string) {
+const isValidRating = async function (rating:string) {
   try {
     const ratingId = await getRatingId(rating);
     if (isNaN(ratingId)) {
@@ -86,6 +87,20 @@ const isValidLikesOption = function (option: "true" | "false" | boolean) {
     return typeof option === 'boolean'
   }
   return true
+}
+
+export async function getComicProfile(identifier: string | number) {
+  const profile = await selectComicProfie(identifier);
+  if (!!profile) {
+    return {
+      success: true,
+      data: profile
+    }
+  }
+  return {
+    success: false,
+    error: ErrorKeys.COMIC_INVALID
+  }
 }
 
 export async function createComic(

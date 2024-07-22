@@ -7,13 +7,13 @@ import axios from "axios";
 import React from "react";
 
 type EditComicProfileProps = {
-  comicId: number;
+  tenant: string;
 };
 
 const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
   const { t } = useTranslation();
-  const { comicId } = props;
-  const { state, setSubmissionError, confirmEdit } = useComicProfile(comicId);
+  const { tenant } = props;
+  const { state, setSubmissionError, confirmEdit } = useComicProfile(tenant);
   const { update, permissions, profile, submissionError, successMessage } =
     state;
 
@@ -32,7 +32,7 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
     }
     if (profile.title !== update.title) {
       updates.push(
-        axios.post(`/api/comic/${comicId}/title`, { update: update.title }),
+        axios.post(`/api/comic/${tenant}/title`, { update: update.title }),
       );
     }
 
@@ -41,7 +41,7 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
     }
     if (profile.subdomain !== update.subdomain) {
       updates.push(
-        axios.post(`/api/comic/${comicId}/subdomain`, {
+        axios.post(`/api/comic/${tenant}/subdomain`, {
           update: update.subdomain,
         }),
       );
@@ -49,7 +49,7 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
 
     if (profile.description !== update.description) {
       updates.push(
-        axios.post(`/api/comic/${comicId}/description`, {
+        axios.post(`/api/comic/${tenant}/description`, {
           update: update.description,
         }),
       );
@@ -59,7 +59,7 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
     let newGenres = Object.keys(update.genres).sort().join(",");
     if (genres !== newGenres) {
       updates.push(
-        axios.post(`/api/comic/${comicId}/genres`, {
+        axios.post(`/api/comic/${tenant}/genres`, {
           old: profile.genres,
           update: update.genres,
         }),
@@ -78,7 +78,7 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
 
     if (content.sort().join(",") !== newContent.sort().join(",")) {
       updates.push(
-        axios.post(`/api/comic/${comicId}/contentwarnings`, {
+        axios.post(`/api/comic/${tenant}/contentwarnings`, {
           old: profile.content_warnings,
           update: update.content_warnings,
           rating: update.rating,
@@ -104,7 +104,7 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
       submissionError={submissionError}
       successMessage={t(successMessage)}
     >
-      <ComicProfileForm comicId={comicId} />
+      <ComicProfileForm tenant={tenant} />
     </Form>
   );
 };

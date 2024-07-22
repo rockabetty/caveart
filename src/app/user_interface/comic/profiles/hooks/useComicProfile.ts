@@ -18,7 +18,7 @@ import {
 } from "../types";
 import { useRouter } from "next/router";
 
-export const useComicProfile = (comicID?: number) => {
+export const useComicProfile = (tenant?: string) => {
   const router = useRouter();
   const context = useContext(ComicProfileContext);
   if (!context) {
@@ -27,27 +27,27 @@ export const useComicProfile = (comicID?: number) => {
   const { state, dispatch } = context;
 
   useEffect(() => {
-    if (comicID !== undefined) {
+    if (tenant !== undefined) {
       getProfile();
       getUserPermissions();
     }
-  }, [comicID]);
+  }, [tenant]);
 
   const getProfile = () => {
-    if (comicID !== undefined) {
-      fetchProfile(comicID)(dispatch);
+    if (tenant !== undefined) {
+      fetchProfile(tenant)(dispatch);
     }
   };
 
   const getUserPermissions = () => {
-    if (comicID !== undefined) {
-      fetchPermissions(comicID)(dispatch);
+    if (tenant !== undefined) {
+      fetchPermissions(tenant)(dispatch);
     }
   };
 
   const enableEditing = () => {
-    if (comicID !== undefined) {
-      fetchProfileToUpdate(comicID)(dispatch);
+    if (tenant !== undefined) {
+      fetchProfileToUpdate(tenant)(dispatch);
     }
   };
 

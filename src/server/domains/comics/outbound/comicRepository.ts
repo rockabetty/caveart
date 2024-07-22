@@ -130,7 +130,7 @@ export async function isAuthor(
   }
 }
 
-export async function getComic(comicId: number | string): Promise<Comic | null> {
+export async function selectComicProfile(comicId: number | string): Promise<Comic | null> {
   const identifier = typeof comicId === number ? "id" : "subdomain"
   const query = `
   WITH ContentWarnings AS (

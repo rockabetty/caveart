@@ -7,14 +7,14 @@ import { useTranslation} from 'react-i18next';
 function EditComic() {
 
   const { t } = useTranslation();
-  const { comicId } = useRouter().query;
+  const { tenant } = useRouter().query;
   
   return (
   <CaveartLayout requireLogin={true}>
     <h1>{t('comicManagement.edit')}</h1>
       <ComicProfileProvider>
         <EditComicProfile
-          comicId={Number(comicId)}
+          tenant={Number(tenant)}
         />
       </ComicProfileProvider>
    </CaveartLayout>
