@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { isAuthor } from "@data/comics";
+import { canEditComic } from "@domains/comics/core/comicService";
 import jwt from "jsonwebtoken";
 import { requireEnvVar } from "../../../../server/services/logger/envcheck";
 import { ErrorKeys } from "../../../../server/domains/users/errors.types";
@@ -11,11 +11,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { comicId } = req.query;
+  const { tenant } = req.query;
 
   if (req.method === "GET") {
-    const comic = parseInt(comicId);
-    if (isNaN(comic)) {
+    if (!tenant) {
       return res.status(400).json({ message: "Invalid comic ID" });
     }
 
@@ -35,7 +34,7 @@ export default async function handler(
     }
 
     try {
-      const canEdit = await isAuthor(userId, comic);
+      const canEdit = await canEditComic(userId, tenant);
       const permissions = {
         edit: canEdit,
       };

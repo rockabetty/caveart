@@ -47,6 +47,15 @@ export async function addComic(comic: Comic): Promise<number | null> {
   }
 }
 
+export async function getComicIdFromSubdomain(subdomain: string) {
+  const query = `SELECT id FROM comics WHERE subdomain = $1 LIMIT 1`;
+  const values = [subdomain]
+  const result = await queryDbConnection(query, values);
+  if (result.rows && result.rows.length > 0) {
+      return result.rows[0].id
+  }
+}
+
 export async function addGenresToComic(
   comicID: number,
   genreIDs: number[],

@@ -4,6 +4,7 @@ import {
   addAuthorToComic,
   addGenresToComic,
   addContentWarningsToComic,
+  getComicIdFromSubdomain,
   addComic,
   selectComicProfile
 } from "../outbound/comicRepository";
@@ -25,12 +26,13 @@ export const isValidSubdomain = function(rawSubdomain) {
 
 export async function canEditComic(
   token: string,
-  comicId: number | string,
+  identifier: number | string,
   userID: number,
 ) {
   try {
     const userId = await extractUserIdFromToken(token);
-    const ifOwnsComic = await isAuthor(Number(userId), comicId);
+    const comicId = await getComicIdFromSubdomain(identifier);
+    const ifOwnsComic = await isAuthor(Number(userId), Number(comicId));
     return {
       success: true,
       edit: ifOwnsComic,
