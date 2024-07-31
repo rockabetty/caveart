@@ -5,10 +5,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { comicId } = req.query;
+  const { tenant } = req.query;
 
   if (req.method === "POST") {
-    const comic = Number(comicId);
+    const comic = Number(tenant);
 
     if (!comic) {
       return res.status(400).json({ message: "Invalid comic ID" });
@@ -21,17 +21,16 @@ export default async function handler(
     }
 
     try {
-      await editComic(comicId, { subdomain: update });
-      return res
-        .status(200)
-        .json({ message: "Subdomain updated successfully" });
+      await editComic(tenant, { title: update });
+      return res.status(200).json({ message: "Title updated successfully" });
     } catch (error) {
+      console.error("Error updating title:", error);
       if (error.code === "23505") {
         return res
           .status(400)
-          .json({ message: "A comic with this subdomain already exists." });
+          .json({ message: "A comic with this title already exists." });
       }
-      return res.status(500).json({ message: "Failed to update subdomain" });
+      return res.status(500).json({ message: "Failed to update title" });
     }
   } else {
     res.setHeader("Allow", ["POST"]);

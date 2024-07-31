@@ -8,10 +8,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { comicId } = req.query;
+  const { tenant } = req.query;
 
   if (req.method === "POST") {
-    const comic = Number(comicId);
+    const comic = Number(tenant);
 
     if (!comic) {
       return res.status(400).json({ message: "Invalid comic ID" });

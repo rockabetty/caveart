@@ -15,7 +15,7 @@ export default async function handler(
 
   if (req.method === "GET") {
     if (!tenant) {
-      return res.status(400).json({ message: "Invalid comic ID" });
+      return res.status(400).json({ message: "No tenant." });
     }
 
     const token = req.cookies[USER_AUTH_TOKEN_NAME];

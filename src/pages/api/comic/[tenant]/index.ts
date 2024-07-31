@@ -5,9 +5,9 @@ import logger from "../../../../server/services/logger";
 
 const handler: NextApiHandler = async (req, res) => {
   try {
-    const { comicId } = req.query;
-    if (isValidSubdomain(comicId)) {
-      const comicData = await getComicProfile(comicId);
+    const { tenant } = req.query;
+    if (isValidSubdomain(tenant)) {
+      const comicData = await getComicProfile(tenant);
       if (comicData.success) {
         return res.status(200).send(comicData.data);
       }

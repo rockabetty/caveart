@@ -10,10 +10,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { comicId } = req.query;
+  const { tenant } = req.query;
 
   if (req.method === "POST") {
-    const comic = Number(comicId);
+    const comic = Number(tenant);
 
     if (!comic) {
       return res.status(400).json({ message: "invalidComic" });
@@ -51,7 +51,7 @@ export default async function handler(
 
       const ratingId = await getRatingId(rating);
 
-      await editComic(comicId, { rating: ratingId });
+      await editComic(tenant, { rating: ratingId });
 
       return res
         .status(200)
