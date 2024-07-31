@@ -14,7 +14,7 @@ function EditComic() {
     <h1>{t('comicManagement.edit')}</h1>
       <ComicProfileProvider>
         <EditComicProfile
-          tenant={Number(tenant)}
+          tenant={tenant}
         />
       </ComicProfileProvider>
    </CaveartLayout>

@@ -11,7 +11,7 @@ function ComicProfilePage() {
     <CaveartLayout>
       <ComicProfileProvider>
       <ComicProfile
-        comicId={Number(router.query.comicId)}
+        comicId={router.query.tenant}
       />
       </ComicProfileProvider>
     </CaveartLayout>

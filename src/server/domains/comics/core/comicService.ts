@@ -27,7 +27,6 @@ export const isValidSubdomain = function(rawSubdomain) {
 export async function canEditComic(
   token: string,
   identifier: number | string,
-  userID: number,
 ) {
   try {
     const userId = await extractUserIdFromToken(token);
@@ -42,6 +41,27 @@ export async function canEditComic(
     return {
       success: false,
       error: error,
+    };
+  }
+}
+
+export async function editComic(
+  tenant: number | string,
+  update: Comic,
+): Promise<QueryResult | null> {
+  try {
+    let columnName = "subdomain";
+    if (typeof tenant === "number") {
+      columnName = "id"
+    }
+    const edit = await editTable("comics", columnName, tenant, update);
+    return {
+      success: true
+    }
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error
     };
   }
 }

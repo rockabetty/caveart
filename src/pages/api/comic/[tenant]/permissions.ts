@@ -34,7 +34,7 @@ export default async function handler(
     }
 
     try {
-      const canEdit = await canEditComic(userId, tenant);
+      const canEdit = await canEditComic(token, tenant);
       const permissions = {
         edit: canEdit,
       };

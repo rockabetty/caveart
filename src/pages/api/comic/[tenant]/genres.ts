@@ -11,7 +11,7 @@ export default async function handler(
   const { tenant } = req.query;
 
   if (req.method === "POST") {
-    const comic = Number(tenant);
+    const comic = tenant;
 
     if (!comic) {
       return res.status(400).json({ message: "Invalid comic ID" });
