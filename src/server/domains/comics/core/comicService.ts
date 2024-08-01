@@ -121,10 +121,12 @@ export const isValidTitle = function (title: string) {
   if (title.length > 120) {
     return false
   }
+
   const validTitleRegex = /^[a-zA-Z0-9\s.,!?'"-_]{1,120}$/;
   if (!validTitleRegex.test(title)) {
     return false
   }
+  return true
 }
 
 export async function updateTitle (
