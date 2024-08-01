@@ -157,6 +157,34 @@ export async function updateTitle (
     return invalidRequest
 }
 
+export async function updateSubdomain (
+  tenant: number | string,
+  update: string
+  ): Promise<QueryResult | null > {
+    if (isValidSubdomain(update)) {
+      const updateData = { 'subdomain': update }
+      try {
+        editComic(tenant, updateData)
+        return {
+          success: true,
+          data: updateData
+        }
+      } catch (error) {
+        if (error.code && error.code === '23505') {
+          return { 
+            success: false,
+            error: ErrorKeys.SUBDOMAIN_TAKEN
+          }
+        }
+        return {
+          success: false,
+          error: error
+        }
+      }
+    }
+    return invalidRequest
+}
+
 
 export async function getComicProfile(identifier: string | number) {
   const profile = await selectComicProfile(identifier);
