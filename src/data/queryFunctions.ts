@@ -84,6 +84,7 @@ export async function editTable(
   identifierValue: string | number,
   update: GenericStringMap
 ): Promise<QueryResult | null> {
+  console.log("edit table @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")  
   const columnOrder = Object.keys(update);
   const updateString = writeUpdateString(columnOrder);
   const values = [...columnOrder.map(key => update[key]), identifierValue];
@@ -93,12 +94,14 @@ export async function editTable(
   if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(table) || !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(identifierColumn)) {
     throw new Error('Invalid table or column name');
   }
+  console.log("edit table @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 
   const query = `
     UPDATE ${table}
     SET ${updateString}
     WHERE ${identifierColumn} = $${idPlaceholder}
   `;
+  console.log()
 
   try {
     return await queryDbConnection(query, values);

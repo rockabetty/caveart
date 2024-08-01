@@ -6,23 +6,19 @@ import {
   addContentWarningsToComic,
   getComicIdFromSubdomain,
   addComic,
+  editComic as editComicTable,
   selectComicProfile
 } from "../outbound/comicRepository";
 import logger from "@logger";
 import extractUserIdFromToken from "@domains/users/utils/extractUserIdFromToken";
 import formidable from "formidable";
 import { ErrorKeys } from "../errors.types";
+import { ErrorKeys as GeneralErrorKeys } from '../../../errors.types'
 
 const invalidRequest = {
   success: false,
-  error: ErrorKeys.INVALID_REQUEST,
+  error: GeneralErrorKeys.INVALID_REQUEST,
 };
-
-export const isValidSubdomain = function(rawSubdomain) {
-  const subdomain = rawSubdomain.toLowerCase();
-  const subdomainFilter = /^(?!-)(?!.*--)[a-z0-9-]{1,63}(?<!-)$/;
-  return subdomainFilter.test(subdomain)
-}
 
 export async function canEditComic(
   token: string,
@@ -54,7 +50,7 @@ export async function editComic(
     if (typeof tenant === "number") {
       columnName = "id"
     }
-    const edit = await editTable("comics", columnName, tenant, update);
+    const edit = await editComicTable(tenant, update);
     return {
       success: true
     }
@@ -78,6 +74,12 @@ const isValidRating = async function (rating:string) {
   return true;
 }
 
+export const isValidSubdomain = function(rawSubdomain) {
+  const subdomain = rawSubdomain.toLowerCase();
+  const subdomainFilter = /^(?!-)(?!.*--)[a-z0-9-]{1,63}(?<!-)$/;
+  return subdomainFilter.test(subdomain)
+}
+
 const isValidIDList = function (list: number[]) {
   if (!Array.isArray(list)) {
     return false;
@@ -90,26 +92,69 @@ const isValidIDList = function (list: number[]) {
   return true
 }
 
-const isValidDescription = function (description: string) {
+export const isValidDescription = function (description: string) {
+  const validDescriptionRegex = /^[a-zA-Z0-9\s.,!?'"-_]{1,120}$/;
+  if (!validDescriptionRegex.test(description)) {
+    return false
+  }
   return description.length < 1024
 }
 
-const isValidCommentOption = function (option: string) {
+export const isValidCommentOption = function (option: string) {
   const validComments = ["Allowed", "Moderated", "Disabled"];
   return validComments.includes(option);
 } 
 
-const isValidVisibilityOption = function (option: string) {
+export const isValidVisibilityOption = function (option: string) {
   const validVisibilities = ["Public", "Unlisted", "Invite-Only"];
   return validVisibilities.includes(option)
 }
 
-const isValidLikesOption = function (option: "true" | "false" | boolean) {
+export const isValidLikesOption = function (option: "true" | "false" | boolean) {
   if (selectedLikesOption !== "true" && selectedLikesOption !== "false") {
     return typeof option === 'boolean'
   }
   return true
 }
+
+export const isValidTitle = function (title: string) {
+  if (title.length > 120) {
+    return false
+  }
+  const validTitleRegex = /^[a-zA-Z0-9\s.,!?'"-_]{1,120}$/;
+  if (!validTitleRegex.test(title)) {
+    return false
+  }
+}
+
+export async function updateTitle (
+  tenant: number | string,
+  update: string
+  ): Promise<QueryResult | null > {
+    if (isValidTitle(update)) {
+      const updateData = { 'title': update }
+      try {
+        editComic(tenant, updateData)
+        return {
+          success: true,
+          data: updateData
+        }
+      } catch (error) {
+        if (error.code && error.code === '23505') {
+          return { 
+            success: false,
+            error: ErrorKeys.TITLE_TAKEN
+          }
+        }
+        return {
+          success: false,
+          error: error
+        }
+      }
+    }
+    return invalidRequest
+}
+
 
 export async function getComicProfile(identifier: string | number) {
   const profile = await selectComicProfile(identifier);
@@ -153,7 +198,7 @@ export async function createComic(
     }
   }
 
-  profile.title = fields.title[0];
+  profile.title = fields.title[0].trim().replace(/\s+/g, ' ');
  
   const subdomain = fields.subdomain[0].toLowerCase();
   if (!isValidSubdomain(subdomain)) {

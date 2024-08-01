@@ -95,7 +95,6 @@ export async function editTable(
   const updateString = writeUpdateString(columnOrder);
   const values = [...columnOrder.map(key => update[key]), identifierValue];
   const idPlaceholder = columnOrder.length + 1;
-
   // Ensure table and identifierColumn are safe to use in the query
   if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(table) || !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(identifierColumn)) {
     throw new Error('Invalid table or column name');
@@ -106,6 +105,7 @@ export async function editTable(
     SET ${updateString}
     WHERE ${identifierColumn} = $${idPlaceholder}
   `;
+
 
   try {
     return await queryDbConnection(query, values);

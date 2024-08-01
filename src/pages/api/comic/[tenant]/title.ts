@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { editComic } from "@data/comics";
+import { editComic } from "@domains/comics/core/comicService";
 
 export default async function handler(
   req: NextApiRequest,
@@ -21,8 +21,12 @@ export default async function handler(
     }
 
     try {
-      await editComic(tenant, { title: update });
-      return res.status(200).json({ message: "Title updated successfully" });
+      const edit = await editComic(tenant, { title: update });
+      if (edit.success) {
+        return res.status(200).json({ message: "Title updated successfully" });
+      }
+      console.log(edit)
+      return res.status(500).json({message: editComic.error})
     } catch (error) {
       console.error("Error updating title:", error);
       if (error.code === "23505") {

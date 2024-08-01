@@ -1,8 +1,8 @@
 import { NextApiHandler } from "next";
 import { isAuthor } from "../comicService";
 import { requireEnvVar } from "@logger/envcheck";
+import { ErrorKeys } from "../../../errors.types"
 import { ErrorKeys as UserErrorKeys } from "../../users/errors.types";
-import { ErrorKeys } from "../errors.types";
 import { withAuth } from "../../users/middleware";
 const SECRET_KEY_JWT = requireEnvVar("SECRET_KEY_JWT");
 import { acceptGetOnly, getUnvalidatedToken } from "@domains/methodGatekeeper";

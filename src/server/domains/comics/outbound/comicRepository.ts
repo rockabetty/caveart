@@ -39,7 +39,6 @@ export async function addComic(comic: Comic): Promise<number | null> {
 
   try {
     const result = await queryDbConnection(query, values);
-    console.log(result.rows[0])
     return Number(result.rows[0].id);
   } catch (error: any) {
     logger.error(error);
@@ -60,7 +59,6 @@ export async function addGenresToComic(
   comicID: number,
   genreIDs: number[],
 ): Promise<QueryResult[] | null> {
-  console.log("adding " + genreIDs + " to " + comicID);
   const insertPromises: Promise<QueryResult>[] = [];
   genreIDs.forEach((genreID) => {
     const query = `
@@ -191,8 +189,6 @@ export async function selectComicProfile(comicId: number | string): Promise<Comi
   LEFT JOIN ContentWarnings cw ON cw.comic_id = c.id
   WHERE c.${identifier} = $1
   GROUP BY c.id, cw.content_warnings, cg.genres, r.name`;
-
-  console.log(query)
 
   const values = [comicId];
   try {
@@ -397,8 +393,10 @@ export async function editComic(
   update: Comic,
 ): Promise<QueryResult | null> {
   try {
-    const column = typeof identifer === "string" ? "subdomain" : "id"
-    console.log("comic ID:" + comicId);
+    let column = "subdomain"
+    if (typeof identifier === "number") {
+      column = "id"
+    }
     return await editTable("comics", column, identifier, update);
   } catch (error: any) {
     logger.error(error);
