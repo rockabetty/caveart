@@ -1,4 +1,5 @@
-import { createPage, getLastPageReference, getPage } from '../outbound/pageRepository'
+import { createPageData, getLastPageReference, getPage } from '../outbound/pageRepository'
+import { addComicImageToDatabase } from '@services/uploader'
 import { ErrorKeys } from '../errors.types';
 import { ComicPage } from '../comicpage.types';
 import formidable from 'formidable';
@@ -23,7 +24,7 @@ export async function createComicPage (fields: formidable.Fields, files: formida
       const file = files['image[]']
       data.page_number = Number(fields.newPageNumber[0])
       data.img = `/uploads/${file[0].newFilename}`
-      data.comic_id = Number(fields.comicId)
+      data.comic_id = Number(fields.comicID)
     }
 
     if (fields.chapter_id) {
@@ -37,7 +38,10 @@ export async function createComicPage (fields: formidable.Fields, files: formida
       data.release_on = new Date(releaseDate).toISOString()
     }
 
-  	const page = await createPage(data)
+    const upload = await addComicImageToDatabase(data.img)
+    data.img_id = upload;
+
+  	const page = await createPageData(data)
   	if (page) {
   		return {
   		  success: true,

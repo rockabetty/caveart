@@ -7,19 +7,19 @@ import { QueryResult } from "pg";
 import { ComicPage, PageReference } from "../comicpage.types";
 import logger from "@logger";
 
-export async function createPage(
+export async function createPageData(
   pageData: ComicPage,
 ): Promise<QueryResult | null> {
-  const { page_number, img, comic_id, chapter_id, author_comment } = pageData;
+  const { page_number, img_id, comic_id, chapter_id, author_comment } = pageData;
 
   const query = `
     INSERT INTO comic_pages
-    (page_number, img, comic_id, chapter_id, author_comment)
+    (page_number, img_id, comic_id, chapter_id, author_comment)
     VALUES
     ($1, $2, $3, $4, $5)
     RETURNING id
   `;
-  const values = [page_number, img, comic_id, chapter_id, author_comment];
+  const values = [page_number, img_id, comic_id, chapter_id, author_comment];
 
   try {
     const result = await queryDbConnection(query, values);

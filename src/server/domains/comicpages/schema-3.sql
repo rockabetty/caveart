@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS comic_chapters (
 CREATE TABLE IF NOT EXISTS comic_pages (
     id SERIAL PRIMARY KEY,
     page_number INT,
-    img TEXT NOT NULL UNIQUE,
+    img_id INT REFERENECS comic_page_uploads(id),
     comic_id INT REFERENCES comics(id) ON DELETE CASCADE,
     chapter_id INT REFERENCES chapters(id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT NOW(),

@@ -10,6 +10,9 @@ import imageDefaults, {
 import formidable from "formidable";
 import { NextApiRequest } from "next";
 import logger from "@logger";
+import {
+  queryDbConnection,
+} from "../../sql-helpers/queryFunctions";
 
 export const config = {
   api: {
@@ -31,50 +34,14 @@ export const deleteFile = async (filename: string) => {
 };
 
 export const parseFormWithSingleImage = async (req: NextApiRequest, purpose: string) => {
-  console.log("*********************Parse Form Beginning******************")
-  // Ensure the upload directory exists
   await fs.ensureDir(uploadDir);
   
-  console.log("Upload directory ensured:", uploadDir);
-
-  // Configure formidable
-  // const form = formidable({
-  //   uploadDir,
-  //   keepExtensions: true,
-  //   maxFileSize: 5 * 1024 * 1024, // 5MB file size limit, adjust as needed
-  //   filter: ({ name, originalFilename, mimetype }) => {
-  //     // This will only accept image files
-  //     if (mimetype && mimetype.startsWith('image/')) {
-  //       return true;
-  //     }
-  //     return false;
-  //   },
-  // });
   const form = formidable({
     uploadDir,
     keepExtensions: true,
     maxFileSize: 5 * 1024 * 1024, // 5MB
   });
 
-
-  // Debugging event listeners
-  form.on('fileBegin', (name, file) => {
-    console.log(`Starting upload of ${name}: ${file.originalFilename}`);
-  });
-
-  form.on('progress', (bytesReceived, bytesExpected) => {
-    console.log(`Progress: ${bytesReceived} / ${bytesExpected}`);
-  });
-
-  form.on('error', (err) => {
-    console.log('Formidable error:', err);
-  });
-
-  form.on('end', () => {
-    console.log('Formidable parsing finished.');
-  });
-
-  // Parse the form
   return new Promise<{ fields: formidable.Fields; files: formidable.Files }>((resolve, reject) => {
     console.log("Calling form.parse.");
     form.parse(req, (err, fields, files) => {
@@ -89,3 +56,24 @@ export const parseFormWithSingleImage = async (req: NextApiRequest, purpose: str
     });
   });
 };
+
+
+export async function addComicImageToDatabase(
+  src: string,
+): Promise<number | null> {
+  const query = `
+    INSERT INTO comic_image_uploads
+    (img)
+    VALUES
+    ($1)
+    RETURNING id
+  `;
+  const values = [src];
+  try {
+    const result = await queryDbConnection(query, values);
+    return Number(result.rows[0].id);
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
+  }
+}

@@ -55,7 +55,6 @@ const Link = ({
         'Primary': look ==='primary',
         'Warning': look === 'warning',
         'link': type !== 'button' && type !== 'inline button',
-        'Primary': type === 'button'
       })}
       onClick={onClick}
     >

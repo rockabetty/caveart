@@ -1,5 +1,6 @@
 import { NextApiHandler } from 'next';
 import { canEditComic } from '@domains/comics/core/comicService';
+import { getComicIdFromSubdomain } from "@domains/comics/outbound/comicRepository";
 import { logger } from "@logger";
 import { parseFormWithSingleImage } from '@services/uploader';
 import { ErrorKeys as UserErrorKeys } from '../../users/errors.types';
@@ -8,6 +9,8 @@ import { createComicPage } from '../core/comicPageService';
 import { requireEnvVar } from '@logger/envcheck';
 const USER_AUTH_TOKEN_NAME = requireEnvVar("NEXT_PUBLIC_USER_AUTH_TOKEN_NAME");
 import { acceptPostOnly, requireButDoNotValidateToken } from "@domains/methodGatekeeper";
+import { withAuth } from "@domains/users/middleware/withAuth";
+import { isAuthor } from "@domains/comics/middleware/isAuthor";
 
 export const config = {
   api: {
@@ -18,27 +21,18 @@ export const config = {
 const newPageHandler: NextApiHandler = async (req, res) => {
   
   acceptPostOnly(req,res);
-  requireButDoNotValidateToken(req,res);
-
-  const { comicId } = req.query;
-  if (!comicId) {
+  
+  const { tenant } = req.query;
+  if (!tenant) {
     return res.status(400).json(ErrorKeys.COMIC_MISSING);
   }
 
   try {
-    const permissions = await canEditComic(token, Number(comicId));
-    if (!permissions.edit) {
-      return res.status(403).json(ErrorKeys.USER_NOT_AUTHORIZED);
-    }
-  } catch (error: any) {
-    return res.status(500).json(ErrorKeys.GENERAL_SERVER_ERROR);
-  }
-  
-  try {
+    const comicID = await getComicIdFromSubdomain(tenant)
     const { files, fields } = await parseFormWithSingleImage(req, 'illustration');
     const information = {
       ...fields,
-      comicId
+      comicID
     }
   
     const newPage = await createComicPage(information, files);
@@ -56,4 +50,4 @@ const newPageHandler: NextApiHandler = async (req, res) => {
   }
 };
 
-export default newPageHandler
+export default withAuth(isAuthor(newPageHandler));

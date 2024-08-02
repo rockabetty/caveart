@@ -3,6 +3,12 @@ CREATE TABLE IF NOT EXISTS ratings (
     name TEXT UNIQUE NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS comic_image_uploads (
+    id SERIAL PRIMARY KEY,
+    img TEXT NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT NOW()
+)
+
 CREATE TABLE IF NOT EXISTS comics (
     id SERIAL PRIMARY KEY,
     title VARCHAR(250) UNIQUE NOT NULL,
@@ -10,7 +16,7 @@ CREATE TABLE IF NOT EXISTS comics (
     tagline VARCHAR(250),
     description TEXT,
     created_at TIMESTAMP DEFAULT NOW(),
-    thumbnail TEXT,
+    thumbnail_id int REFERENCES comic_image_uploads(id),
     comments BOOLEAN DEFAULT TRUE,
     critique BOOLEAN DEFAULT FALSE,
     is_unlisted BOOLEAN DEFAULT FALSE,
