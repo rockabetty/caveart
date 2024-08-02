@@ -2,10 +2,12 @@ import {
   isAuthor,
   getRatingId,
   addAuthorToComic,
+  getAllGenres,
   addGenresToComic,
   removeGenresFromComic,
   removeContentWarningsFromComic,
   addContentWarningsToComic,
+  getAllContentWarnings,
   getComicIdFromSubdomain,
   addComic,
   editComic as editComicTable,
@@ -250,6 +252,37 @@ export async function updateGenres (
           error: error
         }
     }
+}
+
+
+export async function listGenreOptions () {
+  try {
+    const result = await getAllGenres()
+    return {
+      success: true,
+      data: result
+    }
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error
+    }  
+  }
+}
+
+export async function listContentWarningOptions () {
+  try {
+    const result = await getAllContentWarnings()
+    return {
+      success: true,
+      data: result
+    }
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error
+    }  
+  }
 }
 
 export async function updateContentWarnings (

@@ -3,7 +3,12 @@ import {
   removeOneToManyAssociations,
   editTable,
 } from "../../../../server/sql-helpers/queryFunctions";
-import { Comic, ComicColumnList, Genre, NestedContentWarning } from "../comic.types";
+import {
+  Comic,
+  ComicColumnList,
+  Genre,
+  NestedContentWarning,
+} from "../comic.types";
 import { logger } from "@logger";
 import { QueryResult } from "pg";
 
@@ -48,10 +53,10 @@ export async function addComic(comic: Comic): Promise<number | null> {
 
 export async function getComicIdFromSubdomain(subdomain: string) {
   const query = `SELECT id FROM comics WHERE subdomain = $1 LIMIT 1`;
-  const values = [subdomain]
+  const values = [subdomain];
   const result = await queryDbConnection(query, values);
   if (result.rows && result.rows.length > 0) {
-      return result.rows[0].id
+    return result.rows[0].id;
   }
 }
 
@@ -119,7 +124,7 @@ export async function isAuthor(
   author: number,
   comic: number | string,
 ): Promise<boolean | null> {
-  const column = typeof comic === "string" ? "subdomain" : "comic_id"
+  const column = typeof comic === "string" ? "subdomain" : "comic_id";
   const query = `SELECT TRUE as isauthor
       FROM comics_to_authors ca
       JOIN comics c
@@ -137,8 +142,10 @@ export async function isAuthor(
   }
 }
 
-export async function selectComicProfile(comicId: number | string): Promise<Comic | null> {
-  const identifier = typeof comicId === 'number' ? "id" : "subdomain"
+export async function selectComicProfile(
+  comicId: number | string,
+): Promise<Comic | null> {
+  const identifier = typeof comicId === "number" ? "id" : "subdomain";
   const query = `
   WITH ContentWarnings AS (
     SELECT
@@ -241,6 +248,71 @@ export async function getComicsByAuthor(
   }
 }
 
+export async function listContentWarnings() {
+  const query = `SELECT
+    jsonb_object_agg(cw1.id, cw1.name)
+    AS comics_json
+    FROM content_warnings cw1
+    LEFT JOIN content_warnings cw2 
+      ON cw1.id = cw2.parent_id
+    WHERE cw2.id IS NULL`;
+
+  try {
+    const result = await queryDbConnection(query);
+    if (result.rows && result.rows.length > 0) {
+      return result.rows[0].comics_json;
+    }
+    return null;
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
+  }
+}
+
+export async function getNestedContentWarnings() {
+  const query = `WITH
+      Parents AS (
+        SELECT id, name
+        FROM content_warnings
+        WHERE parent_id IS NULL
+      ),
+      Children AS (
+        SELECT p.id AS parent_id, i.id, i.name
+        FROM content_warnings i
+        JOIN Parents p ON i.parent_id = p.id
+      ),
+      GrandChildren AS (
+        SELECT c.id AS child_id, i.id, i.name
+        FROM content_warnings i
+        JOIN Children c ON i.parent_id = c.id
+      )
+
+      SELECT 
+        p.id,
+        p.name,
+        COALESCE(json_agg(json_build_object('id', c.id, 'name', c.name, 'children', gc_agg)) FILTER (WHERE c.id IS NOT NULL), '[]'::json) AS children
+      FROM Parents p
+      LEFT JOIN Children c ON p.id = c.parent_id
+      LEFT JOIN (
+        SELECT child_id, json_agg(json_build_object('id', id, 'name', name)) AS gc_agg
+        FROM GrandChildren
+        GROUP BY child_id
+      ) gc ON gc.child_id = c.id
+      GROUP BY p.id, p.name
+      `;
+
+  try {
+    const result = await queryDbConnection(query);
+    if (result.rows && result.rows.length > 0) {
+      return result.rows;
+    }
+    return null;
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
+  }
+}
+
 export async function getComicContentWarnings(
   comicId: number,
 ): Promise<QueryResult[] | null> {
@@ -272,19 +344,11 @@ export async function getComicContentWarnings(
   }
 }
 
-export async function getFlatContentWarnings(): Promise<QueryResult | null> {
-  const query = `SELECT
-    jsonb_object_agg(cw1.id, cw1.name)
-    AS comics_json
-    FROM content_warnings cw1
-    LEFT JOIN content_warnings cw2 
-      ON cw1.id = cw2.parent_id
-    WHERE cw2.id IS NULL`;
-
+export async function getAllGenres() {
   try {
-    const result = await queryDbConnection(query);
+    const result = await queryDbConnection(`SELECT id, name FROM genres`);
     if (result.rows && result.rows.length > 0) {
-      return result.rows[0].comics_json;
+      return result.rows;
     }
     return null;
   } catch (error: any) {
@@ -293,9 +357,7 @@ export async function getFlatContentWarnings(): Promise<QueryResult | null> {
   }
 }
 
-export async function getNestedContentWarnings(): Promise<
-  NestedContentWarning[] | null
-> {
+export async function getAllContentWarnings() {
   const query = `WITH
       Parents AS (
         SELECT id, name
@@ -394,9 +456,9 @@ export async function editComic(
   update: Comic,
 ): Promise<QueryResult | null> {
   try {
-    let column = "subdomain"
+    let column = "subdomain";
     if (typeof identifier === "number") {
-      column = "id"
+      column = "id";
     }
     return await editTable("comics", column, identifier, update);
   } catch (error: any) {
@@ -405,8 +467,10 @@ export async function editComic(
   }
 }
 
-export async function deleteComic(identifier: number | string): Promise<boolean | null> {
-  const column = typeof identifier === "string" ? "subdomain" :"id" 
+export async function deleteComic(
+  identifier: number | string,
+): Promise<boolean | null> {
+  const column = typeof identifier === "string" ? "subdomain" : "id";
   const query = `DELETE FROM comics 
     WHERE ${column} = $1;`;
   const values = [comic];
