@@ -6,7 +6,7 @@ import { extractUserIdFromToken } from '@domains/users/utils/extractUserIdFromTo
 
 export const isAuthor = (handler: NextApiHandler): NextApiHandler => {
   return async (req: NextApiRequest, res: NextApiResponse) => {
-    const { tenant } = req.query;
+    const tenantID = Number(req.cookies['CAVEARTWBCMX_current-comic']);
     const token = getUnvalidatedToken(req);
     const userID = await extractUserIdFromToken(token, false);
     
@@ -14,7 +14,7 @@ export const isAuthor = (handler: NextApiHandler): NextApiHandler => {
       return res.status(403).json({ error: ErrorKeys.INVALID_REQUEST });
     }
 
-    const permissions = await canEditComic(token, tenant as string);
+    const permissions = await canEditComic(userID, tenantID);
     if (!permissions.success) {
       return res.status(403).json({ error: ErrorKeys.USER_NOT_AUTHORIZED });
     }

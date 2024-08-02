@@ -19,4 +19,4 @@ const userComicsHandler: NextApiHandler = async (req, res) => {
   }
 }
 
-export default withAuth(userComicsHandler);
+export default withAuth(isAuthor(userComicsHandler));

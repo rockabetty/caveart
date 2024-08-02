@@ -4,6 +4,7 @@ import {
   addAuthorToComic,
   addGenresToComic,
   removeGenresFromComic,
+  removeContentWarningsFromComic,
   addContentWarningsToComic,
   getComicIdFromSubdomain,
   addComic,
@@ -249,6 +250,58 @@ export async function updateGenres (
           error: error
         }
     }
+}
+
+export async function updateContentWarnings (
+  tenantID: number,
+  old,
+  update,
+  rating
+  ) {
+  try {
+    let oldIDs = [];
+    let newIDs = [];
+    for (let key in old) {
+      oldIDs.push(Number(old[key].id))
+    }
+    for (let key in update) {
+      newIDs.push(Number(update[key].id))
+    }
+
+    let deleteIDs: number[] = [];
+    let addIDs: number[] = [];
+
+    for (let id of oldIDs) {
+      if (!newIDs.includes(id)) {
+        deleteIDs.push(id);
+      }
+    }
+
+    for (let id of newIDs) {
+      if (!oldIDs.includes(id)) {
+        addIDs.push(id);
+      }
+    }
+
+    if (addIDs.length > 0) {
+      await addContentWarningsToComic(tenantID, addIDs);
+    }
+    if (deleteIDs.length > 0) {
+      await removeContentWarningsFromComic(tenantID, deleteIDs);
+    }
+
+    const ratingId = await getRatingId(rating);
+    await editComic(tenantID, { rating: ratingId });
+    return {
+      success: true,
+      data: update
+    }
+  } catch (error) {
+    return {
+      success: false,
+      data: ErrorKeys.GENERAL_SERVER_ERROR
+    }
+  }
 }
 
 export async function getComicProfile(identifier: string | number) {
