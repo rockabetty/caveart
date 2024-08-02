@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { requireEnvVar } from '@logger/envcheck';
+import { requireEnvVar } from '../logger/envcheck';
 
 /** 
  * Represents the encryption key used for both encryption and decryption.
