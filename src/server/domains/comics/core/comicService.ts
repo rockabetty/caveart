@@ -20,7 +20,7 @@ import extractUserIdFromToken from "@domains/users/utils/extractUserIdFromToken"
 import formidable from "formidable";
 import { ErrorKeys } from "../errors.types";
 import { ErrorKeys as GeneralErrorKeys } from '../../../errors.types'
-
+import { addComicImageToDatabase } from '@services/uploader'
 
 const invalidRequest = {
   success: false,
@@ -90,6 +90,9 @@ export const isValidSubdomain = function(rawSubdomain) {
 }
 
 const isValidIDList = function (list: number[]) {
+  if (list === undefined) {
+    return true
+  }
   if (!Array.isArray(list)) {
     return false;
   }
@@ -450,13 +453,16 @@ export async function createComic(
   }
   profile.likes = selectedLikesOption === "true";
 
-  
+ 
   if (files) {
+    console.log("@#################%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    console.log(files)
     try {
       await Promise.all(
         Object.keys(files).map(async (key) => {
           const file = files[key][0];
-          profile.thumbnail = `/uploads/${file.newFilename}`;
+          const upload = await addComicImageToDatabase(`/uploads/${file.newFilename}`);
+          profile.thumbnail_id = upload;
         })
       );
     } catch (fileErr) {
@@ -472,14 +478,13 @@ export async function createComic(
     if (id) {
       await addAuthorToComic(id, userId);
   
-      if (profile.genres.length > 0) {
+      if (profile.genres?.length > 0) {
         await addGenresToComic(id, profile.genres);
       }
 
-      if (profile.content.length > 0) {
+      if (profile.content?.length > 0) {
         await addContentWarningsToComic(id, profile.content);
       }
-
       return {
         success: true,
         data: { id },

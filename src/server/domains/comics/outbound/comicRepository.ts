@@ -22,7 +22,7 @@ export async function addComic(comic: Comic): Promise<number | null> {
         is_unlisted,
         is_private,
         moderate_comments,
-        thumbnail,
+        thumbnail_id,
         likes,
         rating
       )
@@ -37,14 +37,14 @@ export async function addComic(comic: Comic): Promise<number | null> {
     comic.is_unlisted,
     comic.is_private,
     comic.moderate_comments,
-    comic.thumbnail,
+    comic.thumbnail_id,
     comic.likes,
     comic.rating,
   ];
 
   try {
     const result = await queryDbConnection(query, values);
-    return Number(result.rows[0].id);
+    return result.rows[0].id;
   } catch (error: any) {
     logger.error(error);
     throw error;
@@ -180,7 +180,7 @@ export async function selectComicProfile(
     c.subdomain,
     c.tagline,
     c.description,
-    c.thumbnail,
+    i.img as thumbnail,
     c.comments,
     c.is_unlisted,
     c.is_private,
@@ -193,10 +193,11 @@ export async function selectComicProfile(
     COALESCE(cw.content_warnings, '{}'::jsonb) AS content_warnings
   FROM comics c
   JOIN ratings r ON r.id = c.rating
+  JOIN comic_image_uploads i ON i.id = c.thumbnail_id 
   LEFT JOIN ComicGenres cg ON cg.comic_id = c.id
   LEFT JOIN ContentWarnings cw ON cw.comic_id = c.id
   WHERE c.${identifier} = $1
-  GROUP BY c.id, cw.content_warnings, cg.genres, r.name`;
+  GROUP BY c.id, cw.content_warnings, cg.genres, r.name, i.img`;
 
   const values = [comicId];
   try {
