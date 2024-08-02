@@ -3,6 +3,7 @@ import {
   getRatingId,
   addAuthorToComic,
   getAllGenres,
+  getRatingDefs,
   addGenresToComic,
   removeGenresFromComic,
   removeContentWarningsFromComic,
@@ -254,6 +255,20 @@ export async function updateGenres (
     }
 }
 
+export async function listRatingOptions() {
+    try {
+    const result = await getRatingDefs()
+    return {
+      success: true,
+      data: result
+    }
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error
+    }  
+  }
+}
 
 export async function listGenreOptions () {
   try {
