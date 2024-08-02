@@ -173,7 +173,7 @@ export async function clearUserSession(
 
 export async function getUser(
   userId: number,
-  columns: UserColumnsArray
+  columns: string[]
 ): Promise<User | null> {
 
   const result: QueryResult<User> = await getTable(

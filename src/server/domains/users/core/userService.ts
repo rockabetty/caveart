@@ -3,7 +3,7 @@ import {
   hashPassword,
   compareHash,
   createRandom,
-} from "@services/encryption/hash";
+} from "../../../services/encryption/hash";
 import { createUserSessionCookie } from "../outbound/userSessionCookie";
 import {
   createUser,
