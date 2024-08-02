@@ -90,22 +90,31 @@ const determineComicRating = function (
 };
 
 export const fetchProfile =
-  (comicID: number) => async (dispatch: React.Dispatch<ComicProfileAction>) => {
+  (tenant: string) => async (dispatch: React.Dispatch<ComicProfileAction>) => {
     try {
-      const comic = await axios.get(`/api/comic/${comicID}`);
+      const comic = await axios.get(`/api/comic/${tenant}`);
       dispatch({
         type: "GET_COMIC_PROFILE",
         payload: { profile: comic.data },
       });
     } catch (error: any) {
-      handleError(error);
+        const { response } = error; 
+        if (response.status === 400 ) {
+          if (!!response.data.subdomain) {
+            return dispatch({
+              type: "RECOMMEND_REDIRECT",
+              payload: { tenant: response.data.subdomain }
+            })
+          }
+        }
+        handleError(error);
     }
   };
 
 export const fetchPermissions =
-  (comicID: number) => async (dispatch: React.Dispatch<ComicProfileAction>) => {
+  (tenant: string) => async (dispatch: React.Dispatch<ComicProfileAction>) => {
     try {
-      const permissions = await axios.get(`/api/comic/${comicID}/permissions`);
+      const permissions = await axios.get(`/api/comic/${tenant}/permissions`);
       const permissionData: ComicPermissions = permissions.data;
       dispatch({
         type: "GET_COMIC_PERMISSIONS",
@@ -117,11 +126,12 @@ export const fetchPermissions =
   };
 
 export const fetchProfileToUpdate =
-  (comicID: number) => async (dispatch: React.Dispatch<ComicProfileAction>) => {
+  (tenant: string) => async (dispatch: React.Dispatch<ComicProfileAction>) => {
+    console.log("Fetch profile to update with tenant  -" + tenant)
     try {
       const [comic, permissions] = await Promise.all([
-        axios.get(`/api/comic/${comicID}`),
-        axios.get(`/api/comic/${comicID}/permissions`),
+        axios.get(`/api/comic/${tenant}`),
+        axios.get(`/api/comic/${tenant}/permissions`),
       ]);
 
       if (permissions.data?.edit) {

@@ -7,6 +7,7 @@ import { ErrorKeys } from '../errors.types';
 import { createComicPage } from '../core/comicPageService';
 import { requireEnvVar } from '@logger/envcheck';
 const USER_AUTH_TOKEN_NAME = requireEnvVar("NEXT_PUBLIC_USER_AUTH_TOKEN_NAME");
+import { acceptPostOnly, requireButDoNotValidateToken } from "@domains/methodGatekeeper";
 
 export const config = {
   api: {
@@ -16,18 +17,12 @@ export const config = {
 
 const newPageHandler: NextApiHandler = async (req, res) => {
   
-  if (req.method !== 'POST') {
-    return res.status(405).end();
-  }
+  acceptPostOnly(req,res);
+  requireButDoNotValidateToken(req,res);
 
   const { comicId } = req.query;
   if (!comicId) {
     return res.status(400).json(ErrorKeys.COMIC_MISSING);
-  }
-
-  const token = req.cookies[USER_AUTH_TOKEN_NAME];
-  if (!token) {
-    return res.status(400).json(UserErrorKeys.TOKEN_MISSING);
   }
 
   try {
@@ -56,8 +51,8 @@ const newPageHandler: NextApiHandler = async (req, res) => {
     }
   
   } catch (error) {
-    console.error("Error parsing form:", error);
-    return res.status(500).json({ error: "Error parsing form." });
+    logger.error(error);
+    return res.status(500).json({ error: ErrorKeys.GENERAL_SERVER_ERROR });
   }
 };
 

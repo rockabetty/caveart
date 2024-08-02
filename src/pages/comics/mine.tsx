@@ -16,7 +16,6 @@ function MyComics() {
   useEffect(() => {
     axios.get('/api/comics/mine')
        .then((response) => {
-        console.log(response)
          setComics(response.data)
        })
        .catch((error) => {
@@ -33,7 +32,7 @@ function MyComics() {
             return (
               <ComicProfileProvider key={`comicProfile-${idx}`}>
               <ComicProfile
-                comicId={comic.id || -1}
+                tenant={comic.subdomain}
               />
               </ComicProfileProvider>
             )

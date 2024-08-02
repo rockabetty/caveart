@@ -1,0 +1,1 @@
+export {default} from "@domains/comics/inbound/updateTitleHandler";

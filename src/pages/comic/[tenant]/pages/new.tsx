@@ -16,8 +16,7 @@ type NewPageSubmission = {
 
 function AddPage() {
   const router = useRouter();
-  const { comicId } = router.query;
-  console.log(comicId);
+  const { tenant } = router.query;
   const { t } = useTranslation();
   const [upload, setUpload] = useState<NewPageSubmission>({
     newPageNumber: 0,
@@ -26,9 +25,9 @@ function AddPage() {
   });
 
   useEffect(() => {
-    if (comicId) {
+    if (tenant) {
       axios
-        .get(`/api/comic/${comicId}/page/next`)
+        .get(`/api/comic/${tenant}/page/next`)
         .then((response) => {
           const { newPageNumber } = response.data;
           setUpload({ ...upload, newPageNumber });
@@ -37,7 +36,7 @@ function AddPage() {
           console.log(error);
         });
     }
-  }, [comicId]);
+  }, [tenant]);
 
   const handleCommentaryChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -64,7 +63,7 @@ function AddPage() {
     setError("");
     setSuccess(false);
     axios
-      .post(`/api/comic/${comicId}/page/new`, upload, {
+      .post(`/api/comic/${tenant}/page/new`, upload, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -94,7 +93,7 @@ function AddPage() {
           <div>
             <Link
               type="button"
-              href={`/read/${comicId}/${upload.newPageNumber}`}
+              href={`/read/${tenant}/${upload.newPageNumber}`}
             >
               Go to page
             </Link>

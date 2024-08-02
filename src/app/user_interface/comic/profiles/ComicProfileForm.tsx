@@ -16,15 +16,15 @@ import {
 } from "./types";
 
 type ComicProfileFormProps = {
-  comicId?: number;
+  tenant?: string;
 };
 
 const ComicProfileForm: React.FC<ComicProfileFormProps> = (
   props
 ) => {
   const { t } = useTranslation();
-  const { comicId } = props;
-  const { state, enableEditing, setField, setRating, setThumbnail } = useComicProfile(comicId);
+  const { tenant } = props;
+  const { state, enableEditing, setField, setRating, setThumbnail } = useComicProfile(tenant);
   const { update } = state;
   const [genres, setGenres] = useState([]);
   const [contentWarnings, setContentWarnings] = useState([]);
@@ -45,7 +45,7 @@ const ComicProfileForm: React.FC<ComicProfileFormProps> = (
 
   useEffect(() => {
     enableEditing();
-  }, [comicId]);
+  }, [tenant]);
 
   const handleTextInput = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -97,7 +97,7 @@ const ComicProfileForm: React.FC<ComicProfileFormProps> = (
         <ImageUpload
           editable
           helperText={t('comicProfile.coverImageSize', {megabytes: '3'})}
-          id={`${comicId ? `${comicId}-` : ''}cover_image`}
+          id={`${tenant ? `${tenant}-` : ''}cover_image`}
           src={`${update?.thumbnail}` || "/img/brand/kraugak.png"}
           alt="Preview cover image"
           maxSize={1000}
@@ -111,7 +111,7 @@ const ComicProfileForm: React.FC<ComicProfileFormProps> = (
           <TextInput
             onChange={handleTextInput}
             labelText={t('comicProfile.title')}
-            id={`title-edit-${comicId}`}
+            id={`title-edit-${tenant}`}
             pattern="^[a-zA-Z0-9 !:_\-?]+$"
             placeholderText="Unga Bunga: The Grungas of Wunga"
             name="title"
@@ -125,7 +125,7 @@ const ComicProfileForm: React.FC<ComicProfileFormProps> = (
             name="subdomain"
             pattern="[A-Za-z0-9\-_]{1,}"
             placeholderText="ungabunga"
-            id={`subdomain-edit-${comicId}`}
+            id={`subdomain-edit-${tenant}`}
             value={update?.subdomain}
             required
           />
@@ -134,7 +134,7 @@ const ComicProfileForm: React.FC<ComicProfileFormProps> = (
             labelText={t('comicProfile.description')}
             name="description"
             placeholderText={t('comicProfile.helperTexts.description')}
-            id={`description-edit-${comicId}`}
+            id={`description-edit-${tenant}`}
             value={update?.description}
           />
         </div>

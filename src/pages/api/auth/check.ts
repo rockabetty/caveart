@@ -1,1 +1,1 @@
-export {checkAuthHandler as default} from '../../../server/domains/users/inbound';
+export {checkAuthHandler as default} from '@domains/users/inbound';

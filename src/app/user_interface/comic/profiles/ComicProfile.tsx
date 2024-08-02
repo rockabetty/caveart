@@ -5,13 +5,13 @@ import { useComicProfile } from './hooks/useComicProfile';
 import { useTranslation } from 'react-i18next';
 
 type ComicProfileProps = {
-  comicId: number
+  tenant: string
 }
 
 const ComicProfile: React.FC<ComicProfileProps> = (props) => {
   const { t } = useTranslation();
-  const {comicId} = props;
-  const {state} = useComicProfile(comicId);
+  const {tenant} = props;
+  const {state} = useComicProfile(tenant);
   const {profile, permissions} = state;
 
   const renderGenres = useCallback(() => {
@@ -27,7 +27,7 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
           {selectedGenres.map((value, idx) => {
             return (
               <Tag
-                key={`browsing-genre-${comicId}-${idx}`}
+                key={`browsing-genre-${tenant}-${idx}`}
                 label={value.name}
               />
             )
@@ -51,7 +51,7 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
           {contentWarnings.map((key, idx) => {
             return (
               <Tag
-                key={`browsing-content_warning-${comicId}-${idx}`}
+                key={`browsing-content_warning-${tenant}-${idx}`}
                 label={t(`contentWarnings.${key}.${profile.content_warnings[key].name}`)}
               />
             )
@@ -77,8 +77,8 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
                 <h1 className="comic-profile_title">{profile?.title}</h1>
                   {permissions?.edit
                     ? (<>
-                        <Link type="inline button" href={`/comic/${comicId}/edit`} id={`edit-${profile?.subdomain}`}>{t('comicProfile.edit')}</Link>
-                        <Link type="inline button" look="primary" href={`/comic/${comicId}/pages/new`} id={`newpage-${profile?.subdomain}`}>{t('comicPages.add')}</Link>
+                        <Link type="inline button" href={`/comic/${profile?.subdomain}/edit`} id={`edit-${profile?.subdomain}`}>{t('comicProfile.edit')}</Link>
+                        <Link type="inline button" look="primary" href={`/comic/${profile?.subdomain}/pages/new`} id={`newpage-${profile?.subdomain}`}>{t('comicPages.add')}</Link>
                       </>
                       )
                     : null
