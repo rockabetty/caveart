@@ -113,7 +113,7 @@ export const isValidVisibilityOption = function (option: string) {
 }
 
 export const isValidLikesOption = function (option: "true" | "false" | boolean) {
-  if (selectedLikesOption !== "true" && selectedLikesOption !== "false") {
+  if (option !== "true" && option !== "false") {
     return typeof option === 'boolean'
   }
   return true
@@ -323,6 +323,7 @@ export async function createComic(
   files: formidable.Files,
   userId: number
 ) {
+
   let profile = {
     title: "",
     subdomain: "",
@@ -339,10 +340,9 @@ export async function createComic(
   };
 
   const requiredFields = ["rating", "title", "subdomain"];
-
   for (let field of requiredFields) {
     if (!fields[field]) {
-      return invalidRequest;
+       return invalidRequest;
     }
   }
 
@@ -352,19 +352,21 @@ export async function createComic(
   if (!isValidSubdomain(subdomain)) {
     return invalidRequest;
   }
+  profile.subdomain = subdomain;
 
   const rating = fields.rating[0];
   if (!isValidRating(rating)) {
-    return invalidRequest;
+   return invalidRequest;
   }
-  const ratingId = getRatingId(rating);
+  const ratingId = await getRatingId(rating);
   profile.rating = ratingId;
 
   const description = fields.description[0];
   if (!isValidDescription) {
     return invalidRequest;
   }
-  profile.description = description;
+  const sanitizedInput = sanitizeLongformText(description)
+  profile.description = sanitizedInput;
 
   const genresValid = isValidIDList(fields["genres[]"]);
   if (genresValid) {
@@ -372,22 +374,21 @@ export async function createComic(
   } else {
     return invalidRequest;
   }
- 
+
   const contentWarningsValid = isValidIDList(fields["content[]"]);
   if (contentWarningsValid) {
     profile.content = fields["content[]"];
   } else {
     return invalidRequest;
   }
- 
+
   const selectedCommentsOption = fields.comments[0];
   if (!isValidCommentOption(selectedCommentsOption)) {
     return invalidRequest;
   }
   profile.comments = selectedCommentsOption !== "Disabled";
   profile.moderate_comments = selectedCommentsOption === "Moderated";
- 
- 
+
   const selectedVisibilityOption = fields.visibility[0];
   if (!isValidVisibilityOption(selectedVisibilityOption)) {
     return invalidRequest;
@@ -401,6 +402,7 @@ export async function createComic(
   }
   profile.likes = selectedLikesOption === "true";
 
+  
   if (files) {
     try {
       await Promise.all(
@@ -410,7 +412,6 @@ export async function createComic(
         })
       );
     } catch (fileErr) {
-      logger.error(fileErr);
       return {
         success: false,
         error: ErrorKeys.FILE_UPLOAD_ERROR,
@@ -422,7 +423,7 @@ export async function createComic(
     const id = await addComic(profile);
     if (id) {
       await addAuthorToComic(id, userId);
-    
+  
       if (profile.genres.length > 0) {
         await addGenresToComic(id, profile.genres);
       }
@@ -452,7 +453,7 @@ export async function createComic(
     if (id) {
       try {
         await deleteComic(id);
-      } catch (cleanupError) {
+       } catch (cleanupError) {
         logger.error(cleanupError);
       }
     }

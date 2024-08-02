@@ -41,6 +41,7 @@ const NewComicForm: React.FC = () => {
       visibility: update.visibility,
       comments: update.comments,
       rating: update.rating,
+      likes: update.likes
     };
 
     if (!update.title) {
