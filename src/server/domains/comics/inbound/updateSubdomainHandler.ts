@@ -10,14 +10,14 @@ import { acceptPostOnly } from "@domains/methodGatekeeper";
 const handler: NextApiHandler = async (req, res): Promise<void> => {
   acceptPostOnly(req, res);
   try {
-    const { tenant } = req.query;
+    const tenantID = Number(req.cookies['CAVEARTWBCMX_current-comic']);
     const { update } = req.body;
 
     if (typeof update !== "string") {
       return res.status(400).json({ error: ErrorKeys.INVALID_REQUEST });
     }
 
-    const newSubdomain = await updateSubdomain(tenant as string, update);
+    const newSubdomain = await updateSubdomain(tenantID, update);
     if (newSubdomain.success) {
       return res.status(200).send("OK");
     }

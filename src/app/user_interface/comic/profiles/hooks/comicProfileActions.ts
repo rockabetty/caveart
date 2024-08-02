@@ -93,13 +93,22 @@ export const fetchProfile =
   (tenant: string) => async (dispatch: React.Dispatch<ComicProfileAction>) => {
     try {
       const comic = await axios.get(`/api/comic/${tenant}`);
-      console.log(comic.data)
       dispatch({
         type: "GET_COMIC_PROFILE",
         payload: { profile: comic.data },
       });
     } catch (error: any) {
-      handleError(error);
+        const { response } = error; 
+        if (response.status === 400 ) {
+          if (!!response.data.subdomain) {
+            console.log("Recommend redirect to " + response.data.subdomain)
+            return dispatch({
+              type: "RECOMMEND_REDIRECT",
+              payload: { tenant: response.data.subdomain }
+            })
+          }
+        }
+        handleError(error);
     }
   };
 

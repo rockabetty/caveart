@@ -7,6 +7,7 @@ export type ComicProfileState = {
   permissions: ComicPermissions | undefined;
   submissionError?: string;
   successMessage?: string;
+  redirect?: string
 };
 
 const emptyProfile: ComicData = {
@@ -29,7 +30,8 @@ export const initialState: ComicProfileState = {
   editing: false,
   permissions: undefined,
   submissionError: "",
-  successMessage: ""
+  successMessage: "",
+  redirect: undefined
 };
 
 export type ComicProfileAction =
@@ -72,6 +74,10 @@ export type ComicProfileAction =
   | {
       type: 'EDIT_COMIC_SUCCESS',
       payload: { successMessage: string }
+  }
+  | {
+    type: "RECOMMEND_REDIRECT",
+    payload: { redirect: string }
   }
 
 export const comicProfileReducer = (
@@ -128,6 +134,11 @@ export const comicProfileReducer = (
       return {
         ...state,
         successMessage: action.payload.successMessage
+      }
+    case 'RECOMMEND_REDIRECT':
+      return {
+        ...state,
+        redirect: action.payload.tenant
       }
 
     default:

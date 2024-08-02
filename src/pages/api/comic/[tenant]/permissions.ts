@@ -11,7 +11,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { tenant } = req.query;
+ 
+  const tenant = req.cookies['CAVEARTWBCMX_current-comic'];
 
   if (req.method === "GET") {
     if (!tenant) {
@@ -34,7 +35,7 @@ export default async function handler(
     }
 
     try {
-      const canEdit = await canEditComic(token, tenant);
+      const canEdit = await canEditComic(userId, tenant);
       const permissions = {
         edit: canEdit,
       };

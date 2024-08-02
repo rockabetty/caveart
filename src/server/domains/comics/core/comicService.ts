@@ -9,11 +9,13 @@ import {
   editComic as editComicTable,
   selectComicProfile
 } from "../outbound/comicRepository";
+import { sanitizeLongformText } from "@services/sanitizers"
 import logger from "@logger";
 import extractUserIdFromToken from "@domains/users/utils/extractUserIdFromToken";
 import formidable from "formidable";
 import { ErrorKeys } from "../errors.types";
 import { ErrorKeys as GeneralErrorKeys } from '../../../errors.types'
+
 
 const invalidRequest = {
   success: false,
@@ -46,9 +48,9 @@ export async function editComic(
   update: Comic,
 ): Promise<QueryResult | null> {
   try {
-    let columnName = "subdomain";
-    if (typeof tenant === "number") {
-      columnName = "id"
+    let columnName = "id";
+    if (typeof tenant === "string") {
+      columnName = "subdomain"
     }
     const edit = await editComicTable(tenant, update);
     return {
@@ -93,11 +95,7 @@ const isValidIDList = function (list: number[]) {
 }
 
 export const isValidDescription = function (description: string) {
-  const validDescriptionRegex = /^[a-zA-Z0-9\s.,!?'"-_]{1,120}$/;
-  if (!validDescriptionRegex.test(description)) {
-    return false
-  }
-  return description.length < 1024
+  return description.length < 1024; 
 }
 
 export const isValidCommentOption = function (option: string) {
@@ -130,13 +128,13 @@ export const isValidTitle = function (title: string) {
 }
 
 export async function updateTitle (
-  tenant: number | string,
+  tenantID: number,
   update: string
   ): Promise<QueryResult | null > {
     if (isValidTitle(update)) {
       const updateData = { 'title': update }
       try {
-        editComic(tenant, updateData)
+        editComic(tenantID, updateData)
         return {
           success: true,
           data: updateData
@@ -158,13 +156,13 @@ export async function updateTitle (
 }
 
 export async function updateSubdomain (
-  tenant: number | string,
+  tenantID: number,
   update: string
   ): Promise<QueryResult | null > {
     if (isValidSubdomain(update)) {
       const updateData = { 'subdomain': update }
       try {
-        editComic(tenant, updateData)
+        editComic(tenantID, updateData)
         return {
           success: true,
           data: updateData
@@ -185,6 +183,28 @@ export async function updateSubdomain (
     return invalidRequest
 }
 
+export async function updateDescription (
+  tenantID: number,
+  update: string
+  ): Promise<QueryResult | null > {
+    if (isValidDescription(update)) {
+      const sanitizedInput = sanitizeLongformText(update)
+      const updateData = { 'description': sanitizedInput }
+      try {
+        editComic(tenantID, updateData)
+        return {
+          success: true,
+          data: updateData
+        }
+      } catch (error) {
+        return {
+          success: false,
+          error: error
+        }
+      }
+    }
+    return invalidRequest
+}
 
 export async function getComicProfile(identifier: string | number) {
   const profile = await selectComicProfile(identifier);

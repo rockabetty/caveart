@@ -168,6 +168,7 @@ export async function selectComicProfile(comicId: number | string): Promise<Comi
     GROUP BY c.id
   )
   SELECT 
+    c.id,
     c.title,
     c.subdomain,
     c.tagline,

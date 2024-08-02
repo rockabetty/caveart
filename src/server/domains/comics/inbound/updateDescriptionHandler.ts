@@ -1,5 +1,5 @@
 import { NextApiHandler } from "next";
-import { canEditComic, updateTitle } from "../core/comicService";
+import { canEditComic, updateDescription } from "../core/comicService";
 import { withAuth } from "@domains/users/middleware/withAuth";
 import { isAuthor } from "../middleware/isAuthor";
 import { logger } from "@logger";
@@ -13,28 +13,22 @@ const handler: NextApiHandler = async (req, res): Promise<void> => {
     const tenantID = Number(req.cookies['CAVEARTWBCMX_current-comic']);
     const { update } = req.body;
 
-    console.log("#############################################################################################")
-    console.log(tenantID)
-    console.log(update)
-
     if (typeof update !== "string") {
       return res.status(400).json({ error: ErrorKeys.INVALID_REQUEST });
     }
 
-    const newTitle = await updateTitle(tenantID, update);
-    console.log("update title was made.")
-    if (newTitle.success) {
+    const newDescription = await updateDescription(tenantID);
+    if (newDescription.success) {
       return res.status(200).send("OK");
     }
 
     let statusCode = 400;
-    if (newTitle.error === ErrorKeys.GENERAL_SERVER_ERROR) {
-      console.log("error after updateTitle call.")
-      logger.error(newTitle.error);
+    if (newDescription.error === ErrorKeys.GENERAL_SERVER_ERROR) {
+      logger.error(newDescription.error);
       statusCode = 500;
     }
 
-    return res.status(statusCode).send(newTitle.error);
+    return res.status(statusCode).send(newDescription.error);
   } catch (error: any) {
     logger.error(error);
     return res.status(500).json({ error: ErrorKeys.GENERAL_SERVER_ERROR });

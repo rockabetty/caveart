@@ -1,4 +1,4 @@
-import { LoadingSpinner, Form } from "@components";
+import { LoadingSpinner, Form, Link } from "@components";
 import "./ComicProfiles.css";
 import { useComicProfile } from "./hooks/useComicProfile";
 import ComicProfileForm from "./ComicProfileForm";
@@ -14,7 +14,7 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
   const { t } = useTranslation();
   const { tenant } = props;
   const { state, setSubmissionError, confirmEdit } = useComicProfile(tenant);
-  const { update, permissions, profile, submissionError, successMessage } =
+  const { update, permissions, profile, submissionError, successMessage, redirect } =
     state;
 
   if (permissions === undefined) {
@@ -24,6 +24,11 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
   if (permissions?.edit === false) {
     return <div>{t("comicProfile.errors.403")}</div>;
   }
+
+  if (!!redirect) {
+    return <div>Whoops! We can't find a webcomic with the subdomain '{tenant}'. If you just recently updated your comic's subdomain, this URL is outdated and you might want to go to <Link href={`/comic/${redirect}/edit`}>here, instead</Link>!</div>
+  }
+
   const handleFormSubmit = async () => {
     let updates: Promise<any>[] = [];
 
