@@ -26,7 +26,12 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
   }
 
   if (!!redirect) {
-    return <div>Whoops! We can't find a webcomic with the subdomain '{tenant}'. If you just recently updated your comic's subdomain, this URL is outdated and you might want to go to <Link href={`/comic/${redirect}/edit`}>here, instead</Link>!</div>
+    return (
+      <div>
+        <p>{t('comicProfile.errors.redirect.prompt')}</p>
+        <Link type="button" href={`/comic/${redirect}/edit`}>{t('comicProfile.errors.redirect.linkLabel')}</Link>
+      </div>
+      )
   }
 
   const handleFormSubmit = async () => {

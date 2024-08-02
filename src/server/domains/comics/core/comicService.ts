@@ -3,6 +3,7 @@ import {
   getRatingId,
   addAuthorToComic,
   addGenresToComic,
+  removeGenresFromComic,
   addContentWarningsToComic,
   getComicIdFromSubdomain,
   addComic,
@@ -23,13 +24,15 @@ const invalidRequest = {
 };
 
 export async function canEditComic(
-  token: string,
-  identifier: number | string,
+  userID: number,
+  tenant: number | string,
 ) {
   try {
-    const userId = await extractUserIdFromToken(token);
-    const comicId = await getComicIdFromSubdomain(identifier);
-    const ifOwnsComic = await isAuthor(Number(userId), Number(comicId));
+    let comicID = tenant;
+    if (typeof tenant  !== 'number' ) {
+      comicID = await getComicIdFromSubdomain(tenant);
+    }
+    const ifOwnsComic = await isAuthor(userID, comicID);
     return {
       success: true,
       edit: ifOwnsComic,
@@ -204,6 +207,48 @@ export async function updateDescription (
       }
     }
     return invalidRequest
+}
+
+export async function updateGenres (
+  tenantID: number,
+  old,
+  update ) {
+    if (typeof old !== "object" || typeof update !== "object") {
+      return invalidRequest
+    }
+    try {
+      let deleteIDs: number[] = [];
+      let addIDs: number[] = [];
+
+      for (let key in old) {
+        if (!update[key]) {
+          deleteIDs.push(Number(key));
+        }
+      }
+      for (let key in update) {
+        if (!old[key]) {
+          addIDs.push(Number(key));
+        }
+      }
+      
+      if (deleteIDs.length > 0) {
+        await removeGenresFromComic(tenantID, deleteIDs);
+      }
+
+      if (addIDs.length > 0) {
+        await addGenresToComic(tenantID, addIDs);
+      }
+
+      return {
+        success: true,
+        data: update
+      }
+    } catch (error) {
+        return {
+          success: false,
+          error: error
+        }
+    }
 }
 
 export async function getComicProfile(identifier: string | number) {

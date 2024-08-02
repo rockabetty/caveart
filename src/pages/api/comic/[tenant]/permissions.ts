@@ -12,7 +12,7 @@ export default async function handler(
   res: NextApiResponse,
 ) {
  
-  const tenant = req.cookies['CAVEARTWBCMX_current-comic'];
+  const tenant = Number(req.cookies['CAVEARTWBCMX_current-comic']);
 
   if (req.method === "GET") {
     if (!tenant) {

@@ -101,7 +101,6 @@ export const fetchProfile =
         const { response } = error; 
         if (response.status === 400 ) {
           if (!!response.data.subdomain) {
-            console.log("Recommend redirect to " + response.data.subdomain)
             return dispatch({
               type: "RECOMMEND_REDIRECT",
               payload: { tenant: response.data.subdomain }
@@ -128,6 +127,7 @@ export const fetchPermissions =
 
 export const fetchProfileToUpdate =
   (tenant: string) => async (dispatch: React.Dispatch<ComicProfileAction>) => {
+    console.log("Fetch profile to update with tenant  -" + tenant)
     try {
       const [comic, permissions] = await Promise.all([
         axios.get(`/api/comic/${tenant}`),

@@ -105,10 +105,7 @@ export async function editTable(
     SET ${updateString}
     WHERE ${identifierColumn} = $${idPlaceholder}
   `;
-
-  console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-  console.log(query)
-
+  
   try {
     return await queryDbConnection(query, values);
   } catch (error: any) {

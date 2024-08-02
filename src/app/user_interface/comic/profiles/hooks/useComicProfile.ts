@@ -34,19 +34,19 @@ export const useComicProfile = (tenant?: string) => {
   }, [tenant]);
 
   const getProfile = () => {
-    if (tenant !== undefined) {
+    if (!!tenant) {
       fetchProfile(tenant)(dispatch);
     }
   };
 
   const getUserPermissions = () => {
-    if (tenant !== undefined) {
+    if (!!tenant) {
       fetchPermissions(tenant)(dispatch);
     }
   };
 
   const enableEditing = () => {
-    if (tenant !== undefined) {
+    if (!!tenant) {
       fetchProfileToUpdate(tenant)(dispatch);
     }
   };
@@ -78,6 +78,7 @@ export const useComicProfile = (tenant?: string) => {
 
   const confirmEdit = () => {
     handleEditSuccess()(dispatch);
+    getProfile();
   };
 
   return {
