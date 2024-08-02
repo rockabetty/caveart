@@ -35,7 +35,7 @@ export const deleteFile = async (filename: string) => {
 
 export const parseFormWithSingleImage = async (req: NextApiRequest, purpose: string) => {
   await fs.ensureDir(uploadDir);
-  
+
   const form = formidable({
     uploadDir,
     keepExtensions: true,
@@ -43,15 +43,12 @@ export const parseFormWithSingleImage = async (req: NextApiRequest, purpose: str
   });
 
   return new Promise<{ fields: formidable.Fields; files: formidable.Files }>((resolve, reject) => {
-    console.log("Calling form.parse.");
     form.parse(req, (err, fields, files) => {
       if (err) {
-        console.log("Error in parsing.")
         logger.error(err);
         reject(err);
         return;
       }
-      console.log("Resolving time.");
       resolve({ fields, files });
     });
   });

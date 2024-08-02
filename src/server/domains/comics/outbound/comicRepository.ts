@@ -193,7 +193,7 @@ export async function selectComicProfile(
     COALESCE(cw.content_warnings, '{}'::jsonb) AS content_warnings
   FROM comics c
   JOIN ratings r ON r.id = c.rating
-  JOIN comic_image_uploads i ON i.id = c.thumbnail_id 
+  LEFT JOIN comic_image_uploads i ON i.id = c.thumbnail_id 
   LEFT JOIN ComicGenres cg ON cg.comic_id = c.id
   LEFT JOIN ContentWarnings cw ON cw.comic_id = c.id
   WHERE c.${identifier} = $1

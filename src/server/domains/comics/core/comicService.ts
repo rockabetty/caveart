@@ -20,6 +20,7 @@ import extractUserIdFromToken from "@domains/users/utils/extractUserIdFromToken"
 import formidable from "formidable";
 import { ErrorKeys } from "../errors.types";
 import { ErrorKeys as GeneralErrorKeys } from '../../../errors.types'
+import { ErrorKeys as FileErrorKeys } from '@services/uploader/errors.types'
 import { addComicImageToDatabase } from '@services/uploader'
 
 const invalidRequest = {
@@ -369,6 +370,34 @@ export async function getComicProfile(identifier: string | number) {
   }
 }
 
+export async function updateThumbnail(comicID: number, files: formidable.Files) {
+  let thumbnail_id = undefined;
+  if (files) {
+    try {
+      await Promise.all(
+        Object.keys(files).map(async (key) => {
+          const file = files[key][0];
+          thumbnail_id = await addComicImageToDatabase(`/uploads/${file.newFilename}`);
+        })
+      );
+      const update = await editComic(comicID, { thumbnail_id })
+      return {
+        success: true,
+        data: { thumbnail_id }
+      }
+    } catch (fileErr) {
+      return {
+        success: false,
+        error: fileErr
+      };
+    }
+  }
+  return {
+    success: false,
+    error: FileErrorKeys.IMAGE_MISSING
+  }
+}
+
 export async function createComic(
   fields: formidable.Fields,
   files: formidable.Files,
@@ -453,10 +482,7 @@ export async function createComic(
   }
   profile.likes = selectedLikesOption === "true";
 
- 
   if (files) {
-    console.log("@#################%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-    console.log(files)
     try {
       await Promise.all(
         Object.keys(files).map(async (key) => {
@@ -468,7 +494,7 @@ export async function createComic(
     } catch (fileErr) {
       return {
         success: false,
-        error: ErrorKeys.FILE_UPLOAD_ERROR,
+        error: FileErrorKeys.FILE_UPLOAD_ERROR,
       };
     }
   }

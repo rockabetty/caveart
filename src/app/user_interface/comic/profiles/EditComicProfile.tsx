@@ -46,6 +46,16 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
       );
     }
 
+    if (typeof update.thumbnail !== 'string') {
+      updates.push(
+        axios.post(`/api/comic/${tenant}/thumbnail`, { arbitrayfield: "lol", thumbnail: update.thumbnail},  {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }),
+      );
+    }
+
     if (!update.subdomain) {
       return setSubmissionError("comicManagement.errors.subdomainMissing");
     }

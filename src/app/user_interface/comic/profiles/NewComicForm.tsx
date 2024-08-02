@@ -42,7 +42,7 @@ const NewComicForm: React.FC = () => {
       comments: update.comments,
       rating: update.rating,
       likes: update.likes,
-      setThumbnail: update.thumbnail
+      thumbnail: update.thumbnail
     };
 
     if (!update.title) {
