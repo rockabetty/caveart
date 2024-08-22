@@ -1,11 +1,11 @@
 .link {
-  text-decoration: none;
+  text-decoration: underline;
   cursor: pointer;
   display: inline-flex;
   outline: 3px solid transparent;
   outline-offset: 0;
   color: var(--col-interactive-01);
-  padding: var(--spacing-2xs);
+  padding: 0;
   transition: 0.25s ease-in-out color,
               0.25s ease-in-out outline-offset,
               0.25s ease-in-out outline;
@@ -14,23 +14,24 @@
 .link:focus {
   color: var(--col-interactive-01-hover);
   outline: 3px solid var(--col-interactive-02);
-  outline-offset:  var(--spacing-2xs);
+  outline-offset: 0;
   transition: 0.125s ease-in-out color,
               0.125s ease-in-out outline-offset,
               0.125s ease-in-out outline;
 }
-.link.Inline {
-  padding: 0;
-  text-decoration: underline;
-}
-.link.Inline:focus,
-.link.Inline:hover {
-  outline-offset: 0;
-}
+
 .link.Disabled {
   pointer-events: none;
   color:  var(--col-disabled);
 }
 .button {
   text-decoration: none;
+}
+
+.link.Navigation {
+  text-decoration: none;
+  padding: var(--spacing-2xs);
+}
+.link.Navigation:hover, .link.Navigation:focus {
+   outline-offset: var(--spacing-2xs);
 }
