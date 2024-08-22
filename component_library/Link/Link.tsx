@@ -14,11 +14,13 @@ export interface LinkProps extends InteractiveProps {
    * Pass the `href` attribute for the <a> element
    */
   href: string
-  inline?: boolean
   /**
    * Pass the <a> element target attribute
   * */
   target?: '_blank' | '_self' | '_parent' | '_top' | 'framename'
+  /**
+   * Toggle appearance and behavior when disabled
+  * */
   disabled?: boolean
   /**
    * custom on click event function
@@ -27,7 +29,10 @@ export interface LinkProps extends InteractiveProps {
   /**
    * Shift the appearance of the link for semantic vs visual presentation needs
   * */
-  type?: 'inline' | 'default' | 'button' | 'inline button'
+  type?: 'default' | 'button' | 'navigation'
+  /**
+   * Select the visual presentation of the link when it has a Button appearance
+   * */
   look?: 'primary' | 'default' | 'muted' | 'warning' | undefined;
 }
 
@@ -48,13 +53,13 @@ const Link = ({
       href={href}
       target={target}
       className={classNames({
-        'Inline': type === 'inline' || type === 'inline button',
+        'Navigation': type === 'navigation',
         'Disabled': !!disabled,
-        'button': type === 'button' || type === 'inline button',
-        'Muted': look === 'muted',
-        'Primary': look ==='primary',
-        'Warning': look === 'warning',
-        'link': type !== 'button' && type !== 'inline button',
+        'button': type === 'button',
+        'Muted': type === 'button' && look === 'muted',
+        'Primary': type === 'button' && look ==='primary',
+        'Warning': type === 'button' && look === 'warning',
+        'link': type !== 'button',
       })}
       onClick={onClick}
     >
