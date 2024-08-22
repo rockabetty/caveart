@@ -2,7 +2,7 @@ import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 import Checkbox from './Checkbox'
 export default {
-  title: 'Components/Checkbox',
+  title: 'Form Components/Checkbox',
   component: Checkbox,
    argTypes: {
     checked: {
@@ -15,6 +15,10 @@ const Template: ComponentStory<typeof Checkbox> = (args) => <Checkbox {...args} 
 
 let isChecked = false;
 
+const handleChange = function () {
+  isChecked = !isChecked;
+}
+
 export const Default = Template.bind({})
 Default.args = {
   id: "example-id",
@@ -22,5 +26,6 @@ Default.args = {
   helperText: "Optional helper text goes here.",
   defaultValue: "Default Value",
   type: "password",
-  checked: isChecked
+  checked: isChecked,
+  onChange: handleChange
 }
