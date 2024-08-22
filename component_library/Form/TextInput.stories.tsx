@@ -3,7 +3,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react'
 import TextInput from './TextInput'
 import Link from '../Link/Link'
 export default {
-  title: 'Components/TextInput',
+  title: 'Form Components/TextInput',
   component: TextInput,
   argTypes: {
     defaultValue: {
