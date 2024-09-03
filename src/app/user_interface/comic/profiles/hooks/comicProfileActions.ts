@@ -89,6 +89,17 @@ const determineComicRating = function (
   return "All Ages";
 };
 
+export const deleteComic = (comicID: number) => async(dispatch: React.Dispatch<ComicProfileAction>) => {
+  try {
+    axios.post(`/api/comic/${comicID}/delete`);
+    dispatch({
+      type: "DELETE_COMIC"
+    })
+  } catch (error: any) {
+    handleError(error);
+  }
+};
+
 export const fetchProfile =
   (tenant: string) => async (dispatch: React.Dispatch<ComicProfileAction>) => {
     try {

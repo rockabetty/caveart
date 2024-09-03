@@ -10,6 +10,7 @@ import {
   handleSubmissionError,
   handleSubmissionSuccess,
   handleEditSuccess,
+  deleteComic
 } from "./comicProfileActions";
 import {
   ComicData,
@@ -81,6 +82,11 @@ export const useComicProfile = (tenant?: string) => {
     getProfile();
   };
 
+  const removeComic = (comicID: number) => {
+    deleteComic(comicID)(dispatch);
+    // router.push(`/comics/mine`);
+  }
+
   return {
     state,
     getProfile,
@@ -92,5 +98,6 @@ export const useComicProfile = (tenant?: string) => {
     setSubmissionError,
     confirmCreation,
     confirmEdit,
+    removeComic
   };
 };

@@ -488,6 +488,39 @@ export async function deleteComic(
   }
 }
 
+export async function removeAllGenresFromComic(comicID: number) {
+  const query = `DELETE FROM comics_to_genres WHERE comic_id = $1`;
+  const values = [comicID]
+  try {
+    const result = await queryDbConnection(query, values)
+    if (result.rowCount > 0) {
+    return true;
+  } else {
+    return false;
+  }
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
+  }
+}
+
+export async function removeAllContentWarningsFromComic(comicID: number) {
+  const query = `DELETE FROM comics_to_content_warnings WHERE comic_id = $1`;
+  const values = [comicID]
+  try {
+    const result = await queryDbConnection(query, values)
+    if (result.rowCount > 0) {
+    return true;
+  } else {
+    return false;
+  }
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
+  }
+}
+
+
 export async function removeGenresFromComic(
   comic: number,
   genreList: number[] = [],
@@ -545,5 +578,24 @@ export async function removeAuthorsFromComic(
   } catch (error: any) {
     logger.error(error);
     throw error;
+  }
+}
+
+export async function getAuthorsOfComic(
+  comic: number
+  ): Promise<QueryResult| null> {
+  try {
+    const query = `SELECT
+      u.username, u.id
+    FROM comics_to_authors ca
+    JOIN users u 
+      ON u.id = ca.user_id
+    WHERE ca.comic_id = $1`;
+    const values = [comic]
+    const selection = await queryDbConnection(query, values);
+    return selection.rows
+  } catch (error:any) {
+    logger.error(error)
+    throw error
   }
 }
