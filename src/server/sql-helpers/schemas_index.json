@@ -1,0 +1,7 @@
+[
+  "../domains/users/schema.sql",
+  // comics belong to authors (users), do not load comics schema before users schema
+  "../domains/comics/schema.sql",
+  // comic pages refer to comics, do do not load comic pages schema before comics schema
+  "../domains/comicpages/schema.sql"
+]

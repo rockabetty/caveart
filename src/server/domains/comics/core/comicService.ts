@@ -74,17 +74,12 @@ export async function getAuthors(tenant: string | number) {
   }
 }
 
-export async function deleteComic(tenant: string | number, author: number) {
+export async function deleteComic(comicID: number, author: number) {
   try {
-    let comicID = undefined;
-    if (typeof tenant === "number") {
-      comicID = tenant;
-    } else {
-      console.log("tenant -" + tenant)
-      comicID = await getComicIdFromSubdomain(tenant);
-    }
+    console.log("Delete comic running")
 
-    const authorSelection = await getAuthors(tenant);
+    const authorSelection = await getAuthors(comicID);
+    console.log("Author selection")
     const authorList = authorSelection.data.authors;
 
     if (authorList.length > 1) {
@@ -94,7 +89,7 @@ export async function deleteComic(tenant: string | number, author: number) {
       }
     }
 
-    console.log("ARGS:" + comicID + author)
+    console.log("Comic ID:" + comicID + "...Author:" + author)
 
     await removeAuthorsFromComic(comicID, [author]);
     console.log("Authors yoinked")

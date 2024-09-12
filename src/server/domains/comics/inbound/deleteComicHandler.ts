@@ -12,6 +12,8 @@ const handler: NextApiHandler = async (req, res): Promise<void> => {
   acceptPostOnly(req, res);
   try {
     const {tenant} = req.query;
+
+
     const token = getUnvalidatedToken(req);
     const userID = await extractUserIdFromToken(token, false);
     const deleteAttempt = deleteComic(tenant, userID);

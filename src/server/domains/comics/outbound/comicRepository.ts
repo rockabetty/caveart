@@ -11,6 +11,7 @@ import {
 } from "../comic.types";
 import { logger } from "@logger";
 import { QueryResult } from "pg";
+import ErrorKeys from '../errors.types';
 
 export async function addComic(comic: Comic): Promise<number | null> {
   const query = `
@@ -469,17 +470,24 @@ export async function editComic(
 }
 
 export async function deleteComic(
-  identifier: number | string,
+  comicID: number
 ): Promise<boolean | null> {
-  const column = typeof identifier === "string" ? "subdomain" : "id";
+  if (typeof comicID !== 'number' || comicID <= 0) {
+    return { success: false, message: ErrorKeys.COMIC_ID_INVALID };
+  }
+
+  console.log("Running DC on " + comicID)
   const query = `DELETE FROM comics 
-    WHERE ${column} = $1;`;
-  const values = [comic];
+    WHERE id = $1;`;
+  const values = [comicID];
   try {
+    console.log("Deleting " + comicID)
     const result = await queryDbConnection(query, values);
     if (result.rowCount > 0) {
+      console.log("Deletion supposedly worked")
       return true;
     } else {
+      console.log("No row count")
       return false;
     }
   } catch (error: any) {
@@ -505,15 +513,29 @@ export async function removeAllGenresFromComic(comicID: number) {
 }
 
 export async function removeAllContentWarningsFromComic(comicID: number) {
-  const query = `DELETE FROM comics_to_content_warnings WHERE comic_id = $1`;
   const values = [comicID]
+  const checkQuery = `SELECT COUNT(id) FROM comics_to_content_warnings WHERE comic_id = $1`;
+  const deleteQuery = `DELETE FROM comics_to_content_warnings WHERE comic_id = $1`;
+
+  console.log("Deleting content warnings from comic iD " + comicID)
+  
   try {
-    const result = await queryDbConnection(query, values)
+    const checkResult = await queryDbConnection(checkQuery, values);
+    const count = parseInt(checkResult.rows[0].count, 10);
+
+    if (count === 0) {
+      console.log("NOthing to delete")
+      return true;
+    }
+
+    const deleteResult = await queryDbConnection(deleteQuery, values)
     if (result.rowCount > 0) {
-    return true;
-  } else {
-    return false;
-  }
+      console.log("Deleted!")
+      return true;
+    } else {
+      console.log("Nothing was deleted.")
+      return false;
+    }
   } catch (error: any) {
     logger.error(error);
     throw error;
