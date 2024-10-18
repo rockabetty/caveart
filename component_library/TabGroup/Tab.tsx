@@ -13,7 +13,8 @@ const Tab = function (props) {
   	id,
     labelText,
     isActive,
-    onClick
+    onClick,
+    disabled
   } = props;
   return (
     <button
@@ -23,7 +24,8 @@ const Tab = function (props) {
       className={
       classNames({
       'tabgroup_tab': true,
-      'Active': !!isActive
+      'Active': !!isActive,
+      'Disabled': !!disabled
       })}
     >
       {labelText}
