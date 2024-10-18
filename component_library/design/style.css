@@ -87,6 +87,7 @@
   --size-font-xl: calc(var(--base-size) * var(--base-scaler) * var(--base-scaler));
 
   --size-border-radius: var(--border-radius, var(--spacing-xs));
+  --size-border-width: var(--border-width, 1px);
 
   --theme-interface-00: var(--color-interface-00, var(--swatch-black));
   --theme-interface-10: var(--color-interface-10, var(--swatch-ochre-100));
@@ -152,8 +153,8 @@
   --col-text-secondary: var(--color-text-secondary, var(--theme-interface-80));
   --col-text-inverse: var(--color-text-inverse, var(--theme-interface-00));
 
-  --col-background: var(--color-background, var(--theme-interface-10));
-  --col-backdrop: var(--color-background, var(--theme-interface-00));
+  --col-background: var(--color-background, var(--theme-interface-00));
+  --col-backdrop: var(--color-backdrop, var(--theme-interface-10));
   --col-border: var(--color-border, var(--theme-interface-40));
 
   --col-button: var(--color-button, var(--theme-secondary-20));
