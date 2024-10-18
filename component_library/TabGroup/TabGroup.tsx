@@ -45,6 +45,7 @@ const TabGroup: React.FC<TabGroupProps> = ({
               labelText={tab.name}
               isActive={activeTabName === tab.name}
               onClick={() => updateTab(tab.name)}
+              disabled={tab.disabled}
             />
             )
         })}
