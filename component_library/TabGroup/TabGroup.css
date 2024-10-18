@@ -2,6 +2,11 @@
   border: var(--size-border-width) solid var(--col-border);
 }
 
+.tabgroup_tab-selection {
+  display: flex;
+  width: 100%;
+}
+
 .tabgroup_tab {
   background: var(--col-backdrop);
   color: var(--col-interactive-01);
@@ -13,6 +18,7 @@
     0.25s ease-in-out border,
     0.25s ease-in-out color,
     0.25s ease-in-out box-shadow;
+  flex-grow: 1;
 }
 
 .tabgroup_tab:hover {
@@ -38,4 +44,8 @@
 	color: var(--col-text);
 	background: var(--col-background);
 	border-bottom-color: var(--col-focus);
+}
+
+.tabgroup_content {
+  padding: var(--spacing-md);
 }

@@ -4,37 +4,55 @@ import Tab from './Tab';
 import './TabGroup.css';
 import classNames from 'classnames';
 
-export interface TabGroupProps extends UniversalProps {
-  tabs: String[],
+
+interface TabData extends UniversalProps {
+  name: string;
+  content: React.ReactNode;
+  disabled?: boolean;
 }
 
-const TabGroup = function (props) {
+export interface TabGroupProps extends UniversalProps {
+  tabs: TabData[];
+  initialTab?: string;
+}
 
-  const [activeTabId, setActiveTabId] = useState<String>("");
+const TabGroup: React.FC<TabGroupProps> = ({
+  id,
+  tabs,
+  initialTab
+  }) => {
 
-  const updateTab = function (event: React.SyntheticEvent) {
-    setActiveTabId(event.target.id);
+  const initialActiveTab = initialTab || tabs[0].name
+  const initialContent = tabs.find(tab => tab.name === initialActiveTab)?.content;
+  const [activeTabName, setActiveTabName] = useState<string>(initialActiveTab);
+  const [activeTabContent, setActiveTabContent] = useState<React.ReactNode>(initialContent);
+
+  const updateTab = function (name) {
+    setActiveTabName(name);
+    const content = tabs.find(tab => tab.name === name)?.content
+    setActiveTabContent(content);
   }
 
-  const {
-    id,
-    tabs
-  } = props;
   return (
-    <div className='tabgroup'
-    >
-      {tabs.map((tab, idx) => {
-        const tabId = `tabgroup-tab-${tab}`;
-        return (
-          <Tab
-            id={tabId}
-            key={`tabgroup-tab-${idx}`}
-            labelText={tab}
-            isActive={activeTabId === tabId}
-            onClick={updateTab}
-          />
-          )
-      })}
+    <div className='tabgroup' id={id}>
+      <div className='tabgroup_tab-selection'>
+        {tabs.map((tab, idx) => {
+          const tabId = `tabgroup-tab-${tab}`;
+          return (
+            <Tab
+              id={tab.id}
+              key={`tab-${tab.name}`}
+              labelText={tab.name}
+              isActive={activeTabName === tab.name}
+              onClick={() => updateTab(tab.name)}
+            />
+            )
+        })}
+      </div>
+
+      <div className='tabgroup_content'>
+        {activeTabContent}
+      </div>
     </div>
   )
 }
