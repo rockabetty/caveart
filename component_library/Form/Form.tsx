@@ -18,6 +18,7 @@ export interface FormProps extends InteractiveProps {
   children: ReactNode;
   isLoading?: boolean;
   successMessage?: string;
+  isDestructive: boolean;
   formValues: FormValues;
 }
 
@@ -34,6 +35,7 @@ const Form: React.FC<FormProps> = (props) => {
     successMessage = "",
     submitLabel = "Submit",
     cancelLabel = "",
+    isDestructive = false,
     onCancel  = () => {},
   } = props;
 
@@ -66,7 +68,7 @@ const Form: React.FC<FormProps> = (props) => {
           <p className="form-feedback">{successMessage}</p>
         ) : null}
       </div>
-
+      <p>{isDestructive.toString()}</p>
       {cancelLabel ? (
         <ButtonSet>
           <Button loading={isLoading} onClick={onCancel} id={`cancel-${id}`}>
@@ -75,7 +77,7 @@ const Form: React.FC<FormProps> = (props) => {
 
           <Button
             loading={isLoading}
-            look="primary"
+            look={!!isDestructive ? "warning" : "primary" }
             type="submit"
             id={`submit-${id}`}
           >
@@ -86,7 +88,7 @@ const Form: React.FC<FormProps> = (props) => {
         <Button
           id={`${id}-form-submit`}
           type="submit"
-          look="primary"
+          look={!!isDestructive ? "warning" : "primary" }
           loading={isLoading}
         >
           {submitLabel}

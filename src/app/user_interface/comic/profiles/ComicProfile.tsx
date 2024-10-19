@@ -78,6 +78,7 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
         cancelLabel={t('comicProfile.deletion.cancelDeletion')}
         onCancel={cancelDeletion}
         onSubmit={deleteComic}
+        isDestructive={true}
         submissionError={formErrorText}
       >
         <p>{t('comicProfile.deletion.instructions')}</p>
