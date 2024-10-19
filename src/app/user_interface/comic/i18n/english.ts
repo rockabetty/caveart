@@ -24,6 +24,7 @@ const english = {
 			instructions: "Deletion of a comic is permanent! To confirm, type the name of the comic into the textbox.",
 			cancelDeletion: "Cancel",
 			confirmDeletion: "Delete",
+			invalidDeletion: "This comic title isn't right. Check for typos.",
 			helperText: "Type the comic title as it appears on the comic profile ({{title}}).",
 			comicName: "Comic title to delete"
 		},

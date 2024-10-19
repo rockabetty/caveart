@@ -15,6 +15,12 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
   const {profile, permissions} = state;
   const [deleted, setDeleted] = useState<boolean>(false);
   const [deletionConfirmationModalOpen, setDeletionConfirmationModalOpen] = useState<boolean>(false);
+  const [deletionConfirmationString, setDeletionConfirmationString] = useState<string>("");
+  const [formErrorText, setFormErrorText] = useState<string>("");
+
+  const onDeletionConfirmationInput = function (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    setDeletionConfirmationString(e.target.value)
+  }
 
   const renderGenres = useCallback(() => {
     const selectedGenres = profile?.genres 
@@ -48,14 +54,20 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
     setDeletionConfirmationModalOpen(false);
   }
 
-  const handleRemoveComic = async function() {
-    if (profile.id) {
+  const isValidDeletionAttempt = function () {
+    return deletionConfirmationString === profile.title;
+  }
+
+  const deleteComic = async function() {
+    if (isValidDeletionAttempt()) {
       try {
         await removeComic(profile.id);
         setDeleted(true)
       } catch (error) {
         console.error(error)
       }
+    } else {
+      setFormErrorText(t('comicProfile.deletion.invalidDeletion'))
     }
   }
 
@@ -65,6 +77,8 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
         submitLabel={t('comicProfile.deletion.confirmDeletion')}
         cancelLabel={t('comicProfile.deletion.cancelDeletion')}
         onCancel={cancelDeletion}
+        onSubmit={deleteComic}
+        submissionError={formErrorText}
       >
         <p>{t('comicProfile.deletion.instructions')}</p>
         <TextInput 
@@ -72,6 +86,8 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
           helperText={t('comicProfile.deletion.helperText', {title: profile.title})}
           pattern={profile.title}
           required
+          value={deletionConfirmationString}
+          onChange={onDeletionConfirmationInput}
         />
       </Form>
     )
