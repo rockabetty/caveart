@@ -11,10 +11,6 @@ const Template: ComponentStory<typeof Accordion> = (args) => <Accordion {...args
 
 export const Default = Template.bind({})
 Default.args = {
-  children: (
-    <>
-      <h1>Heading</h1>
-      <p>Lorem ipsum sit dolor amet</p>
-    </>
-  )
+  title: "Accordion",
+  children: <p>Lorem ipsum sit dolor amet</p>
 }
