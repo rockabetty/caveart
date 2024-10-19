@@ -45,36 +45,24 @@ export interface WriteInFieldProps extends InputProps {
   errorText?: string;
 }
 
-export const writeInDefaults: WriteInFieldProps = {
-  ...InputDefaults,
-  placeholderText: '',
-  type: 'text',
-  min: undefined,
-  max: undefined,
-  maxLength: undefined,
-  minLength: undefined,
-  helperText: "",
-  errorText: ""
-} as WriteInFieldProps
-
 const WriteInField: React.FC<WriteInFieldProps> = (props) => {
   const {
-    id,
-    type,
-    disabled,
+    id = "",
+    type = "text",
+    disabled = false,
     max,
     min,
     maxLength,
     minLength,
-    name,
-    onBlur,
-    onChange,
-    onClick,
+    name = "",
+    onBlur = () => {},
+    onChange = () => {},
+    onClick = () => {},
     pattern,
-    labelText,
-    placeholderText,
-    helperText,
-    errorText,
+    labelText = "",
+    placeholderText = "",
+    helperText = "",
+    errorText = "",
     classes,
     required,
     value
@@ -163,7 +151,5 @@ const WriteInField: React.FC<WriteInFieldProps> = (props) => {
     </FormField>
   )
 }
-
-WriteInField.defaultProps = writeInDefaults
 
 export default WriteInField

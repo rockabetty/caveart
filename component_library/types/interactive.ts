@@ -1,4 +1,4 @@
-import {UniversalProps, UniversalDefaults} from './universal'
+import {UniversalProps} from './universal'
 
 export interface InteractiveProps extends UniversalProps {
     /**
@@ -28,16 +28,3 @@ export interface InteractiveProps extends UniversalProps {
     */
     onFocus?: (...params: any) => any;
 };
-
-export const InteractiveDefaults = {
-  ...UniversalDefaults,
-  ariaLabel: "",
-  ariaLabelledby: "",
-  disabled: false,
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  onBlur: () => {},
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  onClick: () => {},
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  onFocus: () => {},
-} as InteractiveProps;

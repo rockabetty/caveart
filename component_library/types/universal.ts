@@ -4,7 +4,3 @@ export interface UniversalProps {
   **/
   id?: string;
 }
-
-export const UniversalDefaults = {
-  id: "",
-} as UniversalProps

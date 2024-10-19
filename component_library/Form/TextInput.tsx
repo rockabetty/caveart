@@ -10,6 +10,4 @@ const TextInput: React.FC<WriteInFieldProps> = (props) => {
   )
 }
 
-TextInput.defaultProps = writeInDefaults;
-
 export default TextInput;

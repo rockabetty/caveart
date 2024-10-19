@@ -10,15 +10,13 @@ export interface LabelProps extends InteractiveProps {
   required?: boolean;
 }
 
-export const labelDefaults: LabelProps = {
-  ...InteractiveDefaults,
-  htmlFor: '',
-  labelText: '',
-} as LabelProps
-
-const Label: React.FC<LabelProps> = (props) => {
-
-  const {labelText, htmlFor, disabled, required, hasError} = props
+const Label: React.FC<LabelProps> = ({
+  labelText = "",
+  htmlFor = "",
+  disabled,
+  required,
+  hasError
+}) => {
 
   return ( 
     <label
@@ -35,5 +33,4 @@ const Label: React.FC<LabelProps> = (props) => {
   )
 }
 
-Label.defaultProps = labelDefaults;
 export default Label
