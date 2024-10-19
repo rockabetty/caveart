@@ -24,7 +24,7 @@ const ContentWarningSelector: React.FC<ContentWarningProps> = (props) => {
         options.map((warning, idx) => {
           return (
             <Accordion key={idx}>
-              {t(`contentWarnings.${warning.name}`)}
+              <p>{t(`contentWarnings.${warning.name}`)}</p>
               {warning.children.map((child, idx) => {
                 const name = child.name;
                 return (
