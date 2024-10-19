@@ -4,7 +4,7 @@ import {Link} from '@components';
 import ComicProfile from '../../app/user_interface/comic/profiles/ComicProfile';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { Comic, GenreSelection } from '../../data/types';
+import { Comic } from '../../data/types';
 import ComicProfileProvider from '../../app/user_interface/comic/profiles/hooks/ComicProfileProvider'
 
 function MyComics() {

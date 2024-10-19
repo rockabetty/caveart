@@ -1,6 +1,6 @@
 import { ImageUpload, Link, Tag, Button } from '@components'
 import './ComicProfiles.css';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useComicProfile } from './hooks/useComicProfile'; 
 import { useTranslation } from 'react-i18next';
 
@@ -13,6 +13,7 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
   const {tenant} = props;
   const {state, removeComic} = useComicProfile(tenant);
   const {profile, permissions} = state;
+  const [deleted, setDeleted] = useState<boolean>(false);
 
   const renderGenres = useCallback(() => {
     const selectedGenres = profile?.genres 
@@ -38,9 +39,14 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
     );
   }, [profile]);
 
-  const handleRemoveComic = function() {
+  const handleRemoveComic = async function() {
     if (profile.id) {
-      removeComic(profile.id)
+      try {
+        await removeComic(profile.id);
+        setDeleted(true)
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 
@@ -71,6 +77,14 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
 
   return (
       <div className="comic-profile">
+      { deleted ? 
+        (
+          <>
+          <p>This comic has been deleted.</p>
+          </>
+        )
+        :
+        (
           <div className="comic-profile_body">
             <a className="comic-profile_cover" href={`/read/${profile?.subdomain}`}>
               {profile?.thumbnail
@@ -100,6 +114,8 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
               {renderContentWarnings()}
             </div>
           </div>
+          )
+      }          
       </div>
   )
 }
