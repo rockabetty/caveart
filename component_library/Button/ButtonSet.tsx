@@ -7,7 +7,7 @@ export interface ButtonSetProps {
 }
 
 const Button = ({
-  id,
+  id = "",
   children
 }: ButtonSetProps) => {
   return (

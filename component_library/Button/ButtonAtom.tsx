@@ -21,13 +21,13 @@ const ButtonAtom = ({
   id ='',
   look,
   children,
-  disabled,
+  disabled = false,
   loading,
   onClick = () => {},
-  role,
+  role = "button",
   tabIndex,
   type = "button",
-  inline,
+  inline = false,
   classes
   }: ButtonAtomProps) => {
 
