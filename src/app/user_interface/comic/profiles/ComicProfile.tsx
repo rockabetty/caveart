@@ -1,4 +1,4 @@
-import { ImageUpload, Link, Tag, Button } from '@components'
+import { ImageUpload, Link, Tag, Button, Modal, Form, TextInput } from '@components'
 import './ComicProfiles.css';
 import { useCallback, useState } from 'react';
 import { useComicProfile } from './hooks/useComicProfile'; 
@@ -14,6 +14,7 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
   const {state, removeComic} = useComicProfile(tenant);
   const {profile, permissions} = state;
   const [deleted, setDeleted] = useState<boolean>(false);
+  const [deletionConfirmationModalOpen, setDeletionConfirmationModalOpen] = useState<boolean>(false);
 
   const renderGenres = useCallback(() => {
     const selectedGenres = profile?.genres 
@@ -39,6 +40,14 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
     );
   }, [profile]);
 
+  const beginDeletion = function () {
+    setDeletionConfirmationModalOpen(true);
+  }
+
+  const cancelDeletion = function () {
+    setDeletionConfirmationModalOpen(false);
+  }
+
   const handleRemoveComic = async function() {
     if (profile.id) {
       try {
@@ -48,6 +57,24 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
         console.error(error)
       }
     }
+  }
+
+  const renderDeletionConfirmationModal = () => {
+    return (
+      <Form
+        submitLabel={t('comicProfile.deletion.confirmDeletion')}
+        cancelLabel={t('comicProfile.deletion.cancelDeletion')}
+        onCancel={cancelDeletion}
+      >
+        <p>{t('comicProfile.deletion.instructions')}</p>
+        <TextInput 
+          labelText={t('comicProfile.deletion.comicName')}
+          helperText={t('comicProfile.deletion.helperText', {title: profile.title})}
+          pattern={profile.title}
+          required
+        />
+      </Form>
+    )
   }
 
   const renderContentWarnings = useCallback(() => {
@@ -80,40 +107,52 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
       { deleted ? 
         (
           <>
-          <p>This comic has been deleted.</p>
+           <p>This comic has been deleted.</p>
           </>
         )
         :
         (
-          <div className="comic-profile_body">
-            <a className="comic-profile_cover" href={`/read/${profile?.subdomain}`}>
-              {profile?.thumbnail
-                ? <ImageUpload src={profile?.thumbnail} />
-                : <ImageUpload src='/img/brand/kraugak.png' />
-              }
-            </a>
-            <div>
-             <div className="comic-profile_header">
-                <h1 className="comic-profile_title">{profile?.title}</h1>
-                  {permissions?.edit
-                    ? (<>
-                        <Link type="inline button" look="default" href={`/comic/${profile?.subdomain}/edit`} id={`edit-${profile?.subdomain}`}>{t('comicProfile.edit')}</Link>
-                        <Link type="inline button" look="primary" href={`/comic/${profile?.subdomain}/pages/new`} id={`newpage-${profile?.subdomain}`}>{t('comicPages.add')}</Link>
-                        <Button look="warning" id={`delete_comic-${profile.id}`} inline onClick={handleRemoveComic}>Delete</Button>
-                      </>
-                      )
-                    : null
-                  }
+          <>
+            <Modal
+              size="md"
+              id="delete_comic_confirmation"
+              ariaLabel="Deletion confirmation"
+              heading={t('comicProfile.deletion.confirmationHeading')}
+              isOpen={deletionConfirmationModalOpen}
+              onClose={cancelDeletion}
+            >
+              {deletionConfirmationModalOpen && renderDeletionConfirmationModal()}
+            </Modal>
+            <div className="comic-profile_body">
+              <a className="comic-profile_cover" href={`/read/${profile?.subdomain}`}>
+                {profile?.thumbnail
+                  ? <ImageUpload src={profile?.thumbnail} />
+                  : <ImageUpload src='/img/brand/kraugak.png' />
+                }
+              </a>
+              <div>
+               <div className="comic-profile_header">
+                  <h1 className="comic-profile_title">{profile?.title}</h1>
+                    {permissions?.edit
+                      ? (<>
+                          <Link type="inline button" look="default" href={`/comic/${profile?.subdomain}/edit`} id={`edit-${profile?.subdomain}`}>{t('comicProfile.edit')}</Link>
+                          <Link type="inline button" look="primary" href={`/comic/${profile?.subdomain}/pages/new`} id={`newpage-${profile?.subdomain}`}>{t('comicPages.add')}</Link>
+                          <Button look="warning" id={`delete_comic-${profile.id}`} inline onClick={beginDeletion}>Delete</Button>
+                        </>
+                        )
+                      : null
+                    }
+                </div>
+                <pre className="comic-profile_description">{profile?.description}</pre>
+                <Tag label={profile?.rating} />
+                {profile?.genres
+                  ? renderGenres()
+                  : null
+                }
+                {renderContentWarnings()}
               </div>
-              <pre className="comic-profile_description">{profile?.description}</pre>
-              <Tag label={profile?.rating} />
-              {profile?.genres
-                ? renderGenres()
-                : null
-              }
-              {renderContentWarnings()}
             </div>
-          </div>
+          </>
           )
       }          
       </div>

@@ -19,6 +19,14 @@ const english = {
 			unlisted: "Unlisted (Hidden from search engines)",
 			private: "Private (only invitees and admins)",
 		},
+		deletion: {
+			confirmationHeading: "Are you sure?",
+			instructions: "Deletion of a comic is permanent! To confirm, type the name of the comic into the textbox.",
+			cancelDeletion: "Cancel",
+			confirmDeletion: "Delete",
+			helperText: "Type the comic title as it appears on the comic profile ({{title}}).",
+			comicName: "Comic title to delete"
+		},
 		likes: {
 			name: "Likes",
 			enabled: "Users can like comic pages",
