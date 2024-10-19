@@ -6,3 +6,4 @@ export { Accordion } from './Accordion';
 export { ImageUpload, useImageUploader } from './Image';
 export { Tag } from './Tag';
 export { LoadingSpinner } from './LoadingSpinner';
+export { TabGroup } from './TabGroup';
