@@ -472,7 +472,7 @@ export async function editComic(
 export async function deleteComic(
   comicID: number
 ): Promise<boolean | null> {
-  if (typeof comicID !== 'number' || comicID <= 0) {
+  if (Number.isNaN(comicID) || comicID <= 0) {
     return { success: false, message: ErrorKeys.COMIC_ID_INVALID };
   }
 
@@ -529,7 +529,7 @@ export async function removeAllContentWarningsFromComic(comicID: number) {
     }
 
     const deleteResult = await queryDbConnection(deleteQuery, values)
-    if (result.rowCount > 0) {
+    if (deleteResult.rowCount > 0) {
       console.log("Deleted!")
       return true;
     } else {
