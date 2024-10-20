@@ -4,11 +4,11 @@ import { useCallback, useState } from 'react';
 import { useComicProfile } from './hooks/useComicProfile'; 
 import { useTranslation } from 'react-i18next';
 
-type ComicProfileProps = {
+type AuthorComicEntryProps = {
   tenant: string
 }
 
-const ComicProfile: React.FC<ComicProfileProps> = (props) => {
+const AuthorComicEntry: React.FC<AuthorComicEntryProps> = (props) => {
   const { t } = useTranslation();
   const {tenant} = props;
   const {state, removeComic} = useComicProfile(tenant);
@@ -22,29 +22,6 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
     setDeletionConfirmationString(e.target.value)
   }
 
-  const renderGenres = useCallback(() => {
-    const selectedGenres = profile?.genres 
-    ? Object.values(profile.genres)
-    : [];
-
-    return (
-      <>
-      {selectedGenres.length === 0
-        ? null
-        : (<>
-          {selectedGenres.map((value, idx) => {
-            return (
-              <Tag
-                key={`browsing-genre-${tenant}-${idx}`}
-                label={value.name}
-              />
-            )
-          })}
-          </>)
-      }
-      </>
-    );
-  }, [profile]);
 
   const beginDeletion = function () {
     setDeletionConfirmationModalOpen(true);
@@ -94,30 +71,6 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
     )
   }
 
-  const renderContentWarnings = useCallback(() => {
-    const contentWarnings = profile?.content_warnings 
-    ? Object.keys(profile.content_warnings)
-    : [];
-   
-    return (
-      <>
-      {contentWarnings.length === 0
-        ? null
-        : (<>
-          {contentWarnings.map((key, idx) => {
-            return (
-              <Tag
-                key={`browsing-content_warning-${tenant}-${idx}`}
-                label={t(`contentWarnings.${key}.${profile.content_warnings[key].name}`)}
-              />
-            )
-          })}
-          </>)
-      }
-      </>
-    );
-  }, [profile]);
-
 
   if (!deleted) {  
     return (
@@ -144,16 +97,15 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
                 <h1 className="comic-profile_title">{profile?.title}</h1>
                   {permissions?.edit
                     ? (<>
-                        <Link type="inline button" look="default" href={`/comic/${profile?.subdomain}/edit`} id={`edit-${profile?.subdomain}`}>{t('comicProfile.edit')}</Link>
-                        <Link type="inline button" look="primary" href={`/comic/${profile?.subdomain}/pages/new`} id={`newpage-${profile?.subdomain}`}>{t('comicPages.add')}</Link>
+                        <Link type="button" look="default" href={`/comic/${profile?.subdomain}`} id={`read-${profile?.subdomain}`}>{t('comicProfile.read')}</Link>
+                        <Link type="button" look="default" href={`/comic/${profile?.subdomain}/edit`} id={`edit-${profile?.subdomain}`}>{t('comicProfile.edit')}</Link>
+                        <Link type="button" look="primary" href={`/comic/${profile?.subdomain}/pages/new`} id={`newpage-${profile?.subdomain}`}>{t('comicPages.add')}</Link>
                         <Button look="warning" id={`delete_comic-${profile.id}`} inline onClick={beginDeletion}>Delete</Button>
                       </>
                       )
                     : null
                   }
               </div>
-              <pre className="comic-profile_description">{profile?.description}</pre>
-              <Tag label={profile?.rating} />
             </div>
           </div>         
         </div>
@@ -161,4 +113,4 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
   }
 }
 
-export default ComicProfile;
+export default AuthorComicEntry;
