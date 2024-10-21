@@ -141,7 +141,6 @@ const WriteInField: React.FC<WriteInFieldProps> = (props) => {
       })}
     >
       <Label
-        classes="form-field_label"
         htmlFor={id || `label-${labelText}`}
         labelText={labelText || "MISSING LABEL"}
         required={required}

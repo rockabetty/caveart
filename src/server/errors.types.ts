@@ -7,4 +7,5 @@ export enum ErrorKeys {
     UNSUPPORTED_MEDIA_TYPE = "server.errors.unsupportedMediaType",
     VALIDATION_ERROR = "server.errors.validationError",
     AUTHENTICATION_FAILED = "server.errors.authenticationFailed"
+    RESOURCE_NOT_FOUND = "server.errors.resourceNotFound"
 }

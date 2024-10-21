@@ -22,7 +22,7 @@ const Label: React.FC<LabelProps> = ({
     <label
       htmlFor={htmlFor}
       className={classNames({
-        'form-field': true,
+        'form-field_label': true,
         'Disabled': disabled,
         'Error': hasError,
       })}

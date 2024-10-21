@@ -1,5 +1,5 @@
 import { NextApiHandler } from 'next';
-import newComicHandler, {config }from "@domains/comics/inbound/newComicHandler";
+import newComicHandler, {config} from "@domains/comics/inbound/newComicHandler";
 
 export { config };
 

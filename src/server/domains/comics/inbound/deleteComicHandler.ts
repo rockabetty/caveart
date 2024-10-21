@@ -1,5 +1,5 @@
 import { NextApiHandler } from "next";
-import { deleteComic } from "../core/comicService";
+import { deleteComic, getComicId } from "../core/comicService";
 import { withAuth } from "@domains/users/middleware/withAuth";
 import { isAuthor } from "../middleware/isAuthor";
 import { logger } from "@logger";
@@ -8,15 +8,21 @@ import { ErrorKeys as ComicErrorKeys } from "../errors.types";
 import { extractUserIdFromToken } from '@domains/users/utils/extractUserIdFromToken';
 import { acceptPostOnly, getUnvalidatedToken } from "@domains/methodGatekeeper";
 
+
 const handler: NextApiHandler = async (req, res): Promise<void> => {
   acceptPostOnly(req, res);
   try {
-    const {tenant} = req.query;
-
-
     const token = getUnvalidatedToken(req);
     const userID = await extractUserIdFromToken(token, false);
-    const deleteAttempt = deleteComic(tenant, userID);
+
+    const {id, subdomain} = req.body;
+    let comicID = id ? id : subdomain;
+    if (comicID === subdomain) {
+      const { data } = await getComicId(subdomain);
+      comicID = data.id;
+    }
+    
+    const deleteAttempt = await deleteComic(comicID, userID);
     if (deleteAttempt.success) {
       return res.status(200).send("OK");
     } else {

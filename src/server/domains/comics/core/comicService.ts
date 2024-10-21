@@ -33,6 +33,25 @@ const invalidRequest = {
   error: GeneralErrorKeys.INVALID_REQUEST,
 };
 
+export async function getComicId(tenant: string | number) {
+  try {
+   if (typeof tenant === "number") {
+    return tenant
+   }
+   const id = await getComicIdFromSubdomain(tenant);
+   return {
+    success: true,
+    data: { id }
+   }
+  } catch (error: any) {
+    logger.error(error);
+    return {
+      success: false,
+      error: error
+    }
+  }
+}
+
 export async function canEditComic(userID: number, tenant: number | string) {
   try {
     let comicID = tenant;
@@ -60,7 +79,6 @@ export async function getAuthors(tenant: string | number) {
   }
   try {
     comicID = await getComicIdFromSubdomain(tenant);
-    console.log(tenant)
     const authors = await getAuthorsOfComic(comicID);
     return {
       success: true,
@@ -76,30 +94,19 @@ export async function getAuthors(tenant: string | number) {
 
 export async function deleteComic(comicID: number, author: number) {
   try {
-    console.log("Delete comic running")
-
     const authorSelection = await getAuthors(comicID);
-    console.log("Author selection")
     const authorList = authorSelection.data.authors;
-
     if (authorList.length > 1) {
       return {
         success: false,
         error: ErrorKeys.MULTIPLE_AUTHORS
       }
     }
-
-    console.log("Comic ID:" + comicID + "...Author:" + author)
-
     await removeAuthorsFromComic(comicID, [author]);
-    console.log("Authors yoinked")
     await removeAllGenresFromComic(comicID);
-    console.log("Genres")
     await removeAllContentWarningsFromComic(comicID);
-    console.log("CWs")
-    await deleteComicFromDatabase(comicID);
-    console.log("ID")
-
+    const success = await deleteComicFromDatabase(comicID);
+    return { success }
   } catch (error: any) {
     return {
       success: false,
@@ -542,7 +549,7 @@ export async function createComic(
   }
   profile.likes = selectedLikesOption === "true";
 
-  if (files) {
+  if (files && Object.keys(files).length > 0) {
     try {
       await Promise.all(
         Object.keys(files).map(async (key) => {
@@ -559,6 +566,8 @@ export async function createComic(
         error: FileErrorKeys.FILE_UPLOAD_ERROR,
       };
     }
+  } else {
+    profile.thumbnail_id = null;
   }
 
   try {

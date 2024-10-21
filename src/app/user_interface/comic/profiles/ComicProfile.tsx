@@ -1,19 +1,22 @@
-import { ImageUpload, Link, Tag, Button } from '@components'
+import { ImageUpload, Link, Tag, Button, Modal, Form, TextInput } from '@components'
 import './ComicProfiles.css';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useComicProfile } from './hooks/useComicProfile'; 
 import { useTranslation } from 'react-i18next';
 
 type ComicProfileProps = {
-  tenant: string
+  tenant: string;
+  onDelete: (event) => void
 }
 
-const ComicProfile: React.FC<ComicProfileProps> = (props) => {
+const ComicProfile: React.FC<ComicProfileProps> = ({
+  tenant,
+  onDelete
+}) => {
   const { t } = useTranslation();
-  const {tenant} = props;
   const {state, removeComic} = useComicProfile(tenant);
   const {profile, permissions} = state;
-
+  
   const renderGenres = useCallback(() => {
     const selectedGenres = profile?.genres 
     ? Object.values(profile.genres)
@@ -38,11 +41,6 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
     );
   }, [profile]);
 
-  const handleRemoveComic = function() {
-    if (profile.id) {
-      removeComic(profile.id)
-    }
-  }
 
   const renderContentWarnings = useCallback(() => {
     const contentWarnings = profile?.content_warnings 
@@ -68,40 +66,40 @@ const ComicProfile: React.FC<ComicProfileProps> = (props) => {
     );
   }, [profile]);
 
-
   return (
-      <div className="comic-profile">
-          <div className="comic-profile_body">
-            <a className="comic-profile_cover" href={`/read/${profile?.subdomain}`}>
-              {profile?.thumbnail
-                ? <ImageUpload src={profile?.thumbnail} />
-                : <ImageUpload src='/img/brand/kraugak.png' />
-              }
-            </a>
-            <div>
-             <div className="comic-profile_header">
-                <h1 className="comic-profile_title">{profile?.title}</h1>
-                  {permissions?.edit
-                    ? (<>
-                        <Link type="inline button" look="default" href={`/comic/${profile?.subdomain}/edit`} id={`edit-${profile?.subdomain}`}>{t('comicProfile.edit')}</Link>
-                        <Link type="inline button" look="primary" href={`/comic/${profile?.subdomain}/pages/new`} id={`newpage-${profile?.subdomain}`}>{t('comicPages.add')}</Link>
-                        <Button look="warning" id={`delete_comic-${profile.id}`} inline onClick={handleRemoveComic}>Delete</Button>
-                      </>
-                      )
-                    : null
-                  }
-              </div>
-              <pre className="comic-profile_description">{profile?.description}</pre>
-              <Tag label={profile?.rating} />
-              {profile?.genres
-                ? renderGenres()
+    <div className="comic-profile">
+      <div className="comic-profile_body">
+        <a className="comic-profile_cover" href={`/read/${profile?.subdomain}`}>
+          {profile?.thumbnail
+            ? <ImageUpload src={profile?.thumbnail} />
+            : <ImageUpload src='/img/brand/kraugak.png' />
+          }
+        </a>
+        <div>
+         <div className="comic-profile_header">
+            <h1 className="comic-profile_title">{profile?.title}</h1>
+              {permissions?.edit
+                ? (<>
+                    <Link type="inline button" look="default" href={`/comic/${profile?.subdomain}/edit`} id={`edit-${profile?.subdomain}`}>{t('comicProfile.edit')}</Link>
+                    <Link type="inline button" look="primary" href={`/comic/${profile?.subdomain}/pages/new`} id={`newpage-${profile?.subdomain}`}>{t('comicPages.add')}</Link>
+                    <Button look="warning" id={`delete_comic-${profile.id}`} inline onClick={onDelete}>Delete</Button>
+                  </>
+                  )
                 : null
               }
-              {renderContentWarnings()}
-            </div>
           </div>
-      </div>
+          <pre className="comic-profile_description">{profile?.description}</pre>
+          <Tag label={profile?.rating} />
+          {profile?.genres
+            ? renderGenres()
+            : null
+          }
+          {renderContentWarnings()}
+        </div>
+      </div>         
+    </div>
   )
+  
 }
 
 export default ComicProfile;
