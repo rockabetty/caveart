@@ -68,7 +68,6 @@ const Form: React.FC<FormProps> = (props) => {
           <p className="form-feedback">{successMessage}</p>
         ) : null}
       </div>
-      <p>{isDestructive.toString()}</p>
       {cancelLabel ? (
         <ButtonSet>
           <Button loading={isLoading} onClick={onCancel} id={`cancel-${id}`}>

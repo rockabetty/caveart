@@ -33,6 +33,25 @@ const invalidRequest = {
   error: GeneralErrorKeys.INVALID_REQUEST,
 };
 
+export async function getComicId(tenant: string | number) {
+  try {
+   if (typeof tenant === "number") {
+    return tenant
+   }
+   const id = await getComicIdFromSubdomain(tenant);
+   return {
+    success: true,
+    data: { id }
+   }
+  } catch (error: any) {
+    logger.error(error);
+    return {
+      success: false,
+      error: error
+    }
+  }
+}
+
 export async function canEditComic(userID: number, tenant: number | string) {
   try {
     let comicID = tenant;
@@ -530,7 +549,7 @@ export async function createComic(
   }
   profile.likes = selectedLikesOption === "true";
 
-  if (files) {
+  if (files && Object.keys(files).length > 0) {
     try {
       await Promise.all(
         Object.keys(files).map(async (key) => {
@@ -547,6 +566,8 @@ export async function createComic(
         error: FileErrorKeys.FILE_UPLOAD_ERROR,
       };
     }
+  } else {
+    profile.thumbnail_id = null;
   }
 
   try {

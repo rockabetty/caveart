@@ -203,7 +203,7 @@ const Modal = ({
                 </div>
               )
               :
-              ''
+              null
           }
         </div>
       </dialog>

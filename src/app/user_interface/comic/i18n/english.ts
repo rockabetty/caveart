@@ -21,11 +21,11 @@ const english = {
 		},
 		deletion: {
 			confirmationHeading: "Are you sure?",
-			instructions: "Deletion of a comic is permanent! To confirm, type the name of the comic into the textbox.",
+			instructions: "Deletion of a comic is permanent! To confirm, type the subdomain of the comic into the textbox.",
 			cancelDeletion: "Cancel",
 			confirmDeletion: "Delete",
-			invalidDeletion: "This comic title isn't right. Check for typos.",
-			helperText: "Type the comic title as it appears on the comic profile ({{title}}).",
+			invalidDeletion: "This comic subdomain isn't right. Check for typos.",
+			helperText: "Type the comic subdomain as it appears on the comic profile.",
 			comicName: "Comic title to delete"
 		},
 		likes: {
