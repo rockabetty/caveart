@@ -28,6 +28,10 @@
   text-decoration: none;
 }
 
+.link.Inverse {
+  color: var(--col-interactive-01-inverse);
+}
+
 .link.Navigation {
   text-decoration: none;
   padding: var(--spacing-2xs);

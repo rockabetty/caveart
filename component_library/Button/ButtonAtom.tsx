@@ -15,6 +15,7 @@ interface ButtonAtomProps {
   type?: 'button' | 'reset' | 'submit';
   loading?: boolean;
   inline?: boolean;
+  inverse?: boolean;
 }
 
 const ButtonAtom = ({
@@ -28,7 +29,8 @@ const ButtonAtom = ({
   tabIndex,
   type = "button",
   inline = false,
-  classes
+  classes = '',
+  inverse = false
   }: ButtonAtomProps) => {
 
   return(
@@ -36,12 +38,13 @@ const ButtonAtom = ({
       id={id}
       disabled={disabled}
       onClick={(e) => {onClick(e)}}
-      className={`button ${classes} ${classNames({
+      className={`button DisplayText ${classes} ${classNames({
         'Disabled': !!disabled,
         'Muted': look === 'muted',
         'Primary': look ==='primary',
         'Warning': look === 'warning',
-        'Inline': inline === true,
+        'Inline': !!inline,
+        'Inverse': !!inverse
       })}`.trim()}
       role={role}
       tabIndex={tabIndex}

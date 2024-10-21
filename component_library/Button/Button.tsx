@@ -29,6 +29,7 @@ interface ButtonProps {
   type?: 'button' | 'reset' | 'submit';
   loading?: boolean;
   inline?: boolean;
+  inverse?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = (props) => {

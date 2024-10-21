@@ -4,7 +4,7 @@ function TermsofService() {
  
   return (
     <CaveartLayout>
-    <article>
+    <article className="tile">
       <h1>Terms of Service</h1>
       <h1>You must be at least 13 to have a Caveart account.</h1>
       <p>

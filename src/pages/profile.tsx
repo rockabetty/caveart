@@ -30,8 +30,10 @@ const Profile: React.FC = () => {
   if (userProfile) {
     return (
       <CaveartLayout requireLogin={true}>
-        <h1>{userProfile.username}</h1>
-        <p>{userProfile.created_at} | {userProfile.email}</p>
+        <div className="tile">
+          <h1>{userProfile.username}</h1>
+          <p>{userProfile.created_at} | {userProfile.email}</p>
+        </div>
       </CaveartLayout>
     );
   }

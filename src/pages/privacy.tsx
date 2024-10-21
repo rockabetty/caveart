@@ -5,7 +5,7 @@ import { Link } from '@components';
 function PrivacyPolicy() {
   return (
     <CaveartLayout>
-      <article>
+      <article className="tile">
         <h1>Privacy Policy</h1>
 
         <p>

@@ -34,6 +34,10 @@ export interface LinkProps extends InteractiveProps {
    * Select the visual presentation of the link when it has a Button appearance
    * */
   look?: 'primary' | 'default' | 'muted' | 'warning' | undefined;
+  /**
+   * Select for inverse color combos
+   * */
+  inverse?: boolean
 }
 
 const Link = ({
@@ -44,7 +48,8 @@ const Link = ({
   disabled,
   type,
   onClick,
-  look = 'default'
+  look = 'default',
+  inverse = false
 }:LinkProps) => {
 
   return(
@@ -53,6 +58,7 @@ const Link = ({
       href={href}
       target={target}
       className={classNames({
+        'Inverse': !!inverse,
         'Navigation': type === 'navigation',
         'Disabled': !!disabled,
         'button': type === 'button',

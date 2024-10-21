@@ -6,7 +6,7 @@
 */
 
 :root {
-  --border-radius: 4px;
+  --border-radius: 8px;
 
   --swatch-black: #101010;
   --swatch-white: #FEFEFE;
@@ -66,17 +66,17 @@
   --swatch-lime-20: #abf3a7;
   --swatch-lime-10: #e1fbe0;
 
-  --theme-interface-00: var(--swatch-ochre-100);
-  --theme-interface-10: var(--swatch-ochre-90);
-  --theme-interface-20: var(--swatch-ochre-80);
-  --theme-interface-30: var(--swatch-ochre-70);
-  --theme-interface-40: var(--swatch-ochre-60);
-  --theme-interface-50: var(--swatch-ochre-50);
-  --theme-interface-60: var(--swatch-ochre-40);
-  --theme-interface-70: var(--swatch-ochre-30);
-  --theme-interface-80: var(--swatch-ochre-20);
-  --theme-interface-90: var(--swatch-ochre-10);
-  --theme-interface-100: var(--swatch-white);
+  --theme-interface-100: var(--swatch-black);
+  --theme-interface-90: var(--swatch-ochre-100);
+  --theme-interface-80: var(--swatch-ochre-90);
+  --theme-interface-70: var(--swatch-ochre-80);
+  --theme-interface-60: var(--swatch-ochre-70);
+  --theme-interface-50: var(--swatch-ochre-60);
+  --theme-interface-40: var(--swatch-ochre-50);
+  --theme-interface-30: var(--swatch-ochre-40);
+  --theme-interface-20: var(--swatch-ochre-30);
+  --theme-interface-10: var(--swatch-ochre-20);
+  --theme-interface-00: var(--swatch-ochre-10);
 
   --theme-primary-00: var(--swatch-white);
   --theme-primary-10: var(--swatch-ochre-100);
@@ -90,17 +90,17 @@
   --theme-primary-90: var(--swatch-ochre-20);
   --theme-primary-100: var(--swatch-ochre-10);
 
-  --theme-secondary-00: var(--swatch-white);
-  --theme-secondary-10: var(--swatch-gray-100);
-  --theme-secondary-20: var(--swatch-gray-90);
-  --theme-secondary-30: var(--swatch-gray-80);
-  --theme-secondary-40: var(--swatch-gray-70);
+  --theme-secondary-00: var(--swatch-gray-10);
+  --theme-secondary-10: var(--swatch-gray-20);
+  --theme-secondary-20: var(--swatch-gray-30);
+  --theme-secondary-30: var(--swatch-gray-40);
+  --theme-secondary-40: var(--swatch-gray-50);
   --theme-secondary-50: var(--swatch-gray-60);
-  --theme-secondary-60: var(--swatch-gray-50);
-  --theme-secondary-70: var(--swatch-gray-40);
-  --theme-secondary-80: var(--swatch-gray-30);
-  --theme-secondary-90: var(--swatch-gray-20);
-  --theme-secondary-100: var(--swatch-gray-10);
+  --theme-secondary-60: var(--swatch-gray-70);
+  --theme-secondary-70: var(--swatch-gray-80);
+  --theme-secondary-80: var(--swatch-gray-90);
+  --theme-secondary-90: var(--swatch-gray-100);
+  --theme-secondary-100: var(--swatch-black);
 
   --theme-tertiary-00: var(--swatch-white);
   --theme-tertiary-10: var(--swatch-red-100);
@@ -125,4 +125,20 @@
   --theme-success-80: var(--swatch-lime-30);
   --theme-success-90: var(--swatch-lime-20);
   --theme-success-100: var(--swatch-lime-10);
+
+  --base-font-size: 1.25rem;
+
+  --color-background: var(--theme-interface-100);
+  --color-border: var(--theme-secondary-50);
+  --color-backdrop: var(--theme-interface-00);
+  --color-shadow: var(--swatch-black);
+
+  --color-button-primary: var(--theme-primary-50);
+  --color-button-primary-hover: var(--theme-primary-40);
+  --col-button-hover:  var(--theme-secondary-50);
+  --color-interactive-01:  var(--theme-primary-40);
+  --color-interactive-01-hover: var(--theme-primary-50);
+
+  --typeface-heading: "Lacquer", Tahoma,Verdana,Segoe,sans-serif;
+  --typeface-body: "Averia Libre", Tahoma,Verdana,Segoe,sans-serif;
 }

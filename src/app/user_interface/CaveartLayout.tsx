@@ -5,7 +5,7 @@ import { useUser } from "./users/hooks/useUser";
 import SiteHeader from "./navigation/SiteHeader";
 import SiteFooter from "./navigation/SiteFooter";
 import AuthModal from "./users/AuthModal";
-import "@components/design/style.css";
+import './global.css';
 import "../../i18n";
 import "../themes/main.css";
 
@@ -64,6 +64,10 @@ const CaveartLayout: React.FC<CaveartLayoutProps> = ({
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Lacquer&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Averia+Libre:wght@400;700&display=swap" rel="stylesheet" />
       </Head>
 
       <SiteHeader
@@ -78,7 +82,7 @@ const CaveartLayout: React.FC<CaveartLayoutProps> = ({
         initial={authMode}
       />
 
-      <div className="wrapper--text">
+      <div className="wrapper">
         <main>{children}</main>
       </div>
 

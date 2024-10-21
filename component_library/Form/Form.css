@@ -1,4 +1,4 @@
-form .Invisible {
+.form .Invisible {
   border: 0;
   clip: rect(0 0 0 0);
   height: 1px;
@@ -10,14 +10,18 @@ form .Invisible {
   width: 1px;
 }
 
-form .Inacessible {
+.form {
+  margin-block-end:  1rem;
+}
+
+.form .Inacessible {
   display: none;
   visibility: hidden;
 }
 
 fieldset, .fieldset {
   border: none;
-  margin: var(--spacing-sm);
+  margin: var(--spacing-sm) 0;
 }
 
 legend, .legend {
@@ -104,18 +108,19 @@ legend, .legend {
 .form-field_control {
   width: 100%;
   display: block;
-  background-color: var(--col-background);
+  background-color: var(--theme-interface-10);
   border: none;
   color:  var(--col-text);
   padding: var(--spacing-sm);
   font-size: var(--size-font-md);
   border-radius: var(--spacing-xs);
   outline: 1px solid var(--col-border);
+  font-family: var(--typeface-body);
 }
 
 .form-field_control:focus {
-  background-color: var(--col-background);
   outline: 3px solid var(--col-focus);
+    background-color: var(--theme-interface-00);
 }
 
 .form-field_control::placeholder {
@@ -125,6 +130,7 @@ legend, .legend {
 .form-field_helpertext {
   color: var(--col-text-secondary);
   font-size: var(--size-font-sm);
+  font-weight: 700;
   letter-spacing: 0.5px;
   margin-top: var(--spacing-xs);
   margin-bottom: 0;

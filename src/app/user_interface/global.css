@@ -17,6 +17,22 @@
   }  
 }
 
+.wrapper {
+  max-width: var(--grid-maxwidth);
+  margin:  0 auto;
+}
+
+.tile {
+  padding: var(--spacing-md);
+  margin:  var(--spacing-md);
+  border-radius: var(--border-radius);
+  background-image: url('/img/brand/tilingstone.jpg');
+  background-color: var(--theme-interface-00);
+  background-blend-mode: multiply;
+  box-shadow: inset 2px 6px 4px var(--swatch-white),
+              inset -2px -6px 8px rgba(0,0,0,0.5);
+}
+
 .flex {
   display: flex;
 }
@@ -29,6 +45,12 @@
 .FullWidth {
   width: 100%;
 }
+
+.modal_content {
+  background-image: url('/img/brand/tilingstone.jpg');
+  background-blend-mode: multiply;
+}
+
 
 /*
 X-Small devices (portrait phones, less than 576px)

@@ -27,17 +27,17 @@ const SiteHeader = ({
         </a>
         { loggedIn === true ? 
           <>
-            <Link id="horizontal-nav_profile" href="/profile">{t('headerNavigation.myAccount')}</Link>
-            <Link id="horizontal-nav_manage-comics" href="/comics/mine">{t('headerNavigation.myWebcomics')}</Link>
-            <Link id="horizontal-nav_reading-list" href="/read">{t('headerNavigation.mySubscriptions')}</Link>
-            <Link id="horizontal-nav_notifications" href="/notifications">{t('headerNavigation.notifications')}</Link>
+            <Link type="navigation" inverse id="horizontal-nav_profile" href="/profile">{t('headerNavigation.myAccount')}</Link>
+            <Link type="navigation" inverse id="horizontal-nav_manage-comics" href="/comics/mine">{t('headerNavigation.myWebcomics')}</Link>
+            <Link type="navigation" inverse id="horizontal-nav_reading-list" href="/read">{t('headerNavigation.mySubscriptions')}</Link>
+            <Link type="navigation" inverse id="horizontal-nav_notifications" href="/notifications">{t('headerNavigation.notifications')}</Link>
           </>
           : ""
         }
         <div className="horizontal-nav_authentication">
           {loggedIn === true 
               ? (
-                <Button look="muted" id="header-logout" onClick={onLogout}>{t('authenticationForm.buttonLabels.logOut')}</Button>
+                <Button look="muted" inverse id="header-logout" onClick={onLogout}>{t('authenticationForm.buttonLabels.logOut')}</Button>
               )
               :
               (

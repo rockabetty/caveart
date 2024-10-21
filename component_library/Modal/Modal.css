@@ -34,6 +34,7 @@
 .modal_content {
   display: block;
   border: 1px solid var(--col-border);
+  background-color: var(--col-backdrop);
 }
 .modal_content.Small {
   width: calc(var(--spacing-sm) * 25);
@@ -52,12 +53,10 @@
   padding: var(--spacing-md);
   padding-bottom: 0;
   justify-content: space-between;
-  background-color: var(--col-background);
 }
 
 .modal_body {
   padding: var(--spacing-md);
-  background-color: var(--col-background);
   max-height: 75vh;
   overflow-y: scroll;
 }

@@ -150,14 +150,15 @@
   --theme-success-100: var(--color-success-100, var(--swatch-lime-10));
 
   --col-text: var(--color-text, var(--theme-interface-100));
-  --col-text-secondary: var(--color-text-secondary, var(--theme-interface-80));
+  --col-text-secondary: var(--color-text-secondary, var(--theme-secondary-80));
   --col-text-inverse: var(--color-text-inverse, var(--theme-interface-00));
 
   --col-background: var(--color-background, var(--theme-interface-00));
-  --col-backdrop: var(--color-backdrop, var(--theme-interface-10));
+  --col-backdrop: var(--color-backdrop, var(--theme-interface-90));
   --col-border: var(--color-border, var(--theme-interface-40));
+  --col-shadow: var(--color-shadow, var(--swatch-black));
 
-  --col-button: var(--color-button, var(--theme-secondary-20));
+  --col-button: var(--color-button, var(--theme-secondary-80));
   --col-button-hover: var(--color-button-hover, var(--theme-secondary-30));
   --col-button-active: var(--color-button-active, var(--theme-secondary-30));
   --col-button-label: var(--color-button-label, var(--theme-secondary-00));
@@ -175,6 +176,7 @@
   --col-focus: var(--color-interactive-01-hover, var(--theme-primary-70));
   --col-interactive-01: var(--color-interactive-01, var(--theme-primary-70)); /* 4.5:1 ratio */
   --col-interactive-01-hover: var(--color-interactive-01-hover, var(--theme-primary-80)); /* 4.5:1 ratio */
+  --col-interactive-01-inverse:  var(--color-interactive-01-inverse, var(--theme-primary-80));
   --col-interactive-02: var(--color-interactive-02, var(--theme-secondary-50)); /*   3:1 ratio */
   --col-interactive-border: var(--color-interactive-border, var(--theme-primary-50));
   --col-disabled: var(--color-disabled, var(--theme-interface-30));
@@ -190,19 +192,17 @@
 }
 
 body {
-  background: var(--col-backdrop);
+  background: var(--col-background);
 }
 
-.wrapper--text {
-  padding:  0 var(--spacing-md);
-  margin: 0 auto;
-  max-width:  1400px;
+fieldset {
+  border: none;
 }
-
 div, p, span, a, rt, rp, dfn, abbr, q, cite, em, time, var,
 samp, i, b, sub, sup, small, strong, mark, ruby, ins, del,
 bdi, bdo, s, kbd, wbr, pre, textarea {
-  font-family: Tahoma,Verdana,Segoe,sans-serif; 
+  font-family: var(--typeface-body,Tahoma,Verdana,Segoe,sans-serif); 
+  font-size: var(--size-font-md);
 }
 
 /* 
@@ -213,22 +213,25 @@ pre {
   white-space: pre-wrap;
 }
 
-
 p {
   margin-block-end:  var(--spacing-md);
   margin-block-start:  var(--spacing-sm);
 }
 
 h1 {
-  color: var(--theme-primary-70);
+  color: var(--theme-primary-40);
 }
 h2 {
   color: var(--theme-interface-70);
 }
 
+.DisplayText {
+  font-family: var(--typeface-heading, Tahoma,Verdana,Segoe,sans-serif);
+}
+
 h1, h2, h3, h4, h5, h6 {
-  font-family: Tahoma,Verdana,Segoe,sans-serif;
-  margin-block-start:  var(--spacing-lg);
+  font-family: var(--typeface-heading, Tahoma,Verdana,Segoe,sans-serif);
+  margin-block-end: var(--spacing-md);
 }
 
 ul {
