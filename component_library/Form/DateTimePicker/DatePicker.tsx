@@ -6,19 +6,21 @@ import Label from '../atoms/Label';
 import FormField from '../atoms/FormField';
 // import useUserTimeZone from '../hooks/useUserTimeZone';
 
-const DateTimePicker = (props) => {
+const DateInput = (props) => {
   const [startDate, setStartDate] = useState(new Date());
-  const timeZone = ""  //useUserTimeZone();
-
+ 
   const {
     onChange,
     labelText,
-    id
+    id,
+    showYearDropdown,
+    maxDate,
+    minDate
   } = props;
 
   const handleDateChange = (date) => {
     setStartDate(date);
-    onChange(date, timeZone);
+    onChange(date);
   };
 
   return (
@@ -27,12 +29,14 @@ const DateTimePicker = (props) => {
       <DatePicker
         selected={startDate}
         onChange={handleDateChange}
-        showTimeSelect
-        dateFormat="Pp"
+        dateFormat="MM/dd/yyyy"
+        maxDate={maxDate}
+        minDate={minDate}
+        showYearDropdown={showYearDropdown}
+        scrollableYearDropdown={showYearDropdown}
       />
-      <p>Your time zone: {timeZone}</p>
     </FormField>
   );
 };
 
-export default DateTimePicker
+export default DateInput

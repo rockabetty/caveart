@@ -5,7 +5,7 @@
 }
 
 .react-datepicker__input-container input {
-    background: var(--theme-interface-10);
+    background: var(--theme-background);
     font-size: var(--size-font-md);
     display: block;
     font-size: var(--size-font-md);
@@ -16,7 +16,7 @@
 }
 
 .react-datepicker {
-	background: var(--col-background);
+	background: var(--col-backdrop);
 	color: var(--col-text);
 	border-color: var(--col-border);
 }

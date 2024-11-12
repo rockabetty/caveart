@@ -15,11 +15,14 @@ const english = {
         email: "Email",
         password: "Password",
         password2: "Verify password",
+        birthdate: "Birthdate"
       },
       instructions: {
         username: "Please enter a username",
         email: "Please enter a valid email address",
         password: "Pick a password with at least 8 characters",
+        birthdate: "How old are you?",
+        userAssertsTrueDOB: "By signing up an giving your birthdate you are asserting you are telling the truth and agree to our TOS/privacy policy."
       },
       userErrorMessages: {
         userNameTaken: "Please pick a different username",

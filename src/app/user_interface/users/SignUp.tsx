@@ -1,9 +1,24 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
-import { TextInput, Form } from "@components";
+import { TextInput, Form, DatePicker } from "@components";
 import { useUser } from "./hooks/useUser";
 import { ErrorKeys } from "./errors.types";
+
+type SignupFormState = {
+  name: string;
+  email: string;
+  password: string;
+  passwordVerification: string;
+  birthdate: Date;
+};
+
+type SignupErrors = {
+  nameError: string;
+  emailError: string;
+  passwordError: string;
+  passwordVerificationError: string;
+};
 
 const SignUp: React.FC = () => {
   const { t } = useTranslation();
@@ -14,7 +29,7 @@ const SignUp: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [passwordVerification, setPasswordVerification] = useState<string>("");
-
+  const [birthdate, setBirthdate] = useState<Date>(new Date());
   const [nameError, setNameError] = useState<string>("");
   const [emailError, setEmailError] = useState<string>("");
   const [passwordError, setPasswordError] = useState<string>("");
@@ -24,97 +39,77 @@ const SignUp: React.FC = () => {
 
   const isEmailValid = () => /^([\w.%+-]+)@([\w-]+).([\w]{2,})$/i.test(email);
 
-  const checkpasswordsMatch = () => {
+  const checkPasswordsMatch = () => {
     setPasswordVerificationError("");
     if (password !== passwordVerification) {
       setPasswordVerificationError(t(ErrorKeys.PASSWORD_MISMATCH));
     }
   };
 
-  const onInputName = function (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) {
-    setName(e.target.value);
-  };
+  const onInputName = (e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value);
+  const onInputEmail = (e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value);
+  const onInputPassword = (e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value);
+  const onInputPasswordVerification = (e: React.ChangeEvent<HTMLInputElement>) => setPasswordVerification(e.target.value);
+  const onInputBirthdate = (birthdate: Date) => setBirthdate(birthdate);
 
-  const onInputEmail = function (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) {
-    setEmail(e.target.value);
-  };
-
-  const onInputPassword = function (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) {
-    setPassword(e.target.value);
-  };
-
-  const onInputPasswordVerification = function (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) {
-    setPasswordVerification(e.target.value);
+  const validateFields = () => {
+    const errors: Record<string, string> = {};
+    // TODO - pick out the things HTML can natively just deal with.
+    if (!name) errors.nameError = t(ErrorKeys.USERNAME_MISSING);
+    if (!isEmailValid()) errors.emailError = t(ErrorKeys.EMAIL_INVALID);
+    if (password.length < 8) errors.passwordError = t(ErrorKeys.PASSWORD_SHORT);
+    if (password !== passwordVerification) errors.passwordVerificationError = t(ErrorKeys.PASSWORD_MISMATCH);
+    return errors;
   };
 
   const validateSignup = () => {
-    setNameError("");
-    if (name.length === 0) {
-      setNameError(t(ErrorKeys.USERNAME_MISSING));
-      return false;
-    }
-    setEmailError("");
-    if (!isEmailValid()) {
-      setEmailError(t(ErrorKeys.EMAIL_INVALID));
-      return false;
-    }
-    setPasswordError("");
-    if (password.length < 8) {
-      setPasswordError(t(ErrorKeys.PASSWORD_SHORT));
-      return false;
-    }
-    if (password !== passwordVerification) {
-      setPasswordVerificationError(t(ErrorKeys.PASSWORD_MISMATCH));
-      return false;
-    }
-    return true;
+    const errors = validateFields();
+    setNameError(errors.nameError || "");
+    setEmailError(errors.emailError || "");
+    setPasswordError(errors.passwordError || "");
+    setPasswordVerificationError(errors.passwordVerificationError || "");
+    return Object.keys(errors).length === 0;
   };
 
-  const handleSignup = () => {
+  const handleApiError = (error: any) => {
+    const message = error?.response?.data?.message;
+    switch (message) {
+      case ErrorKeys.USERNAME_MISSING:
+        setNameError(t(ErrorKeys.USERNAME_MISSING));
+        break;
+      case ErrorKeys.PASSWORD_MISSING:
+        setPasswordError(t(ErrorKeys.PASSWORD_MISSING));
+        break;
+      case ErrorKeys.EMAIL_INVALID:
+        setEmailError(t(ErrorKeys.EMAIL_INVALID));
+        break;
+      case ErrorKeys.USERNAME_TAKEN:
+        setNameError(t(ErrorKeys.USERNAME_TAKEN));
+        break;
+      case ErrorKeys.EMAIL_TAKEN:
+        setEmailError(t(ErrorKeys.EMAIL_TAKEN));
+        break;
+      default:
+        setFormError(t(ErrorKeys.GENERAL_SUBMISSION_ERROR));
+    }
+  };
+
+  const handleSignup = (e: React.FormEvent) => {
+    e.preventDefault();
+    const form = e.currentTarget
+    if (!form.reportValidity()) {
+      return; // To catch the simple "you didn't fill in the required part" errors
+    }
+
     setFormError("");
-    const isValid = validateSignup();
-
-    if (isValid) {
-      const userData = { name, email, password };
-
+    if (validateSignup()) {
+      const userData = { name, email, password, birthdate };
       axios
         .post("/api/auth/signup", userData)
         .then(() => {
           loginUser(email, password);
         })
-        .catch((err: any) => {
-          console.log(err);
-          const { data } = err?.response;
-          switch (data.message) {
-            case ErrorKeys.USERNAME_MISSING:
-              setNameError(t(ErrorKeys.USERNAME_MISSING));
-              break;
-            case ErrorKeys.PASSWORD_MISSING:
-              setPasswordError(t(ErrorKeys.PASSWORD_MISSING));
-              break;
-            case ErrorKeys.EMAIL_INVALID:
-              setEmailError(t(ErrorKeys.EMAIL_INVALID));
-              break;
-            case ErrorKeys.USERNAME_TAKEN:
-              setNameError(t(ErrorKeys.USERNAME_TAKEN));
-              setFormError(t(ErrorKeys.USERNAME_TAKEN));
-              break;
-            case ErrorKeys.EMAIL_TAKEN:
-              setEmailError(t(ErrorKeys.EMAIL_TAKEN));
-              setFormError(t(ErrorKeys.EMAIL_TAKEN));
-              break;
-            default:
-              setFormError(t(ErrorKeys.GENERAL_SUBMISSION_ERROR));
-          }
-        });
+        .catch(handleApiError);
     }
   };
 
@@ -131,9 +126,7 @@ const SignUp: React.FC = () => {
           labelText={t("authenticationForm.labels.username")}
           pattern={"/^[a-zA-Z0-9_-]+$/"}
           id="signup_name"
-          onChange={(e) => {
-            onInputName(e);
-          }}
+          onChange={onInputName}
           type="text"
           placeholderText="Captain Caveman"
           errorText={nameError}
@@ -143,9 +136,7 @@ const SignUp: React.FC = () => {
         <TextInput
           labelText={t("authenticationForm.labels.email")}
           id="signup_email"
-          onChange={(e) => {
-            onInputEmail(e);
-          }}
+          onChange={onInputEmail}
           placeholderText="unga@bunga.com"
           type="email"
           errorText={emailError}
@@ -160,11 +151,18 @@ const SignUp: React.FC = () => {
           minLength={8}
           errorText={passwordError}
           id="signup_password"
-          onChange={(e) => {
-            onInputPassword(e);
-          }}
+          onChange={onInputPassword}
           type="password"
           required={true}
+        />
+        <DatePicker
+          id="signup_birthdate"
+          labelText={t("authenticationForm.labels.birthdate")}
+          helperText={t("authenticationForm.instructions.birthdate")}
+          onChange={onInputBirthdate}
+          maxDate={new Date()}
+          value={birthdate}
+          showYearDropdown
         />
         <TextInput
           labelText={t("authenticationForm.labels.password2")}
@@ -172,15 +170,13 @@ const SignUp: React.FC = () => {
           value={passwordVerification}
           placeholderText=""
           id="signup_password_verification"
-          onChange={(e) => {
-            onInputPasswordVerification(e);
-          }}
-          onBlur={() => {
-            checkpasswordsMatch();
-          }}
+          onChange={onInputPasswordVerification}
+          onBlur={checkPasswordsMatch}
           type="password"
           required={true}
         />
+
+        <p className="form-field_helpertext">{t("authenticationForm.instructions.userAssertsTrueDOB")}</p>
       </fieldset>
     </Form>
   );
