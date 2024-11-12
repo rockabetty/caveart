@@ -4,7 +4,7 @@ const english = {
 	},
 	comicProfile: {
 		noComics: "You don't have any comics yet!",
-		create: "Create comic",
+		create: "Create a comic",
 		edit: "Edit profile",
 		save: "Save changes",
 		coverImageSize: "Cover images can be up to {{megabytes}} megabytes.",

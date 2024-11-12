@@ -1,1 +1,1 @@
-export { default } from './TabGroup'
+export { default as TabGroup } from './TabGroup'

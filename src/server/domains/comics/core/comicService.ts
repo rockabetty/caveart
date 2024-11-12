@@ -170,7 +170,7 @@ const isValidIDList = function (list: number[]) {
 };
 
 export const isValidDescription = function (description: string) {
-  return description.length < 1024;
+  return description.length < 4096;
 };
 
 export const isValidCommentOption = function (option: string) {
@@ -265,7 +265,9 @@ export async function updateDescription(
   update: string,
 ): Promise<QueryResult | null> {
   if (isValidDescription(update)) {
+    console.log("############################ fidna sanitize")
     const sanitizedInput = sanitizeLongformText(update);
+    console.log(sanitizedInput)
     const updateData = { description: sanitizedInput };
     try {
       editComic(tenantID, updateData);

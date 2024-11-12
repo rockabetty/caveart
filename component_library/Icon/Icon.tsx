@@ -34,10 +34,10 @@ const Icon = ({
   id ='',
   classes = '',
   name = '',
-  viewbox,
+  viewbox = '0 0 16 16',
   title,
-  width,
-  height,
+  width = 16,
+  height = 16,
   disabled,
   }: IconProps) => {
 
@@ -61,10 +61,10 @@ const Icon = ({
         id={id}
         className={`icon ${classes} ${disabled ? 'Disabled' : ''}`.trim()}
         version="1.1"
-        height={height ? `${height}px` : ''}
-        width={width ? `${width}px` : ''}
+        height={`${height}px`}
+        width={`${width}px`}
         xmlns="http://www.w3.org/2000/svg"
-        viewBox={viewbox || '0 0 12 12'}
+        viewBox={viewbox}
       >
         <title>{title || `${name} icon`}</title>
         <path {...opts}></path>

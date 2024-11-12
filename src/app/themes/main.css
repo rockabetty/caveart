@@ -103,16 +103,16 @@
   --theme-secondary-100: var(--swatch-black);
 
   --theme-tertiary-00: var(--swatch-white);
-  --theme-tertiary-10: var(--swatch-red-100);
-  --theme-tertiary-20: var(--swatch-red-90);
-  --theme-tertiary-30: var(--swatch-red-80);
-  --theme-tertiary-40: var(--swatch-red-70);
-  --theme-tertiary-50: var(--swatch-red-60);
-  --theme-tertiary-60: var(--swatch-red-50);
-  --theme-tertiary-70: var(--swatch-red-40);
-  --theme-tertiary-80: var(--swatch-red-30);
-  --theme-tertiary-90: var(--swatch-red-20);
-  --theme-tertiary-100: var(--swatch-red-10);
+  --theme-tertiary-10: var(--swatch-red-10);
+  --theme-tertiary-20: var(--swatch-red-20);
+  --theme-tertiary-30: var(--swatch-red-30);
+  --theme-tertiary-40: var(--swatch-red-40);
+  --theme-tertiary-50: var(--swatch-red-50);
+  --theme-tertiary-60: var(--swatch-red-60);
+  --theme-tertiary-70: var(--swatch-red-70);
+  --theme-tertiary-80: var(--swatch-red-80);
+  --theme-tertiary-90: var(--swatch-red-90);
+  --theme-tertiary-100: var(--swatch-red-100);
 
   --theme-success-00: var(--swatch-white);
   --theme-success-10: var(--swatch-lime-100);
@@ -126,7 +126,7 @@
   --theme-success-90: var(--swatch-lime-20);
   --theme-success-100: var(--swatch-lime-10);
 
-  --base-font-size: 1.25rem;
+  --base-font-size: 1rem;
 
   --color-background: var(--theme-interface-100);
   --color-border: var(--theme-secondary-50);

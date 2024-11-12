@@ -66,6 +66,7 @@ const Link = ({
         'Primary': type === 'button' && look ==='primary',
         'Warning': type === 'button' && look === 'warning',
         'link': type !== 'button',
+        'Inline': type === 'button'
       })}
       onClick={onClick}
     >

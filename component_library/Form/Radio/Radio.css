@@ -31,7 +31,7 @@
 
 .radio_control:checked + label::before {
   background-color: var(--col-interactive-01);
-  box-shadow: inset 0 0 0 var(--spacing-2xs) var(--col-background);
+  box-shadow: inset 0 0 0 var(--spacing-2xs) transparent;
   border-color: var(--col-interactive-02);
 }
 

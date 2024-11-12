@@ -9,11 +9,13 @@ function NewComic() {
   
   return (
   <CaveartLayout requireLogin={true}>
-    <h1>{t('comicManagement.create')}</h1>
+    <div className="tile">
+      <h1>{t('comicProfile.create')}</h1>
       <ComicProfileProvider>
         <NewComicForm
         />
       </ComicProfileProvider>
+    </div>
    </CaveartLayout>
   )
 }

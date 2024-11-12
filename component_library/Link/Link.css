@@ -26,6 +26,7 @@
 }
 .button {
   text-decoration: none;
+  font-family: var(--typeface-heading);
 }
 
 .link.Inverse {

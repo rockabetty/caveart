@@ -1,9 +1,8 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { UniversalProps } from '../types/universal';
 import Tab from './Tab';
 import './TabGroup.css';
 import classNames from 'classnames';
-
 
 interface TabData extends UniversalProps {
   name: string;
@@ -16,46 +15,34 @@ export interface TabGroupProps extends UniversalProps {
   initialTab?: string;
 }
 
-const TabGroup: React.FC<TabGroupProps> = ({
-  id,
-  tabs,
-  initialTab
-  }) => {
-
-  const initialActiveTab = initialTab || tabs[0].name
-  const initialContent = tabs.find(tab => tab.name === initialActiveTab)?.content;
+const TabGroup: React.FC<TabGroupProps> = ({ id, tabs, initialTab }) => {
+  const initialActiveTab = initialTab || tabs[0].name;
   const [activeTabName, setActiveTabName] = useState<string>(initialActiveTab);
-  const [activeTabContent, setActiveTabContent] = useState<React.ReactNode>(initialContent);
 
-  const updateTab = function (name) {
+  const updateTab = (name: string) => {
     setActiveTabName(name);
-    const content = tabs.find(tab => tab.name === name)?.content
-    setActiveTabContent(content);
-  }
+  };
+
+  const activeTabContent = tabs.find((tab) => tab.name === activeTabName)?.content;
 
   return (
-    <div className='tabgroup' id={id}>
-      <div className='tabgroup_tab-selection'>
-        {tabs.map((tab, idx) => {
-          const tabId = `tabgroup-tab-${tab}`;
-          return (
-            <Tab
-              id={tab.id}
-              key={`tab-${tab.name}`}
-              labelText={tab.name}
-              isActive={activeTabName === tab.name}
-              onClick={() => updateTab(tab.name)}
-              disabled={tab.disabled}
-            />
-            )
-        })}
+    <div className="tabgroup" id={id}>
+      <div className="tabgroup_tab-selection">
+        {tabs.map((tab) => (
+          <Tab
+            id={tab.id}
+            key={`tab-${tab.name}`}
+            labelText={tab.name}
+            isActive={activeTabName === tab.name}
+            onClick={() => updateTab(tab.name)}
+            disabled={tab.disabled}
+          />
+        ))}
       </div>
 
-      <div className='tabgroup_content'>
-        {activeTabContent}
-      </div>
+      <div className="tabgroup_content">{activeTabContent}</div>
     </div>
-  )
-}
+  );
+};
 
 export default TabGroup;

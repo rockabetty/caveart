@@ -14,7 +14,10 @@ const handler: NextApiHandler = async (req, res): Promise<void> => {
     const { update } = req.body;
 
     if (typeof update !== "string") {
-      return res.status(400).json({ error: ErrorKeys.INVALID_REQUEST });
+      console.log(typeof update)
+      return res.status(400).json({ error: typeof update });
+    } else {
+      console.log("################ valid udate type")
     }
 
     const newDescription = await updateDescription(tenantID, update);

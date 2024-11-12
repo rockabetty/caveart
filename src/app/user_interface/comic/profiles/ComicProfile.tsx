@@ -1,4 +1,4 @@
-import { ImageUpload, Link, Tag, Button, Modal, Form, TextInput } from '@components'
+import { ImageUpload, Link, Tag, Button, Modal, Form, TextInput, Tooltip } from '@components'
 import './ComicProfiles.css';
 import { useCallback, useState } from 'react';
 import { useComicProfile } from './hooks/useComicProfile'; 
@@ -51,16 +51,24 @@ const ComicProfile: React.FC<ComicProfileProps> = ({
       <>
       {contentWarnings.length === 0
         ? null
-        : (<>
-          {contentWarnings.map((key, idx) => {
-            return (
-              <Tag
-                key={`browsing-content_warning-${tenant}-${idx}`}
-                label={t(`contentWarnings.${key}.${profile.content_warnings[key].name}`)}
-              />
-            )
-          })}
-          </>)
+        : (
+          <div>
+          <Tooltip
+            label={profile?.rating}
+            content={
+              <ul>
+                {contentWarnings.map((key, idx) => {
+                  return (
+                    <li>
+                      {t(`contentWarnings.${key}.${profile.content_warnings[key].name}`)}
+                    </li>
+                  )
+                })}
+              </ul>
+            }
+          />
+          </div>
+          )
       }
       </>
     );
@@ -78,25 +86,38 @@ const ComicProfile: React.FC<ComicProfileProps> = ({
         <div>
          <div className="comic-profile_header">
             <h1 className="comic-profile_title">{profile?.title}</h1>
-              {permissions?.edit
-                ? (<>
-                    <Link type="inline button" look="default" href={`/comic/${profile?.subdomain}/edit`} id={`edit-${profile?.subdomain}`}>{t('comicProfile.edit')}</Link>
-                    <Link type="inline button" look="primary" href={`/comic/${profile?.subdomain}/pages/new`} id={`newpage-${profile?.subdomain}`}>{t('comicPages.add')}</Link>
-                    <Button look="warning" id={`delete_comic-${profile.id}`} inline onClick={onDelete}>Delete</Button>
-                  </>
-                  )
-                : null
-              }
+            <Link href={`/read/${profile?.subdomain}`}>caveartcomics.com/read/{profile?.subdomain}</Link>
           </div>
           <pre className="comic-profile_description">{profile?.description}</pre>
-          <Tag label={profile?.rating} />
-          {profile?.genres
+          {renderContentWarnings()}
+           {profile?.genres
             ? renderGenres()
             : null
           }
-          {renderContentWarnings()}
+          {permissions?.edit
+            ? (<>
+                <Link
+                  type="button" 
+                  look="default" 
+                  href={`/comic/${profile?.subdomain}/edit`} 
+                  id={`edit-${profile?.subdomain}`}
+                >
+                  {t('comicProfile.edit')}
+                </Link>
+                <Button 
+                  look="warning" 
+                  id={`delete_comic-${profile.id}`} 
+                  inline 
+                  onClick={onDelete}
+                >
+                  Delete
+                </Button>
+              </>
+              )
+            : null
+          }
         </div>
-      </div>         
+      </div>     
     </div>
   )
   

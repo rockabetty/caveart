@@ -231,16 +231,17 @@ h2 {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--typeface-heading, Tahoma,Verdana,Segoe,sans-serif);
-  margin-block-end: var(--spacing-md);
 }
 
 ul {
-  margin-inline-start: var(--spacing-md);
-  list-style-type: square;
+  list-style-type: none;
 }
 
 li {
   padding-block-end: var(--spacing-xs);
+}
+li:last-of-type {
+  padding-block-end: 0;
 }
 
 /* width */

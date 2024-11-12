@@ -22,6 +22,7 @@ function MyComics() {
   useEffect(() => {
     axios.get('/api/comics/mine')
        .then((response) => {
+        console.log(response)
          setComics(response.data)
        })
        .catch((error) => {
@@ -83,9 +84,14 @@ function MyComics() {
     if (comics.length === 1) {
       const comic = comics[0];
       return (
+        <div className="tile">
         <ComicProfileProvider>
-          <ComicProfile tenant={comic.subdomain} onDelete={beginDeletion}/>
+          <ComicProfile
+            tenant={comic.subdomain}
+            onDelete={beginDeletion}
+          />
         </ComicProfileProvider>
+        </div>
       )
     }
 
@@ -107,8 +113,10 @@ function MyComics() {
  
   return (
     <CaveartLayout requireLogin={true}>
-      <h1>{t('headerNavigation.myWebcomics')}</h1>
-      <Link type="button" id="link-create_comic" href="/comic/new">{t('comicProfile.create')}</Link>
+      <div className="tile page_header">
+        <h1>{t('headerNavigation.myWebcomics')}</h1>
+        <Link type="button" look="primary" id="link-create_comic" href="/comic/new">{t('comicProfile.create')}</Link>
+      </div>
       <Modal
             size="md"
             id="delete_comic_confirmation"
