@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS users (
   password_reset_token VARCHAR(250),
   password_reset_expiry TIMESTAMP,
   verified BOOLEAN DEFAULT FALSE,
+  adult_age_verified BOOLEAN DEFAULT FALSE,
+  grant_age_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   role user_role DEFAULT 'Member'
