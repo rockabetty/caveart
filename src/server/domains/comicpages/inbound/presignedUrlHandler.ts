@@ -10,15 +10,16 @@ export const presignedUrlHandler: NextApiHandler = async (req, res) => {
   acceptPostOnly(req, res);
   rateLimit(req, res);
   const { tenant } = req.query;
-  const { image } = req.body;
-  const { fileType, fileName } = image;
+  const { name, type } = req.body;
+
   try {
     const comicId = await getComicIdFromSubdomain(tenant);
     const prefix = `uploads/comics/${comicId}/pages`;
-    const presignedUrl = getPresignedUrl(fileName, fileType, prefix);
+    const presignedUrl = await getPresignedUrl(name, type, prefix);
     if (presignedUrl.success) {
       return res.status(200).send(presignedUrl.data);
     }
+    console.log(presignedUrl)
     return res.status(400).send(ErrorKeys.IMAGE_MISSING);
   } catch (error) {
     return res.status(500).send(ErrorKeys.GENERAL_SERVER_ERROR);

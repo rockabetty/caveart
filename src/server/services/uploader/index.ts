@@ -39,7 +39,13 @@ export const getPresignedUrl = async (
 ) => {
   const region = requireEnvVar('AWS_REGION');
   const bucket = requireEnvVar('AWS_S3_BUCKET_USA');
-  const s3Client = new S3Client({ region });
+  const s3Client = new S3Client({ 
+    region,
+    credentials: {
+      accessKeyId: requireEnvVar('AWS_S3_ACCESS_KEY_ID'),
+      secretAccessKey: requireEnvVar('AWS_S3_SECRET_ACCESS_KEY')
+    }
+  });
 
   try {
     if (!fileName || !fileType) {

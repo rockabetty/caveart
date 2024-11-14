@@ -55,10 +55,10 @@ function AddPage() {
     updateUploadField("authorComment", e.target.value)
   };
 
-  const handleImageChange = (file: FileList) => {
+  const handleImageChange = (files: FileList) => {
     if (files && files.length > 0) {
       const file = files[0];
-      updateField("image", file);
+      updateUploadField("image", file);
     }
   };
 
@@ -72,25 +72,43 @@ function AddPage() {
     updateUploadField("newPageNumber", newPageNumber + 1);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = () => {
+    console.log("mmmmmmmmmmmmmmm")
     setUploadFormError("");
     setUploadFormSuccess(false);
-    axios
-      .post(`/api/comic/${tenant}/page/new`, uploadForm, {
+    const {name, type} = uploadForm.image;
+    const data = JSON.stringify({ name, type });
+
+    axios.post(
+      `/api/comic/${tenant}/page/presign`, 
+      data,
+      {
         headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((res) => {
-        console.log(res);
-        setSuccess(true);
+         'Content-Type': 'application/json'
+        }
+      }).then((res) => {
+        console.log(res)
       })
       .catch((error) => {
-        setError(error.response?.data);
-        setSuccess(false);
+        console.log(error)
       });
-  };
+  }
+
+    // axios
+    //   .post(`/api/comic/${tenant}/page/new`, uploadForm, {
+    //     headers: {
+    //       "Content-Type": "multipart/form-data",
+    //     },
+    //   })
+    //   .then((res) => {
+    //     console.log(res);
+    //     setSuccess(true);
+    //   })
+    //   .catch((error) => {
+    //     setError(error.response?.data);
+    //     setSuccess(false);
+    //   });
+    // };
 
   return (
     <CaveartLayout requireLogin={true}>
