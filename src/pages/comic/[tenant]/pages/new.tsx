@@ -6,9 +6,8 @@ import CaveartLayout from "@features/CaveartLayout";
 import ComicProfileProvider from "@features/comic/profiles/hooks/ComicProfileProvider";
 import { Button, Form, ImageUpload, Link, TextArea } from "@components";
 import DateTimepicker from "@components/Form/DateTimepicker";
-import { NewPageSubmission } from '@features/comic/pages';
+import { NewPageSubmission } from "@features/comic/pages";
 import { useUploadForm } from "@features/comic/pages/hooks/useUploadForm";
-
 
 function AddPage() {
   const router = useRouter();
@@ -21,7 +20,7 @@ function AddPage() {
     releaseDate: new Date(),
     title: "",
     commentary: "",
-    imageSource: "upload"
+    imageSource: "upload",
   };
 
   const {
@@ -35,7 +34,7 @@ function AddPage() {
     setUploadFormSuccess,
     uploadFormLoading,
     setUploadFormLoading,
-  } = useUploadForm(initialState)
+  } = useUploadForm(initialState);
 
   useEffect(() => {
     if (tenant) {
@@ -51,8 +50,10 @@ function AddPage() {
     }
   }, [tenant]);
 
-  const handleCommentaryChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    updateUploadField("authorComment", e.target.value)
+  const handleCommentaryChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    updateUploadField("authorComment", e.target.value);
   };
 
   const handleImageChange = (files: FileList) => {
@@ -73,42 +74,52 @@ function AddPage() {
   };
 
   const handleSubmit = () => {
-    console.log("mmmmmmmmmmmmmmm")
     setUploadFormError("");
     setUploadFormSuccess(false);
-    const {name, type} = uploadForm.image;
+    const { name, type } = uploadForm.image;
     const data = JSON.stringify({ name, type });
 
-    axios.post(
-      `/api/comic/${tenant}/page/presign`, 
-      data,
-      {
+    axios
+      .post(`/api/comic/${tenant}/page/presign`, data, {
         headers: {
-         'Content-Type': 'application/json'
-        }
-      }).then((res) => {
-        console.log(res)
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => {
+        const { uploadUrl, fileUrl } = res.data;
+        axios.put(
+          uploadUrl,
+          { body: uploadForm.image },
+          {
+            headers: {
+              "Content-Type": type,
+            },
+          },
+        )
+        .catch((error) => {
+          console.log(error);
+        });
       })
       .catch((error) => {
-        console.log(error)
+        console.log(error);
       });
-  }
+  };
 
-    // axios
-    //   .post(`/api/comic/${tenant}/page/new`, uploadForm, {
-    //     headers: {
-    //       "Content-Type": "multipart/form-data",
-    //     },
-    //   })
-    //   .then((res) => {
-    //     console.log(res);
-    //     setSuccess(true);
-    //   })
-    //   .catch((error) => {
-    //     setError(error.response?.data);
-    //     setSuccess(false);
-    //   });
-    // };
+  // axios
+  //   .post(`/api/comic/${tenant}/page/new`, uploadForm, {
+  //     headers: {
+  //       "Content-Type": "multipart/form-data",
+  //     },
+  //   })
+  //   .then((res) => {
+  //     console.log(res);
+  //     setSuccess(true);
+  //   })
+  //   .catch((error) => {
+  //     setError(error.response?.data);
+  //     setSuccess(false);
+  //   });
+  // };
 
   return (
     <CaveartLayout requireLogin={true}>
@@ -120,15 +131,19 @@ function AddPage() {
               type="button"
               href={`/read/${tenant}/${upload.newPageNumber}`}
             >
-              {t('comicPages.view')}
+              {t("comicPages.view")}
             </Link>
             <Button type="button" id="reset-form" onClick={uploadAnother}>
-              {t('comicPages.addAnother')}
+              {t("comicPages.addAnother")}
             </Button>
           </div>
         ) : (
           <div>
-            <p>{t('comicPages.newPage.number', { nextNumber: uploadForm.nextPageNumber })}</p>
+            <p>
+              {t("comicPages.newPage.number", {
+                nextNumber: uploadForm.nextPageNumber,
+              })}
+            </p>
             <Form
               submitLabel={t("comicPages.add")}
               formValues={uploadForm}
@@ -139,7 +154,7 @@ function AddPage() {
                 name="newPage"
                 required
                 id="new"
-                labelText={t('comicPages.newPage.uploadYourImage')}
+                labelText={t("comicPages.newPage.uploadYourImage")}
                 editable
                 value={uploadForm.image}
                 maxSize={3000 * 1024}
@@ -149,8 +164,10 @@ function AddPage() {
               <TextArea
                 id="author_comment"
                 name="commentary"
-                labelText={t('comicPages.newPage.authorComment.label')}
-                placeholderText={t('comicPages.newPage.authorComment.placeholder')}
+                labelText={t("comicPages.newPage.authorComment.label")}
+                placeholderText={t(
+                  "comicPages.newPage.authorComment.placeholder",
+                )}
                 value={uploadForm.authorComment}
                 onChange={handleCommentaryChange}
               />

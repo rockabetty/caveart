@@ -58,8 +58,7 @@ export const getPresignedUrl = async (
     const command = new PutObjectCommand({
       Bucket: bucket,
       Key: objectKey,
-      ContentType: fileType,
-      ACL: 'public-read',
+      ContentType: fileType
     });
     const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn });
     const fileUrl = `https://${bucket}.s3.${region}.amazonaws.com/${objectKey}`;
