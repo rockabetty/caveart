@@ -1,6 +1,6 @@
 import { NextApiHandler } from "next";
 import { ErrorKeys } from "../errors.types";
-import { acceptPostOnly } from "@domains/methodGatekeeper";
+import { acceptPostOnly, rateLimit } from "@domains/methodGatekeeper";
 import { getComicIdFromSubdomain } from "@domains/comics/outbound/comicRepository";
 import { getPresignedUrl } from "@services/uploader";
 import { withAuth } from "@domains/users/middleware/withAuth";
@@ -8,6 +8,7 @@ import { isAuthor } from "@domains/comics/middleware/isAuthor";
 
 export const presignedUrlHandler: NextApiHandler = async (req, res) => {
   acceptPostOnly(req, res);
+  rateLimit(req, res);
   const { tenant } = req.query;
   const { image } = req.body;
   const { fileType, fileName } = image;
