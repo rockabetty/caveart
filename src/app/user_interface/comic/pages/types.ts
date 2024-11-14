@@ -1,5 +1,6 @@
 export interface ComicPage {
   id?: number;
+  comicId?: number;
   title?: string;
   mouseoverText?: string;
   imageUrl?: string;

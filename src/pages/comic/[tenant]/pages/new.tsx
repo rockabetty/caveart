@@ -56,7 +56,10 @@ function AddPage() {
   };
 
   const handleImageChange = (file: FileList) => {
-    updateUploadField("image", file);
+    if (files && files.length > 0) {
+      const file = files[0];
+      updateField("image", file);
+    }
   };
 
   const handleDateChange = (date: Date) => {

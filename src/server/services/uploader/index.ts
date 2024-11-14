@@ -48,7 +48,7 @@ export const getPresignedUrl = async (
         error: "Invalid or missing file"
       }
     }
-    const objectKey = `${purpose}/${Date.now()}_${fileName}`;
+    const objectKey = `${prefix}/${Date.now()}_${fileName}`;
     const command = new PutObjectCommand({
       Bucket: bucket,
       Key: objectKey,
