@@ -38,16 +38,17 @@ function AddPage() {
     }
   }, [tenant]);
 
-  const handleCommentaryChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
+  const handleCommentaryChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { value } = e.target;
-    setUpload({ ...upload, commentary: value });
-    console.log(upload);
+    setUpload((prevState) => ({ ...prevState, commentary: value }));
   };
 
   const handleImageChange = (file: FileList) => {
-    setUpload({ ...upload, image: file });
+    setUpload((prevState) => ({ ...prevState, image: file }));
+  };
+
+  const handleDateChange = (date: Date) => {
+    setUpload((prevState) => ({ ...prevState, releaseDate: date }));
   };
 
   const uploadAnother = () => {
@@ -76,10 +77,6 @@ function AddPage() {
         setError(error.response?.data);
         setSuccess(false);
       });
-  };
-
-  const handleDateChange = (date: Date) => {
-    setUpload({ ...upload, releaseDate: date });
   };
 
   const [error, setError] = useState<string>("");

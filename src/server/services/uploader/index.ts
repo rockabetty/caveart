@@ -36,11 +36,20 @@ export const deleteFile = async (filename: string) => {
 export const parseFormWithSingleImage = async (req: NextApiRequest, purpose: string) => {
   await fs.ensureDir(uploadDir);
 
-  const form = formidable({
-    uploadDir,
-    keepExtensions: true,
-    maxFileSize: 5 * 1024 * 1024, // 5MB
-  });
+   const formImageDefaults = (() => {
+    switch (purpose) {
+      case "thumbnail":
+        return tinyImageDefaults;
+      case "small":
+        return smallImageDefaults;
+      case "large":
+        return largeImageDefaults;
+      default:
+        return imageDefaults;
+    }
+  })();
+
+  const form = formidable(formImageDefaults);
 
   return new Promise<{ fields: formidable.Fields; files: formidable.Files }>((resolve, reject) => {
     form.parse(req, (err, fields, files) => {
@@ -53,7 +62,6 @@ export const parseFormWithSingleImage = async (req: NextApiRequest, purpose: str
     });
   });
 };
-
 
 export async function addComicImageToDatabase(
   src: string,

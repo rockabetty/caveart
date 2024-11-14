@@ -1,6 +1,9 @@
 const english = {
 	comicPages: {
 		add: "Add pages",
+		newPage: {
+			linkRequiredIfExternal: "If you are using an external image, you need an image link." 
+		},
 	},
 	comicProfile: {
 		noComics: "You don't have any comics yet!",

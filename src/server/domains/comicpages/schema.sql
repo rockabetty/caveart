@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS comic_chapters (
 
 CREATE TABLE IF NOT EXISTS comic_pages (
     id SERIAL PRIMARY KEY,
+    title TEXT,
+    mouseover_text TEXT,
     page_number INT,
     comic_id INT REFERENCES comics(id) ON DELETE CASCADE,
     chapter_id INT REFERENCES comic_chapters(id) ON DELETE CASCADE,
@@ -20,11 +22,15 @@ CREATE TABLE IF NOT EXISTS comic_pages (
     view_count INT DEFAULT 0,
     like_count INT DEFAULT 0,
     author_comment TEXT,
+    enable_html_author_comment BOOLEAN,
     high_res_image_url TEXT,
     thumbnail_image_url TEXT,
     low_res_image_url TEXT,
+    embed_code TEXT,
+    transcript TEXT,
     CONSTRAINT unique_comic_chapter_pages UNIQUE (comic_id, chapter_id, page_number)
 );
+
 
 -- Users can free-form tag pages with whatever they like, like "mermaids" or "sword fight".
 CREATE TABLE IF NOT EXISTS comic_pages_tags (

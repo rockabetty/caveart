@@ -11,7 +11,8 @@ const uploadDir = getUploadDirectory();
 
 export const imageDefaults: formidable.Options = {
   maxFileSize: 2000 * 1024, // 2000 KB
-  maxTotalFileSize: 3000 * 1024, // 3000 KB
+  maxTotalFileSize: 3000 * 1024, // 3000 KB,
+  keepExtensions: true,
   filter: ({ originalFilename, mimetype }: formidable.Part): boolean => {
     if (originalFilename && mimetype) {
       const fileExt = path.extname(originalFilename).toLowerCase().substring(1);

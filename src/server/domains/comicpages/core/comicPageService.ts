@@ -5,6 +5,17 @@ import { ComicPage } from '../comicpage.types';
 import formidable from 'formidable';
 import logger from '@logger';
 
+export async function validateComicPage (fields: formidable.Fields, files: formidable.Files) {
+  if (!fields.newPageNumber || !fields.releaseDate || !files['image[]']) {
+    return {
+      success: false,
+      error: ErrorKeys.INVALID_REQUEST
+    }
+  }
+
+  
+}
+
 export async function createComicPage (fields: formidable.Fields, files: formidable.Files) {
   try {
 
