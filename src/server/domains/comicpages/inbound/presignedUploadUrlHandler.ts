@@ -6,7 +6,7 @@ import { getPresignedUrl } from "@services/uploader";
 import { withAuth } from "@domains/users/middleware/withAuth";
 import { isAuthor } from "@domains/comics/middleware/isAuthor";
 
-export const presignedUrlHandler: NextApiHandler = async (req, res) => {
+export const presignedUploadUrlHandler: NextApiHandler = async (req, res) => {
   acceptPostOnly(req, res);
   rateLimit(req, res);
   const { tenant } = req.query;
@@ -14,7 +14,8 @@ export const presignedUrlHandler: NextApiHandler = async (req, res) => {
 
   try {
     const comicId = await getComicIdFromSubdomain(tenant);
-    const prefix = `uploads/comics/${comicId}/pages`;
+    // TO DO: Private URLs for private and age restricted (18+) comics
+    const prefix = `uploads/comics/public/${comicId}/pages`;
     const presignedUrl = await getPresignedUrl(name, type, prefix);
     if (presignedUrl.success) {
       return res.status(200).send(presignedUrl.data);
@@ -26,4 +27,4 @@ export const presignedUrlHandler: NextApiHandler = async (req, res) => {
   }
 };
 
-export default withAuth(isAuthor(presignedUrlHandler));
+export default withAuth(isAuthor(presignedUploadUrlHandler));

@@ -8,6 +8,7 @@ import { Button, Form, ImageUpload, Link, TextArea } from "@components";
 import DateTimepicker from "@components/Form/DateTimepicker";
 import { NewPageSubmission } from "@features/comic/pages";
 import { useUploadForm } from "@features/comic/pages/hooks/useUploadForm";
+import { MAX_COMIC_PAGE_FILESIZE } from "../../constants";
 
 function AddPage() {
   const router = useRouter();
@@ -19,7 +20,7 @@ function AddPage() {
     image: undefined,
     releaseDate: new Date(),
     title: "",
-    commentary: "",
+    authorComment: "",
     imageSource: "upload",
   };
 
@@ -37,17 +38,20 @@ function AddPage() {
   } = useUploadForm(initialState);
 
   useEffect(() => {
-    if (tenant) {
-      axios
-        .get(`/api/comic/${tenant}/page/next`)
-        .then((response) => {
-          const { newPageNumber } = response.data;
-          updateUploadField("newPageNumber", newPageNumber);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+
+    const getNextPage = async function () {
+      if (tenant) {
+        try {
+          const nextPageRequest = await axios.get(`/api/comic/${tenant}/page/next`);
+          const { newPageNumber } = nextPageRequest.data;
+           updateUploadField("newPageNumber", newPageNumber);
+        } catch (error) {
+          setUploadFormError(t('comicPages.newPage.generalError'))
+        }
+      }
     }
+    getNextPage();
+    
   }, [tenant]);
 
   const handleCommentaryChange = (
@@ -57,8 +61,21 @@ function AddPage() {
   };
 
   const handleImageChange = (files: FileList) => {
+    setUploadFormError("");
     if (files && files.length > 0) {
       const file = files[0];
+      if (file.size > 3000 * 1024) {
+        setUploadFormError(
+          t("comicPages.newPage.imageTooBig", { maxMegabytes: 3 }),
+        );
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        setUploadFormError(t("comicPages.newPage.wrongFormat"));
+        return;
+      }
+
       updateUploadField("image", file);
     }
   };
@@ -68,117 +85,138 @@ function AddPage() {
   };
 
   const uploadAnother = () => {
-    resetForm();
     setUploadFormSuccess(false);
-    updateUploadField("newPageNumber", newPageNumber + 1);
+    updateUploadField("newPageNumber", uploadForm.newPageNumber + 1);
+    resetUploadForm();
+  
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setUploadFormError("");
     setUploadFormSuccess(false);
+    setUploadFormLoading(true);
+
+    if (!uploadForm.image) {
+      setUploadFormError(t("comicPages.newPage.noImage"));
+      setUploadFormLoading(false);
+      return;
+    }
+
     const { name, type } = uploadForm.image;
     const data = JSON.stringify({ name, type });
 
-    axios
-      .post(`/api/comic/${tenant}/page/presign`, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
-        const { uploadUrl, fileUrl } = res.data;
-        axios.put(
-          uploadUrl,
-          { body: uploadForm.image },
-          {
-            headers: {
-              "Content-Type": type,
-            },
+    try {
+      const presignedUrl = await axios.post(
+        `/api/comic/${tenant}/page/presign`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
           },
-        )
-        .catch((error) => {
-          console.log(error);
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+        },
+      );
 
-  // axios
-  //   .post(`/api/comic/${tenant}/page/new`, uploadForm, {
-  //     headers: {
-  //       "Content-Type": "multipart/form-data",
-  //     },
-  //   })
-  //   .then((res) => {
-  //     console.log(res);
-  //     setSuccess(true);
-  //   })
-  //   .catch((error) => {
-  //     setError(error.response?.data);
-  //     setSuccess(false);
-  //   });
-  // };
+      const { uploadUrl, fileUrl } = presignedUrl.data;
+
+      if (!uploadUrl || !fileUrl) {
+        setUploadFormError(t("comicPages.newPage.presignFailure"));
+        return;
+      }
+
+      await axios.put(
+        uploadUrl,
+        { body: uploadForm.image },
+        {
+          headers: {
+            "Content-Type": type,
+          },
+        },
+      );
+
+      const newPage = await axios.post(
+        `/api/comic/${tenant}/page/new`,
+        { ...uploadForm,
+          imageUrl: fileUrl
+        }
+      );
+
+      const { success } = newPage.data;
+      if (success) {
+        setUploadFormSuccess(true);
+      }
+    } catch (error) {
+      setUploadFormError(t("comicPages.newPage.generalError"));
+    } finally {
+      setUploadFormLoading(false);
+    }
+  };
 
   return (
     <CaveartLayout requireLogin={true}>
-      <h1>{t("comicPages.add")}</h1>
       <ComicProfileProvider>
-        {uploadFormSuccess ? (
-          <div>
-            <Link
-              type="button"
-              href={`/read/${tenant}/${upload.newPageNumber}`}
-            >
-              {t("comicPages.view")}
-            </Link>
-            <Button type="button" id="reset-form" onClick={uploadAnother}>
-              {t("comicPages.addAnother")}
-            </Button>
-          </div>
-        ) : (
-          <div>
-            <p>
-              {t("comicPages.newPage.number", {
-                nextNumber: uploadForm.nextPageNumber,
-              })}
-            </p>
-            <Form
-              submitLabel={t("comicPages.add")}
-              formValues={uploadForm}
-              onSubmit={handleSubmit}
-              submissionError={uploadFormError}
-            >
-              <ImageUpload
-                name="newPage"
-                required
-                id="new"
-                labelText={t("comicPages.newPage.uploadYourImage")}
-                editable
-                value={uploadForm.image}
-                maxSize={3000 * 1024}
-                onChange={handleImageChange}
-              />
+        <h1>{t("comicPages.add")}</h1>
 
-              <TextArea
-                id="author_comment"
-                name="commentary"
-                labelText={t("comicPages.newPage.authorComment.label")}
-                placeholderText={t(
-                  "comicPages.newPage.authorComment.placeholder",
-                )}
-                value={uploadForm.authorComment}
-                onChange={handleCommentaryChange}
-              />
+        <div className="tile">
+          {uploadFormSuccess ? (
+            <>
+              <Link
+                type="button"
+                href={`/read/${tenant}/${uploadForm.newPageNumber}`}
+              >
+                {t("comicPages.view")}
+              </Link>
+              <Button type="button" id="reset-form" onClick={uploadAnother}>
+                {t("comicPages.addAnother")}
+              </Button>
+            </>
+          ) : (
+            <>
+              <p>
+                {t("comicPages.newPage.number", {
+                  nextNumber: uploadForm.newPageNumber,
+                })}
+              </p>
+              <Form
+                submitLabel={t("comicPages.add")}
+                formValues={uploadForm}
+                onSubmit={handleSubmit}
+                submissionError={uploadFormError}
+              >
+                <div className="flex Row">
+                  <div className="flex-section">
+                    <ImageUpload
+                      name="newPage"
+                      required
+                      id="new"
+                      labelText={t("comicPages.newPage.uploadYourImage")}
+                      editable
+                      value={uploadForm.image}
+                      maxSize={3000 * 1024}
+                      onChange={handleImageChange}
+                    />
+                  </div>
+                  <div className="flex-section Grow">
+                    <TextArea
+                      id="author_comment"
+                      name="commentary"
+                      labelText={t("comicPages.newPage.authorComment.label")}
+                      placeholderText={t(
+                        "comicPages.newPage.authorComment.placeholder",
+                      )}
+                      value={uploadForm.authorComment}
+                      onChange={handleCommentaryChange}
+                    />
 
-              <DateTimepicker
-                labelText="Release date"
-                onDateChange={handleDateChange}
-              />
-            </Form>
-          </div>
-        )}
+                    <DateTimepicker
+                      labelText="Release date"
+                      onDateChange={handleDateChange}
+                    />
+                  </div>
+                </div>
+              </Form>
+            </>
+          )}
+        </div>
       </ComicProfileProvider>
     </CaveartLayout>
   );

@@ -4,7 +4,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 import './Datepicker.css';
 import Label from '../atoms/Label';
 import FormField from '../atoms/FormField';
-// import useUserTimeZone from '../hooks/useUserTimeZone';
 
 const DateTimePicker = (props) => {
   const [startDate, setStartDate] = useState(new Date());

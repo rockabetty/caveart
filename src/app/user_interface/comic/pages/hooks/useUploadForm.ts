@@ -14,7 +14,7 @@ export function useUploadForm(initialState: NewPageSubmission) {
     setUploadForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const validateForm = () => {
+  const validateUploadForm = () => {
     if (uploadForm.imageSource === "url" && !uploadForm.imageUrl) {
       setUploadFormError(t('comicPages.newPage.linkRequiredIfExternal'));
       return false;
@@ -36,7 +36,7 @@ export function useUploadForm(initialState: NewPageSubmission) {
   return {
     uploadForm,
     updateUploadField,
-    validateForm,
+    validateUploadForm,
     resetUploadForm,
     uploadFormError,
     setUploadFormError,

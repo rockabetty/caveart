@@ -42,6 +42,15 @@
 .flex {
   display: flex;
 }
+.flex-section {
+  margin: var(--spacing-sm);
+}
+.flex.Row {
+  flex-direction: row;
+}
+.flex .Grow {
+  flex-grow: 1;
+}
 
 .FlushRight {
   display: flex;
