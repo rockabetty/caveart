@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { requireEnvVar } from "@logger/envcheck";
-import { rateLimiter } from "@services/rateLimiter";
+import { rateLimiter } from "@server-services/rateLimiter";
 
 const USER_AUTH_TOKEN_NAME = requireEnvVar("NEXT_PUBLIC_USER_AUTH_TOKEN_NAME");
 

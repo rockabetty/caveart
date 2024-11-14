@@ -23,7 +23,8 @@
       "@logger": ["./server/services/logger"],
       "@logger/*": ["./server/services/logger/*"],
       "@domains/*": ["./server/domains/*"],
-      "@services/*": ["./server/services/*"]
+      "@server-services/*": ["./server/services/*"],
+      "@client-services/*": ["./app/services/*"],
     },
     "importHelpers": true,
     // output .d.ts declaration files for consumers

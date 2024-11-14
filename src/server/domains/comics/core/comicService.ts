@@ -19,14 +19,14 @@ import {
   editComic as editComicTable,
   selectComicProfile,
 } from "../outbound/comicRepository";
-import { sanitizeLongformText } from "@services/sanitizers";
+import { sanitizeLongformText } from "@server-services/sanitizers";
 import logger from "@logger";
 import extractUserIdFromToken from "@domains/users/utils/extractUserIdFromToken";
 import formidable from "formidable";
 import { ErrorKeys } from "../errors.types";
 import { ErrorKeys as GeneralErrorKeys } from "../../../errors.types";
-import { ErrorKeys as FileErrorKeys } from "@services/uploader/errors.types";
-import { addComicImageToDatabase } from "@services/uploader";
+import { ErrorKeys as FileErrorKeys } from "@server-services/uploader/errors.types";
+import { addComicImageToDatabase } from "@server-services/uploader";
 
 const invalidRequest = {
   success: false,

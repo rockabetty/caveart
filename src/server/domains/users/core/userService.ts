@@ -18,7 +18,7 @@ import { requireEnvVar } from "../../../services/logger/envcheck";
 import { ErrorKeys } from "../errors.types";
 import logger from "../../../services/logger";
 import { User, UserCredentials } from "../user.types";
-import { encrypt, decrypt } from "@services/encryption";
+import { encrypt, decrypt } from "@server-services/encryption";
 import { sendSingleEmail } from "../../../services/emailer";
 
 const SECRET_KEY_JWT = requireEnvVar("SECRET_KEY_JWT");

@@ -1,5 +1,5 @@
 import { createPageData, getLastPageReference, getPage } from '../outbound/pageRepository'
-import { addComicImageToDatabase } from '@services/uploader'
+import { addComicImageToDatabase } from '@server-services/uploader'
 import { ErrorKeys } from '../errors.types';
 import { ComicPage as ComicPageDatabaseEntry } from '../comicpage.types';
 import { ComicPage as ComicPagePostData } from '@features/comic/pages/types';

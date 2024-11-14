@@ -7,7 +7,8 @@ moduleAlias.addAliases({
   '@data': path.resolve(__dirname, 'src/data'),
   '@logger': path.resolve(__dirname, 'src/server/services/logger'),
   '@domains': path.resolve(__dirname, 'src/server/domains'),
-  '@services': path.resolve(__dirname, 'src/server/services')
+  '@server-services': path.resolve(__dirname, 'src/server/services'),
+  '@client-services': path.resolve(__dirname, 'src/app/services'),
 });
 
 /** @type {import('next').NextConfig} */

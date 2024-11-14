@@ -2,7 +2,7 @@ import { NextApiHandler } from "next";
 import { ErrorKeys } from "../errors.types";
 import { acceptPostOnly, rateLimit } from "@domains/methodGatekeeper";
 import { getComicIdFromSubdomain } from "@domains/comics/outbound/comicRepository";
-import { getPresignedUrl } from "@services/uploader";
+import { getPresignedUrl } from "@server-services/uploader";
 import { withAuth } from "@domains/users/middleware/withAuth";
 import { isAuthor } from "@domains/comics/middleware/isAuthor";
 

@@ -1,6 +1,6 @@
 import path from "path";
 import formidable from "formidable";
-import { createHash, createRandom } from "@services/encryption/hash";
+import { createHash, createRandom } from "@server-services/encryption/hash";
 
 export const getUploadDirectory = (): string => {
   // We will fix this up to involve S3 buckets or whatever when we're a REAL BOY

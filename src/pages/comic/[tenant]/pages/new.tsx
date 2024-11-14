@@ -9,6 +9,7 @@ import DateTimepicker from "@components/Form/DateTimepicker";
 import { NewPageSubmission } from "@features/comic/pages";
 import { useUploadForm } from "@features/comic/pages/hooks/useUploadForm";
 import { MAX_COMIC_PAGE_FILESIZE } from "../../constants";
+import { uploadToS3 } from "@client-services/uploads";
 
 function AddPage() {
   const router = useRouter();
@@ -38,20 +39,20 @@ function AddPage() {
   } = useUploadForm(initialState);
 
   useEffect(() => {
-
     const getNextPage = async function () {
       if (tenant) {
         try {
-          const nextPageRequest = await axios.get(`/api/comic/${tenant}/page/next`);
+          const nextPageRequest = await axios.get(
+            `/api/comic/${tenant}/page/next`,
+          );
           const { newPageNumber } = nextPageRequest.data;
-           updateUploadField("newPageNumber", newPageNumber);
+          updateUploadField("newPageNumber", newPageNumber);
         } catch (error) {
-          setUploadFormError(t('comicPages.newPage.generalError'))
+          setUploadFormError(t("comicPages.newPage.generalError"));
         }
       }
-    }
+    };
     getNextPage();
-    
   }, [tenant]);
 
   const handleCommentaryChange = (
@@ -88,7 +89,6 @@ function AddPage() {
     setUploadFormSuccess(false);
     updateUploadField("newPageNumber", uploadForm.newPageNumber + 1);
     resetUploadForm();
-  
   };
 
   const handleSubmit = async () => {
@@ -106,39 +106,16 @@ function AddPage() {
     const data = JSON.stringify({ name, type });
 
     try {
-      const presignedUrl = await axios.post(
-        `/api/comic/${tenant}/page/presign`,
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
+      const presignedUrl = await uploadToS3(
+        uploadForm.image,
+        tenant,
+        "comic page",
       );
 
-      const { uploadUrl, fileUrl } = presignedUrl.data;
-
-      if (!uploadUrl || !fileUrl) {
-        setUploadFormError(t("comicPages.newPage.presignFailure"));
-        return;
-      }
-
-      await axios.put(
-        uploadUrl,
-        { body: uploadForm.image },
-        {
-          headers: {
-            "Content-Type": type,
-          },
-        },
-      );
-
-      const newPage = await axios.post(
-        `/api/comic/${tenant}/page/new`,
-        { ...uploadForm,
-          imageUrl: fileUrl
-        }
-      );
+      const newPage = await axios.post(`/api/comic/${tenant}/page/new`, {
+        ...uploadForm,
+        imageUrl: presignedUrl,
+      });
 
       const { success } = newPage.data;
       if (success) {
@@ -159,13 +136,21 @@ function AddPage() {
         <div className="tile">
           {uploadFormSuccess ? (
             <>
+              <p>{t("comicPages.newPage.uploadConfirmation")}</p>
               <Link
                 type="button"
+                inline
+                look="primary"
                 href={`/read/${tenant}/${uploadForm.newPageNumber}`}
               >
                 {t("comicPages.view")}
               </Link>
-              <Button type="button" id="reset-form" onClick={uploadAnother}>
+              <Button
+                type="button"
+                inline
+                id="reset-form"
+                onClick={uploadAnother}
+              >
                 {t("comicPages.addAnother")}
               </Button>
             </>

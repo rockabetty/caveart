@@ -4,6 +4,7 @@ const english = {
 		view: "View page",
 		addAnother: "Add another",
 		newPage: {
+			uploadConfirmation: "Your new page was uploaded!",
 			generalError: "Something went wrong. Please try again",
 			presignFailure: "Something happened with our image uploader! Please try again.",
 			imageTooBig: "Your image size exceeds the {{ maxMegabytes }}MB limit.",
