@@ -10,7 +10,7 @@ export function useUploadForm(initialState: NewPageSubmission) {
 
   const { t } = useTranslation();
 
-  const updateField = (field: keyof NewPageSubmission, value: any) => {
+  const updateUploadField = (field: keyof NewPageSubmission, value: any) => {
     setUploadForm((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -22,7 +22,7 @@ export function useUploadForm(initialState: NewPageSubmission) {
     return true;
   };
 
-  const resetForm = (nextPageNumber: number) => {
+  const resetUploadForm = (nextPageNumber: number) => {
     setUploadForm({
       ...initialState,
       newPageNumber: nextPageNumber,
@@ -35,9 +35,9 @@ export function useUploadForm(initialState: NewPageSubmission) {
 
   return {
     uploadForm,
-    updateField,
+    updateUploadField,
     validateForm,
-    resetForm,
+    resetUploadForm,
     uploadFormError,
     setUploadFormError,
     uploadFormSuccess,

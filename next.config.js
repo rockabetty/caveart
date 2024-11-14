@@ -2,7 +2,8 @@ const path = require('path');
 const moduleAlias = require('module-alias');
 
 moduleAlias.addAliases({
-  '@components': path.resolve(__dirname, 'src/app/ui/components'),
+  '@features': path.resolve(__dirname, 'src/app/user_interface'),
+  '@components': path.resolve(__dirname, 'component_library'),
   '@data': path.resolve(__dirname, 'src/data'),
   '@logger': path.resolve(__dirname, 'src/server/services/logger'),
   '@domains': path.resolve(__dirname, 'src/server/domains'),

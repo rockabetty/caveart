@@ -1,7 +1,15 @@
 const english = {
 	comicPages: {
 		add: "Add pages",
+		view: "View page",
+		addAnother: "Add another",
 		newPage: {
+			uploadYourImage: "Upload your image",
+			authorComment: {
+				label: "Author comment",
+				placeholder: "Tell us about your favorite part of this page, your process, or whatever comes to mind."
+			},
+			number: "Next page number: {{nextPageNumber}}",
 			linkRequiredIfExternal: "If you are using an external image, you need an image link." 
 		},
 	},
