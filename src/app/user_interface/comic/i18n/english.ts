@@ -1,6 +1,6 @@
 const english = {
 	comicPages: {
-		add: "Add pages",
+		add: "Add page",
 		view: "View page",
 		addAnother: "Add another",
 		newPage: {

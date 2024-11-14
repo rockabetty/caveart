@@ -91,7 +91,7 @@ function AddPage() {
 
   return (
     <CaveartLayout requireLogin={true}>
-      <h1>{t("comicManagement.addPage.title")}</h1>
+      <h1>{t("comicPages.add")}</h1>
       <ComicProfileProvider>
         {uploadFormSuccess ? (
           <div>
@@ -109,7 +109,7 @@ function AddPage() {
           <div>
             <p>{t('comicPages.newPage.number', { nextNumber: uploadForm.nextPageNumber })}</p>
             <Form
-              submitLabel={t("comicManagement.addPage")}
+              submitLabel={t("comicPages.add")}
               formValues={uploadForm}
               onSubmit={handleSubmit}
               submissionError={uploadFormError}
