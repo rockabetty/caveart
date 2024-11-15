@@ -7,7 +7,7 @@ import ComicProfileProvider from "@features/comic/profiles/hooks/ComicProfilePro
 import { Button, Form, ImageUpload, Link, TextArea } from "@components";
 import DateTimepicker from "@components/Form/DateTimepicker";
 import { NewPageSubmission } from "@features/comic/pages";
-import { useUploadForm } from "@features/comic/pages/hooks/useUploadForm";
+import { useComicPage } from "@features/comic/pages/hooks/useComicPage";
 import { MAX_COMIC_PAGE_FILESIZE } from "../../constants";
 import { uploadToS3 } from "@client-services/uploads";
 
@@ -26,17 +26,17 @@ function AddPage() {
   };
 
   const {
-    uploadForm,
-    updateUploadField,
-    validateForm,
-    resetUploadForm,
-    uploadFormError,
-    setUploadFormError,
-    uploadFormSuccess,
-    setUploadFormSuccess,
-    uploadFormLoading,
-    setUploadFormLoading,
-  } = useUploadForm(initialState);
+    uploadComicPage,
+    pageForm,
+    updatePageField,
+    resetPageForm,
+    pageFormError,
+    setPageFormError,
+    pageFormSuccess,
+    setPageFormSuccess,
+    pageFormLoading,
+    setPageFormLoading,
+  } = useComicPage(initialState);
 
   useEffect(() => {
     const getNextPage = async function () {
@@ -46,9 +46,9 @@ function AddPage() {
             `/api/comic/${tenant}/page/next`,
           );
           const { newPageNumber } = nextPageRequest.data;
-          updateUploadField("newPageNumber", newPageNumber);
+          updatePageField("newPageNumber", newPageNumber);
         } catch (error) {
-          setUploadFormError(t("comicPages.newPage.generalError"));
+          setPageFormError(t("comicPages.newPage.generalError"));
         }
       }
     };
@@ -58,73 +58,74 @@ function AddPage() {
   const handleCommentaryChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    updateUploadField("authorComment", e.target.value);
+    updatePageField("authorComment", e.target.value);
   };
 
   const handleImageChange = (files: FileList) => {
-    setUploadFormError("");
+    setPageFormError("");
     if (files && files.length > 0) {
       const file = files[0];
       if (file.size > 3000 * 1024) {
-        setUploadFormError(
+        setPageFormError(
           t("comicPages.newPage.imageTooBig", { maxMegabytes: 3 }),
         );
         return;
       }
 
       if (!file.type.startsWith("image/")) {
-        setUploadFormError(t("comicPages.newPage.wrongFormat"));
+        setPageFormError(t("comicPages.newPage.wrongFormat"));
         return;
       }
 
-      updateUploadField("image", file);
+      updatePageField("image", file);
     }
   };
 
   const handleDateChange = (date: Date) => {
-    updateUploadField("releaseOn", date);
+    updatePageField("releaseOn", date);
   };
 
   const uploadAnother = () => {
-    setUploadFormSuccess(false);
-    updateUploadField("newPageNumber", uploadForm.newPageNumber + 1);
-    resetUploadForm();
+    setPageFormSuccess(false);
+    updatePageField("newPageNumber", pageForm.newPageNumber + 1);
+    resetPageForm();
   };
 
   const handleSubmit = async () => {
-    setUploadFormError("");
-    setUploadFormSuccess(false);
-    setUploadFormLoading(true);
+    setPageFormError("");
+    setPageFormSuccess(false);
+    setPageFormLoading(true);
 
-    if (!uploadForm.image) {
-      setUploadFormError(t("comicPages.newPage.noImage"));
-      setUploadFormLoading(false);
+    if (!pageForm.image) {
+      setPageFormError(t("comicPages.newPage.noImage"));
+      setPageFormLoading(false);
       return;
     }
 
-    const { name, type } = uploadForm.image;
+    const { name, type } = pageForm.image;
     const data = JSON.stringify({ name, type });
 
     try {
-      const presignedUrl = await uploadToS3(
-        uploadForm.image,
+      const imageUrl = await uploadComicPage(
+        pageForm.image,
         tenant,
         "comic page",
       );
 
       const newPage = await axios.post(`/api/comic/${tenant}/page/new`, {
-        ...uploadForm,
-        imageUrl: presignedUrl,
+        ...pageForm,
+        imageUrl
       });
 
       const { success } = newPage.data;
       if (success) {
-        setUploadFormSuccess(true);
+        setPageFormSuccess(true);
       }
     } catch (error) {
-      setUploadFormError(t("comicPages.newPage.generalError"));
+      console.log(error)
+      setPageFormError(t("comicPages.newPage.generalError"));
     } finally {
-      setUploadFormLoading(false);
+      setPageFormLoading(false);
     }
   };
 
@@ -134,14 +135,14 @@ function AddPage() {
         <h1>{t("comicPages.add")}</h1>
 
         <div className="tile">
-          {uploadFormSuccess ? (
+          {pageFormSuccess ? (
             <>
               <p>{t("comicPages.newPage.uploadConfirmation")}</p>
               <Link
                 type="button"
                 inline
                 look="primary"
-                href={`/read/${tenant}/${uploadForm.newPageNumber}`}
+                href={`/read/${tenant}/${pageForm.newPageNumber}`}
               >
                 {t("comicPages.view")}
               </Link>
@@ -158,14 +159,14 @@ function AddPage() {
             <>
               <p>
                 {t("comicPages.newPage.number", {
-                  nextNumber: uploadForm.newPageNumber,
+                  nextNumber: pageForm.newPageNumber,
                 })}
               </p>
               <Form
                 submitLabel={t("comicPages.add")}
-                formValues={uploadForm}
+                formValues={pageForm}
                 onSubmit={handleSubmit}
-                submissionError={uploadFormError}
+                submissionError={pageFormError}
               >
                 <div className="flex Row">
                   <div className="flex-section">
@@ -175,7 +176,7 @@ function AddPage() {
                       id="new"
                       labelText={t("comicPages.newPage.uploadYourImage")}
                       editable
-                      value={uploadForm.image}
+                      value={pageForm.image}
                       maxSize={3000 * 1024}
                       onChange={handleImageChange}
                     />
@@ -188,7 +189,7 @@ function AddPage() {
                       placeholderText={t(
                         "comicPages.newPage.authorComment.placeholder",
                       )}
-                      value={uploadForm.authorComment}
+                      value={pageForm.authorComment}
                       onChange={handleCommentaryChange}
                     />
 
