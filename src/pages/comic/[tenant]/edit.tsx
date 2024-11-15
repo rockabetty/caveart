@@ -11,7 +11,7 @@ function EditComic() {
   return (
     <CaveartLayout requireLogin={true}>
       <div className="tile">
-        <h1>{t("comicManagement.edit")}</h1>
+        <h1>{t("comicProfile.edit")}</h1>
         <ComicProfileProvider>
           <EditComicProfile tenant={tenant} />
         </ComicProfileProvider>

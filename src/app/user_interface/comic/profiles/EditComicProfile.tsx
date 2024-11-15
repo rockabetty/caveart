@@ -13,7 +13,7 @@ type EditComicProfileProps = {
 const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
   const { t } = useTranslation();
   const { tenant } = props;
-  const { state, setSubmissionError, confirmEdit } = useComicProfile(tenant);
+  const { state, setSubmissionError, confirmEdit, uploadThumbnail } = useComicProfile(tenant);
   const { update, permissions, profile, submissionError, successMessage, redirect } =
     state;
 
@@ -40,6 +40,7 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
     if (!update.title) {
       return setSubmissionError("comicManagement.errors.titleMissing");
     }
+
     if (profile.title !== update.title) {
       updates.push(
         axios.post(`/api/comic/${tenant}/title`, { update: update.title }),
@@ -48,12 +49,10 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
 
     if (typeof update.thumbnail !== 'string') {
       updates.push(
-        axios.post(`/api/comic/${tenant}/thumbnail`, { arbitrayfield: "lol", thumbnail: update.thumbnail},  {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }),
-      );
+        uploadThumbnail(
+        update.thumbnail,
+        profile.id
+      ));
     }
 
     if (!update.subdomain) {
