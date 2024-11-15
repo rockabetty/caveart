@@ -64,6 +64,7 @@ const english = {
 			"403": "You don't have permission to make changes to this comic.",
 			titleMissing: "Your comic needs a name!",
 			subdomainMissing: "Your comic needs a subdomain.",
+			thumbnailMissing: "No thumbnail provided.",
 			redirect: {
 				prompt: "There is no comic here. If you recently changed your comic's subdomain, this page is outdated since it's using the old subdomain.",
 				linkLabel: "Try again"

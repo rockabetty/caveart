@@ -8,7 +8,7 @@ import React from "react";
 
 const NewComicForm: React.FC = () => {
   const { t } = useTranslation();
-  const { state, setField, setSubmissionError, confirmCreation } =
+  const { state, setField, setSubmissionError, confirmCreation, uploadThumbnail } =
     useComicProfile();
   const { update, submissionError } = state;
 
@@ -42,7 +42,7 @@ const NewComicForm: React.FC = () => {
       comments: update.comments,
       rating: update.rating,
       likes: update.likes,
-      thumbnail: update.thumbnail
+      thumbnail: update.thumbnail,
     };
 
     if (!update.title) {
@@ -52,24 +52,37 @@ const NewComicForm: React.FC = () => {
       return setSubmissionError("comicProfile.errors.subdomainMissing");
     }
 
-    submission.genres = Object.keys(update.genres);
-    for (const value of Object.values(update.content_warnings)) {
-      submission.content.push(value.id);
-    }
+    try {
 
-    await axios
-      .post(`/api/comic/new`, submission, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((response) => {
-        confirmCreation(response.data);
-      })
-      .catch((error) => {
-        const message = error.response.data.error;
-        setSubmissionError(message);
-      });
+      submission.genres = Object.keys(update.genres);
+      for (const value of Object.values(update.content_warnings)) {
+        submission.content.push(value.id);
+      }
+
+      const creation = await axios
+        .post(
+          `/api/comic/new`,
+          submission
+        );
+
+      if (!id) {
+        throw new Error("No comic ID.")
+      }
+
+      console.log("time to uploadThumbnail")
+
+      const imageUrl = await uploadThumbnail(
+        submission.thumbnail,
+        id
+      );
+
+      console.log(imageUrl)
+
+      confirmCreation(creation.data);
+    } catch (error) {
+      const message = error.response.data.error;
+      setSubmissionError(message);
+    }
   };
 
   return (

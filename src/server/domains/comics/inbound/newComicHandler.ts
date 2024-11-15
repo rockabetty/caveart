@@ -7,23 +7,44 @@ import { ErrorKeys } from "../errors.types";
 import { acceptPostOnly, getUnvalidatedToken } from "@domains/methodGatekeeper";
 import { extractUserIdFromToken } from '@domains/users/utils/extractUserIdFromToken';
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 const handler: NextApiHandler = async (req, res): Promise<SubmissionResult> => {
   acceptPostOnly(req, res);
   try {
     const token = getUnvalidatedToken(req);
-
     const userID = await extractUserIdFromToken(token, false);
     if (isNaN(userID)) { 
       return res.status(403).json({ error: ErrorKeys.INVALID_REQUEST })
     }
-    const { files, fields } = await parseFormWithSingleImage(req, 'thumbnail');
-    const newComic = await createComic(fields, files, userID);
+
+    const {
+      title,
+      subdomain,
+      rating,
+      description,
+      genres,
+      content,
+      comments,
+      visibility,
+      likes
+    } = req.body
+
+    const fields = {
+      title,
+      subdomain,
+      rating,
+      description,
+      genres,
+      content,
+      comments,
+      visibility,
+      likes
+    }
+
+    console.log(req.body)
+    
+    const newComic = await createComic( fields, userID);
+
+    console.log(newComic)
     if (newComic.success) {
       return res.status(200).json(newComic.data)
     } else {
