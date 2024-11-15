@@ -53,7 +53,7 @@ We're using domain driven design and attempting to be as framework agnostic as p
 
 ### Directory Structure
 Here’s a brief overview of the key folders:
-
+```
 ├── component_library/ # UI components which will be later turned into a standalone npm package
 ├── src/ # The actual web application
 │ ├── documentation/ # Guess. No, go on, guess
@@ -76,7 +76,7 @@ Here’s a brief overview of the key folders:
 │ │ │ ├── users/ # Representing user accounts and authorization
 │ │ ├── services/ # Server-side logic not belonging exclusively to one domain, e.g. encryption
 │ │ ├── sql-helpers/ # Helper functions for query building 
-
+```
 #### Atomic Design
 We follow the atomic design methodology to structure our UI components. To learn more about this methodology, visit [Atomic Design By Brad Frost](https://atomicdesign.bradfrost.com). 
 
