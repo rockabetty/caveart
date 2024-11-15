@@ -3,12 +3,6 @@ CREATE TABLE IF NOT EXISTS ratings (
     name TEXT UNIQUE NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS comic_image_uploads (
-    id SERIAL PRIMARY KEY,
-    img TEXT NOT NULL UNIQUE,
-    created_at TIMESTAMP DEFAULT NOW()
-)
-
 CREATE TABLE IF NOT EXISTS comics (
     id SERIAL PRIMARY KEY,
     title VARCHAR(250) UNIQUE NOT NULL,
@@ -22,8 +16,11 @@ CREATE TABLE IF NOT EXISTS comics (
     is_unlisted BOOLEAN DEFAULT FALSE,
     is_private BOOLEAN DEFAULT FALSE,
     moderate_comments BOOLEAN DEFAULT FALSE,
+    /* view_count here is intended to be an eventually-accurate amount, not updated in real time */
     view_count INT DEFAULT 0,
+    /* whether a comic can be liked by a user */
     likes BOOLEAN DEFAULT TRUE,
+    /* like_count is, like view_count, not intended to be updated in real time */
     like_count INT DEFAULT 0,
     rating INT REFERENCES ratings(id) ON DELETE CASCADE,
     stylesheet_variables JSONB,

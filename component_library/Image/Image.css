@@ -3,7 +3,8 @@
   margin-bottom: var(--spacing-sm);
   margin-inline-end:  var(--spacing-sm);
   position: relative;
-  height: calc(var(--grid-4) + var(--grid-8)) ;
+  min-height: var(--grid-8);
+  max-height: calc(var(--grid-4) + var(--grid-8));
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -59,7 +60,7 @@
 
 .image_upload-label span {
   border: 1px solid var(--col-border);
-  background-color: var(--col-background);
+  background-color: var(--col-backdrop);
   padding: var(--spacing-sm);
   margin:  var(--spacing-md);
   text-align: center;

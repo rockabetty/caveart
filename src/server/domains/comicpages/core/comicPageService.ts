@@ -1,45 +1,48 @@
 import { createPageData, getLastPageReference, getPage } from '../outbound/pageRepository'
-import { addComicImageToDatabase } from '@services/uploader'
+import { addComicImageToDatabase } from '@server-services/uploader'
 import { ErrorKeys } from '../errors.types';
-import { ComicPage } from '../comicpage.types';
+import { ComicPage as ComicPageDatabaseEntry } from '../comicpage.types';
+import { ComicPage as ComicPagePostData } from '@features/comic/pages/types';
 import formidable from 'formidable';
 import logger from '@logger';
 
-export async function createComicPage (fields: formidable.Fields, files: formidable.Files) {
-  try {
+export async function validateComicPage (fields: formidable.Fields, files: formidable.Files) {
+  if (!fields.newPageNumber || !fields.releaseDate || !files['image[]']) {
+    return {
+      success: false,
+      error: ErrorKeys.INVALID_REQUEST
+    }
+  }
+}
 
-    let data: ComicPage = {
-      page_number: 0,
-      img: "",
-      comic_id: 0,
-      release_on: new Date().toISOString()
-    };
+export async function createComicPage (fields: ComicPagePostData) {
 
-    if (!fields.newPageNumber || !fields.releaseDate || !files['image[]']) {
+  console.log(fields)
+
+  if (!fields.comicID || !fields.newPageNumber || !fields.imageUrl) {
       return {
         success: false,
         error: ErrorKeys.INVALID_REQUEST
       }
-    } else {
-      const file = files['image[]']
-      data.page_number = Number(fields.newPageNumber[0])
-      data.img = `/uploads/${file[0].newFilename}`
-      data.comic_id = Number(fields.comicID)
+    }
+
+  try {
+
+    let data: ComicPage = {
+      page_number: Number(fields.newPageNumber),
+      high_res_image_url: fields.imageUrl,
+      comic_id: Number(fields.comicID),
+      author_comment: fields.authorComment,
+      release_on: new Date().toISOString()
+    };
+
+    if (fields.releaseOn) {
+      data.release_on = new Date(fields.releaseOn).toISOString();
     }
 
     if (fields.chapter_id) {
-      data.chapter_id = Number(fields.chapter_id[0])
+      data.chapter_id = Number(fields.chapter_id)
     }
-    if (fields.author_comment) {
-      data.author_comment = fields.author_comment[0]
-    }
-    if (fields.release_on) {
-      const releaseDate = fields.release_on[0]
-      data.release_on = new Date(releaseDate).toISOString()
-    }
-
-    const upload = await addComicImageToDatabase(data.img)
-    data.img_id = upload;
 
   	const page = await createPageData(data)
   	if (page) {

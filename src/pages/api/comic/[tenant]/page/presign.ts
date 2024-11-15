@@ -1,0 +1,1 @@
+export { presignedUploadUrlHandler as default } from "@domains/comicpages/inbound/presignedUploadUrlHandler";

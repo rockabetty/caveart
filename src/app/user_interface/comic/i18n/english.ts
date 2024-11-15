@@ -1,6 +1,23 @@
 const english = {
 	comicPages: {
-		add: "Add pages",
+		add: "Add page",
+		view: "View page",
+		addAnother: "Add another",
+		newPage: {
+			uploadConfirmation: "Your new page was uploaded!",
+			generalError: "Something went wrong. Please try again",
+			presignFailure: "Something happened with our image uploader! Please try again.",
+			imageTooBig: "Your image size exceeds the {{ maxMegabytes }}MB limit.",
+			wrontFormat: "Wrong format. Please upload an image file.",
+			noImage: "There's no image selected.",
+			uploadYourImage: "Upload your image",
+			authorComment: {
+				label: "Author comment",
+				placeholder: "Tell us about your favorite part of this page, your process, or whatever comes to mind."
+			},
+			number: "Next page number: {{ nextNumber }}",
+			linkRequiredIfExternal: "If you are using an external image, you need an image link." 
+		},
 	},
 	comicProfile: {
 		noComics: "You don't have any comics yet!",

@@ -2,7 +2,7 @@ import { NextApiHandler } from "next";
 import cookie from "cookie";
 import { getComicProfile } from "../core/comicService";
 import { isValidSubdomain } from "../core/comicService";
-import logger from "@services/logger";
+import logger from "@server-services/logger";
 import { acceptGetOnly } from "@domains/methodGatekeeper";
 
 const comicProfileHandler: NextApiHandler = async (req, res) => {

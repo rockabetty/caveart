@@ -18,8 +18,9 @@
 .button.Inline {
   width: auto;
   display: inline-block;
-  margin-inline-start: var(--spacing-md);
+  margin-inline-end: var(--spacing-md);
 }
+
 
 .button:hover {
   background-color: var(--col-button-hover);

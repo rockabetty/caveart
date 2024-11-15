@@ -1,6 +1,6 @@
 import path from "path";
 import formidable from "formidable";
-import { createHash, createRandom } from "@services/encryption/hash";
+import { createHash, createRandom } from "@server-services/encryption/hash";
 
 export const getUploadDirectory = (): string => {
   // We will fix this up to involve S3 buckets or whatever when we're a REAL BOY
@@ -11,7 +11,8 @@ const uploadDir = getUploadDirectory();
 
 export const imageDefaults: formidable.Options = {
   maxFileSize: 2000 * 1024, // 2000 KB
-  maxTotalFileSize: 3000 * 1024, // 3000 KB
+  maxTotalFileSize: 3000 * 1024, // 3000 KB,
+  keepExtensions: true,
   filter: ({ originalFilename, mimetype }: formidable.Part): boolean => {
     if (originalFilename && mimetype) {
       const fileExt = path.extname(originalFilename).toLowerCase().substring(1);

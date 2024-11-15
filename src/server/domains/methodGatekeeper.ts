@@ -1,7 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { requireEnvVar } from "@logger/envcheck";
+import { rateLimiter } from "@server-services/rateLimiter";
 
-const USER_AUTH_TOKEN_NAME = requireEnvVar('NEXT_PUBLIC_USER_AUTH_TOKEN_NAME');
+const USER_AUTH_TOKEN_NAME = requireEnvVar("NEXT_PUBLIC_USER_AUTH_TOKEN_NAME");
 
 export const acceptGetOnly = function (
     req: NextApiRequest,
@@ -23,12 +24,19 @@ export const acceptPostOnly = function (
     }
 };
 
-export const getUnvalidatedToken = function (
-    req: NextApiRequest,
-) {
+export const getUnvalidatedToken = function (req: NextApiRequest) {
     const token = req.cookies[USER_AUTH_TOKEN_NAME];
     if (!token) {
-        throw new Error()
+        throw new Error();
     }
     return token;
+};
+
+export const rateLimit = function (req: NextApiRequest, res: NextApiResponse) {
+    const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+    if (!rateLimiter(ip as string)) {
+        res.status(429).json({
+            error: "Too many requests. Please try again later.",
+        });
+    }
 };

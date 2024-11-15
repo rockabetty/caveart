@@ -11,7 +11,7 @@ import {
 } from "../comic.types";
 import { logger } from "@logger";
 import { QueryResult } from "pg";
-import ErrorKeys from '../errors.types';
+import { ErrorKeys } from '../errors.types';
 
 export async function addComic(comic: Comic): Promise<number | null> {
   const query = `

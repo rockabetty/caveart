@@ -190,7 +190,9 @@ export const updateRating =
 
 export const handleFileChange =
   (file: File | FileList) => (dispatch: React.Dispatch<ComicProfileAction>) => {
-    dispatch({ type: "SET_COVER_IMAGE", file });
+    const selectedFile = file instanceof FileList ? file[0] : file;
+    if (!selectedFile) return;
+    dispatch({ type: "SET_COVER_IMAGE", file: selectedFile });
   };
 
 export const handleSubmissionError =

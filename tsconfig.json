@@ -15,13 +15,16 @@
     ],
     "baseUrl": "./src",
     "paths": {
+      "@features": ["./app/user_interface"],
+      "@features/*": ["./app/user_interface/*"],
       "@components": ["../component_library"],
       "@components/*": ["../component_library/*"],
       "@data/*": ["./data/*"],
       "@logger": ["./server/services/logger"],
       "@logger/*": ["./server/services/logger/*"],
       "@domains/*": ["./server/domains/*"],
-      "@services/*": ["./server/services/*"]
+      "@server-services/*": ["./server/services/*"],
+      "@client-services/*": ["./app/services/*"],
     },
     "importHelpers": true,
     // output .d.ts declaration files for consumers

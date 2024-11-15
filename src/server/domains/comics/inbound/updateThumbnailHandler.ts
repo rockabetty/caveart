@@ -1,5 +1,5 @@
 import { NextApiHandler } from "next";
-import { parseFormWithSingleImage } from "@services/uploader";
+import { parseFormWithSingleImage } from "@server-services/uploader";
 import { updateThumbnail } from "../core/comicService";
 import { withAuth } from "@domains/users/middleware/withAuth";
 import { isAuthor } from "../middleware/isAuthor";

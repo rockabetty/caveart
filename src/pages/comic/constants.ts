@@ -1,0 +1,1 @@
+export const MAX_COMIC_PAGE_FILESIZE = 3 * 1024 * 1024;

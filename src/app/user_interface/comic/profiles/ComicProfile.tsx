@@ -104,6 +104,13 @@ const ComicProfile: React.FC<ComicProfileProps> = ({
                 >
                   {t('comicProfile.edit')}
                 </Link>
+                <Link 
+                  id={`addpages-${profile?.subdomain}`}
+                  type="button"
+                  look="default"
+                  href={`/comic/${profile?.subdomain}/pages/new`}>
+                    {t('comicPages.add')}
+                </Link>
                 <Button 
                   look="warning" 
                   id={`delete_comic-${profile.id}`} 
