@@ -8,19 +8,19 @@ import { isAuthor } from "@domains/comics/middleware/isAuthor";
 export const presignedUploadUrlHandler: NextApiHandler = async (req, res) => {
   acceptPostOnly(req, res);
   rateLimit(req, res);
-  const { name, type, comicId } = req.body;
+  const { name, type, tenant } = req.body;
 
   if (!name || !type) {
     return res.status(400).send(ErrorKeys.IMAGE_MISSING)
   }
 
-  if (!comicId) {
+  if (!tenant) {
     return res.status(400).send(ErrorKeys.COMIC_INVALID)
   }
 
   try {
     // TO DO: Private URLs for private and age restricted (18+) comics
-    const prefix = `uploads/comics/public/${comicId}/thumbnails`;
+    const prefix = `uploads/comics/public/${tenant}/thumbnails`;
     const presignedUrl = await getPresignedUrl(name, type, prefix);
     if (presignedUrl.success) {
       return res.status(200).send(presignedUrl.data);

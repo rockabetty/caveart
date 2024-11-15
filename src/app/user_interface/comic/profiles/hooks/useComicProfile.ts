@@ -6,7 +6,7 @@ import {
   fetchPermissions,
   updateFormfield,
   updateRating,
-  handleFileChange,
+  // handleFileChange,
   handleSubmissionError,
   handleSubmissionSuccess,
   handleEditSuccess,
@@ -67,18 +67,18 @@ export const useComicProfile = (tenant?: string) => {
     updateRating(contentWarnings)(dispatch);
   };
 
-  const setThumbnail = (file: File | FileList) => {
-    const validTypes = ["image/jpeg", "image/png", "image/gif"];
-    if (!validTypes.includes(file.type)) {
-      return setSubmissionError(
-        "Invalid file type. Only JPG, PNG, and GIF are allowed.",
-      );
-    }
-    if (file.size > 500 * 1024) {
-      return setSubmissionError("File size exceeds the 500KB limit.");
-    }
-    handleFileChange(file)(dispatch);
-  };
+  // const setThumbnail = (file: File ) => {
+  //   const validTypes = ["image/jpeg", "image/png", "image/gif"];
+  //   if (!validTypes.includes(file.type)) {
+  //     return setSubmissionError(
+  //       "Invalid file type. Only JPG, PNG, and GIF are allowed.",
+  //     );
+  //   }
+  //   if (file.size > 500 * 1024) {
+  //     return setSubmissionError("File size exceeds the 500KB limit.");
+  //   }
+  //   handleFileChange(file)(dispatch);
+  // };
 
   const setSubmissionError = (error: any) => {
     handleSubmissionError(error)(dispatch);
@@ -89,11 +89,14 @@ export const useComicProfile = (tenant?: string) => {
     console.log(comicID)
     if (!comicID) return;
     if (!image) {
+      console.log("no image.")
       return setSubmissionError("thumbnailMissing");
     }
+    console.log("hi")
 
     try {
-      const fileUrl = await uploadComicThumbnail(comicID, image);
+      console.log("time to await")
+      const fileUrl = await uploadComicThumbnail(comicID, image)(dispatch);
       dispatch({
         type: "UPLOAD_THUMBNAIL",
         payload: { uploadUrl: fileUrl },
@@ -125,7 +128,7 @@ export const useComicProfile = (tenant?: string) => {
     enableEditing,
     setField,
     setRating,
-    setThumbnail,
+    // setThumbnail,
     setSubmissionError,
     confirmCreation,
     confirmEdit,

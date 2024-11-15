@@ -437,23 +437,14 @@ export async function getComicProfile(identifier: string | number) {
 
 export async function updateThumbnail(
   comicID: number,
-  files: formidable.Files,
+  uploadUrl: string
 ) {
-  let thumbnail_id = undefined;
-  if (files) {
+  if (uploadUrl) {
     try {
-      await Promise.all(
-        Object.keys(files).map(async (key) => {
-          const file = files[key][0];
-          thumbnail_id = await addComicImageToDatabase(
-            `/uploads/${file.newFilename}`,
-          );
-        }),
-      );
-      const update = await editComic(comicID, { thumbnail_id });
+      const update = await editComic(comicID, { "thumbnail_image_url" : uploadUrl });
       return {
         success: true,
-        data: { thumbnail_id },
+        data: { comicID, uploadUrl },
       };
     } catch (fileErr) {
       return {

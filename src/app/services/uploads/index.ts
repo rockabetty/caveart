@@ -1,23 +1,22 @@
 import axios from "axios";
 
-type UploadType = "comic page" | "thumbnail" | "avatar" | "site graphic";
+type UploadType = "comic page" | "thumbnail";
 
 export const uploadToS3 = async (
   file: File,
   tenant: string,
-  preSignFor: UploadType = "comic page",
+  presignFor: UploadType = "comic page",
   onProgress?: (progressEvent: ProgressEvent) => void
 ): Promise<string> => {
   try {
     const { name, type } = file;
-    const data = JSON.stringify({ name, type });
+    const data = JSON.stringify({ name, type, tenant });
 
     let endpoint = `/api/comic/${tenant}/page/presign`;
 
-    if (preSignFor !== "comic page") {
-      if (presignFor === "avatar") endpoint = "/api/auth/presign";
-      if (preSignFor === "thumbnail") endpoint = `/api/comic/${tenant}/page/presign-thumbnail`;
-      if (preSignFor === "site graphic") endpoint = `/api/comic/${tenant}/assets/presign`;
+    if (presignFor !== "comic page") {
+      if (presignFor === "thumbnail") endpoint = `/api/comic/${tenant}/presign-thumbnail`;
+      // add different endpoints here as needs expand
     }
 
     const presignedUrlResponse = await axios.post(

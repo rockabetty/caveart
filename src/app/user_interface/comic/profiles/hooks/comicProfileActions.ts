@@ -9,7 +9,7 @@ import {
 } from "../types";
 import { uploadToS3 } from "@client-services/uploads";
 
-const handleError = function (error: any, dispatch: React.Dispatch<ComicProfileAction> ) {
+const handleError = function (error: any, dispatch: React.Dispatch<ComicProfileAction>) {
   console.error(error);
   const errorMessage =
     error?.response?.data?.error || "An unknown error occurred.";
@@ -171,7 +171,8 @@ export const updateFormfield =
       | string
       | Readonly<ContentWarningUserSelection>
       | Readonly<GenreUserSelection>
-      | boolean,
+      | boolean
+      | File
   ) =>
   (dispatch: React.Dispatch<ComicProfileAction>) => {
     dispatch({
@@ -193,12 +194,12 @@ export const updateRating =
     });
   };
 
-export const handleFileChange =
-  (file: File | FileList) => (dispatch: React.Dispatch<ComicProfileAction>) => {
-    const selectedFile = file instanceof FileList ? file[0] : file;
-    if (!selectedFile) return;
-    dispatch({ type: "SET_COVER_IMAGE", file: selectedFile });
-  };
+// export const handleFileChange =
+//   (file: File ) => (dispatch: React.Dispatch<ComicProfileAction>) => {
+//     console.log("Handle file change")
+//     if (!file) return;
+//     dispatch({ type: "EDIT_FORM_FIELD", "thumbnail", file });
+//   };
 
 export const handleSubmissionError =
   (errorMessage: string) => (dispatch: React.Dispatch<ComicProfileAction>) => {
@@ -229,12 +230,16 @@ export const handleSubmissionSuccess =
 export const uploadComicThumbnail =
   (tenant: string, image: File) =>
   async (dispatch: React.Dispatch<ComicProfileAction>) => {
+    console.log("UCT is running.")
     try {
       const uploadUrl = await uploadToS3(image, tenant, "thumbnail");
+      await axios.post(`/api/comic/${tenant}/thumbnail`, { tenant, uploadUrl });
+
       dispatch({
-        type: "UPLOAD_THUMBNAIL",
-        payload: { uploadUrl },
+        type: "CREATE_OR_EDIT_COMIC_SUCCESS",
+        payload: { successMessage: "comicManagement.editSuccessful" },
       });
+
     } catch (uploadError) {
       console.error(uploadError);
       handleError(uploadError, dispatch);

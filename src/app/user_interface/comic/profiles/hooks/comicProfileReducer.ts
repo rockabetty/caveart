@@ -56,10 +56,6 @@ export type ComicProfileAction =
       payload: { rating: string }
     }
   | {
-      type: "UPLOAD_THUMBNAIL",
-      payload: { uploadUrl: string }
-    }
-  | {
       type: "LOADING",
       payload: { action: ComicProfileAction }
   }
@@ -115,14 +111,6 @@ export const comicProfileReducer = (
         update: {
           ...state.update,
           rating: action.payload.rating
-        }
-      }
-    case 'UPLOAD_THUMBNAIL':
-      return {
-        ...state,
-        update: {
-          ...state.update,
-          thumbnail: action.payload.uploadUrl,
         }
       }
     case 'CREATE_OR_EDIT_COMIC_FAILURE':

@@ -1,5 +1,4 @@
 import { NextApiHandler } from "next";
-import { parseFormWithSingleImage } from "@server-services/uploader";
 import { updateThumbnail } from "../core/comicService";
 import { withAuth } from "@domains/users/middleware/withAuth";
 import { isAuthor } from "../middleware/isAuthor";
@@ -7,18 +6,18 @@ import { logger } from "@logger";
 import { ErrorKeys } from "../errors.types";
 import { acceptPostOnly } from "@domains/methodGatekeeper";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
 
 const handler: NextApiHandler = async (req, res): Promise<SubmissionResult> => {
   acceptPostOnly(req, res);
   try {
-    const tenantID = Number(req.cookies['CAVEARTWBCMX_current-comic']);
-    const { files, fields } = await parseFormWithSingleImage(req, 'thumbnail');
-    const newThumbnail = await updateThumbnail(tenantID, files);
+    const {tenant, uploadUrl} = req.body;
+    
+    if (!tenant) {
+      return res.status(400).json({error: ErrorKeys.COMIC_ID_INVALID})
+    }
+
+    const newThumbnail = await updateThumbnail(tenant, uploadUrl);
+    
     if (newThumbnail.success) {
       return res.status(200).json(newThumbnail.data)
     } else {

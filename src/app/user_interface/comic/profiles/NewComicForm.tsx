@@ -8,7 +8,7 @@ import React from "react";
 
 const NewComicForm: React.FC = () => {
   const { t } = useTranslation();
-  const { state, setField, setSubmissionError, confirmCreation, uploadThumbnail } =
+  const { state, setField, setSubmissionError, confirmCreation, uploadThumbnail, uploadUrl } =
     useComicProfile();
   const { update, submissionError } = state;
 
@@ -52,6 +52,9 @@ const NewComicForm: React.FC = () => {
       return setSubmissionError("comicProfile.errors.subdomainMissing");
     }
 
+      console.log(submission)
+
+
     try {
 
       submission.genres = Object.keys(update.genres);
@@ -65,20 +68,22 @@ const NewComicForm: React.FC = () => {
           submission
         );
 
+      console.log(creation)
+
+      const {id} = creation.data;
+
       if (!id) {
         throw new Error("No comic ID.")
       }
 
       console.log("time to uploadThumbnail")
 
-      const imageUrl = await uploadThumbnail(
+      await uploadThumbnail(
         submission.thumbnail,
         id
       );
-
-      console.log(imageUrl)
-
-      confirmCreation(creation.data);
+      
+      // confirmCreation(creation.data);
     } catch (error) {
       const message = error.response.data.error;
       setSubmissionError(message);
