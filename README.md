@@ -49,7 +49,7 @@ Advanced users may find the following instructions sufficient, but if you're a t
 - Type `npm run storybook` to start the Storybook instance.
 
 ### Design
-We're using domain driven design and attempting to be as framework agnostic as possible without over-engineering just for the sake of agnosticism.
+This project uses domain driven design to be as framework agnostic as possible without over-engineering just for the sake of agnosticism.
 
 ### Directory Structure
 Here’s a brief overview of the key folders:
@@ -78,10 +78,10 @@ Here’s a brief overview of the key folders:
 │ │ ├── sql-helpers/ # Helper functions for query building 
 ```
 #### Atomic Design
-We follow the atomic design methodology to structure our UI components. To learn more about this methodology, visit [Atomic Design By Brad Frost](https://atomicdesign.bradfrost.com). 
+Follow the atomic design methodology to structure UI components. To learn more about this methodology, visit [Atomic Design By Brad Frost](https://atomicdesign.bradfrost.com). 
 
 #### API naming strategy
-We utilize a RESTful API and highly recommend descriptive naming for files and folders. Avoid generic names like 'misc' or 'utils' to ensure clarity. Check out [Git's best practices](https://www.freecodecamp.org/news/how-to-use-git-best-practices-for-beginners/#:~:text=To%20get%20the%20most%20out,pull%20requests%20for%20code%20reviews.).
+Utilize a RESTful API and descriptive naming for files and folders. Avoid generic names like 'misc' or 'utils' to ensure clarity. Check out [Git's best practices](https://www.freecodecamp.org/news/how-to-use-git-best-practices-for-beginners/#:~:text=To%20get%20the%20most%20out,pull%20requests%20for%20code%20reviews.).
 
 - **Use sub-paths** for significantly different response formats:
   - `/api/content`: Returns nested content warning definitions.
@@ -93,7 +93,7 @@ We utilize a RESTful API and highly recommend descriptive naming for files and f
 
 #### Notable Details 
 * **The component_library vs. user_interface**: The component_library will eventually branch out into its standalone project, serving as a general-purpose component library, which is why you see it in a sister directory.  In contrast, user_interface is tailored specifically for our comics hosting platform, encompassing platform-specific UI elements.
-* **Domain-Driven Design:** Caveart is built on Domain-Driven Design (DDD) principles so that it's not married to Next.js forever, basically. NextJS is cool but as a free spritid girlie I want this website to be as easy to maintain as it grows as I can and I don't want to be locked into a specific framework forever. 
+* **Domain-Driven Design:** Caveart is built on Domain-Driven Design (DDD) principles so that it's not married to Next.js forever, basically. 
 
 ## Documentation
 In general, function definitions should have JSDocs style documentation in the actual files that define them.  More complex concepts may also have long form commentary within the files that define the subject matter discussed therein.   Setup instructions, high level info, and other such stuff that involves sharing rationale and design decisions and so forth goes into the `src/documentation` folder.
