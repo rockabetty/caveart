@@ -181,7 +181,7 @@ export async function selectComicProfile(
     c.subdomain,
     c.tagline,
     c.description,
-    c.thumbnail_image_url,
+    c.thumbnail_image_url as thumbnail,
     c.comments,
     c.is_unlisted,
     c.is_private,
