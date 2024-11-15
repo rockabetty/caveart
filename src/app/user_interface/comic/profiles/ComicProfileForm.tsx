@@ -24,7 +24,7 @@ const ComicProfileForm: React.FC<ComicProfileFormProps> = (
 ) => {
   const { t } = useTranslation();
   const { tenant } = props;
-  const { state, enableEditing, setField, setRating, setThumbnail } = useComicProfile(tenant);
+  const { state, enableEditing, setField, setRating } = useComicProfile(tenant);
   const { update } = state;
   const [genres, setGenres] = useState([]);
   const [contentWarnings, setContentWarnings] = useState([]);
@@ -88,7 +88,7 @@ const ComicProfileForm: React.FC<ComicProfileFormProps> = (
   };
 
   const handleImageChange = (file: FileList) => {
-    setThumbnail(file)
+    setField("thumbnail", file[0])
   }
 
   return (

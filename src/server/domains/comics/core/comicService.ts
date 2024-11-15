@@ -437,23 +437,14 @@ export async function getComicProfile(identifier: string | number) {
 
 export async function updateThumbnail(
   comicID: number,
-  files: formidable.Files,
+  uploadUrl: string
 ) {
-  let thumbnail_id = undefined;
-  if (files) {
+  if (uploadUrl) {
     try {
-      await Promise.all(
-        Object.keys(files).map(async (key) => {
-          const file = files[key][0];
-          thumbnail_id = await addComicImageToDatabase(
-            `/uploads/${file.newFilename}`,
-          );
-        }),
-      );
-      const update = await editComic(comicID, { thumbnail_id });
+      const update = await editComic(comicID, { "thumbnail_image_url" : uploadUrl });
       return {
         success: true,
-        data: { thumbnail_id },
+        data: { comicID, uploadUrl },
       };
     } catch (fileErr) {
       return {
@@ -469,10 +460,10 @@ export async function updateThumbnail(
 }
 
 export async function createComic(
-  fields: formidable.Fields,
-  files: formidable.Files,
+  fields,
   userId: number,
 ) {
+
   let profile = {
     title: "",
     subdomain: "",
@@ -495,22 +486,22 @@ export async function createComic(
     }
   }
 
-  profile.title = fields.title[0].trim().replace(/\s+/g, " ");
+  profile.title = fields.title.trim().replace(/\s+/g, " ");
 
-  const subdomain = fields.subdomain[0].toLowerCase();
+  const subdomain = fields.subdomain.toLowerCase();
   if (!isValidSubdomain(subdomain)) {
     return invalidRequest;
   }
   profile.subdomain = subdomain;
 
-  const rating = fields.rating[0];
+  const rating = fields.rating;
   if (!isValidRating(rating)) {
     return invalidRequest;
   }
   const ratingId = await getRatingId(rating);
   profile.rating = ratingId;
 
-  const description = fields.description[0];
+  const description = fields.description;
   if (!isValidDescription) {
     return invalidRequest;
   }
@@ -531,45 +522,28 @@ export async function createComic(
     return invalidRequest;
   }
 
-  const selectedCommentsOption = fields.comments[0];
+  const selectedCommentsOption = fields.comments;
   if (!isValidCommentOption(selectedCommentsOption)) {
     return invalidRequest;
   }
   profile.comments = selectedCommentsOption !== "Disabled";
   profile.moderate_comments = selectedCommentsOption === "Moderated";
 
-  const selectedVisibilityOption = fields.visibility[0];
+  const selectedVisibilityOption = fields.visibility;
   if (!isValidVisibilityOption(selectedVisibilityOption)) {
     return invalidRequest;
   }
   profile.is_private = selectedVisibilityOption === "Invite-Only";
   profile.is_unlisted = selectedVisibilityOption === "Unlisted";
 
-  const selectedLikesOption = fields.likes[0];
+  const selectedLikesOption = fields.likes;
   if (!isValidLikesOption(selectedLikesOption)) {
     return invalidRequest;
   }
   profile.likes = selectedLikesOption === "true";
 
-  if (files && Object.keys(files).length > 0) {
-    try {
-      await Promise.all(
-        Object.keys(files).map(async (key) => {
-          const file = files[key][0];
-          const upload = await addComicImageToDatabase(
-            `/uploads/${file.newFilename}`,
-          );
-          profile.thumbnail_id = upload;
-        }),
-      );
-    } catch (fileErr) {
-      return {
-        success: false,
-        error: FileErrorKeys.FILE_UPLOAD_ERROR,
-      };
-    }
-  } else {
-    profile.thumbnail_id = null;
+  if (fields.thumbnail) {
+    profile.thumbnail_image_url = fields.thumbnail;
   }
 
   try {

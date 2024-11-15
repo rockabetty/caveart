@@ -48,16 +48,12 @@ export type ComicProfileAction =
     }
   | {
       type: "EDIT_FORM_FIELD",
-      fieldName: string,
+      fieldName: keyof ComicData,
       value:  string | ContentWarningUserSelection | GenreUserSelection | boolean
     }
   | {
       type: "EDIT_COMIC_RATING",
       payload: { rating: string }
-    }
-  | {
-      type: "SET_COVER_IMAGE",
-      file: File | FileList
     }
   | {
       type: "LOADING",
@@ -117,14 +113,6 @@ export const comicProfileReducer = (
           rating: action.payload.rating
         }
       }
-    case 'SET_COVER_IMAGE':
-      return {
-        ...state,
-        update: {
-          ...state.update,
-          thumbnail: action.file
-        }
-      }
     case 'CREATE_OR_EDIT_COMIC_FAILURE':
       return {
         ...state,
@@ -140,8 +128,7 @@ export const comicProfileReducer = (
         ...state,
         redirect: action.payload.tenant
       }
-
     default:
-      return state;
+      return state || initialState;
   }
 };

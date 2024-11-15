@@ -10,7 +10,10 @@ CREATE TABLE IF NOT EXISTS comics (
     tagline VARCHAR(250),
     description TEXT,
     created_at TIMESTAMP DEFAULT NOW(),
-    thumbnail_id int REFERENCES comic_image_uploads(id),
+    -- thumbnail is direct upload for gallery tab view
+    thumbnail_image_url TEXT,
+    -- cover image is a big hero image for the comic profile
+    cover_image INT REFERENCES comic_pages(id),
     comments BOOLEAN DEFAULT TRUE,
     critique BOOLEAN DEFAULT FALSE,
     is_unlisted BOOLEAN DEFAULT FALSE,

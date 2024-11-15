@@ -7,11 +7,13 @@ import {
   GenreUserSelection,
   ContentWarningUserSelection,
 } from "../types";
+import { uploadToS3 } from "@client-services/uploads";
 
-const handleError = function (error: any) {
-  // TODO- error logging and such, in the meantime handleError is called in each action
-  // for future convenience
+const handleError = function (error: any, dispatch: React.Dispatch<ComicProfileAction>) {
   console.error(error);
+  const errorMessage =
+    error?.response?.data?.error || "An unknown error occurred.";
+  handleSubmissionError(errorMessage)(dispatch);
 };
 
 const ratingLevels = {
@@ -56,50 +58,56 @@ const ratingLevels = {
   ]),
 };
 
-// isDisjointFrom is brand new so here's one that typescript won't sneer at
-const isDisjointFrom = (setA: Set<string>, setB: Set<string>) => {
-  for (let elem of setA) {
-    if (setB.has(elem)) {
-      return false;
-    }
-  }
-  return true;
-};
-
-const determineComicRating = function (
+const determineComicRating = (
   selection: Readonly<ContentWarningUserSelection>,
-): string {
-  const warningsChosen: string[] = [];
-  Object.keys(selection).forEach((warning) => {
-    warningsChosen.push(selection[warning]["name"]);
-  });
+): string => {
+  const warningsChosen = Object.values(selection).map(
+    (warning) => warning.name,
+  );
   const content = new Set(warningsChosen);
-  if (!isDisjointFrom(content, ratingLevels["Adults Only (18+)"])) {
+
+  if (
+    Array.from(ratingLevels["Adults Only (18+)"]).some((warning) =>
+      content.has(warning),
+    )
+  ) {
     return "Adults Only (18+)";
   }
-  if (!isDisjointFrom(content, ratingLevels["Mature (17+)"])) {
+  if (
+    Array.from(ratingLevels["Mature (17+)"]).some((warning) =>
+      content.has(warning),
+    )
+  ) {
     return "Mature (17+)";
   }
-  if (!isDisjointFrom(content, ratingLevels["Teen (13+)"])) {
+  if (
+    Array.from(ratingLevels["Teen (13+)"]).some((warning) =>
+      content.has(warning),
+    )
+  ) {
     return "Teen (13+)";
   }
-  if (!isDisjointFrom(content, ratingLevels["Ages 10+"])) {
+  if (
+    Array.from(ratingLevels["Ages 10+"]).some((warning) => content.has(warning))
+  ) {
     return "Ages 10+";
   }
   return "All Ages";
 };
 
-export const deleteComic = (comicID: number) => async(dispatch: React.Dispatch<ComicProfileAction>) => {
-  try {
-    axios.post(`/api/comic/${comicID}/delete`);
-    dispatch({
-      type: "DELETE_COMIC"
-    })
-  } catch (error: any) {
-    handleError(error);
-  }
-};
+export const deleteComic =
+  (comicID: number) => async (dispatch: React.Dispatch<ComicProfileAction>) => {
+    try {
+      axios.post(`/api/comic/${comicID}/delete`);
+      dispatch({
+        type: "DELETE_COMIC",
+      });
+    } catch (error: any) {
+      handleError(error, dispatch);
+    }
+  };
 
+// `fetchProfile` is used for general viewing (read-only access).
 export const fetchProfile =
   (tenant: string) => async (dispatch: React.Dispatch<ComicProfileAction>) => {
     try {
@@ -109,16 +117,36 @@ export const fetchProfile =
         payload: { profile: comic.data },
       });
     } catch (error: any) {
-        const { response } = error; 
-        if (response.status === 400 ) {
-          if (!!response.data.subdomain) {
-            return dispatch({
-              type: "RECOMMEND_REDIRECT",
-              payload: { tenant: response.data.subdomain }
-            })
-          }
+      const { response } = error;
+      if (response.status === 400) {
+        if (!!response.data.subdomain) {
+          return dispatch({
+            type: "RECOMMEND_REDIRECT",
+            payload: { tenant: response.data.subdomain },
+          });
         }
-        handleError(error);
+      }
+      handleError(error, dispatch);
+    }
+  };
+
+// `fetchProfileToUpdate` is used when the user has editing permissions (e.g., comic owner).
+export const fetchProfileToUpdate =
+  (tenant: string) => async (dispatch: React.Dispatch<ComicProfileAction>) => {
+    try {
+      const permissions = await axios.get(`/api/comic/${tenant}/permissions`);
+      if (!permissions.data?.edit) return;
+
+      const comic = await axios.get(`/api/comic/${tenant}`);
+      dispatch({
+        type: "GET_COMIC_PROFILE_TO_UPDATE",
+        payload: {
+          profile: comic.data,
+          update: JSON.parse(JSON.stringify(comic.data)),
+        },
+      });
+    } catch (error: any) {
+      handleError(error, dispatch);
     }
   };
 
@@ -132,30 +160,7 @@ export const fetchPermissions =
         payload: { permissions: permissionData },
       });
     } catch (error: any) {
-      handleError(error);
-    }
-  };
-
-export const fetchProfileToUpdate =
-  (tenant: string) => async (dispatch: React.Dispatch<ComicProfileAction>) => {
-    console.log("Fetch profile to update with tenant  -" + tenant)
-    try {
-      const [comic, permissions] = await Promise.all([
-        axios.get(`/api/comic/${tenant}`),
-        axios.get(`/api/comic/${tenant}/permissions`),
-      ]);
-
-      if (permissions.data?.edit) {
-        dispatch({
-          type: "GET_COMIC_PROFILE_TO_UPDATE",
-          payload: {
-            profile: comic.data as ComicData,
-            update: JSON.parse(JSON.stringify(comic.data)) as ComicData,
-          },
-        });
-      }
-    } catch (error: any) {
-      handleError(error);
+      handleError(error, dispatch);
     }
   };
 
@@ -166,7 +171,8 @@ export const updateFormfield =
       | string
       | Readonly<ContentWarningUserSelection>
       | Readonly<GenreUserSelection>
-      | boolean,
+      | boolean
+      | File
   ) =>
   (dispatch: React.Dispatch<ComicProfileAction>) => {
     dispatch({
@@ -188,12 +194,12 @@ export const updateRating =
     });
   };
 
-export const handleFileChange =
-  (file: File | FileList) => (dispatch: React.Dispatch<ComicProfileAction>) => {
-    const selectedFile = file instanceof FileList ? file[0] : file;
-    if (!selectedFile) return;
-    dispatch({ type: "SET_COVER_IMAGE", file: selectedFile });
-  };
+// export const handleFileChange =
+//   (file: File ) => (dispatch: React.Dispatch<ComicProfileAction>) => {
+//     console.log("Handle file change")
+//     if (!file) return;
+//     dispatch({ type: "EDIT_FORM_FIELD", "thumbnail", file });
+//   };
 
 export const handleSubmissionError =
   (errorMessage: string) => (dispatch: React.Dispatch<ComicProfileAction>) => {
@@ -219,4 +225,23 @@ export const handleSubmissionSuccess =
       type: "CREATE_OR_EDIT_COMIC_SUCCESS",
       payload: { successMessage: "comicManagement.comicCreated" },
     });
+  };
+
+export const uploadComicThumbnail =
+  (tenant: string, image: File) =>
+  async (dispatch: React.Dispatch<ComicProfileAction>) => {
+    console.log("UCT is running.")
+    try {
+      const uploadUrl = await uploadToS3(image, tenant, "thumbnail");
+      await axios.post(`/api/comic/${tenant}/thumbnail`, { tenant, uploadUrl });
+
+      dispatch({
+        type: "CREATE_OR_EDIT_COMIC_SUCCESS",
+        payload: { successMessage: "comicManagement.editSuccessful" },
+      });
+
+    } catch (uploadError) {
+      console.error(uploadError);
+      handleError(uploadError, dispatch);
+    }
   };
