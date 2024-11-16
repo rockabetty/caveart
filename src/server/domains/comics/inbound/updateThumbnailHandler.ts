@@ -17,7 +17,6 @@ const handler: NextApiHandler = async (req, res): Promise<SubmissionResult> => {
     }
 
     const newThumbnail = await updateThumbnail(tenant, uploadUrl);
-    
     if (newThumbnail.success) {
       return res.status(200).json(newThumbnail.data)
     } else {

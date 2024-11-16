@@ -194,19 +194,12 @@ export const updateRating =
     });
   };
 
-// export const handleFileChange =
-//   (file: File ) => (dispatch: React.Dispatch<ComicProfileAction>) => {
-//     console.log("Handle file change")
-//     if (!file) return;
-//     dispatch({ type: "EDIT_FORM_FIELD", "thumbnail", file });
-//   };
-
 export const handleSubmissionError =
   (errorMessage: string) => (dispatch: React.Dispatch<ComicProfileAction>) => {
     dispatch({
       type: "CREATE_OR_EDIT_COMIC_FAILURE",
       payload: {
-        error: errorMessage ? `comicManagement.errors.${errorMessage}` : "",
+        error: errorMessage ? `comicProfile.errors.${errorMessage}` : "",
       },
     });
   };
@@ -215,7 +208,7 @@ export const handleEditSuccess =
   () => (dispatch: React.Dispatch<ComicProfileAction>) => {
     dispatch({
       type: "CREATE_OR_EDIT_COMIC_SUCCESS",
-      payload: { successMessage: "comicManagement.editSuccessful" },
+      payload: { successMessage: "comicProfile.editSuccessful" },
     });
   };
 
@@ -223,21 +216,20 @@ export const handleSubmissionSuccess =
   () => (dispatch: React.Dispatch<ComicProfileAction>) => {
     dispatch({
       type: "CREATE_OR_EDIT_COMIC_SUCCESS",
-      payload: { successMessage: "comicManagement.comicCreated" },
+      payload: { successMessage: "comicProfile.comicCreated" },
     });
   };
 
 export const uploadComicThumbnail =
   (tenant: string, image: File) =>
   async (dispatch: React.Dispatch<ComicProfileAction>) => {
-    console.log("UCT is running.")
     try {
       const uploadUrl = await uploadToS3(image, tenant, "thumbnail");
       await axios.post(`/api/comic/${tenant}/thumbnail`, { tenant, uploadUrl });
 
       dispatch({
         type: "CREATE_OR_EDIT_COMIC_SUCCESS",
-        payload: { successMessage: "comicManagement.editSuccessful" },
+        payload: { successMessage: "comicProfile.editSuccessful" },
       });
 
     } catch (uploadError) {

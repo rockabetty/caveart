@@ -20,6 +20,8 @@ const english = {
 		},
 	},
 	comicProfile: {
+		editSuccessful: "Your changes have been saved.",
+		comicCreated: "Your comic has been created!",
 		noComics: "You don't have any comics yet!",
 		create: "Create a comic",
 		edit: "Edit profile",

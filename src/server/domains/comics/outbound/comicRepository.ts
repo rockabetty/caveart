@@ -249,6 +249,21 @@ export async function getComicsByAuthor(
   }
 }
 
+export async function getComicThumbnail(comicID) {
+  const query=`SELECT thumbnail_image_url FROM comics WHERE id = $1`;
+  const values = [comicID];
+  try {
+  const result = await queryDbConnection(query,values);
+   if (result.rows && result.rows.length > 0) {
+      return result.rows[0].comics_json;
+    }
+    return null;
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
+  }
+}
+
 export async function listContentWarnings() {
   const query = `SELECT
     jsonb_object_agg(cw1.id, cw1.name)

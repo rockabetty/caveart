@@ -11,23 +11,28 @@ export const presignedUploadUrlHandler: NextApiHandler = async (req, res) => {
   const { name, type, tenant } = req.body;
 
   if (!name || !type) {
-    return res.status(400).send(ErrorKeys.IMAGE_MISSING)
+    return res.status(400).json({error: ErrorKeys.IMAGE_MISSING})
   }
 
   if (!tenant) {
-    return res.status(400).send(ErrorKeys.COMIC_INVALID)
+    return res.status(400).json({error: ErrorKeys.COMIC_INVALID})
+  }
+
+  const extension = name.split(".").pop().toLowerCase();
+  if (!extension) {
+    return res.status(400).json({ error: ErrorKeys.INVALID_FILE_EXTENSION });
   }
 
   try {
     // TO DO: Private URLs for private and age restricted (18+) comics
-    const prefix = `uploads/comics/public/${tenant}/thumbnails`;
-    const presignedUrl = await getPresignedUrl(name, type, prefix);
+    const prefix = `uploads/comics/public/${tenant}/assets`;
+    const presignedUrl = await getPresignedUrl(`thumbnail.${extension}`, type, prefix);
     if (presignedUrl.success) {
       return res.status(200).send(presignedUrl.data);
     }
-    return res.status(400).send(ErrorKeys.IMAGE_MISSING);
+    return res.status(400).json({error: ErrorKeys.IMAGE_MISSING});
   } catch (error) {
-    return res.status(500).send(ErrorKeys.GENERAL_SERVER_ERROR);
+    return res.status(500).json({error: ErrorKeys.GENERAL_SERVER_ERROR});
   }
 };
 
