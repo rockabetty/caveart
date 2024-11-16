@@ -36,20 +36,20 @@ const invalidRequest = {
 
 export async function getComicId(tenant: string | number) {
   try {
-   if (typeof tenant === "number") {
-    return tenant
-   }
-   const id = await getComicIdFromSubdomain(tenant);
-   return {
-    success: true,
-    data: { id }
-   }
+    if (typeof tenant === "number") {
+      return tenant;
+    }
+    const id = await getComicIdFromSubdomain(tenant);
+    return {
+      success: true,
+      data: { id },
+    };
   } catch (error: any) {
     logger.error(error);
     return {
       success: false,
-      error: error
-    }
+      error: error,
+    };
   }
 }
 
@@ -83,7 +83,7 @@ export async function getAuthors(tenant: string | number) {
     const authors = await getAuthorsOfComic(comicID);
     return {
       success: true,
-      data: { authors }
+      data: { authors },
     };
   } catch (error: any) {
     return {
@@ -100,14 +100,14 @@ export async function deleteComic(comicID: number, author: number) {
     if (authorList.length > 1) {
       return {
         success: false,
-        error: ErrorKeys.MULTIPLE_AUTHORS
-      }
+        error: ErrorKeys.MULTIPLE_AUTHORS,
+      };
     }
     await removeAuthorsFromComic(comicID, [author]);
     await removeAllGenresFromComic(comicID);
     await removeAllContentWarningsFromComic(comicID);
     const success = await deleteComicFromDatabase(comicID);
-    return { success }
+    return { success };
   } catch (error: any) {
     return {
       success: false,
@@ -266,9 +266,9 @@ export async function updateDescription(
   update: string,
 ): Promise<QueryResult | null> {
   if (isValidDescription(update)) {
-    console.log("############################ fidna sanitize")
+    console.log("############################ fidna sanitize");
     const sanitizedInput = sanitizeLongformText(update);
-    console.log(sanitizedInput)
+    console.log(sanitizedInput);
     const updateData = { description: sanitizedInput };
     try {
       editComic(tenantID, updateData);
@@ -436,28 +436,32 @@ export async function getComicProfile(identifier: string | number) {
   };
 }
 
-export async function updateThumbnail(
-  comicID: number,
-  uploadUrl: string
-) {
+export async function updateThumbnail(comicID: number, uploadUrl: string) {
   if (uploadUrl) {
     try {
-
       const oldVersion = await getComicThumbnail(comicID);
-      
+
       if (oldVersion) {
-        await deleteFromS3(oldVersion)
+        const deleteResult = await deleteFromS3(oldVersion);
+        if (!deleteResult.success) {
+          return {
+            success: false,
+            error: `Failed to delete old thumbnail: ${deleteResult.error}`,
+          };
+        }
       }
 
-      const update = await editComic(comicID, { "thumbnail_image_url" : uploadUrl });
+      const update = await editComic(comicID, {
+        thumbnail_image_url: uploadUrl,
+      });
       return {
         success: true,
         data: { comicID, uploadUrl },
       };
-    } catch (fileErr) {
+    } catch (error: any) {
       return {
         success: false,
-        error: fileErr,
+        error: error?.message || "Unknown error",
       };
     }
   }
@@ -467,11 +471,7 @@ export async function updateThumbnail(
   };
 }
 
-export async function createComic(
-  fields,
-  userId: number,
-) {
-
+export async function createComic(fields, userId: number) {
   let profile = {
     title: "",
     subdomain: "",

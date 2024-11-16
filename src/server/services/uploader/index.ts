@@ -10,6 +10,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const region = requireEnvVar("AWS_REGION");
 const bucket = requireEnvVar("AWS_S3_BUCKET_USA");
+const baseUrl = `https://${bucket}.s3.${region}.amazonaws.com`;
 
 let s3Client: S3Client;
 
@@ -63,7 +64,7 @@ export const getPresignedUrl = async (
       ContentType: fileType,
     });
     const uploadUrl = await getSignedUrl(client, command, { expiresIn });
-    const fileUrl = `https://${bucket}.s3.${region}.amazonaws.com/${objectKey}`;
+    const fileUrl = `${baseUrl}/${objectKey}`;
     return {
       success: true,
       data: { uploadUrl, fileUrl },
@@ -78,14 +79,16 @@ export const getPresignedUrl = async (
 
 /**
  * Deletes an object from S3.
- * @param {string} key - The full path (including prefix) of the file to delete in the S3 bucket.
+ * @param {string} url - The full URL of the file to delete in the S3 bucket, e.g.  https://my-custom-bucket.s3.us-region-x.amazonaws.com/uploads/comics/public/1/thumbnails/1731703853633_thumbnail.png
  * @returns {Promise<{ success: boolean; error?: string }>} - Returns an object indicating the success of the operation.
  * - `success: true` if the object was deleted successfully.
  * - `error: string` contains the error message if the deletion failed.
  */
-export const deleteFromS3 = async (key: string): Promise<{ success: boolean; error?: string }> => {
+export const deleteFromS3 = async (url: string): Promise<{ success: boolean; error?: string }> => {
   try {
     const client = getS3Client();
+    const parsedUrl = new URL(url);
+    const key = parsedUrl.pathname.slice(1); 
     const command = new DeleteObjectCommand({
       Bucket: bucket,
       Key: key,
