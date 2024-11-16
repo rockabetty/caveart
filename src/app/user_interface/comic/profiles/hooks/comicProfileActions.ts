@@ -2,7 +2,6 @@ import axios from "axios";
 import { ComicProfileAction } from "./comicProfileReducer";
 import {
   ComicPermissions,
-  ComicData,
   ComicField,
   GenreUserSelection,
   ContentWarningUserSelection,
@@ -14,6 +13,7 @@ const handleError = function (error: any, dispatch: React.Dispatch<ComicProfileA
   const errorMessage =
     error?.response?.data?.error || "An unknown error occurred.";
   handleSubmissionError(errorMessage)(dispatch);
+  dispatch({ type: "LOADING", payload: { loading: false } });
 };
 
 const ratingLevels = {
@@ -118,24 +118,35 @@ export const fetchProfile =
         payload: { profile: comic.data },
       });
     } catch (error: any) {
-      const { response } = error;
-      if (response.status === 400) {
-        if (!!response.data.subdomain) {
+      if (error.response) {
+        const { response } = error;
+
+        if (response.status === 400 && response.data?.subdomain) {
           return dispatch({
             type: "RECOMMEND_REDIRECT",
-            payload: { tenant: response.data.subdomain },
+            payload: { redirect: response.data.subdomain },
           });
         }
+
+        dispatch({
+          type: "SERVER_RESPONSE_FAILURE",
+          payload: { error: response.data?.message || "An error occurred" },
+        });
+      } else {
+        dispatch({
+          type: "SERVER_RESPONSE_FAILURE",
+          payload: { error: "Network error. Please check your connection." },
+        });
       }
-      handleError(error, dispatch);
     } finally {
       dispatch({ type: "LOADING", payload: { loading: false } });
     }
-  };
+  };;
 
 // `fetchProfileToUpdate` is used when the user has editing permissions (e.g., comic owner).
 export const fetchProfileToUpdate =
   (tenant: string) => async (dispatch: React.Dispatch<ComicProfileAction>) => {
+    dispatch({ type: "LOADING", payload: { loading: true } });
     try {
       const permissions = await axios.get(`/api/comic/${tenant}/permissions`);
       if (!permissions.data?.edit) return;
@@ -150,6 +161,8 @@ export const fetchProfileToUpdate =
       });
     } catch (error: any) {
       handleError(error, dispatch);
+    } finally {
+      dispatch({ type: "LOADING", payload: { loading: false } });
     }
   };
 
@@ -175,7 +188,6 @@ export const updateFormfield =
       | Readonly<ContentWarningUserSelection>
       | Readonly<GenreUserSelection>
       | boolean
-      | File
   ) =>
   (dispatch: React.Dispatch<ComicProfileAction>) => {
     dispatch({
@@ -200,7 +212,7 @@ export const updateRating =
 export const handleSubmissionError =
   (errorMessage: string) => (dispatch: React.Dispatch<ComicProfileAction>) => {
     dispatch({
-      type: "CREATE_OR_EDIT_COMIC_FAILURE",
+      type: "SERVER_RESPONSE_FAILURE",
       payload: {
         error: errorMessage ? `comicProfile.errors.${errorMessage}` : "",
       },
@@ -210,7 +222,7 @@ export const handleSubmissionError =
 export const handleEditSuccess =
   () => (dispatch: React.Dispatch<ComicProfileAction>) => {
     dispatch({
-      type: "CREATE_OR_EDIT_COMIC_SUCCESS",
+      type: "SERVER_RESPONSE_SUCCESS",
       payload: { successMessage: "comicProfile.editSuccessful" },
     });
   };
@@ -218,7 +230,7 @@ export const handleEditSuccess =
 export const handleSubmissionSuccess =
   () => (dispatch: React.Dispatch<ComicProfileAction>) => {
     dispatch({
-      type: "CREATE_OR_EDIT_COMIC_SUCCESS",
+      type: "SERVER_RESPONSE_SUCCESS",
       payload: { successMessage: "comicProfile.comicCreated" },
     });
   };
@@ -226,17 +238,20 @@ export const handleSubmissionSuccess =
 export const uploadComicThumbnail =
   (tenant: string, image: File) =>
   async (dispatch: React.Dispatch<ComicProfileAction>) => {
+    dispatch({ type: "LOADING", payload: { loading: true } });
     try {
       const uploadUrl = await uploadToS3(image, tenant, "thumbnail");
-      await axios.post(`/api/comic/${tenant}/thumbnail`, { tenant, uploadUrl });
+      await axios.post(`/api/comic/${tenant}/thumbnail`, { uploadUrl });
 
       dispatch({
-        type: "CREATE_OR_EDIT_COMIC_SUCCESS",
+        type: "SERVER_RESPONSE_SUCCESS",
         payload: { successMessage: "comicProfile.editSuccessful" },
       });
 
     } catch (uploadError) {
       console.error(uploadError);
       handleError(uploadError, dispatch);
+    } finally {
+      dispatch({ type: "LOADING", payload: { loading: false } });
     }
   };

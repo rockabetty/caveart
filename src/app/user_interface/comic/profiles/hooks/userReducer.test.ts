@@ -66,9 +66,9 @@ describe("comicProfileReducer", () => {
     expect(result.update.rating).toEqual("Mature (17+)");
   });
 
-  it("should handle CREATE_OR_EDIT_COMIC_SUCCESS", () => {
+  it("should handle SERVER_RESPONSE_SUCCESS", () => {
     const action: ComicProfileAction = {
-      type: "CREATE_OR_EDIT_COMIC_SUCCESS",
+      type: "SERVER_RESPONSE_SUCCESS",
       payload: { successMessage: "Comic created successfully!" },
     };
 
@@ -76,9 +76,9 @@ describe("comicProfileReducer", () => {
     expect(result.successMessage).toEqual("Comic created successfully!");
   });
 
-  it("should handle CREATE_OR_EDIT_COMIC_FAILURE", () => {
+  it("should handle SERVER_RESPONSE_FAILURE", () => {
     const action: ComicProfileAction = {
-      type: "CREATE_OR_EDIT_COMIC_FAILURE",
+      type: "SERVER_RESPONSE_FAILURE",
       payload: { error: "Failed to create comic" },
     };
 

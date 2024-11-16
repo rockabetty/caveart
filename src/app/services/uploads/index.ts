@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosProgressEvent } from "axios";
 
 type UploadType = "comic page" | "thumbnail";
 
@@ -6,7 +6,7 @@ export const uploadToS3 = async (
   file: File,
   tenant: string,
   presignFor: UploadType = "comic page",
-  onProgress?: (progressEvent: ProgressEvent) => void
+  onProgress?: (progressEvent: AxiosProgressEvent) => void
 ): Promise<string> => {
   try {
     const { name, type } = file;

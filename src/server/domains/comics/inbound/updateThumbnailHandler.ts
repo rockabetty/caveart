@@ -10,8 +10,9 @@ import { acceptPostOnly } from "@domains/methodGatekeeper";
 const handler: NextApiHandler = async (req, res): Promise<SubmissionResult> => {
   acceptPostOnly(req, res);
   try {
-    const {tenant, uploadUrl} = req.body;
-    
+    const {uploadUrl} = req.body;
+    const {tenant} = req.query;
+
     if (!tenant) {
       return res.status(400).json({error: ErrorKeys.COMIC_ID_INVALID})
     }

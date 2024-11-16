@@ -62,11 +62,11 @@ export type ComicProfileAction =
       payload: { loading: boolean } 
     }
   | {
-      type: "CREATE_OR_EDIT_COMIC_SUCCESS",
+      type: "SERVER_RESPONSE_SUCCESS",
       payload: { successMessage: string }
     }
   | {
-      type: "CREATE_OR_EDIT_COMIC_FAILURE",
+      type: "SERVER_RESPONSE_FAILURE",
       payload: { error: string }
     }
   | {
@@ -76,6 +76,9 @@ export type ComicProfileAction =
   | {
     type: "RECOMMEND_REDIRECT",
     payload: { redirect: string }
+  }
+  | {
+    type: "DELETE_COMIC"
   }
 
 export const comicProfileReducer = (
@@ -115,12 +118,12 @@ export const comicProfileReducer = (
           rating: action.payload.rating
         }
       }
-    case 'CREATE_OR_EDIT_COMIC_FAILURE':
+    case 'SERVER_RESPONSE_FAILURE':
       return {
         ...state,
         submissionError: action.payload.error
       }
-    case 'CREATE_OR_EDIT_COMIC_SUCCESS':
+    case 'SERVER_RESPONSE_SUCCESS':
       return {
         ...state,
         successMessage: action.payload.successMessage
@@ -135,6 +138,8 @@ export const comicProfileReducer = (
         ...state,
         loading: action.payload.loading,
       }
+    case 'DELETE_COMIC':
+      return state;
     default:
       return state;
   }
