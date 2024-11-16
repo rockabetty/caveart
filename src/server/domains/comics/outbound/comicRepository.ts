@@ -11,7 +11,7 @@ import {
 } from "../comic.types";
 import { logger } from "@logger";
 import { QueryResult } from "pg";
-import { ErrorKeys } from '../errors.types';
+import { ErrorKeys } from "../errors.types";
 
 export async function addComic(comic: Comic): Promise<number | null> {
   const query = `
@@ -250,12 +250,12 @@ export async function getComicsByAuthor(
 }
 
 export async function getComicThumbnail(comicID) {
-  const query=`SELECT thumbnail_image_url FROM comics WHERE id = $1`;
+  const query = `SELECT thumbnail_image_url FROM comics WHERE id = $1`;
   const values = [comicID];
   try {
-  const result = await queryDbConnection(query,values);
-   if (result.rows && result.rows.length > 0) {
-      return result.rows[0].comics_json;
+    const result = await queryDbConnection(query, values);
+    if (result.rows && result.rows.length > 0) {
+      return result.rows[0].thumbnail_image_url;
     }
     return null;
   } catch (error: any) {
@@ -483,25 +483,23 @@ export async function editComic(
   }
 }
 
-export async function deleteComic(
-  comicID: number
-): Promise<boolean | null> {
+export async function deleteComic(comicID: number): Promise<boolean | null> {
   if (Number.isNaN(comicID) || comicID <= 0) {
     return { success: false, message: ErrorKeys.COMIC_ID_INVALID };
   }
 
-  console.log("Running DC on " + comicID)
+  console.log("Running DC on " + comicID);
   const query = `DELETE FROM comics 
     WHERE id = $1;`;
   const values = [comicID];
   try {
-    console.log("Deleting " + comicID)
+    console.log("Deleting " + comicID);
     const result = await queryDbConnection(query, values);
     if (result.rowCount > 0) {
-      console.log("Deletion supposedly worked")
+      console.log("Deletion supposedly worked");
       return true;
     } else {
-      console.log("No row count")
+      console.log("No row count");
       return false;
     }
   } catch (error: any) {
@@ -512,42 +510,12 @@ export async function deleteComic(
 
 export async function removeAllGenresFromComic(comicID: number) {
   const query = `DELETE FROM comics_to_genres WHERE comic_id = $1`;
-  const values = [comicID]
+  const values = [comicID];
   try {
-    const result = await queryDbConnection(query, values)
+    const result = await queryDbConnection(query, values);
     if (result.rowCount > 0) {
-    return true;
-  } else {
-    return false;
-  }
-  } catch (error: any) {
-    logger.error(error);
-    throw error;
-  }
-}
-
-export async function removeAllContentWarningsFromComic(comicID: number) {
-  const values = [comicID]
-  const checkQuery = `SELECT COUNT(id) FROM comics_to_content_warnings WHERE comic_id = $1`;
-  const deleteQuery = `DELETE FROM comics_to_content_warnings WHERE comic_id = $1`;
-
-  console.log("Deleting content warnings from comic iD " + comicID)
-  
-  try {
-    const checkResult = await queryDbConnection(checkQuery, values);
-    const count = parseInt(checkResult.rows[0].count, 10);
-
-    if (count === 0) {
-      console.log("NOthing to delete")
-      return true;
-    }
-
-    const deleteResult = await queryDbConnection(deleteQuery, values)
-    if (deleteResult.rowCount > 0) {
-      console.log("Deleted!")
       return true;
     } else {
-      console.log("Nothing was deleted.")
       return false;
     }
   } catch (error: any) {
@@ -556,6 +524,35 @@ export async function removeAllContentWarningsFromComic(comicID: number) {
   }
 }
 
+export async function removeAllContentWarningsFromComic(comicID: number) {
+  const values = [comicID];
+  const checkQuery = `SELECT COUNT(id) FROM comics_to_content_warnings WHERE comic_id = $1`;
+  const deleteQuery = `DELETE FROM comics_to_content_warnings WHERE comic_id = $1`;
+
+  console.log("Deleting content warnings from comic iD " + comicID);
+
+  try {
+    const checkResult = await queryDbConnection(checkQuery, values);
+    const count = parseInt(checkResult.rows[0].count, 10);
+
+    if (count === 0) {
+      console.log("NOthing to delete");
+      return true;
+    }
+
+    const deleteResult = await queryDbConnection(deleteQuery, values);
+    if (deleteResult.rowCount > 0) {
+      console.log("Deleted!");
+      return true;
+    } else {
+      console.log("Nothing was deleted.");
+      return false;
+    }
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
+  }
+}
 
 export async function removeGenresFromComic(
   comic: number,
@@ -618,8 +615,8 @@ export async function removeAuthorsFromComic(
 }
 
 export async function getAuthorsOfComic(
-  comic: number
-  ): Promise<QueryResult| null> {
+  comic: number,
+): Promise<QueryResult | null> {
   try {
     const query = `SELECT
       u.username, u.id
@@ -627,11 +624,11 @@ export async function getAuthorsOfComic(
     JOIN users u 
       ON u.id = ca.user_id
     WHERE ca.comic_id = $1`;
-    const values = [comic]
+    const values = [comic];
     const selection = await queryDbConnection(query, values);
-    return selection.rows
-  } catch (error:any) {
-    logger.error(error)
-    throw error
+    return selection.rows;
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
   }
 }

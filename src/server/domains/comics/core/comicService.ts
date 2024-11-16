@@ -17,8 +17,10 @@ import {
   getComicIdFromSubdomain,
   addComic,
   editComic as editComicTable,
+  getComicThumbnail,
   selectComicProfile,
 } from "../outbound/comicRepository";
+import { deleteFromS3 } from "@server-services/uploader";
 import { sanitizeLongformText } from "@server-services/sanitizers";
 import logger from "@logger";
 import extractUserIdFromToken from "@domains/users/utils/extractUserIdFromToken";
@@ -26,7 +28,6 @@ import formidable from "formidable";
 import { ErrorKeys } from "../errors.types";
 import { ErrorKeys as GeneralErrorKeys } from "../../../errors.types";
 import { ErrorKeys as FileErrorKeys } from "@server-services/uploader/errors.types";
-import { addComicImageToDatabase } from "@server-services/uploader";
 
 const invalidRequest = {
   success: false,
@@ -441,6 +442,13 @@ export async function updateThumbnail(
 ) {
   if (uploadUrl) {
     try {
+
+      const oldVersion = await getComicThumbnail(comicID);
+      
+      if (oldVersion) {
+        await deleteFromS3(oldVersion)
+      }
+
       const update = await editComic(comicID, { "thumbnail_image_url" : uploadUrl });
       return {
         success: true,
