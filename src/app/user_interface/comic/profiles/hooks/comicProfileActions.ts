@@ -110,6 +110,7 @@ export const deleteComic =
 // `fetchProfile` is used for general viewing (read-only access).
 export const fetchProfile =
   (tenant: string) => async (dispatch: React.Dispatch<ComicProfileAction>) => {
+    dispatch({ type: "LOADING", payload: { loading: true } });
     try {
       const comic = await axios.get(`/api/comic/${tenant}`);
       dispatch({
@@ -127,6 +128,8 @@ export const fetchProfile =
         }
       }
       handleError(error, dispatch);
+    } finally {
+      dispatch({ type: "LOADING", payload: { loading: false } });
     }
   };
 

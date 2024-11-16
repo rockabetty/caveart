@@ -8,6 +8,7 @@ export type ComicProfileState = {
   submissionError?: string;
   successMessage?: string;
   redirect?: string
+  loading: boolean;
 };
 
 const emptyProfile: ComicData = {
@@ -31,7 +32,8 @@ export const initialState: ComicProfileState = {
   permissions: undefined,
   submissionError: "",
   successMessage: "",
-  redirect: undefined
+  redirect: undefined,
+  loading: false
 };
 
 export type ComicProfileAction =
@@ -55,10 +57,10 @@ export type ComicProfileAction =
       type: "EDIT_COMIC_RATING",
       payload: { rating: string }
     }
-  | {
+  | { 
       type: "LOADING",
-      payload: { action: ComicProfileAction }
-  }
+      payload: { loading: boolean } 
+    }
   | {
       type: "CREATE_OR_EDIT_COMIC_SUCCESS",
       payload: { successMessage: string }
@@ -116,7 +118,7 @@ export const comicProfileReducer = (
     case 'CREATE_OR_EDIT_COMIC_FAILURE':
       return {
         ...state,
-        submissionError: action.error
+        submissionError: action.payload.error
       }
     case 'CREATE_OR_EDIT_COMIC_SUCCESS':
       return {
@@ -126,9 +128,14 @@ export const comicProfileReducer = (
     case 'RECOMMEND_REDIRECT':
       return {
         ...state,
-        redirect: action.payload.tenant
+        redirect: action.payload.redirect
+      }
+    case "LOADING":
+      return {
+        ...state,
+        loading: action.payload.loading,
       }
     default:
-      return state || initialState;
+      return state;
   }
 };
