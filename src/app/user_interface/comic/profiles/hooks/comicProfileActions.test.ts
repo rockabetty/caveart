@@ -4,7 +4,16 @@ import {
   deleteComic,
   fetchProfile,
   fetchProfileToUpdate,
+  fetchPermissions,
+  handleEditSuccess,
+  handleSubmissionSuccess,
+  handleSubmissionError,
+  handleError,
+  updateFormfield
 } from "./comicProfileActions";
+import { mockProfile } from "./userReducer.test";
+const tenant = "test";
+const comicID = 1;
 
 describe("Facilitating CRUD Operations", () => {
   let mock: MockAdapter = new MockAdapter(axios);
@@ -20,24 +29,21 @@ describe("Facilitating CRUD Operations", () => {
   });
 
   it("lets users delete a comic", async () => {
-    const comicID = 1;
     mock.onPost(`/api/comic/${comicID}/delete`).reply(200);
     await deleteComic(comicID)(dispatch);
     expect(dispatch).toHaveBeenCalledWith({ type: "DELETE_COMIC" });
   });
 
   it("Allows any viewer to look at a (public) comic profile", async () => {
-    const tenant = "testcomic";
-    mock.onGet(`/api/comic/${tenant}`).reply(200);
+    mock.onGet(`/api/comic/${tenant}`).reply(200, mockProfile);
     await fetchProfile(tenant)(dispatch);
     expect(dispatch).toHaveBeenNthCalledWith(2, {
-      payload: { profile: undefined },
+      payload: { profile: mockProfile },
       type: "GET_COMIC_PROFILE",
     });
   });
 
   it("Handles network errors gracefully and dispatches an error action", async () => {
-    const tenant = "testcomic";
     mock.onGet(`/api/comic/${tenant}`).reply(500);
     await fetchProfile(tenant)(dispatch);
 
@@ -48,7 +54,6 @@ describe("Facilitating CRUD Operations", () => {
   });
 
   it("Advises a redirect if it can't find the resource", async () => {
-    const tenant = "testcomic";
     const mockResponse = {
       status: 400,
       data: {
@@ -67,10 +72,8 @@ describe("Facilitating CRUD Operations", () => {
   });
 
   it("Provides a means to render loading status while fetching a profile", async () => {
-    const tenant = "testcomic";
     mock.onGet(`/api/comic/${tenant}`).reply(200);
     await fetchProfile(tenant)(dispatch);
-
     expect(dispatch).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
@@ -88,7 +91,6 @@ describe("Facilitating CRUD Operations", () => {
   });
 
   it("Doesn't let unauthorized users initiate a comic edit", async () => {
-    const tenant = "testcomic";
     const mockResponse = {
       status: 200,
       data: {
@@ -117,71 +119,218 @@ describe("Facilitating CRUD Operations", () => {
   });
 
   it("Lets authors of comics initiate editing", async () => {
-    const tenant = "testcomic";
     const mockPermissionsResponse = {
       edit: true,
     };
     mock
       .onGet(`/api/comic/${tenant}/permissions`)
       .reply(200, mockPermissionsResponse);
-
-    const mockProfileResponse = {
-      id: "1",
-      title: "Test Comic",
-      description: "A test comic description",
-    };
-    mock.onGet(`/api/comic/${tenant}`).reply(200, mockProfileResponse);
+    mock.onGet(`/api/comic/${tenant}`).reply(200, mockProfile);
     await fetchProfileToUpdate(tenant)(dispatch);
-
     expect(dispatch).toHaveBeenNthCalledWith(
       2,
       expect.objectContaining({
         type: "GET_COMIC_PROFILE_TO_UPDATE",
         payload: {
-          profile: mockProfileResponse,
-          update: mockProfileResponse,
+          profile: mockProfile,
+          update: mockProfile,
+        },
+      }),
+    );
+  });
+
+  it("Defaults to no permissions if the server response is empty or malformed", async () => {
+    const mockPermissionsResponse = {};
+    mock
+      .onGet(`/api/comic/${tenant}/permissions`)
+      .reply(200, mockPermissionsResponse);
+    await fetchPermissions(tenant)(dispatch);
+
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "GET_COMIC_PERMISSIONS",
+        payload: {
+          permissions: { edit: false },
         },
       }),
     );
 
+    mock
+      .onGet(`/api/comic/${tenant}/permissions`)
+      .reply(200, { flibberdyGhibbets: true });
+    await fetchPermissions(tenant)(dispatch);
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "GET_COMIC_PERMISSIONS",
+        payload: {
+          permissions: { edit: false },
+        },
+      }),
+    );
   });
 });
 
-// })
+describe("Profile Updater", () => {
 
-// describe("Fetch permissions", () => {
-//   it("Fetches all of a user's permissions to edit a specific comic", () => {})
-//   it("Handles an empty permissions response gracefully", () => {});
-// })
+  let dispatch: jest.Mock;
 
-// describe("Profile Updater", () => {
-//   it("Validates required fields before dispatching updates", () => {});
-//   it("Lets a user change a comic's title", () => {});
-//   it("Lets a user change a comic's subdomain", () => {});
-//   it("Lets a user change a comic's description", () => {});
-//   it("Lets a user change a comic's genre selection", () => {});
-//   it("Lets a user change a comic's content warnings", () => {});
-//   it("Lets a user change a comic's thumbnail", () => {});
-//   it("Updates ratings when content warnings change", () => {
-//   });
-//   it("marks adult content appropriately given adult content warnings", () => {});
-//   it("Uploads thumbnails", ()=> {
-//     // test that uploadToS3 gets called if you run uploadComicThumbnail and that you get the right dispatch
-//   });
+  beforeEach(() => {
+    dispatch = jest.fn();
+  });
 
-// })
+  it("Dispatches the correct action to update any field", () => {
+    const fieldName = "title";
+    const value = "My Comic";
+    updateFormfield(fieldName, value)(dispatch);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: "EDIT_FORM_FIELD",
+      fieldName,
+      value,
+    });
+  });
 
-// describe("User feedback", () => {
-//   it("Confirms that updates on existing comics were successful", () => {
-//     // test handleEditSuccess
-//   })
-//   it("Confirms that submissions of new comics were successful", () => {
-//     // test handleSubmissionSuccess
-//   })
-//   it("provides a centralized means of reporting its own errors with a dispatch", () => {
-//     // test the handleError function
-//   });
-//   describe("Reports on issues with user submissions", () => {
-//     // test handleSubmissionError
-//   });
-// });
+  it("Handles updating a boolean field (e.g., likes)", () => {
+    const fieldName = "likes";
+    const value = false;
+
+    updateFormfield(fieldName, value)(dispatch);
+
+    expect(dispatch).toHaveBeenCalledWith({
+      type: "EDIT_FORM_FIELD",
+      fieldName,
+      value,
+    });
+  });
+
+  it("Handles updating complex fields (e.g., content warnings)", () => {
+    const fieldName = "content_warnings";
+    const value = { violence: { name: "Violence", id: "violence" } };
+    updateFormfield(fieldName, value)(dispatch);
+
+    expect(dispatch).toHaveBeenCalledWith({
+      type: "EDIT_FORM_FIELD",
+      fieldName,
+      value,
+    });
+  });
+});
+
+describe("User feedback", () => {
+  let dispatch: jest.Mock;
+  beforeEach(() => {
+    dispatch = jest.fn();
+  });
+
+  it("Provides a means for visual feedback on a successful edit submission", () => {
+    handleEditSuccess()(dispatch);
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "SERVER_RESPONSE_SUCCESS",
+        payload: { successMessage: "comicProfile.editSuccessful" },
+      }),
+    );
+  });
+
+  it("Provides a means for visual feedback on successful creation of a new comic", () => {
+    handleSubmissionSuccess()(dispatch);
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "SERVER_RESPONSE_SUCCESS",
+        payload: { successMessage: "comicProfile.comicCreated" },
+      }),
+    );
+  });
+
+  it("Provides a means for visual feedback on submission issues", () => {
+    const errorMessage = "errorStringGoesHere";
+    handleSubmissionError(errorMessage)(dispatch);
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "SERVER_RESPONSE_FAILURE",
+        payload: { error: `comicProfile.errors.${errorMessage}` },
+      }),
+    );
+  });
+
+  it("Handles no arguments gracefully in handleSubmissionError", () => {
+    // @ts-expect-error
+    handleSubmissionError()(dispatch);
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "SERVER_RESPONSE_FAILURE",
+        payload: { error: "comicProfile.errors.unknown" },
+      }),
+    );
+  });
+});
+
+describe("General Error Handling", () => {
+  let mockDispatch: jest.Mock;
+
+  beforeEach(() => {
+    mockDispatch = jest.fn();
+    jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("logs errors to the console", () => {
+    const testError = new Error("Test error");
+    handleError(testError, mockDispatch);
+    expect(console.error).toHaveBeenCalledWith(testError);
+  });
+
+  it("dispatches the error message if the response has a specific error message", () => {
+    const errorResponse = {
+      response: {
+        data: {
+          error: "jimmyhendrix",
+        },
+      },
+    };
+
+    handleError(errorResponse, mockDispatch);
+
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: "SERVER_RESPONSE_FAILURE",
+      payload: { error: "comicProfile.errors.jimmyhendrix" },
+    });
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: "LOADING",
+      payload: { loading: false },
+    });
+  });
+
+  it("dispatches a generic error message if the response is missing the error property", () => {
+    const errorResponse = {
+      response: {
+        data: {},
+      },
+    };
+
+    handleError(errorResponse, mockDispatch);
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: "SERVER_RESPONSE_FAILURE",
+      payload: { error: "comicProfile.errors.unknown" },
+    });
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: "LOADING",
+      payload: { loading: false },
+    });
+  });
+
+  it("dispatches a generic error message if the error object is undefined", () => {
+    handleError(undefined, mockDispatch);
+
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: "SERVER_RESPONSE_FAILURE",
+      payload: { error: "comicProfile.errors.unknown" },
+    });
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: "LOADING",
+      payload: { loading: false },
+    });
+  });
+});

@@ -8,10 +8,10 @@ import {
 } from "../types";
 import { uploadToS3 } from "@client-services/uploads";
 
-const handleError = function (error: any, dispatch: React.Dispatch<ComicProfileAction>) {
+export const handleError = function (error: any, dispatch: React.Dispatch<ComicProfileAction>) {
   console.error(error);
   const errorMessage =
-    error?.response?.data?.error || "An unknown error occurred.";
+    error?.response?.data?.error || "unknown";
   handleSubmissionError(errorMessage)(dispatch);
   dispatch({ type: "LOADING", payload: { loading: false } });
 };
@@ -169,11 +169,16 @@ export const fetchProfileToUpdate =
 export const fetchPermissions =
   (tenant: string) => async (dispatch: React.Dispatch<ComicProfileAction>) => {
     try {
+      
       const permissions = await axios.get(`/api/comic/${tenant}/permissions`);
       const permissionData: ComicPermissions = permissions.data;
+      let { edit } = permissionData;
+      if (edit !== true ) {
+        edit = false
+      }
       dispatch({
         type: "GET_COMIC_PERMISSIONS",
-        payload: { permissions: permissionData },
+        payload: { permissions: {edit} },
       });
     } catch (error: any) {
       handleError(error, dispatch);
@@ -214,7 +219,7 @@ export const handleSubmissionError =
     dispatch({
       type: "SERVER_RESPONSE_FAILURE",
       payload: {
-        error: errorMessage ? `comicProfile.errors.${errorMessage}` : "",
+        error: `comicProfile.errors.${errorMessage ? errorMessage : "unknown"}`,
       },
     });
   };

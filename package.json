@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test:frontend": "jest --config jest.config.frontend.ts",
-    "test:backend": "jest --config jest.config.backend.ts",
+    "test:frontend": "jest --config jest.frontend.config.ts",
+    "test:backend": "jest --config jest.backend.config.ts",
     "test": "jest --config jest.frontend.config.ts && jest --config jest.backend.config.ts",
     "dev": "next dev",
     "build": "next build",

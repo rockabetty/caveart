@@ -1,6 +1,20 @@
 import { comicProfileReducer, initialState, ComicProfileAction } from "./comicProfileReducer";
 import { ComicData } from "../types";
 
+export const mockProfile: ComicData = {
+  id: 1,
+  genres: { 5: { id: 5, name: "Sci-Fi", description: "aliens and stuff"} },
+  content_warnings: { "violence": { name: "someViolence", id: 420, description: "Oh boy, here I go killing again"} },
+  description: "Bonds diversified, necks protected",
+  title: "Robert Telles Tells All",
+  subdomain: "test",
+  thumbnail: "www.imageplace.com/image.jpg",
+  rating: "Mature (17+)",
+  likes: true,
+  comments: "Allowed",
+  visibility: "Public"
+};
+
 describe("comicProfileReducer", () => {
   it("should not modify state for unknown action types", () => {
     const action = { type: "UNKNOWN_ACTION", payload: {} }
@@ -10,25 +24,10 @@ describe("comicProfileReducer", () => {
   });
 
   it("should handle GET_COMIC_PROFILE", () => {
-    const mockProfile: ComicData = {
-      id: "1",
-      title: "Test Comic",
-      subdomain: "test-comic",
-      description: "This is a test comic",
-      genres: {},
-      content_warnings: {},
-      rating: "All Ages",
-      thumbnail: undefined,
-      likes: true,
-      comments: "Allowed",
-      visibility: "Public",
-    };
-
     const action: ComicProfileAction = {
       type: "GET_COMIC_PROFILE",
       payload: { profile: mockProfile },
     };
-
     const result = comicProfileReducer(initialState, action);
     expect(result.profile).toEqual(mockProfile);
     expect(result.loading).toBe(false);
@@ -40,7 +39,6 @@ describe("comicProfileReducer", () => {
       type: "GET_COMIC_PERMISSIONS",
       payload: { permissions },
     };
-
     const result = comicProfileReducer(initialState, action);
     expect(result.permissions).toEqual(permissions);
   });

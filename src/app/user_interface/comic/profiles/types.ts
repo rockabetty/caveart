@@ -1,5 +1,5 @@
 export type Genre = {
-  id: string;
+  id: number | string;
   name: string;
   description?: string;
 };
@@ -19,7 +19,7 @@ export type ContentWarningUserSelection = {
 };
 
 export type ComicData = {
-  id: string;
+  id: string | number;
   genres: GenreUserSelection;
   content_warnings: ContentWarningUserSelection;
   description: string;
