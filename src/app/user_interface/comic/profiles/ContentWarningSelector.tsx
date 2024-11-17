@@ -1,6 +1,6 @@
 import React from "react";
 import { TabGroup, Radio } from "@components";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 type ContentWarning = {
   id: string;
@@ -23,27 +23,30 @@ const ContentWarningSelector: React.FC<ContentWarningProps> = ({
 
   if (!options || options.length === 0) return null;
 
-  return (
-    <TabGroup
-      id="content_warnings"
-      tabs={options.map((warning) => ({
-        name: t(`contentWarnings.${warning.name}`),
-        content: (
-          <div key={warning.id}>
-            {warning.children.map((child) => (
-              <ContentWarningFieldset
-                key={child.id}
-                child={child}
-                selection={selection}
-                onChange={onChange}
-                t={t}
-              />
-            ))}
-          </div>
-        ),
-      }))}
-    />
-  );
+  // Create metadata and content maps for the TabGroup
+  const tabsMeta = options.map((warning) => ({
+    key: warning.id,
+    name: t(`contentWarnings.${warning.name}`),
+  }));
+
+  const tabsContent = options.reduce((acc, warning) => {
+    acc[warning.id] = (
+      <div key={warning.id}>
+        {warning.children.map((child) => (
+          <ContentWarningFieldset
+            key={child.id}
+            child={child}
+            selection={selection}
+            onChange={onChange}
+            t={t}
+          />
+        ))}
+      </div>
+    );
+    return acc;
+  }, {} as { [key: string]: React.ReactNode });
+
+  return <TabGroup id="content_warnings" tabs={tabsMeta} content={tabsContent} />;
 };
 
 type ContentWarningFieldsetProps = {
@@ -67,16 +70,18 @@ const ContentWarningFieldset: React.FC<ContentWarningFieldsetProps> = ({
         <strong>{t(`contentWarnings.${child.name}.name`)}</strong>
       </legend>
       <p>{t(`contentWarnings.${child.name}.definition`)}</p>
+
       <Radio
         id={`${name}Absent`}
         onChange={onChange}
-        labelText={t('contentWarnings.absent')}
+        labelText={t("contentWarnings.absent")}
         checked={selection && selection[name] === undefined}
         name={name}
         value="none"
       />
+
       {child.children.map((option, idx) => {
-        const labelKey = idx === 0 ? 'some' : 'frequent';
+        const labelKey = idx === 0 ? "some" : "frequent";
         const labelString = `${labelKey}${name.charAt(0).toUpperCase()}${name.slice(1)}`;
         return (
           <Radio

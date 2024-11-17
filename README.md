@@ -42,8 +42,16 @@ You're welcome to contribute. Hell, I would prefer it so I don't have to code ev
 ### Setup
 Advanced users may find the following instructions sufficient, but if you're a total newbie, check out the documentation folder and read 'SETUP.md'. 
 
-- Pre-requisites: git, Node.js (16.14.0 or higher), NPM, a PostgreSQL database (ideally with pgAdmin 4, Stack Builder, and Command Line Utilities). 
-- Schema files are currently disparate and in each domain folder (see `/server/domains` and you will see schema files) as a singular script for installing the database does not yet exist.  The order should be first the schema file for `users`, then `comics`, then `comicpages`.
+- **Pre-requisites:**
+- git
+- Node.js (16.14.0 or higher)
+- NPM
+- a PostgreSQL database 
+- Image Magick
+- A process manager, like PM2 
+
+Schema files are currently disparate and in each domain folder (see `/server/domains` and you will see schema files) as a singular script for installing the database does not yet exist.  The order should be first the schema file for `users`, then `comics`, then `comicpages`.
+
 - Don't forget to check out `.env.example` and copy over the variables into your own .env while providing appropriate data.
 - Type `npm run dev` to start the server.
 - Type `npm run storybook` to start the Storybook instance.

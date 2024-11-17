@@ -94,35 +94,7 @@ const ComicProfile: React.FC<ComicProfileProps> = ({
             ? renderGenres()
             : null
           }
-          {permissions?.edit
-            ? (<>
-                <Link
-                  type="button" 
-                  look="default" 
-                  href={`/comic/${profile?.subdomain}/edit`} 
-                  id={`edit-${profile?.subdomain}`}
-                >
-                  {t('comicProfile.edit')}
-                </Link>
-                <Link 
-                  id={`addpages-${profile?.subdomain}`}
-                  type="button"
-                  look="default"
-                  href={`/comic/${profile?.subdomain}/pages/new`}>
-                    {t('comicPages.add')}
-                </Link>
-                <Button 
-                  look="warning" 
-                  id={`delete_comic-${profile.id}`} 
-                  inline 
-                  onClick={onDelete}
-                >
-                  Delete
-                </Button>
-              </>
-              )
-            : null
-          }
+
         </div>
       </div>     
     </div>

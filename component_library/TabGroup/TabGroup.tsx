@@ -1,29 +1,34 @@
-import React, { useState } from 'react';
-import { UniversalProps } from '../types/universal';
-import Tab from './Tab';
-import './TabGroup.css';
-import classNames from 'classnames';
+import React, { useState, useMemo } from "react";
+import { UniversalProps } from "../types/universal";
+import Tab from "./Tab";
+import "./TabGroup.css";
+import classNames from "classnames";
 
-interface TabData extends UniversalProps {
+interface TabMeta extends UniversalProps {
+  key: string;
   name: string;
-  content: React.ReactNode;
   disabled?: boolean;
 }
 
-export interface TabGroupProps extends UniversalProps {
-  tabs: TabData[];
-  initialTab?: string;
+interface TabContentMap {
+  [key: string]: React.ReactNode;
 }
 
-const TabGroup: React.FC<TabGroupProps> = ({ id, tabs, initialTab }) => {
-  const initialActiveTab = initialTab || tabs[0].name;
-  const [activeTabName, setActiveTabName] = useState<string>(initialActiveTab);
+export interface TabGroupProps extends UniversalProps {
+  tabs: TabMeta[];
+  content: TabContentMap;
+  initialTabKey?: string;
+}
 
-  const updateTab = (name: string) => {
-    setActiveTabName(name);
+const TabGroup: React.FC<TabGroupProps> = ({ id, tabs, content, initialTabKey }) => {
+  const initialActiveTabKey = initialTabKey || tabs[0].key;
+  const [activeTabKey, setActiveTabKey] = useState<string>(initialActiveTabKey);
+
+  const updateTab = (key: string) => {
+    setActiveTabKey(key);
   };
 
-  const activeTabContent = tabs.find((tab) => tab.name === activeTabName)?.content;
+  const activeTabContent = useMemo(() => content[activeTabKey], [content, activeTabKey]);
 
   return (
     <div className="tabgroup" id={id}>
@@ -31,10 +36,10 @@ const TabGroup: React.FC<TabGroupProps> = ({ id, tabs, initialTab }) => {
         {tabs.map((tab) => (
           <Tab
             id={tab.id}
-            key={`tab-${tab.name}`}
+            key={`tab-${tab.key}`}
             labelText={tab.name}
-            isActive={activeTabName === tab.name}
-            onClick={() => updateTab(tab.name)}
+            isActive={activeTabKey === tab.key}
+            onClick={() => updateTab(tab.key)}
             disabled={tab.disabled}
           />
         ))}

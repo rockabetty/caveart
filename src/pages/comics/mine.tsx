@@ -1,13 +1,15 @@
-import CaveartLayout from '../../app/user_interface/CaveartLayout'
+import CaveartLayout from '@features/CaveartLayout'
 import {useEffect, useState} from 'react';
-import {Link, Modal} from '@components';
-import AuthorComicEntry from '../../app/user_interface/comic/profiles/AuthorComicEntry';
-import ComicProfile from '../../app/user_interface/comic/profiles/ComicProfile';
+import {Link, Modal, TabGroup } from '@components';
+import AuthorComicEntry from '@features/comic/profiles/AuthorComicEntry';
+import ComicProfile from '@features/comic/profiles/ComicProfile';
+import EditComicProfile from '@features/comic/profiles/EditComicProfile';
+import NewComicPageForm from '@features/comic/pages/NewComicPageForm';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { Comic } from '../../data/types';
-import ComicProfileProvider from '../../app/user_interface/comic/profiles/hooks/ComicProfileProvider'
-import ComicDeletionConfirmationForm from '../../app/user_interface/comic/profiles/ComicDeletionConfirmationForm'
+import ComicProfileProvider from '@features/comic/profiles/hooks/ComicProfileProvider'
+import ComicDeletionConfirmationForm from '@features/comic/profiles/ComicDeletionConfirmationForm'
 
 function MyComics() {
 
@@ -83,13 +85,23 @@ function MyComics() {
 
     if (comics.length === 1) {
       const comic = comics[0];
+
+      const tabsMeta = [
+        { key: "overview", name: "Overview" },
+        { key: "edit", name: "Edit" },
+        { key: "pages", name: "Pages" },
+      ];
+
+      const tabsContent = {
+        overview: <ComicProfile tenant={comic.subdomain} onDelete={beginDeletion} />,
+        edit: <EditComicProfile tenant={comic.subdomain} />,
+        pages: <NewComicPageForm tenant={comic.subdomain} />,
+      };
+
       return (
         <div className="tile">
         <ComicProfileProvider>
-          <ComicProfile
-            tenant={comic.subdomain}
-            onDelete={beginDeletion}
-          />
+          <TabGroup id="comic-profile" tabs={tabsMeta} content={tabsContent} initialTabKey="overview" />;
         </ComicProfileProvider>
         </div>
       )

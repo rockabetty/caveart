@@ -85,6 +85,11 @@ IAM is going to complain at you that you shouldn't do this despite the fact that
 
 Click through the next steps and then download your Access Key ID and Secret Access Key.  You're going to use these keys in the .env file, which is covered in the next step. 
 
+## Install Image Magick
+Image Magick is what Caveart uses to quickly compress files.  It's a CLI tool that runs when you execute a command and then exits. Check out [Image Magick.org](https://imagemagick.org/) to install it.
+
+To verify installation, open your console and type `magick -version`.
+
 ## Configure the Next.js Application
 Within the root of the project folder, you'll find ".env.example". This file provides an example of what environment variables (configurations, settings) that Caveart needs to run.  In order to tell your local version of Caveart what your postgres password is, make a file called `.env` (with the dot!) and copy the contents of `.env.example` into it.   You'll need to replace the example values, so now let's walk through doing that.
 
@@ -109,7 +114,7 @@ Leave **NEXT_PUBLIC_NODE_ENV** as-is ("development").  When th is app runs in pr
 These variables are for sending emails for stuff like password resets.
 
 - **EMAIL_SERVER:**  The SMTP server for sending emails. If you're using Gmail, leave this as smtp.gmail.com. For other email providers, you may need to change this (e.g., smtp.mail.yahoo.com).
-- **EMAIL_USER**=your_email@gmail.com 
+- **EMAIL_USER:** your_email@gmail.com 
 - **EMAIL_PASSWORD** The password to the email you just gave.
 - **SUPPORT_EMAIL_ADDRESS:** Whatever it is in the env.example should be left as-is.
 
@@ -124,6 +129,17 @@ If you're one of my personal buddies then you know how to contact me for the inf
 - **AWS_S3_BUCKET_USA:** The name of your S3 bucket. The variable is called AWS_S3_BUCKET_USA because of an abstract plan to expand to different buckets in different parts of the world, but there's only one bucket for now.
 - **AWS_S3_ACCESS_KEY_ID:** The Access Key ID for your AWS user. You can generate this in the AWS Management Console under IAM > Users > Security credentials.
 - **AWS_S3_SECRET_ACCESS_KEY:** The Secret Access Key for your AWS user. Keep it secret, keep it safe.
+
+### Image Magick Configuration
+**IMAGE_MAGICK_TEMP_PATH:** A file path for Image Magick to save images temporarily. What you want to put in there depends on what you're developing on: 
+
+- Windows: C:\\Temp
+- macOS: /tmp
+- Linux: /tmp
+
+If you're on Windows you're going to want to update your own system environment variable. Right-click on This PC > Properties > Advanced system settings. Click on Environment Variables, then under System Variables, find the Path variable and click Edit.  You're going to see a modal that wants a variable name and a variable value.  The variable value should be the path directly to wherever you installed Image Magick (e.g. C:\Program Files\ImageMagick-7.1.1-Q16-HDRI) and the variable name should be IMAGEMAGICK_HOME.
+
+Click New and add the path to ImageMagick’s binaries. It should look like this:
 
 # Running The Application
 Type `npm run dev` into your terminal, and the application should start up smoothly!

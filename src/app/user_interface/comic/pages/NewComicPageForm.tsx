@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
-import CaveartLayout from "@features/CaveartLayout";
 import ComicProfileProvider from "@features/comic/profiles/hooks/ComicProfileProvider";
 import { Button, Form, ImageUpload, Link, TextArea } from "@components";
 import DateTimepicker from "@components/Form/DateTimepicker";
 import { NewPageSubmission } from "@features/comic/pages";
 import { useComicPage } from "@features/comic/pages/hooks/useComicPage";
-import { MAX_COMIC_PAGE_FILESIZE } from "../../constants";
 import { uploadToS3 } from "@client-services/uploads";
 
-function AddPage() {
-  const router = useRouter();
-  const { tenant } = router.query;
+const MAX_COMIC_PAGE_FILESIZE =  3 * 1024 * 1024;
+
+const NewComicPageForm: React.FC = ( props ) => {
+
+  const { tenant } = props;
+
   const { t } = useTranslation();
 
   const initialState: NewPageSubmission = {
@@ -37,6 +37,7 @@ function AddPage() {
     pageFormLoading,
     setPageFormLoading,
   } = useComicPage(initialState);
+
 
   useEffect(() => {
     const getNextPage = async function () {
@@ -130,10 +131,8 @@ function AddPage() {
   };
 
   return (
-    <CaveartLayout requireLogin={true}>
       <ComicProfileProvider>
-        <h1>{t("comicPages.add")}</h1>
-        <div className="tile">
+       
           {pageFormSuccess ? (
             <>
               <p>{t("comicPages.newPage.uploadConfirmation")}</p>
@@ -156,11 +155,7 @@ function AddPage() {
             </>
           ) : (
             <>
-              <p>
-                {t("comicPages.newPage.number", {
-                  nextNumber: pageForm.newPageNumber,
-                })}
-              </p>
+             
               <Form
                 submitLabel={t("comicPages.add")}
                 formValues={pageForm}
@@ -181,6 +176,12 @@ function AddPage() {
                     />
                   </div>
                   <div className="flex-section Grow">
+                    <h1>{t("comicPages.add")}</h1>
+                    <p>
+                      {t("comicPages.newPage.number", {
+                        nextNumber: pageForm.newPageNumber,
+                      })}
+                    </p>
                     <TextArea
                       id="author_comment"
                       name="commentary"
@@ -201,10 +202,9 @@ function AddPage() {
               </Form>
             </>
           )}
-        </div>
+
       </ComicProfileProvider>
-    </CaveartLayout>
   );
 }
 
-export default AddPage;
+export default NewComicPageForm;
