@@ -32,14 +32,12 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    // Write the thumbnail to output file
     strncpy(thumbnail->filename, outputImage, MaxTextExtent - 1);
     if (!WriteImage(imageInfo, thumbnail)) {
         printf("Failed to write thumbnail.\n");
         return 1;
     }
 
-    // Clean up
     DestroyImage(thumbnail);
     DestroyImage(image);
     DestroyImageInfo(imageInfo);
