@@ -1,7 +1,7 @@
 .button.Badge {
-  width: var(--spacing-xl);
-  height: var(--spacing-xl);
-  margin: var(--spacing-md);
+  width: var(--spacing-2xl);
+  height: var(--spacing-2xl);
+  margin: var(--spacing-xs);
   padding: 0;
   display: flex;
   border-radius: 100%;

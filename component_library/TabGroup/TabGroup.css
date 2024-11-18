@@ -40,7 +40,7 @@
 }
 
 .tabgroup_tab:focus {
-  box-shadow: 0px 0px 0 2px var(--col-background), -0px 0px 0 5px var(--col-focus);
+  box-shadow: inset 0px 0px 0 1px var(--col-border), inset -0px 0px 0px 5px var(--col-focus);
   transition: 0.25s ease-in-out background-color,
     0.125s ease-in-out box-shadow,
     0.25s ease-in-out color;
@@ -58,4 +58,16 @@
   border-radius: var(--border-radius);
   background-color: var(--col-backdrop);
   border: var(--size-border-width) solid var(--col-border);
+}
+
+/* Small devices (landscape phones, less than 768px) */
+@media (max-width: 767.98px) { 
+  .tabgroup_tab-selection {
+    margin: var(--spacing-sm) 0;
+  }
+  .tabgroup_tab {
+    margin: 0;
+    font-size: var(--size-font-md);
+    padding:  var(--spacing-sm) 0;
+  }
 }

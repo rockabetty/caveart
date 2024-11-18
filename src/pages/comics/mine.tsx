@@ -5,6 +5,7 @@ import AuthorComicEntry from '@features/comic/profiles/AuthorComicEntry';
 import ComicProfile from '@features/comic/profiles/ComicProfile';
 import EditComicProfile from '@features/comic/profiles/EditComicProfile';
 import NewComicPageForm from '@features/comic/pages/NewComicPageForm';
+import ThumbnailGallery from '@features/comic/pages/ThumbnailGallery';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { Comic } from '../../data/types';
@@ -90,12 +91,22 @@ function MyComics() {
         { key: "overview", name: "Overview" },
         { key: "edit", name: "Edit" },
         { key: "pages", name: "Pages" },
+        { key: "comments", name: "Comments"}
       ];
+
+      const PagesTab = (
+        <>
+        <NewComicPageForm tenant={comic.subdomain} />
+        <h2>Edit Pages</h2>
+        <ThumbnailGallery tenant={comic.subdomain} />
+        </>
+      )
 
       const tabsContent = {
         overview: <ComicProfile tenant={comic.subdomain} onDelete={beginDeletion} />,
         edit: <EditComicProfile tenant={comic.subdomain} />,
-        pages: <NewComicPageForm tenant={comic.subdomain} />,
+        pages: PagesTab,
+        comments: <div>NOBODY LOVES YOU</div>
       };
 
       return (
@@ -116,6 +127,8 @@ function MyComics() {
             tenant={comic.subdomain}
             onDelete={beginDeletion}
           />
+
+
           </ComicProfileProvider>
         )
       })}

@@ -92,8 +92,9 @@ const ComicProfileForm: React.FC<ComicProfileFormProps> = (
   }
 
   return (
-    <div className="comic-profile">
-      <div className="comic-profile_body">
+    <>
+      <div className="flex Row">
+        <div className="flex-section">
         <ImageUpload
           editable
           helperText={t('comicProfile.coverImageSize', {megabytes: '3'})}
@@ -105,9 +106,10 @@ const ComicProfileForm: React.FC<ComicProfileFormProps> = (
           value={update.thumbnail}
           onChange={handleImageChange}
          />
+         </div>
 
-        <div className="comic-profile_description">
-          <h2>{t('comicProfile.basicInfo')}</h2>
+        <div className="flex-section Grow">
+          <h1>{t('comicProfile.basicInfo')}</h1>
           <TextInput
             onChange={handleTextInput}
             labelText={t('comicProfile.title')}
@@ -156,7 +158,7 @@ const ComicProfileForm: React.FC<ComicProfileFormProps> = (
         onChange={handleContentWarningSelection}
       />
        {update.rating}
-    </div>
+    </>
   );
 };
 

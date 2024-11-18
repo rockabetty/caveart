@@ -1,4 +1,4 @@
-import { createPageData, getLastPageReference, getPage } from '../outbound/pageRepository'
+import { getComicThumbnails, createPageData, getLastPageReference, getPage } from '../outbound/pageRepository'
 import { addComicImageToDatabase } from '@server-services/uploader'
 import { ErrorKeys } from '../errors.types';
 import { ComicPage as ComicPageDatabaseEntry } from '../comicpage.types';
@@ -13,6 +13,23 @@ export async function validateComicPage (fields: formidable.Fields, files: formi
       error: ErrorKeys.INVALID_REQUEST
     }
   }
+}
+
+export async function getThumbnails (comicID, offset = 0, limit = 20, chapter, omniscient) {
+
+  try {
+    const data = await getComicThumbnails(comicID, offset, limit, chapter, omniscient);
+    return {
+      success: true,
+      data
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: ErrorKeys.GENERAL_SERVER_ERROR
+    }
+  }
+
 }
 
 export async function createComicPage (fields: ComicPagePostData) {

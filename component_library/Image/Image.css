@@ -13,6 +13,15 @@
   border-radius: var(--size-border-radius);
 }
 
+/* Small devices (landscape phones, less than 768px) */
+@media (max-width: 767.98px) { 
+  .image {
+    width: auto;
+    max-height: inherit;
+  }
+}
+
+
 .image.Flexible {
   width: 100%;
   height: auto;
@@ -28,7 +37,7 @@
   z-index: 100;
   position: absolute;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   bottom: 0;
   right: 0;
 }

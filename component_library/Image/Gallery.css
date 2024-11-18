@@ -1,0 +1,35 @@
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--grid-8), 1fr));
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+}
+
+.gallery_tile {
+  position: relative;
+  width: var(--grid-8);
+  transition: transform 0.2s;
+}
+
+.gallery_buttons {
+  position: absolute;
+  bottom: 0;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  opacity: 0;
+  height: 100%;
+  transition: opacity 0.2s;
+    display: flex;
+}
+
+.gallery_tile:hover .gallery_buttons {
+  opacity: 1;
+  transition: opacity 0.2s;
+
+}
+
+.gallery_tile:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s;
+}

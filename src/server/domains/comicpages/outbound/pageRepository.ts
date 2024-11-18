@@ -85,35 +85,32 @@ export async function getLastPageReference(
   }
 }
 
-export async function getPages(
+export async function getComicThumbnails(
   comicId: number,
-  omniscientPOV = false,
   offset: number = 0,
-  limit: number = 20
+  limit: number = 20,
   chapterId: number,
+  omniscientPOV = false,
 ): Promise<PageReference | null> {
   try {
     // TO DO: Change high res to thumbnail when thumbnails are working out
     const query = `
-    SELECT id, title, page_number, high_res_image_url, chapter_id release_on
+    SELECT id, title, page_number as "pageNumber", high_res_image_url as "imageUrl", release_on as "releaseOn"
     FROM comic_pages
     ${
       omniscientPOV
         ? "WHERE comic_id = $1"
         : "WHERE comic_id = $1 AND release_on <= NOW()"
     }
-    ${
-      chapterId
-        ? "WHERE chapter_id=$2"
-        : ""
-    }
     ORDER BY page_number ASC
-    LIMIT $3
-    OFFSET $4
+    LIMIT $2
+    OFFSET $3
     `;
-    const values = [comicId, chapter_id, limit, offset];
+
+    const values = [comicId, limit, offset];
+
     const result = await queryDbConnection(query, values);
-    return getOneRowResult(result);
+    return result.rows;
   } catch (error: any) {
     logger.error(error);
     throw error;

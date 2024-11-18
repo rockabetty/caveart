@@ -1,17 +1,15 @@
 import { ImageUpload, Link, Tag, Button, Modal, Form, TextInput, Tooltip } from '@components'
-import './ComicProfiles.css';
 import { useCallback, useState } from 'react';
 import { useComicProfile } from './hooks/useComicProfile'; 
 import { useTranslation } from 'react-i18next';
+import './ComicProfiles.css';
 
 type ComicProfileProps = {
   tenant: string;
-  onDelete: (event) => void
 }
 
 const ComicProfile: React.FC<ComicProfileProps> = ({
-  tenant,
-  onDelete
+  tenant
 }) => {
   const { t } = useTranslation();
   const {state, removeComic} = useComicProfile(tenant);
@@ -75,18 +73,19 @@ const ComicProfile: React.FC<ComicProfileProps> = ({
   }, [profile]);
 
   return (
-    <div className="comic-profile">
-      <div className="comic-profile_body">
-        <a className="comic-profile_cover" href={`/read/${profile?.subdomain}`}>
-          {profile?.thumbnail
-            ? <ImageUpload src={profile?.thumbnail} />
-            : <ImageUpload src='/img/brand/kraugak.png' />
-          }
-        </a>
-        <div>
-         <div className="comic-profile_header">
-            <h1 className="comic-profile_title">{profile?.title}</h1>
-            <Link href={`/read/${profile?.subdomain}`}>caveartcomics.com/read/{profile?.subdomain}</Link>
+      <div className="flex Row">
+        <div className="flex-section">
+          <a className="comic-profile_cover flex-section" href={`/read/${profile?.subdomain}`}>
+            {profile?.thumbnail
+              ? <ImageUpload src={profile?.thumbnail} />
+              : <ImageUpload src='/img/brand/kraugak.png' />
+            }
+          </a>
+        </div>
+        <div className="flex-section Grow">
+          <div className="comic-profile_header">
+          <h1 className="comic-profile_title">{profile?.title}</h1>
+          <Link href={`/read/${profile?.subdomain}`}>caveartcomics.com/read/{profile?.subdomain}</Link>
           </div>
           <pre className="comic-profile_description">{profile?.description}</pre>
           {renderContentWarnings()}
@@ -97,7 +96,6 @@ const ComicProfile: React.FC<ComicProfileProps> = ({
 
         </div>
       </div>     
-    </div>
   )
   
 }
