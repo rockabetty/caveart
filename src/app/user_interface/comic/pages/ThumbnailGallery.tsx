@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
-import { Gallery, Thumbnail } from "@components";
+import { Gallery, Thumbnail, TextInput } from "@components";
 
 const ThumbnailGallery = (props) => {
     const {
@@ -17,13 +17,17 @@ const ThumbnailGallery = (props) => {
         setImages(pages);
     }
 
+  
     useEffect(() =>{
       getImages()
     }
     , []);
 
     return (
-        <Gallery editable thumbnails={images} />
+        <div>
+          <Gallery mode="navigation" thumbnails={images} />
+          <TextInput type="number" min="1" max="100" labelText="Results" value={limit} />
+        </div>
     )
 } 
 

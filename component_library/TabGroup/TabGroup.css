@@ -64,6 +64,7 @@
 @media (max-width: 767.98px) { 
   .tabgroup_tab-selection {
     margin: var(--spacing-sm) 0;
+    flex-wrap: wrap;
   }
   .tabgroup_tab {
     margin: 0;

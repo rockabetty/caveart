@@ -1,5 +1,6 @@
 .icon {
-  fill: var(--col-interactive-01)
+  fill: var(--col-interactive-01);
+  min-width:  var(--spacing-md);
 }
 .icon.Disabled {
   fill: var(--col-disabled);

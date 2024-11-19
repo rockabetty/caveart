@@ -95,7 +95,13 @@ export async function getComicThumbnails(
   try {
     // TO DO: Change high res to thumbnail when thumbnails are working out
     const query = `
-    SELECT id, title, page_number as "pageNumber", high_res_image_url as "imageUrl", release_on as "releaseOn"
+    SELECT 
+      id,
+      title,
+      page_number as "pageNumber",
+      high_res_image_url as "imageUrl",
+      release_on as "releaseOn",
+      CONCAT('/comic/page/', id) AS "link"
     FROM comic_pages
     ${
       omniscientPOV

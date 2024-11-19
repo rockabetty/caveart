@@ -53,7 +53,7 @@
 
 @media (hover: none) and (pointer: coarse) {
   .button.Badge {
-    width: var(--spacing-xl);
-    height:  var(--spacing-xl);
+    min-width: var(--spacing-xl);
+    min-height: var(--spacing-xl);
   }
 }

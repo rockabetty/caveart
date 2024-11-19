@@ -1,33 +1,30 @@
-import React from 'react';
-import Thumbnail from './Thumbnail';
-import './Gallery.css';
-import {Badge, Button} from '../Button';
+import React from "react";
+import Thumbnail from "./Thumbnail";
+import "./Gallery.css";
+import { Badge, Button } from "../Button";
 
-console.log(Badge)
+console.log(Badge);
 
 type GalleryProps = {
-  thumbnails: { id: number; imageUrl: string; pageNumber: number }[];
-  editable?: boolean;
-  reorderable?: boolean;
-};
+  thumbnails: { id: number; imageUrl: string; title?: string; altText?: string  }[];
+ };
 
-const Gallery: React.FC<GalleryProps> = ({ thumbnails, editable, reorderable }) => {
+const Gallery: React.FC<GalleryProps> = ({
+  thumbnails,
+ }) => {
+
+
   return (
     <div className="gallery">
       {thumbnails?.map((thumbnail) => (
-        <div className="gallery_tile">
           <Thumbnail
             key={thumbnail.id}
             imageUrl={thumbnail.imageUrl}
-            pageNumber={thumbnail.pageNumber}
+            title={thumbnail.title}
+            altText={thumbnail.altText}
             id={thumbnail.id}
+            link={thumbnail.link}
           />
-          <div className="gallery_buttons">
-            { editable ? <Badge look="primary" label="Edit" showLabel icon="edit" /> : null}
-            { reorderable ? <Badge look="primary" label="Reorder" showLabel icon="move" /> : null}
-            { editable ? <Badge look="primary" label="Delete" look="warning" showLabel icon="close" /> : null}
-          </div>
-        </div>
       ))}
     </div>
   );
