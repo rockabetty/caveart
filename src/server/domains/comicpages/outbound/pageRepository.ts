@@ -4,7 +4,7 @@ import {
   getOneRowResult,
 } from "../../../sql-helpers/queryFunctions";
 import { QueryResult } from "pg";
-import { ComicPage, PageReference } from "../comicpage.types";
+import { ComicPage, PageReference, ComicChapter } from "../comicpage.types";
 import logger from "@logger";
 
 export async function createPageData(
@@ -28,6 +28,48 @@ export async function createPageData(
     logger.error(error);
     throw error;
   }
+}
+
+export async function createChapter(
+  chapterData: ComicChapter
+  ) {
+
+  const {
+    comic_id,
+    chapter_number
+  } = chapterData;
+
+  let {
+    name,
+    description,
+    thumbnail_image_url
+  } = chapterData;
+
+  if (!thumbnail_image_url) {
+    thumbnail_image_url = null
+  }
+  if (!description) {
+    description = null;
+  }
+  if (!name) {
+    name = null;
+  }
+
+  const query = `
+    INSERT INTO comic_chapters
+      (comic_id, chapter_number, name, description, thumbnail_image_url)
+      VALUES ($1, $2, $3, $4, $5)
+    `;
+
+  const values = [comic_id, chapter_number, name, description, thumbnail_image_url];
+  try {
+    const result = await queryDbConnection(query, values);
+    return getOneRowResult(result)
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
+  }
+
 }
 
 export async function getPage(

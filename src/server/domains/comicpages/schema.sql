@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS comic_chapters (
     name TEXT, -- a nameless chapter will default to the chapter number as its name for display.
     chapter_number INT NOT NULL,
     description TEXT,
-    thumbnail TEXT,
+    thumbnail_image_url TEXT,
     comic_id INT REFERENCES comics(id) ON DELETE CASCADE,
     CONSTRAINT unique_chapter_number UNIQUE (comic_id, chapter_number)
     -- future potential index on comic_id, chapter_number but it feels too soon
