@@ -1,5 +1,5 @@
 import CaveartLayout from "@features/CaveartLayout";
-import EditComicProfile from "@features/comic/profiles/EditComicProfile";
+import ComicManagementDashboard from "@features/comic/ComicManagementDashboard";
 import ComicProfileProvider from "@features/comic/profiles/hooks/ComicProfileProvider";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
@@ -10,12 +10,9 @@ function EditComic() {
 
   return (
     <CaveartLayout requireLogin={true}>
-      <div className="tile">
-        <h1>{t("comicProfile.edit")}</h1>
-        <ComicProfileProvider>
-          <EditComicProfile tenant={tenant} />
-        </ComicProfileProvider>
-      </div>
+      <ComicProfileProvider>
+        <ComicManagementDashboard tenant={tenant} initialTab="edit" />
+      </ComicProfileProvider>
     </CaveartLayout>
   );
 }

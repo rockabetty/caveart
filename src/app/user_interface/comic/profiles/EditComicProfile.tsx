@@ -1,4 +1,4 @@
-import { LoadingSpinner, Form, Link } from "@components";
+import { LoadingSpinner, Form, Link, Button } from "@components";
 import "./ComicProfiles.css";
 import { useComicProfile } from "./hooks/useComicProfile";
 import ComicProfileForm from "./ComicProfileForm";
@@ -116,6 +116,7 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
   };
 
   return (
+    <>
     <Form
       submitLabel={t("comicProfile.save")}
       formValues={update}
@@ -125,6 +126,8 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
     >
       <ComicProfileForm tenant={tenant} />
     </Form>
+    
+    </>
   );
 };
 

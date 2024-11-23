@@ -1,7 +1,6 @@
 import CaveartLayout from "@features/CaveartLayout";
 import { useEffect, useState } from "react";
 import { Button, ButtonSet, Link, Modal, TabGroup } from "@components";
-import AuthorComicEntry from "@features/comic/profiles/AuthorComicEntry";
 import ComicProfile from "@features/comic/profiles/ComicProfile";
 import EditComicProfile from "@features/comic/profiles/EditComicProfile";
 import NewComicPageForm from "@features/comic/pages/NewComicPageForm";
@@ -12,35 +11,23 @@ import { Comic } from "../../data/types";
 import ComicProfileProvider from "@features/comic/profiles/hooks/ComicProfileProvider";
 import ComicDeletionConfirmationForm from "@features/comic/profiles/ComicDeletionConfirmationForm";
 
-function MyComics() {
+function ComicManagementDashboard({ tenant, initialTab }) {
   const { t } = useTranslation();
 
-  const [comics, setComics] = useState<Comic[]>([]);
+  const actions = [
+    { key: "overview", name: t("comicsDashboard.actions.overview") },
+    { key: "edit", name: t("comicsDashboard.actions.edit") },
+    { key: "pages", name: t("comicsDashboard.actions.pages") },
+    { key: "comments", name: t("comicsDashboard.actions.comments") },
+  ];
+
   const [deletionConfirmationModalOpen, setDeletionConfirmationModalOpen] =
     useState<boolean>(false);
   const [comicPendingDeletion, setComicPendingDeletion] = useState<string>("");
   const [deletionConfirmationString, setDeletionConfirmationString] =
     useState<string>("");
   const [deletionErrorText, setDeletionErrorText] = useState<string>("");
-
-  const actions = [
-    { key: "overview", name: t('comicsDashboard.actions.overview') },
-    { key: "edit", name: t('comicsDashboard.actions.edit') },
-    { key: "pages", name: t('comicsDashboard.actions.pages') },
-    { key: "comments", name: t('comicsDashboard.actions.comments') },
-  ];
-
-  useEffect(() => {
-    axios
-      .get("/api/comics/mine")
-      .then((response) => {
-        console.log(response);
-        setComics(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
+  const [comicDeleted, setComicDeleted] = useState<boolean>(false);
 
   const onDeletionConfirmationInput = function (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -69,14 +56,6 @@ function MyComics() {
         .then((response) => {
           setDeletionConfirmationModalOpen(false);
           setComicPendingDeletion("");
-          axios
-            .get("/api/comics/mine")
-            .then((comics) => {
-              setComics(comics.data);
-            })
-            .catch((error) => {
-              console.error(error);
-            });
         })
         .catch((error) => {
           setDeletionErrorText(error);
@@ -87,62 +66,34 @@ function MyComics() {
     }
   };
 
-  const renderComicEntries = function () {
-    if (comics.length === 0) {
-      return (
-        <div>
-          <p>{t("comicProfile.noComics")}</p>
-          <Link
-            type="button"
-            look="primary"
-            id="link-create_comic"
-            href="/comic/new"
-          >
-            {t("comicProfile.create")}
-          </Link>
-        </div>
-      );
-    }
+  const PagesTab = (
+    <>
+      <NewComicPageForm tenant={tenant} />
+      <h2>Edit Pages</h2>
+      <ThumbnailGallery tenant={tenant} />
+    </>
+  );
 
-    if (comics.length === 1) {
-      const comic = comics[0];
-      return <ComicManagementDashboard tenant={comic.subdomain} initialTab="overview" />
-    }
-
-    return (
-      <>
-        {comics.map((comic, idx) => {
-          return (
-            <ComicProfileProvider key={`comicProfile-${idx}`}>
-              <AuthorComicEntry profile={comic}>
-                <ButtonSet> 
-                  {actions.map((action) => (
-                    <Link 
-                      type="button"
-                      key={`action-${action.key}`}
-                      href={`/comic/${comic.subdomain}/${action.key}`}
-                    >{action.name}</Link>))}
-                </ButtonSet>
-              </AuthorComicEntry>
-            </ComicProfileProvider>
-          );
-        })}
-      </>
-    );
+  const tabsContent = {
+    overview: (
+      <ComicProfile tenant={tenant} onDelete={beginDeletion} />
+    ),
+    edit: <EditComicProfile tenant={tenant} />,
+    pages: PagesTab,
+    comments: <div>NOBODY LOVES YOU</div>,
   };
 
+  if (comicDeleted)
+    return (
+      <div className="tile">
+        <p>{t("comicProfile.deletion.isDeleted")}</p>
+      </div>
+    );
+
   return (
-    <CaveartLayout requireLogin={true}>
+    <>
       <div className="tile page_header">
-        <h1>{t("headerNavigation.myWebcomics")}</h1>
-        <Link
-          type="button"
-          look="primary"
-          id="link-create_comic"
-          href="/comic/new"
-        >
-          {t("comicProfile.create")}
-        </Link>
+        <h1>{tenant}</h1>
       </div>
       <Modal
         size="md"
@@ -162,9 +113,19 @@ function MyComics() {
         />
       </Modal>
 
-      {renderComicEntries()}
-    </CaveartLayout>
+      <div className="tile">
+        <ComicProfileProvider>
+          <TabGroup
+            id="comic-profile"
+            tabs={actions}
+            content={tabsContent}
+            initialTabKey={initialTab || "overview"}
+          />
+          ;
+        </ComicProfileProvider>
+      </div>
+    </>
   );
 }
 
-export default MyComics;
+export default ComicManagementDashboard;
