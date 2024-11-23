@@ -1,4 +1,13 @@
 const english = {
+	comicsDashboard: {
+		actions: {
+			overview: "Overview",
+			edit: "Edit",
+			pages: "Pages",
+			comments: "Comments",
+			statistics: "Statistics"
+		}
+	},
 	comicPages: {
 		add: "Add page",
 		view: "View page",

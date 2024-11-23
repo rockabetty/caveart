@@ -21,7 +21,6 @@
   margin-inline-end: var(--spacing-md);
 }
 
-
 .button:hover {
   background-color: var(--col-button-hover);
   cursor: pointer;
@@ -91,15 +90,17 @@
   display: flex;
 }
 
-.buttonset .button {
-  border-radius: 0;
-}
-
 .buttonset .button:first-of-type {
   border-radius: var(--size-border-radius) 0 0 var(--size-border-radius);
 }
 .buttonset .button:last-of-type {
   border-radius: 0 var(--size-border-radius) var(--size-border-radius) 0;
+}
+
+.buttonset .button {
+  margin-inline-end: 0;
+  -webkit-margin-end: 0;
+  border-radius: 0;
 }
 
 .buttonskeleton {
