@@ -48,6 +48,7 @@ const english = {
 			private: "Private (only invitees and admins)",
 		},
 		deletion: {
+			deleteButtonLabel: "Delete",
 			isDeleted: "This comic has been deleted.",
 			confirmationHeading: "Are you sure?",
 			instructions: "Deletion of a comic is permanent! To confirm, type the subdomain of the comic into the textbox.",

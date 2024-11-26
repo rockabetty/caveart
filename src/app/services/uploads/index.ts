@@ -23,7 +23,11 @@ export const uploadToS3 = async (
       endpoint,
       data,
       {
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+         // "Origin": "http://localhost:3000",
+          "Access-Control-Allow-Origin": "*",
+        },
       },
     );
 
@@ -35,6 +39,8 @@ export const uploadToS3 = async (
     await axios.put(uploadUrl, file, {
       headers: {
         "Content-Type": type,
+     //   "Origin": "http://localhost:3000",
+        "Access-Control-Allow-Origin": "*",
       },
       onUploadProgress: onProgress,
     });

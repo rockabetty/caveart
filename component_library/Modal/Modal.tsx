@@ -143,6 +143,7 @@ const Modal = ({
         aria-label={ariaLabel ? ariaLabel : heading || 'Modal'}
         className={`modal ${classes} ${classNames({
           Open: isOpen,
+          Closed: !isOpen,
           Alert: isAlert,
           Warning: isWarning,
           Medium: size === 'md' || !!size,

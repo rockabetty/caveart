@@ -31,6 +31,13 @@
   transition: all 0.3s ease-in;
 }
 
+.Closed .modal_body {
+  position: fixed;
+  height: 0;
+  overflow: hidden;
+  top: 0;
+}
+
 .modal_content {
   display: block;
   border: 1px solid var(--col-border);

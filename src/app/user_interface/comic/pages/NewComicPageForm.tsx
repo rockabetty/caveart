@@ -107,11 +107,7 @@ const NewComicPageForm: React.FC = ( props ) => {
     const data = JSON.stringify({ name, type });
 
     try {
-      const imageUrl = await uploadComicPage(
-        pageForm.image,
-        tenant,
-        "comic page",
-      );
+      const imageUrl = await uploadComicPage(tenant);
 
       const newPage = await axios.post(`/api/comic/${tenant}/page/new`, {
         ...pageForm,
