@@ -32,7 +32,7 @@ const Profile: React.FC = () => {
       <CaveartLayout requireLogin={true}>
         <div className="tile">
           <h1>{userProfile.username}</h1>
-          <p>{userProfile.created_at} | {userProfile.email}</p>
+          <p>{userProfile.created_at}</p>
         </div>
       </CaveartLayout>
     );

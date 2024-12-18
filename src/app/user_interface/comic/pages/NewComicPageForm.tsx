@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
-import ComicProfileProvider from "@features/comic/profiles/hooks/ComicProfileProvider";
-import { Button, Form, ImageUpload, Link, TextArea } from "@components";
+import { ComicProfileProvider } from "@features/comic/profiles/hooks/ComicProfileProvider";
+import { Link, Button } from "@components";
+import ComicPageForm from './ComicPageForm';
 import DateTimepicker from "@components/Form/DateTimepicker";
 import { NewPageSubmission } from "@features/comic/pages";
 import { useComicPage } from "@features/comic/pages/hooks/useComicPage";
 import { uploadToS3 } from "@client-services/uploads";
 
+console.log(ComicPageForm)
 const MAX_COMIC_PAGE_FILESIZE =  3 * 1024 * 1024;
 
 const NewComicPageForm: React.FC = ( props ) => {
@@ -155,51 +157,7 @@ const NewComicPageForm: React.FC = ( props ) => {
             </>
           ) : (
             <>
-             
-              <Form
-                submitLabel={t("comicPages.add")}
-                formValues={pageForm}
-                onSubmit={handleSubmit}
-                submissionError={pageFormError}
-              >
-                <div className="flex Row">
-                  <div className="flex-section">
-                    <ImageUpload
-                      name="newPage"
-                      required
-                      id="new"
-                      labelText={t("comicPages.newPage.uploadYourImage")}
-                      editable
-                      value={pageForm.image}
-                      maxSize={3000 * 1024}
-                      onChange={handleImageChange}
-                    />
-                  </div>
-                  <div className="flex-section Grow">
-                    <h1>{t("comicPages.add")}</h1>
-                    <p>
-                      {t("comicPages.newPage.number", {
-                        nextNumber: pageForm.newPageNumber,
-                      })}
-                    </p>
-                    <TextArea
-                      id="author_comment"
-                      name="commentary"
-                      labelText={t("comicPages.newPage.authorComment.label")}
-                      placeholderText={t(
-                        "comicPages.newPage.authorComment.placeholder",
-                      )}
-                      value={pageForm.authorComment}
-                      onChange={handleCommentaryChange}
-                    />
-
-                    <DateTimepicker
-                      labelText="Release date"
-                      onDateChange={handleDateChange}
-                    />
-                  </div>
-                </div>
-              </Form>
+              <ComicPageForm />
             </>
           )}
 

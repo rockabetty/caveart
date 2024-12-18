@@ -13,22 +13,30 @@ import {
   UserCredentials,
   User,
 } from '../user.types';
+import { encrypt } from "@server-services/encryption";
 import { GenericStringMap } from '../../../sql-helpers/queryFunctions'
+
+export async function checkEmailHashExists(
+  hashedEmail: string
+  ): Promise<boolean> {
+  const query = `SELECT count(id) AS count FROM users WHERE email = $1`
+  const result = await queryDbConnection(query, [hashedEmail]);
+  return result.rows[0].count === '0';
+};
 
 export async function createUser(
   username: string,
   email: string,
-  hashedEmail: string,
   password: string
 ): Promise<CreatedUserResult> {
   const query = `
     INSERT INTO users
-    (username, email, hashed_email, password)
+    (username, email, password)
     VALUES
     ($1, $2, $3, $4)
     RETURNING id
   `;
-  const values = [username, email, hashedEmail, password];
+  const values = [username, email, password];
   
   try {
     const result = await queryDbConnection(query, values);
@@ -44,7 +52,7 @@ export async function createUser(
       case 'users_username_key':
         errorMessage = ErrorKeys.USERNAME_TAKEN;
         break;
-      case 'users_hashed_email_key':
+      case 'users_email_key':
         errorMessage = ErrorKeys.EMAIL_TAKEN;
         break;
       default:
@@ -71,7 +79,7 @@ export async function getUserCredentials(
     role
   FROM users WHERE `;
   const condition = identificationFormat === 'hashed_email'
-    ? 'hashed_email = $1'
+    ? 'email = $1'
     : 'username = $1';
   const query = baseQuery + condition;
   const values = [identificationString]
@@ -92,7 +100,7 @@ export async function getPasswordResetCredentials(
     password_reset_expiry,
     FROM users WHERE `;
   const condition = identificationFormat === 'hashed_email'
-    ? 'hashed_email = $1'
+    ? 'email = $1'
     : 'username = $1';
   const query = baseQuery + condition;
   const values = [identificationString]

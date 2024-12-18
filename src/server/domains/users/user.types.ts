@@ -2,7 +2,6 @@ export type User = {
     id?: number;
     username?: string;
     email?: string;
-    hashed_email?: string;
     password?: string;
     password_reset_token?: string | null;
     password_reset_expiry?: Date | null;
