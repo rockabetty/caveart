@@ -6,15 +6,14 @@ import { useRouter } from "next/router";
 function EditComic() {
   const { tenant } = useRouter().query;
 
-  if (tenant) {
-    return (
-      <CaveartLayout requireLogin={true}>
-        <ComicProfileProvider>
-          <ComicManagementDashboard tenant={tenant} initialTab="pages" />
-        </ComicProfileProvider>
-      </CaveartLayout>
-    );
-  }
+  return (
+    <CaveartLayout requireLogin={true}>
+      <ComicProfileProvider>
+        {tenant ? <ComicManagementDashboard tenant={tenant} initialTab="pages" /> : null }
+      </ComicProfileProvider>
+    </CaveartLayout>
+  );
+
 }
 
 export default EditComic;

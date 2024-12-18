@@ -1,7 +1,7 @@
 export type Comic = {
-    id?: number;
-    title?: string;
-    subdomain?: string;
+    id: number;
+    title: string;
+    subdomain: string;
     tagline?: string;
     description?: string;
     created_at?: Date;
@@ -14,9 +14,24 @@ export type Comic = {
     view_count?: number;
     likes?: boolean;
     like_count?: number;
-    rating?: string;
+    rating?: number;
     stylesheet_variables?: string;
 };
+
+export type CommentsSettings = {
+    moderate_comments: boolean;
+    comments: boolean;
+}
+
+export type VisibilitySettings = {
+    is_private: boolean;
+    is_unlisted: boolean;
+}
+
+export type CommentsOptions = "Moderated" | "Disabled" | "Enabled";
+export type VisibilityOptions = "Public" | "Unlisted" | "Invite-Only";
+
+export type ComicUpdate = Partial<Comic>;
 
 export type ComicColumnList = Array<keyof Comic>;
 

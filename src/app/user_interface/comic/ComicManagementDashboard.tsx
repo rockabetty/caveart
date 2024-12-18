@@ -1,18 +1,22 @@
-import CaveartLayout from "@features/CaveartLayout";
-import { useEffect, useState } from "react";
-import { Button, ButtonSet, Link, Modal, TabGroup } from "@components";
+import { useState, useMemo } from "react";
+import { Modal, TabGroup } from "@components";
 import ComicProfile from "@features/comic/profiles/ComicProfile";
 import EditComicProfile from "@features/comic/profiles/EditComicProfile";
 import NewComicPageForm from "@features/comic/pages/NewComicPageForm";
 import ThumbnailGallery from "@features/comic/pages/ThumbnailGallery";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
-import { Comic } from "../../data/types";
 import ComicProfileProvider from "@features/comic/profiles/hooks/ComicProfileProvider";
 import ComicDeletionConfirmationForm from "@features/comic/profiles/ComicDeletionConfirmationForm";
 
-function ComicManagementDashboard({ tenant, initialTab }) {
+type ComicManagementDashboardProps = {
+  tenant: string;
+  initialTab: string;
+}
+
+function ComicManagementDashboard(props: ComicManagementDashboardProps) {
   const { t } = useTranslation();
+  const {tenant, initialTab} = props;
 
   const actions = [
     { key: "overview", name: t("comicsDashboard.actions.overview") },
@@ -53,8 +57,9 @@ function ComicManagementDashboard({ tenant, initialTab }) {
     if (isValidDeletionAttempt()) {
       return axios
         .post("/api/comic/delete", { subdomain: deletionConfirmationString })
-        .then((response) => {
+        .then(() => {
           setDeletionConfirmationModalOpen(false);
+          setComicDeleted(true);
           setComicPendingDeletion("");
         })
         .catch((error) => {
@@ -121,7 +126,6 @@ function ComicManagementDashboard({ tenant, initialTab }) {
             content={tabsContent}
             initialTabKey={initialTab || "overview"}
           />
-          ;
         </ComicProfileProvider>
       </div>
     </>

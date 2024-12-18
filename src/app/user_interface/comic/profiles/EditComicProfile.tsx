@@ -4,7 +4,8 @@ import { useComicProfile } from "./hooks/useComicProfile";
 import ComicProfileForm from "./ComicProfileForm";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
-import React from "react";
+import {useState, useEffect} from "react";
+import { ComicData, ComicUpdate } from "./types";
 
 type EditComicProfileProps = {
   tenant: string;
@@ -12,14 +13,40 @@ type EditComicProfileProps = {
 
 const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
   const { t } = useTranslation();
-  const { tenant } = props;
-  const { state, setSubmissionError, confirmEdit, uploadThumbnail } = useComicProfile(tenant);
-  const { update, permissions, profile, submissionError, successMessage, redirect } =
+  const {tenant} = props;
+  const {state, setSubmissionError, confirmEdit, uploadThumbnail} = useComicProfile(tenant);
+  const {update, permissions, profile, submissionError, successMessage, redirect} =
     state;
+
+  const [tenantResolved, setTenantResolved] = useState(!!tenant);
+  const [showError, setShowError] = useState(false);
+
+  useEffect(() => {
+  const timeout = !tenant ? setTimeout(() => setShowError(true), 3000) : null;
+
+  if (tenant) {
+    setTenantResolved(true);
+  }
+
+  return () => {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+  };
+}, [tenant]);
+
+  if (!tenantResolved && !showError) {
+    return <LoadingSpinner />;
+  }
 
   if (permissions === undefined) {
     return <LoadingSpinner />;
   }
+
+  if (showError && !tenant) {
+    return <div>{t("comicProfile.errors.missingTenant")}</div>;
+  }
+
 
   if (permissions?.edit === false) {
     return <div>{t("comicProfile.errors.403")}</div>;
@@ -28,61 +55,39 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
   if (!!redirect) {
     return (
       <div>
-        <p>{t('comicProfile.errors.redirect.prompt')}</p>
-        <Link type="button" href={`/comic/${redirect}/edit`}>{t('comicProfile.errors.redirect.linkLabel')}</Link>
+        <p>{t("comicProfile.errors.redirect.prompt")}</p>
+        <Link type="button" href={`/comic/${redirect}/edit`}>
+          {t("comicProfile.errors.redirect.linkLabel")}
+        </Link>
       </div>
       )
   }
 
   const handleFormSubmit = async () => {
-    let updates: Promise<any>[] = [];
-
-    if (!update.title) {
-      return setSubmissionError("comicManagement.errors.titleMissing");
-    }
+    let data: ComicUpdate = {
+      id: profile.id
+    };
 
     if (profile.title !== update.title) {
-      updates.push(
-        axios.post(`/api/comic/${tenant}/title`, { update: update.title }),
-      );
+      data.title = update.title;
     }
 
     if (typeof update.thumbnail !== 'string') {
-      updates.push(
-        uploadThumbnail(
-        update.thumbnail,
-        profile.id
-      ));
+      data.thumbnail = update.thumbnail;
     }
 
-    if (!update.subdomain) {
-      return setSubmissionError("comicManagement.errors.subdomainMissing");
-    }
     if (profile.subdomain !== update.subdomain) {
-      updates.push(
-        axios.post(`/api/comic/${tenant}/subdomain`, {
-          update: update.subdomain,
-        }),
-      );
+      data.subdomain = update.subdomain;
     }
 
     if (profile.description !== update.description) {
-      updates.push(
-        axios.post(`/api/comic/${tenant}/description`, {
-          update: update.description,
-        }),
-      );
+      data.description = update.description;
     }
 
     let genres = Object.keys(profile.genres).sort().join(",");
     let newGenres = Object.keys(update.genres).sort().join(",");
     if (genres !== newGenres) {
-      updates.push(
-        axios.post(`/api/comic/${tenant}/genres`, {
-          old: profile.genres,
-          update: update.genres,
-        }),
-      );
+      data.genres = update.genres;
     }
 
     let content: number[] = [];
@@ -94,26 +99,19 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
     Object.values(update.content_warnings).forEach((value) => {
       newContent.push(value.id);
     });
-
     if (content.sort().join(",") !== newContent.sort().join(",")) {
-      updates.push(
-        axios.post(`/api/comic/${tenant}/contentwarnings`, {
-          old: profile.content_warnings,
-          update: update.content_warnings,
-          rating: update.rating,
-        }),
-      );
+      data.content_warnings = update.content_warnings;
+      data.rating = update.rating;
     }
 
-    await Promise.all(updates)
-      .then(() => {
-        confirmEdit();
-      })
-      .catch((error) => {
+    try {
+      await axios.put(`/api/comic/${tenant}`, data);
+      confirmEdit();
+    } catch (error: any) {
         console.log(error);
         setSubmissionError(error.response.data.message);
-      });
-  };
+    }
+  }
 
   return (
     <>
@@ -124,9 +122,8 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
       submissionError={submissionError}
       successMessage={t(successMessage)}
     >
-      <ComicProfileForm tenant={tenant} />
+      <ComicProfileForm tenant={tenant || ""} />
     </Form>
-    
     </>
   );
 };

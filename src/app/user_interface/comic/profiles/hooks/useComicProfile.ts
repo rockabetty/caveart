@@ -30,8 +30,10 @@ export const useComicProfile = (tenant?: string) => {
   const { state, dispatch } = context;
 
   useEffect(() => {
-    getProfile();
-    getUserPermissions();
+    if (tenant) {
+      getProfile();
+      getUserPermissions();
+    }
   }, [tenant]);
 
   const getProfile = useCallback(() => {
@@ -77,7 +79,6 @@ export const useComicProfile = (tenant?: string) => {
     }
     
     try {
-      console.log("time to await")
       const fileUrl = await uploadComicThumbnail(comicID, image)(dispatch);
       dispatch({
         type: "UPLOAD_THUMBNAIL",

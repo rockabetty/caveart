@@ -9,7 +9,7 @@ function EditComic() {
   return (
     <CaveartLayout requireLogin={true}>
       <ComicProfileProvider>
-        <ComicManagementDashboard tenant={tenant} initialTab="overview" />
+        {tenant ? <ComicManagementDashboard tenant={tenant} initialTab="edit" /> : null }
       </ComicProfileProvider>
     </CaveartLayout>
   );

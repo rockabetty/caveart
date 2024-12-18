@@ -138,17 +138,18 @@ export async function getComicThumbnails(
     // TO DO: Change high res to thumbnail when thumbnails are working out
     const query = `
     SELECT 
-      id,
-      title,
+      p.id,
+      p.title,
       page_number as "pageNumber",
       high_res_image_url as "imageUrl",
       release_on as "releaseOn",
-      CONCAT('/comic/page/', id) AS "link"
-    FROM comic_pages
+      CONCAT('/comic/', c.subdomain, '/pages/', p.id) AS "link"
+    FROM comic_pages p
+    JOIN comics c ON c.id = p.comic_id
     ${
       omniscientPOV
-        ? "WHERE comic_id = $1"
-        : "WHERE comic_id = $1 AND release_on <= NOW()"
+        ? "WHERE p.comic_id = $1"
+        : "WHERE p.comic_id = $1 AND p.release_on <= NOW()"
     }
     ORDER BY page_number ASC
     LIMIT $2

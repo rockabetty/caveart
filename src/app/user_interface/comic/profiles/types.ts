@@ -31,6 +31,7 @@ export type ComicData = {
   comments?: 'Allowed' | 'Moderated' | 'Disabled';
   visibility?: 'Public' | 'Unlisted' | 'Private';
 }
+export type ComicUpdate = Partial<ComicData>;
 
 export type ComicField = keyof ComicData;
 

@@ -20,6 +20,11 @@ const english = {
 			wrontFormat: "Wrong format. Please upload an image file.",
 			noImage: "There's no image selected.",
 			uploadYourImage: "Upload your image",
+			releaseDate: "Release date",
+			tags: {
+				label: "Tags",
+				helperText: "Separate your tags with commas (,)."
+			},
 			authorComment: {
 				label: "Author comment",
 				placeholder: "Tell us about your favorite part of this page, your process, or whatever comes to mind."

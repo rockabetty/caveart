@@ -99,7 +99,7 @@ const ComicProfileForm: React.FC<ComicProfileFormProps> = (
           editable
           helperText={t('comicProfile.coverImageSize', {megabytes: '3'})}
           id={`${tenant ? `${tenant}-` : ''}cover_image`}
-          src={`${update?.thumbnail}` || "/img/brand/kraugak.png"}
+          src={update?.thumbnail ? update.thumbnail : "/img/brand/kraugak.png"}
           alt="Preview cover image"
           maxSize={1000}
           labelText={t('comicProfile.coverImage')}

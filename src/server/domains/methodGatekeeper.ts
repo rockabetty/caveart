@@ -14,6 +14,16 @@ export const acceptGetOnly = function (
     }
 };
 
+export const acceptPutOnly = function (
+    req: NextApiRequest,
+    res: NextApiResponse,
+) {
+    if (req.method !== "PUT") {
+        res.setHeader("Allow", ["PUT"]);
+        res.status(405).end(`Method ${req.method} Not Allowed`);
+    }
+};
+
 export const acceptPostOnly = function (
     req: NextApiRequest,
     res: NextApiResponse,

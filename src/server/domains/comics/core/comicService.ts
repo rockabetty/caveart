@@ -19,6 +19,9 @@ import {
   editComic as editComicTable,
   getComicThumbnail,
   selectComicProfile,
+  getGenres,
+  getComicGenres,
+  getComicContentWarnings,
 } from "../outbound/comicRepository";
 import { deleteFromS3 } from "@server-services/uploader";
 import { sanitizeLongformText } from "@server-services/sanitizers";
@@ -28,11 +31,63 @@ import formidable from "formidable";
 import { ErrorKeys } from "../errors.types";
 import { ErrorKeys as GeneralErrorKeys } from "../../../errors.types";
 import { ErrorKeys as FileErrorKeys } from "@server-services/uploader/errors.types";
+import { QueryResult } from "pg";
+import { Comic, CommentsOptions, CommentsSettings, VisibilityOptions, VisibilitySettings } from "../comic.types";
 
-const invalidRequest = {
-  success: false,
-  error: GeneralErrorKeys.INVALID_REQUEST,
+const handleUniqueConstraints = function(constraint:string) {
+  return constraint === "comics_title_key"
+    ? ErrorKeys.TITLE_TAKEN
+    : ErrorKeys.SUBDOMAIN_TAKEN;
+}
+
+const isValidTitle = function (title: string) {
+  const validTitleRegex = /^[a-zA-Z0-9\s.,!?'"-_]{1,120}$/;
+  return validTitleRegex.test(title)
+}
+const prepareTitle = function(title: string) {
+  const newTitle = title.trim().replace(/\s+/g, " ");
+  if (!isValidTitle(newTitle)) {
+    throw new Error(GeneralErrorKeys.INVALID_REQUEST);
+  }
+  return newTitle;
+}
+
+export const isValidSubdomain = function (rawSubdomain:string) {
+  const subdomain = rawSubdomain.toLowerCase();
+  const subdomainFilter = /^(?!-)(?!.*--)[a-z0-9-]{1,63}(?<!-)$/;
+  return subdomainFilter.test(subdomain);
 };
+const prepareSubdomain = function (subdomain: string): string {
+  const newSubdomain = subdomain.toLowerCase();
+  if (!isValidSubdomain(newSubdomain)) {
+      throw new Error(GeneralErrorKeys.INVALID_REQUEST);
+  }
+  return newSubdomain;
+}
+
+export const isValidDescription = function (description: string) {
+  return description.length < 4096;
+};
+const prepareDescription = function(description:string): string {
+  if (!isValidDescription(description)) {
+    throw new Error(GeneralErrorKeys.INVALID_REQUEST);
+  }
+  return sanitizeLongformText(description);
+}
+
+const prepareCommentOptions = function (chosenOption: CommentsOptions): CommentsSettings {
+  return {
+    comments: chosenOption !== "Disabled" 
+    moderate_comments: chosenOption === "Moderated" 
+  }
+}
+
+const prepareVisibilityOptions = function(chosenOption: VisibilityOptions): VisibilitySettings {
+  return {
+    is_private: chosenOption === "Invite-Only"
+    is_unlisted: chosenOption === "Unlisted";
+  }
+}
 
 export async function getComicId(tenant: string | number) {
   try {
@@ -118,7 +173,7 @@ export async function deleteComic(comicID: number, author: number) {
 
 export async function editComic(
   tenant: number | string,
-  update: Comic,
+  update: ComicUpdate,
 ): Promise<QueryResult | null> {
   try {
     let columnName = "id";
@@ -137,22 +192,16 @@ export async function editComic(
   }
 }
 
-const isValidRating = async function (rating: string) {
+const prepareRating = async function (rating: string): Promise<number | null> {
   try {
     const ratingId = await getRatingId(rating);
-    if (isNaN(ratingId)) {
-      return false;
+    if (ratingId && isNaN(ratingId)) {
+      throw new Error(GeneralErrorKeys.INVALID_REQUEST); 
     }
+    return ratingId;
   } catch (error) {
     throw error;
   }
-  return true;
-};
-
-export const isValidSubdomain = function (rawSubdomain) {
-  const subdomain = rawSubdomain.toLowerCase();
-  const subdomainFilter = /^(?!-)(?!.*--)[a-z0-9-]{1,63}(?<!-)$/;
-  return subdomainFilter.test(subdomain);
 };
 
 const isValidIDList = function (list: number[]) {
@@ -170,120 +219,62 @@ const isValidIDList = function (list: number[]) {
   return true;
 };
 
-export const isValidDescription = function (description: string) {
-  return description.length < 4096;
-};
+const prepareComicProfile = async function (fields): Partial<Comic> {
+  let profile: ComicUpdate = {};
+  try {
+    if (fields.title) {
+      profile.title = prepareTitle(fields.title);
+    }
 
-export const isValidCommentOption = function (option: string) {
-  const validComments = ["Allowed", "Moderated", "Disabled"];
-  return validComments.includes(option);
-};
+    if (fields.subdomain) {
+      profile.subdomain = prepareSubdomain(fields.subdomain);
+    }
 
-export const isValidVisibilityOption = function (option: string) {
-  const validVisibilities = ["Public", "Unlisted", "Invite-Only"];
-  return validVisibilities.includes(option);
-};
+    if (fields.description) {
+      profile.description = prepareDescription(fields.description);
+    }
 
-export const isValidLikesOption = function (
-  option: "true" | "false" | boolean,
-) {
-  if (option !== "true" && option !== "false") {
-    return typeof option === "boolean";
-  }
-  return true;
-};
-
-export const isValidTitle = function (title: string) {
-  if (title.length > 120) {
-    return false;
-  }
-
-  const validTitleRegex = /^[a-zA-Z0-9\s.,!?'"-_]{1,120}$/;
-  if (!validTitleRegex.test(title)) {
-    return false;
-  }
-  return true;
-};
-
-export async function updateTitle(
-  tenantID: number,
-  update: string,
-): Promise<QueryResult | null> {
-  if (isValidTitle(update)) {
-    const updateData = { title: update };
-    try {
-      editComic(tenantID, updateData);
-      return {
-        success: true,
-        data: updateData,
-      };
-    } catch (error) {
-      if (error.code && error.code === "23505") {
-        return {
-          success: false,
-          error: ErrorKeys.TITLE_TAKEN,
-        };
+    if (fields.rating) {
+      const rating = await prepareRating(fields.rating);
+      if (rating) {
+        profile.rating = rating;
       }
-      return {
-        success: false,
-        error: error,
-      };
+    }
+
+    if (fields.comments) {
+      const commentsSettings = prepareCommentOptions(fields.comments);
+      profile = {...profile, ...commentsSettings}; 
+    }
+
+    if (fields.visibility) {
+      const visibilitySettings = prepareVisibilityOptions(fields.visibility);
+      profile = {...profile, ...visibilitySettings};
+    }
+
+    if (fields.likes) {
+      profile.likes = fields.likes === true;
+    }
+
+    if (fields.thumbnail) {
+      profile.thumbnail_image_url = fields.thumbnail;
+    }
+
+    return profile;
+
+  } catch {
+    return {
+      success: false,
+      data: GeneralErrorKeys.INVALID_REQUEST
     }
   }
-  return invalidRequest;
 }
 
-export async function updateSubdomain(
-  tenantID: number,
-  update: string,
-): Promise<QueryResult | null> {
-  if (isValidSubdomain(update)) {
-    const updateData = { subdomain: update };
-    try {
-      editComic(tenantID, updateData);
-      return {
-        success: true,
-        data: updateData,
-      };
-    } catch (error) {
-      if (error.code && error.code === "23505") {
-        return {
-          success: false,
-          error: ErrorKeys.SUBDOMAIN_TAKEN,
-        };
-      }
-      return {
-        success: false,
-        error: error,
-      };
-    }
-  }
-  return invalidRequest;
+const isValidGenreSelection = function (selectedGenres) {
+  return isValidIDList(selectedGenres);
 }
 
-export async function updateDescription(
-  tenantID: number,
-  update: string,
-): Promise<QueryResult | null> {
-  if (isValidDescription(update)) {
-    console.log("############################ fidna sanitize");
-    const sanitizedInput = sanitizeLongformText(update);
-    console.log(sanitizedInput);
-    const updateData = { description: sanitizedInput };
-    try {
-      editComic(tenantID, updateData);
-      return {
-        success: true,
-        data: updateData,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error,
-      };
-    }
-  }
-  return invalidRequest;
+const isValidContentWarningSelection = function (selectedContentWarnings) {
+  return isValidIDList(selectedContentWarnings)
 }
 
 export async function updateGenres(tenantID: number, old, update) {
@@ -324,6 +315,31 @@ export async function updateGenres(tenantID: number, old, update) {
     };
   }
 }
+
+export async function updateComicProfile(id, fields) {
+  try {
+
+    let profile: ComicUpdate = prepareComicProfile(fields);
+
+    if (fields["genres[]"] && isValidGenreSelection(fields["genres[]"])) {
+      let currentGenres = await getComicGenres(id);
+      if (currentGenres) {
+        await updateGenres(id, currentGenres, fields["genres[]"])  
+      }
+    }
+
+    if (fields["content[]"] && isValidContentWarningSelection(fields["content[]"])) {
+      let currentContentWarnings = await getComicContentWarnings(id);
+      if (currentContentWarnings) {
+        await updateContentWarnings(id, currentContentWarnings, fields["content[]"])  
+      }
+    }
+
+  } catch (error: any) {
+
+  }
+}
+
 
 export async function listRatingOptions() {
   try {
@@ -373,8 +389,7 @@ export async function listContentWarningOptions() {
 export async function updateContentWarnings(
   tenantID: number,
   old,
-  update,
-  rating,
+  update
 ) {
   try {
     let oldIDs = [];
@@ -408,8 +423,6 @@ export async function updateContentWarnings(
       await removeContentWarningsFromComic(tenantID, deleteIDs);
     }
 
-    const ratingId = await getRatingId(rating);
-    await editComic(tenantID, { rating: ratingId });
     return {
       success: true,
       data: update,
@@ -472,89 +485,34 @@ export async function updateThumbnail(comicID: number, uploadUrl: string) {
 }
 
 export async function createComic(fields, userId: number) {
-  let profile = {
-    title: "",
-    subdomain: "",
-    description: "",
-    genres: [],
-    content: [],
-    visibility: "Public",
-    likes: true,
-    rating: "All Ages",
-    comments: false,
-    moderate_comments: false,
-    is_unlisted: false,
-    is_private: false,
-  };
-
-  const requiredFields = ["rating", "title", "subdomain"];
-  for (let field of requiredFields) {
-    if (!fields[field]) {
-      return invalidRequest;
-    }
-  }
-
-  profile.title = fields.title.trim().replace(/\s+/g, " ");
-
-  const subdomain = fields.subdomain.toLowerCase();
-  if (!isValidSubdomain(subdomain)) {
-    return invalidRequest;
-  }
-  profile.subdomain = subdomain;
-
-  const rating = fields.rating;
-  if (!isValidRating(rating)) {
-    return invalidRequest;
-  }
-  const ratingId = await getRatingId(rating);
-  profile.rating = ratingId;
-
-  const description = fields.description;
-  if (!isValidDescription) {
-    return invalidRequest;
-  }
-  const sanitizedInput = sanitizeLongformText(description);
-  profile.description = sanitizedInput;
-
-  const genresValid = isValidIDList(fields["genres[]"]);
-  if (genresValid) {
-    profile.genres = fields["genres[]"];
-  } else {
-    return invalidRequest;
-  }
-
-  const contentWarningsValid = isValidIDList(fields["content[]"]);
-  if (contentWarningsValid) {
-    profile.content = fields["content[]"];
-  } else {
-    return invalidRequest;
-  }
-
-  const selectedCommentsOption = fields.comments;
-  if (!isValidCommentOption(selectedCommentsOption)) {
-    return invalidRequest;
-  }
-  profile.comments = selectedCommentsOption !== "Disabled";
-  profile.moderate_comments = selectedCommentsOption === "Moderated";
-
-  const selectedVisibilityOption = fields.visibility;
-  if (!isValidVisibilityOption(selectedVisibilityOption)) {
-    return invalidRequest;
-  }
-  profile.is_private = selectedVisibilityOption === "Invite-Only";
-  profile.is_unlisted = selectedVisibilityOption === "Unlisted";
-
-  const selectedLikesOption = fields.likes;
-  if (!isValidLikesOption(selectedLikesOption)) {
-    return invalidRequest;
-  }
-  profile.likes = selectedLikesOption === "true";
-
-  if (fields.thumbnail) {
-    profile.thumbnail_image_url = fields.thumbnail;
-  }
+  let profile: Partial<Comic> = {};
+  let genres = [];
+  let contentWarnings = [];
 
   try {
+    const requiredFields = ["rating", "title", "subdomain"];
+    for (let field of requiredFields) {
+      if (!fields[field]) {
+        throw new Error(GeneralErrorKeys.INVALID_REQUEST)
+      }
+    }
+
+    profile = prepareComicProfile(fields);
+
+    const genresValid = isValidIDList(fields["genres[]"]);
+    if (genresValid) {
+      genres = fields["genres[]"];
+    } else {
+      throw new Error(GeneralErrorKeys.INVALID_REQUEST)
+    }
+
+    const contentWarningsValid = isValidIDList(fields["content[]"]);
+    if (contentWarningsValid) {
+      contentWarnings = fields["content[]"];
+    } else {
+      throw new Error(GeneralErrorKeys.INVALID_REQUEST);
+    }
+
     const id = await addComic(profile);
     if (id) {
       await addAuthorToComic(id, userId);

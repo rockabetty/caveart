@@ -329,7 +329,29 @@ export async function getNestedContentWarnings() {
   }
 }
 
+export async function getComicGenres(comicId: number): Promise<number[] | null> {
+  const query = `
+  SELECT array_agg(g.id)
+  FROM genres g
+  JOIN comics_to_genres cg
+  ON cg.genre_id = g.id
+  WHERE cg.comic_id = $1
+  `;
+  try {
+    const values = [comicId];
+    const result = await queryDbConnection(query, values);
+    if (result.rows && result.rows.length > 0) {
+      return result.rows
+    }
+    return null;
+  } catch (error: any) {
+    logger.error(error);
+    throw error;
+  }
+}
+
 export async function getComicContentWarnings(
+  // to do - make this just return an array of IDs no more jsonb_agg build object tomfoolery
   comicId: number,
 ): Promise<QueryResult[] | null> {
   const query = `SELECT
@@ -438,7 +460,7 @@ export async function getRatingDefs(
   }
 }
 
-export async function getRatingId(name: string): Promise<QueryResult | null> {
+export async function getRatingId(name: string): Promise<number | null> {
   try {
     const result = await queryDbConnection(
       `SELECT id FROM ratings WHERE name = $1`,

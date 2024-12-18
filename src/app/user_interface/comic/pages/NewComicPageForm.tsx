@@ -1,18 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 import ComicProfileProvider from "@features/comic/profiles/hooks/ComicProfileProvider";
-import { Button, Form, ImageUpload, Link, TextArea } from "@components";
+import { Button, Form, ImageUpload, Link, TextInput, TextArea } from "@components";
 import DateTimepicker from "@components/Form/DateTimepicker";
-import { NewPageSubmission } from "@features/comic/pages";
+import { NewPageSubmission } from "@features/comic/pages/types";
 import { useComicPage } from "@features/comic/pages/hooks/useComicPage";
-import { uploadToS3 } from "@client-services/uploads";
 
 const MAX_COMIC_PAGE_FILESIZE =  3 * 1024 * 1024;
 
-const NewComicPageForm: React.FC = ( props ) => {
-
-  const { tenant } = props;
+const NewComicPageForm: React.FC = ( tenant ) => {
 
   const { t } = useTranslation();
 
@@ -34,7 +31,6 @@ const NewComicPageForm: React.FC = ( props ) => {
     setPageFormError,
     pageFormSuccess,
     setPageFormSuccess,
-    pageFormLoading,
     setPageFormLoading,
   } = useComicPage(initialState);
 
@@ -167,7 +163,7 @@ const NewComicPageForm: React.FC = ( props ) => {
                       labelText={t("comicPages.newPage.uploadYourImage")}
                       editable
                       value={pageForm.image}
-                      maxSize={3000 * 1024}
+                      maxSize={MAX_COMIC_PAGE_FILESIZE}
                       onChange={handleImageChange}
                     />
                   </div>
@@ -190,9 +186,17 @@ const NewComicPageForm: React.FC = ( props ) => {
                     />
 
                     <DateTimepicker
-                      labelText="Release date"
+                      required
+                      labelText={t("comicPages.newPage.releaseDate")}
                       onDateChange={handleDateChange}
                     />
+
+                    <TextInput
+                      type="text"
+                      labelText={t("comicPages.newPage.tags.label")}
+                      helperText={t("comicPages.newPage.tags.helperText")}
+                      />
+
                   </div>
                 </div>
               </Form>

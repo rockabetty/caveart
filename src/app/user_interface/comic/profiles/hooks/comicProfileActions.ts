@@ -16,6 +16,13 @@ export const handleError = function (error: any, dispatch: React.Dispatch<ComicP
   dispatch({ type: "LOADING", payload: { loading: false } });
 };
 
+const createInvalidTenantDispatch = function(action:string): ComicProfileAction {
+  return {
+      type: "SERVER_RESPONSE_FAILURE",
+      payload: { error: `Invalid or missing tenant. Cannot attempt ${action || "requested operation"}` },
+    }
+}
+
 const ratingLevels = {
   "Ages 10+": new Set(["someViolence", "someSuggestiveContent"]),
   "Teen (13+)": new Set([
@@ -110,6 +117,11 @@ export const deleteComic =
 // `fetchProfile` is used for general viewing (read-only access).
 export const fetchProfile =
   (tenant: string) => async (dispatch: React.Dispatch<ComicProfileAction>) => {
+    if (!tenant) {
+      dispatch(createInvalidTenantDispatch('GET_COMIC_PROFILE'));
+      return;
+    }
+
     dispatch({ type: "LOADING", payload: { loading: true } });
     try {
       const comic = await axios.get(`/api/comic/${tenant}`);
@@ -146,6 +158,11 @@ export const fetchProfile =
 // `fetchProfileToUpdate` is used when the user has editing permissions (e.g., comic owner).
 export const fetchProfileToUpdate =
   (tenant: string) => async (dispatch: React.Dispatch<ComicProfileAction>) => {
+     if (!tenant) {
+      dispatch(createInvalidTenantDispatch('GET_COMIC_PROFILE_TO_UPDATE'));
+      return;
+    }
+    
     dispatch({ type: "LOADING", payload: { loading: true } });
     try {
       const permissions = await axios.get(`/api/comic/${tenant}/permissions`);
@@ -168,8 +185,12 @@ export const fetchProfileToUpdate =
 
 export const fetchPermissions =
   (tenant: string) => async (dispatch: React.Dispatch<ComicProfileAction>) => {
+     if (!tenant) {
+      dispatch(createInvalidTenantDispatch('GET_COMIC_PERMISSIONS'));
+      return;
+    }
+    
     try {
-      
       const permissions = await axios.get(`/api/comic/${tenant}/permissions`);
       const permissionData: ComicPermissions = permissions.data;
       let { edit } = permissionData;

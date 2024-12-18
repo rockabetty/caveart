@@ -57,7 +57,7 @@ const ComicProfile: React.FC<ComicProfileProps> = ({
               <ul>
                 {contentWarnings.map((key, idx) => {
                   return (
-                    <li>
+                    <li key={`content-warning-${profile.content_warnings[key].name}`}>
                       {t(`contentWarnings.${key}.${profile.content_warnings[key].name}`)}
                     </li>
                   )
