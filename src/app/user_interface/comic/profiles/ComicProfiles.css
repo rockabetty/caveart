@@ -2,6 +2,9 @@
   padding: var(--spacing-md);
   box-sizing: border-box;
   margin-block-end: var(--spacing-lg);
+  display: inline-block;
+  height: auto;
+  vertical-align: top;
 }
 
 .comic-profile_header {
@@ -11,14 +14,14 @@
 }
 
 .comic-profile_title {
-  margin-block-start: 0;
+  margin: var(--spacing-xs) auto;
+  font-size: var(--size-font-xl);
 }
-.comic-profile_cover {
-  margin-inline-end: var(--spacing-md);
-}
+
 .comic-profile_body {
   display: flex;
-  flex-direction: row;   
+  flex-direction: column;
+  align-items: center;   
 }
 .comic-profile_description {
   flex-grow: 1;

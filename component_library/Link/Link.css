@@ -10,6 +10,7 @@
               0.25s ease-in-out outline-offset,
               0.25s ease-in-out outline;
 }
+
 .link:hover,
 .link:focus {
   color: var(--col-interactive-01-hover);
