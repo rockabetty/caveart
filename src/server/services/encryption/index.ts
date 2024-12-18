@@ -32,7 +32,8 @@ const IV_LENGTH = 16;
  * @param {string} text - The plain text string to be encrypted.
  * @returns {string} The encrypted text in the format: 'iv:encryptedContent'.
  */
-export function encrypt(text: string): string {    
+export function encrypt(text: string): string {  
+    const ENCRYPTION_SALT = requireEnvVar('ENCRYPTION_SALT'); 
     const ENCRYPTION_KEY_32_BYTE = getEncryptionKey();
     const iv = crypto.randomBytes(IV_LENGTH);
     const cipher = crypto.createCipheriv('aes-256-cbc', ENCRYPTION_KEY_32_BYTE, iv);

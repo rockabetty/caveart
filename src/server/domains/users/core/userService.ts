@@ -12,6 +12,7 @@ import {
   clearUserSession,
   getUser,
   editUser,
+  checkEmailExists
 } from "../outbound/userRepository";
 import jwt from "jsonwebtoken";
 import { requireEnvVar } from "../../../services/logger/envcheck";
@@ -22,7 +23,6 @@ import { encrypt, decrypt } from "@server-services/encryption";
 import { sendSingleEmail } from "../../../services/emailer";
 
 const SECRET_KEY_JWT = requireEnvVar("SECRET_KEY_JWT");
-console.log("User SErvice SKJ:" + SECRET_KEY_JWT)
 
 export const registerUser = async (
   password: string,
@@ -45,13 +45,19 @@ export const registerUser = async (
       error: ErrorKeys.USERNAME_INVALID,
     };
   }
-  const encryptedEmail = encrypt(email);
-  const hashedEmail = await hashEmail(email);
+  const hashedEmail = hashEmail(email);
+  const existingUser = await checkEmailHashExists(hashedEmail);
+  if (existingUser) {
+    return {
+      success: false,
+      error: ErrorKeys.EMAIL_TAKEN,
+    };
+  }
+
   try {
     const hashedPassword = await hashPassword(password);
     const newUser = await createUser(
       name,
-      encryptedEmail,
       hashedEmail,
       hashedPassword,
     );
@@ -319,7 +325,7 @@ export const getUserProfile = async (token:string) => {
     };
   }
 
-  const userProfileDetails = ["username", "email", "role", "created_at"];
+  const userProfileDetails = ["username", "role", "created_at"];
 
   try {
     const userProfile: User | null = await getUser(userId, userProfileDetails);
@@ -332,10 +338,6 @@ export const getUserProfile = async (token:string) => {
         error: ErrorKeys.USER_INVALID,
       };
     }
-
-    const { email } = userProfile;
-    const decryptedEmail = email && decrypt(email);
-    userProfile.email = decryptedEmail;
 
     return {
       success: true,

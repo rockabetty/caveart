@@ -96,7 +96,7 @@ function MyComics() {
 
       const PagesTab = (
         <>
-        <NewComicPageForm tenant={comic.subdomain} />
+        <NewComicPageForm />
         <h2>Edit Pages</h2>
         <ThumbnailGallery tenant={comic.subdomain} />
         </>
