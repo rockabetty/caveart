@@ -72,10 +72,6 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
       data.title = update.title;
     }
 
-    if (typeof update.thumbnail !== 'string') {
-      data.thumbnail = update.thumbnail;
-    }
-
     if (profile.subdomain !== update.subdomain) {
       data.subdomain = update.subdomain;
     }
@@ -88,7 +84,6 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
     let newGenres = Object.keys(update.genres).sort().join(",");
     if (genres !== newGenres) {
       data.genres = Object.keys(update.genres);
-      console.log(data)
     }
 
     let content: number[] = [];
@@ -106,11 +101,13 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
     }
 
     try {
+      if (typeof update.thumbnail !== 'string') {
+        await uploadThumbnail(update.thumbnail, profile.id)
+      }
       await axios.put(`/api/comic/${tenant}`, {update: data});
       confirmEdit();
     } catch (error: any) {
-        console.log(error);
-        setSubmissionError(error.response.data.message);
+      setSubmissionError(error.response.data.message);
     }
   }
 

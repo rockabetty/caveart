@@ -266,7 +266,7 @@ export const uploadComicThumbnail =
   async (dispatch: React.Dispatch<ComicProfileAction>) => {
     dispatch({ type: "LOADING", payload: { loading: true } });
     try {
-      const uploadUrl = await uploadToS3(image, comicID, "thumbnail");
+      const uploadUrl = await uploadToS3(image, {tenant: comicID, presignFor: "thumbnail"});
       await axios.put(`/api/comic/${comicID}`, { update: {id: comicID, thumbnail: uploadUrl }});
 
       dispatch({

@@ -73,17 +73,12 @@ export const useComicProfile = (tenant?: string) => {
   };
 
   const uploadThumbnail = async (image: File, comicID) => {
-    console.log("upload thumbnail is running")
-    console.log(image)
-    console.log(comicID)
     if (!comicID) return;
     if (!image) {
-      console.log("No image provided")
       return setSubmissionError("thumbnailMissing");
     }
     
     try {
-      console.log("Attempting upload Comic Thumbnail to get file url.")
       await uploadComicThumbnail(comicID, image)(dispatch);
     } catch (error) {
       handleSubmissionError("Failed to upload thumbnail.")(dispatch);

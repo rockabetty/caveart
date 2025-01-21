@@ -1,43 +1,131 @@
-import axios, { AxiosProgressEvent } from "axios";
+import axios, { AxiosProgressEvent, AxiosError } from "axios";
 
 type UploadType = "comic page" | "thumbnail";
 
+interface PresignedData {
+  uploadUrl: string;
+  fileUrl: string;
+}
+
+interface UploadOptions {
+  tenant: string;
+  presignFor?: UploadType;
+  onProgress?: (progressEvent: AxiosProgressEvent) => void;
+  maxRetries?: number;
+  retryDelay?: number;
+}
+
+class S3UploadError extends Error {
+  constructor(
+    message: string,
+    public readonly stage: 'presign' | 'upload',
+    public readonly originalError?: Error
+  ) {
+    super(message);
+    this.name = 'S3UploadError';
+  }
+}
+
+const getPresignEndpoint = (tenant: string, type: UploadType): string => {
+  console.log("TENANT: " + tenant)
+  const endpoints = {
+    "comic page": `/api/comic/${tenant}/page/presign`,
+    "thumbnail": `/api/comic/${tenant}/presign-thumbnail`
+  };
+  return endpoints[type];
+};
+
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 export const uploadToS3 = async (
   file: File,
-  tenant: string,
-  presignFor: UploadType = "comic page",
-  onProgress?: (progressEvent: AxiosProgressEvent) => void
+  {
+    tenant,
+    presignFor = "comic page",
+    onProgress,
+    maxRetries = 3,
+    retryDelay = 1000
+  }: UploadOptions
 ): Promise<string> => {
+  let attempts = 0;
+
+  while (attempts < maxRetries) {
+    try {
+      // Get presigned URL
+      const presignedData = await getPresignedUrl(file, tenant, presignFor);
+      
+      // Attempt upload
+      return await performUpload(file, presignedData, onProgress);
+
+    } catch (error) {
+      attempts++;
+      
+      if (error instanceof S3UploadError) {
+        // If it's the last attempt, rethrow
+        if (attempts === maxRetries) throw error;
+        
+        // Wait before retrying
+        await delay(retryDelay * attempts); // Exponential backoff
+        continue;
+      }
+      
+      // For unknown errors, rethrow immediately
+      throw error;
+    }
+  }
+
+  throw new Error("Maximum retry attempts reached");
+};
+
+async function getPresignedUrl(
+  file: File,
+  tenant: string,
+  presignFor: UploadType
+): Promise<PresignedData> {
   try {
     const { name, type } = file;
-    const data = JSON.stringify({ name, type, tenant });
-
-    let endpoint = `/api/comic/${tenant}/page/presign`;
-
-    if (presignFor !== "comic page") {
-      if (presignFor === "thumbnail") endpoint = `/api/comic/${tenant}/presign-thumbnail`;
-      // add different endpoints here as needs expand
-    }
-
-    const presignedUrlResponse = await axios.post(
+    const endpoint = getPresignEndpoint(tenant, presignFor);
+    
+    const { data } = await axios.post<PresignedData>(
       endpoint,
-      data,
+      { name, type, tenant },
       {
         headers: { 
           "Content-Type": "application/json",
           "Access-Control-Allow-Origin": "*",
         },
-      },
+      }
     );
 
-    const { uploadUrl, fileUrl } = presignedUrlResponse.data;
-    if (!uploadUrl || !fileUrl) {
-      throw new Error("Failed to obtain pre-signed URL.");
+    if (!data.uploadUrl || !data.fileUrl) {
+      throw new S3UploadError(
+        "Invalid presigned URL response",
+        'presign'
+      );
     }
 
+    return data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new S3UploadError(
+        `Failed to obtain pre-signed URL: ${error.message}`,
+        'presign',
+        error
+      );
+    }
+    throw error;
+  }
+}
+
+async function performUpload(
+  file: File,
+  { uploadUrl, fileUrl }: PresignedData,
+  onProgress?: (progressEvent: AxiosProgressEvent) => void
+): Promise<string> {
+  try {
     await axios.put(uploadUrl, file, {
       headers: {
-        "Content-Type": type,
+        "Content-Type": file.type,
         "Access-Control-Allow-Origin": "*",
       },
       onUploadProgress: onProgress,
@@ -45,8 +133,13 @@ export const uploadToS3 = async (
 
     return fileUrl;
   } catch (error) {
-    console.error("S3 Upload Error:", error);
-    throw new Error("File upload failed.");
+    if (error instanceof AxiosError) {
+      throw new S3UploadError(
+        `Failed to upload file: ${error.message}`,
+        'upload',
+        error
+      );
+    }
+    throw error;
   }
-};
-
+}

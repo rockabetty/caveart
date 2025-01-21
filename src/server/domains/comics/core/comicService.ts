@@ -171,27 +171,6 @@ export async function deleteComic(comicID: number, author: number) {
   }
 }
 
-export async function editComic(
-  tenant: number | string,
-  update: ComicUpdate,
-): Promise<QueryResult | null> {
-  try {
-    let columnName = "id";
-    if (typeof tenant === "string") {
-      columnName = "subdomain";
-    }
-    const edit = await editComicTable(tenant, update);
-    return {
-      success: true,
-    };
-  } catch (error: any) {
-    return {
-      success: false,
-      error: error,
-    };
-  }
-}
-
 const prepareRating = async function (rating: string): Promise<number | null> {
   try {
     const ratingId = await getRatingId(rating);
@@ -319,8 +298,25 @@ export async function updateComicProfile(id, fields) {
   try {
     let profile: ComicUpdate = await prepareComicProfile(fields);
     const profileKeys = Object.getOwnPropertyNames(profile);
-    if (profileKeys.length > 0) {
+    let oldThumbnail = ""
+
+    if (fields.thumbnail) {
+      oldThumbnail = await getComicThumbnail(id);
+    }
+
+     if (profileKeys.length > 0) {
       await editComicTable(id, profile);
+    }
+
+    if (!!oldThumbnail) {
+      console.log("I want to delete from S3 " + oldThumbnail)
+      const deleteResult = await deleteFromS3(oldThumbnail);
+        if (!deleteResult.success) {
+          return {
+            success: false,
+            error: `Failed to delete old thumbnail: ${deleteResult.error}`,
+          };
+        }
     }
 
     if (fields["genres[]"] && isValidGenreSelection(fields["genres[]"])) {
@@ -329,10 +325,7 @@ export async function updateComicProfile(id, fields) {
         await updateGenres(id, currentGenres, fields["genres[]"])  
       }
     }
-    console.log("#############")
-    console.log(fields)
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!")
-    console.log(profile)
+    
     if (fields["content_warnings"] && isValidContentWarningSelection(fields["content_warnings"])) {
       let currentContentWarnings = await getComicContentWarnings(id);
       await updateContentWarnings(id, currentContentWarnings, fields["content_warnings"])  
@@ -410,32 +403,20 @@ export async function updateContentWarnings(
   update
 ) {
   try {
-    console.log("OLD:")
-    console.log(old)
-    console.log("NEW" )
-    console.log(update)
-
+    
     let deleteIDs: number[] = [];
     let addIDs: number[] = [];
 
     if (!old && update.length > 0) {
       addIDs = update;
     } else {
-
-      console.log("!!!!!!! Making delete IDs.")
-    
       for (let id of old) {
         if (!update.includes(id)) {
-          console.log("delete " + id)
           deleteIDs.push(id);
         }
       }
-
-      console.log("adding ids next")
-      for (let id of update) {
-        console.log(id)
+       for (let id of update) {
         if (!old.includes(id)) {
-          console.log("This is not in the old one.")
           addIDs.push(id);
         }
       }
@@ -474,40 +455,41 @@ export async function getComicProfile(identifier: string | number) {
   };
 }
 
-export async function updateThumbnail(comicID: number, uploadUrl: string) {
-  if (uploadUrl) {
-    try {
-      const oldVersion = await getComicThumbnail(comicID);
+// export async function updateThumbnail(comicID: number, uploadUrl: string) {
+//   if (uploadUrl) {
+//     try {
+//       const oldVersion = await getComicThumbnail(comicID);
 
-      if (oldVersion) {
-        const deleteResult = await deleteFromS3(oldVersion);
-        if (!deleteResult.success) {
-          return {
-            success: false,
-            error: `Failed to delete old thumbnail: ${deleteResult.error}`,
-          };
-        }
-      }
+//       const update = await editComic(comicID, {
+//         thumbnail_image_url: uploadUrl,
+//       });
 
-      const update = await editComic(comicID, {
-        thumbnail_image_url: uploadUrl,
-      });
-      return {
-        success: true,
-        data: { comicID, uploadUrl },
-      };
-    } catch (error: any) {
-      return {
-        success: false,
-        error: error?.message || "Unknown error",
-      };
-    }
-  }
-  return {
-    success: false,
-    error: FileErrorKeys.IMAGE_MISSING,
-  };
-}
+//       if (oldVersion) {
+//         const deleteResult = await deleteFromS3(oldVersion);
+//         if (!deleteResult.success) {
+//           return {
+//             success: false,
+//             error: `Failed to delete old thumbnail: ${deleteResult.error}`,
+//           };
+//         }
+//       }
+
+//       return {
+//         success: true,
+//         data: { comicID, uploadUrl },
+//       };
+//     } catch (error: any) {
+//       return {
+//         success: false,
+//         error: error?.message || "Unknown error",
+//       };
+//     }
+//   }
+//   return {
+//     success: false,
+//     error: FileErrorKeys.IMAGE_MISSING,
+//   };
+// }
 
 export async function createComic(fields, userId: number) {
   let profile: Partial<Comic> = {};

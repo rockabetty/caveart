@@ -485,9 +485,6 @@ export async function editComic(
   update: Comic,
 ): Promise<QueryResult | null> {
   try {
-    console.log("Edit comic is called---------------------------")
-    console.log(id)
-    console.log(update)
     return await editTable("comics", "id", id, update);
   } catch (error: any) {
     logger.error(error);
