@@ -64,7 +64,7 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
   }
 
   const handleFormSubmit = async () => {
-    let data: ComicUpdate = {
+    let data = {
       id: profile.id
     };
 
@@ -87,7 +87,8 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
     let genres = Object.keys(profile.genres).sort().join(",");
     let newGenres = Object.keys(update.genres).sort().join(",");
     if (genres !== newGenres) {
-      data.genres = update.genres;
+      data.genres = Object.keys(update.genres);
+      console.log(data)
     }
 
     let content: number[] = [];
@@ -100,12 +101,12 @@ const EditComicProfile: React.FC<EditComicProfileProps> = (props) => {
       newContent.push(value.id);
     });
     if (content.sort().join(",") !== newContent.sort().join(",")) {
-      data.content_warnings = update.content_warnings;
+      data.content_warnings = newContent;
       data.rating = update.rating;
     }
 
     try {
-      await axios.put(`/api/comic/${tenant}`, data);
+      await axios.put(`/api/comic/${tenant}`, {update: data});
       confirmEdit();
     } catch (error: any) {
         console.log(error);

@@ -39,10 +39,7 @@ const handler: NextApiHandler = async (req, res): Promise<SubmissionResult> => {
       visibility,
       likes
     }
-
-    console.log(req.body)
-    
-    const newComic = await createComic( fields, userID);
+    const newComic = await createComic(fields, userID);
 
     console.log(newComic)
     if (newComic.success) {

@@ -8,8 +8,14 @@ import React from "react";
 
 const NewComicForm: React.FC = () => {
   const { t } = useTranslation();
-  const { state, setField, setSubmissionError, confirmCreation, uploadThumbnail, uploadUrl } =
-    useComicProfile();
+  const {
+    state,
+    setField,
+    setSubmissionError,
+    confirmCreation,
+    uploadThumbnail,
+    uploadUrl,
+  } = useComicProfile();
   const { update, submissionError } = state;
 
   const handleLikesChange = () => {
@@ -52,37 +58,28 @@ const NewComicForm: React.FC = () => {
       return setSubmissionError("comicProfile.errors.subdomainMissing");
     }
 
-      console.log(submission)
-
+    console.log(submission);
 
     try {
-
       submission.genres = Object.keys(update.genres);
       for (const value of Object.values(update.content_warnings)) {
         submission.content.push(value.id);
       }
 
-      const creation = await axios
-        .post(
-          `/api/comic/new`,
-          submission
-        );
+      const creation = await axios.post(`/api/comic/new`, submission);
 
-      console.log(creation)
+      console.log(creation);
 
-      const {id} = creation.data;
+      const { id } = creation.data;
 
       if (!id) {
-        throw new Error("No comic ID.")
+        throw new Error("No comic ID.");
       }
 
-      console.log("time to uploadThumbnail")
+      console.log("time to uploadThumbnail");
 
-      await uploadThumbnail(
-        submission.thumbnail,
-        id
-      );
-      
+      await uploadThumbnail(submission.thumbnail, id);
+
       // confirmCreation(creation.data);
     } catch (error) {
       const message = error.response.data.error;

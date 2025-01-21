@@ -1,7 +1,5 @@
 import { NextApiHandler } from 'next';
-import newComicHandler, {config} from "@domains/comics/inbound/newComicHandler";
-
-export { config };
+import newComicHandler, from "@domains/comics/inbound/newComicHandler";
 
 const handler: NextApiHandler = (req, res) => {
   return newComicHandler(req, res);

@@ -77,16 +77,16 @@ const prepareDescription = function(description:string): string {
 
 const prepareCommentOptions = function (chosenOption: CommentsOptions): CommentsSettings {
   return {
-    comments: chosenOption !== "Disabled" 
+    comments: chosenOption !== "Disabled",
     moderate_comments: chosenOption === "Moderated" 
-  }
+  };
 }
 
 const prepareVisibilityOptions = function(chosenOption: VisibilityOptions): VisibilitySettings {
   return {
-    is_private: chosenOption === "Invite-Only"
-    is_unlisted: chosenOption === "Unlisted";
-  }
+    is_private: chosenOption === "Invite-Only",
+    is_unlisted: chosenOption === "Unlisted"
+  };
 }
 
 export async function getComicId(tenant: string | number) {
@@ -221,7 +221,7 @@ const isValidIDList = function (list: number[]) {
 
 const prepareComicProfile = async function (fields): Partial<Comic> {
   let profile: ComicUpdate = {};
-  try {
+   try {
     if (fields.title) {
       profile.title = prepareTitle(fields.title);
     }
@@ -258,7 +258,6 @@ const prepareComicProfile = async function (fields): Partial<Comic> {
     if (fields.thumbnail) {
       profile.thumbnail_image_url = fields.thumbnail;
     }
-
     return profile;
 
   } catch {
@@ -318,25 +317,44 @@ export async function updateGenres(tenantID: number, old, update) {
 
 export async function updateComicProfile(id, fields) {
   try {
-
-    let profile: ComicUpdate = prepareComicProfile(fields);
-
+    let profile: ComicUpdate = await prepareComicProfile(fields);
+    const profileKeys = Object.getOwnPropertyNames(profile);
+    if (profileKeys.length > 0) {
+      await editComicTable(id, profile);
+    }
+    
     if (fields["genres[]"] && isValidGenreSelection(fields["genres[]"])) {
       let currentGenres = await getComicGenres(id);
       if (currentGenres) {
         await updateGenres(id, currentGenres, fields["genres[]"])  
       }
     }
-
-    if (fields["content[]"] && isValidContentWarningSelection(fields["content[]"])) {
+    console.log("#############")
+    console.log(fields)
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!")
+    console.log(fields["content_warnings"])
+    if (fields["content_warnings"] && isValidContentWarningSelection(fields["content_warnings"])) {
       let currentContentWarnings = await getComicContentWarnings(id);
-      if (currentContentWarnings) {
-        await updateContentWarnings(id, currentContentWarnings, fields["content[]"])  
-      }
+      await updateContentWarnings(id, currentContentWarnings, fields["content_warnings"])  
     }
 
-  } catch (error: any) {
+    return {
+      success: true,
+      data: fields
+    }
 
+  } catch (error) {
+    if (error instanceof Error) {
+      return {
+        success: false,
+        error: error.message
+      }
+    } else {
+      return {
+        success: false,
+        error: "Could not update comic profile."
+      }
+    }
   }
 }
 
@@ -392,27 +410,34 @@ export async function updateContentWarnings(
   update
 ) {
   try {
-    let oldIDs = [];
-    let newIDs = [];
-    for (let key in old) {
-      oldIDs.push(Number(old[key].id));
-    }
-    for (let key in update) {
-      newIDs.push(Number(update[key].id));
-    }
+    console.log("OLD:")
+    console.log(old)
+    console.log("NEW" )
+    console.log(update)
 
     let deleteIDs: number[] = [];
     let addIDs: number[] = [];
 
-    for (let id of oldIDs) {
-      if (!newIDs.includes(id)) {
-        deleteIDs.push(id);
-      }
-    }
+    if (!old && update.length > 0) {
+      addIDs = update;
+    } else {
 
-    for (let id of newIDs) {
-      if (!oldIDs.includes(id)) {
-        addIDs.push(id);
+      console.log("!!!!!!! Making delete IDs.")
+    
+      for (let id of old) {
+        if (!update.includes(id)) {
+          console.log("delete " + id)
+          deleteIDs.push(id);
+        }
+      }
+
+      console.log("adding ids next")
+      for (let id of update) {
+        console.log(id)
+        if (!old.includes(id)) {
+          console.log("This is not in the old one.")
+          addIDs.push(id);
+        }
       }
     }
 
@@ -497,8 +522,8 @@ export async function createComic(fields, userId: number) {
       }
     }
 
-    profile = prepareComicProfile(fields);
-
+    profile = await prepareComicProfile(fields);
+    
     const genresValid = isValidIDList(fields["genres[]"]);
     if (genresValid) {
       genres = fields["genres[]"];

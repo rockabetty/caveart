@@ -6,6 +6,7 @@ import ComicProfile from "@features/comic/profiles/ComicProfile";
 import EditComicProfile from "@features/comic/profiles/EditComicProfile";
 import NewComicPageForm from "@features/comic/pages/NewComicPageForm";
 import ThumbnailGallery from "@features/comic/pages/ThumbnailGallery";
+import ComicManagementDashboard from "@features/comic/ComicManagementDashboard";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { Comic } from "../../data/types";

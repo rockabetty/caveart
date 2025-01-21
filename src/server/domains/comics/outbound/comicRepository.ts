@@ -355,18 +355,9 @@ export async function getComicContentWarnings(
   comicId: number,
 ): Promise<QueryResult[] | null> {
   const query = `SELECT
-    CASE 
-        WHEN COUNT(cw.id) = 0 THEN '{}'::jsonb
-        ELSE jsonb_agg(DISTINCT jsonb_build_object(cwp.name, cw.id))
-      END AS content_warnings
-    FROM comics c
-    LEFT JOIN comics_to_content_warnings ccw
-      ON ccw.comic_id = c.id
-    LEFT JOIN content_warnings cw
-      ON cw.id = ccw.content_warning_id
-    JOIN content_warnings cwp
-      ON cw.parent_id = cwp.id
-      WHERE c.id = $1
+    array_agg(content_warning_id::int)
+    FROM comics_to_content_warnings ccw
+    WHERE ccw.comic_id = $1
    `;
 
   try {
@@ -509,8 +500,6 @@ export async function deleteComic(comicID: number): Promise<boolean | null> {
   if (Number.isNaN(comicID) || comicID <= 0) {
     return { success: false, message: ErrorKeys.COMIC_ID_INVALID };
   }
-
-  console.log("Running DC on " + comicID);
   const query = `DELETE FROM comics 
     WHERE id = $1;`;
   const values = [comicID];
