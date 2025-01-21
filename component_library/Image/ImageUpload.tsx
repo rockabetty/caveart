@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import useImageUploader from './useImageUploader';
 import classNames from 'classnames'
 import './Image.css'
@@ -7,19 +7,16 @@ import '../Form/Form.css'
 export interface ImageUploadProps {
   id?: string;
   alt?: string;
-  src?: string | File;
+  src?: string;
   maxSize?: number;
   editable?: boolean;
   helperText?: string;
   errorText?: string;
   labelText?: string;
-  value?: any;
-  width?: number;
-  height?: number;
   required?: boolean;
   flexible?: boolean;
   name?: string;
-  onChange?: (files: FileList) => void
+  onChange?: (files: FileList | null) => void;
 }
 
 const ImageUpload = ({
@@ -36,67 +33,55 @@ const ImageUpload = ({
   name = '',
   onChange = () => {},
 }: ImageUploadProps) => {
-
-  const { img, fileError, setFileError, generatePreview } = useImageUploader({
+  const { 
+    previewUrl, 
+    fileError, 
+    handleFileChange 
+  } = useImageUploader({
     maxSize,
     allowedFileTypes: ['image/jpeg', 'image/gif', 'image/png', 'image/tiff'],
     initialSrc: src,
     onChange,
   });
 
-  const [editing, setEditing] = useState<boolean>(false)
-  
-  // Handle custom error text from props
-  useEffect(() => {
-    if (errorText) {
-      setFileError(errorText);
-    }
-  }, [errorText]);
-
-  // Handle editing state based on file selection
-  useEffect(() => {
-    setEditing(!!img);
-  }, [img]);
-
-  if (editable) {
-    return (
-      <div>
-        <div id={id} className={classNames({
-          "image" : true,
-          "Editable" : true,
-          "Flexible": flexible,
-          "Error" : !!fileError
-        })}>
-          <div className="image_overlay">
-            <input
-              id={`${id}-image-upload`}
-              className="image_uploader"
-              type="file"
-              name={name}
-              onChange={generatePreview}
-              accept="image/png, image/gif, image/jpg, image/jpeg, image/tiff"
-              required={required}
-            />
-            <label htmlFor={`${id}-image-upload`} className={ editing ? 'image_upload-label Editing' : 'image_upload-label'}>
-              <span>{labelText}</span>
-            </label>
-          </div>
-
-          <img src={img || src} alt={alt} className="image_image" />
-        </div>
-        <span className={`form-field_helpertext ${fileError ? 'Error' : ''}`.trim()}>
-          {fileError ? fileError : helperText}
-        </span>
-      </div>
-    )
-  }
+  // Use previewUrl if available, otherwise fall back to src prop
+  // Ensure we're only using string URLs
+  const displayImage = previewUrl || (typeof src === 'string' ? src : '');
 
   return (
-    <div id={id} className={classNames({
-      "image" : true,
-      "Flexible": flexible
-    })}>
-      <img src={img} alt={alt} className="image_image" />
+    <div>
+      <div id={id} className={classNames({
+        "image": true,
+        "Editable": editable,
+        "Flexible": flexible,
+        "Error": !!fileError
+      })}>
+        <div className="image_overlay">
+          <input
+            id={`${id}-image-upload`}
+            className="image_uploader"
+            type="file"
+            name={name}
+            onChange={handleFileChange}
+            accept="image/png, image/gif, image/jpg, image/jpeg, image/tiff"
+            required={required}
+          />
+          <label htmlFor={`${id}-image-upload`} className='image_upload-label Editing'>
+            <span>{labelText}</span>
+          </label>
+        </div>
+
+        {displayImage && (
+          <img 
+            src={displayImage} 
+            alt={alt} 
+            className="image_image"
+          />
+        )}
+      </div>
+      <span className={`form-field_helpertext ${fileError ? 'Error' : ''}`.trim()}>
+        {fileError || errorText || helperText}
+      </span>
     </div>
   )
 }

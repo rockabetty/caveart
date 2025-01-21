@@ -88,7 +88,9 @@ const ComicProfileForm: React.FC<ComicProfileFormProps> = (
   };
 
   const handleImageChange = (file: FileList) => {
-    setField("thumbnail", file[0])
+    if (file && file[0]) {
+      setField("thumbnail", file[0])
+    }
   }
 
   return (

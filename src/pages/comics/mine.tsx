@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { Button, ButtonSet, Link, Modal, TabGroup } from "@components";
 import AuthorComicEntry from "@features/comic/profiles/AuthorComicEntry";
 import ComicProfile from "@features/comic/profiles/ComicProfile";
-import EditComicProfile from "@features/comic/profiles/EditComicProfile";
 import NewComicPageForm from "@features/comic/pages/NewComicPageForm";
 import ThumbnailGallery from "@features/comic/pages/ThumbnailGallery";
 import ComicManagementDashboard from "@features/comic/ComicManagementDashboard";

@@ -262,12 +262,12 @@ export const handleSubmissionSuccess =
   };
 
 export const uploadComicThumbnail =
-  (tenant: string, image: File) =>
+  (comicID: number, image: File) =>
   async (dispatch: React.Dispatch<ComicProfileAction>) => {
     dispatch({ type: "LOADING", payload: { loading: true } });
     try {
-      const uploadUrl = await uploadToS3(image, tenant, "thumbnail");
-      await axios.post(`/api/comic/${tenant}/thumbnail`, { uploadUrl });
+      const uploadUrl = await uploadToS3(image, comicID, "thumbnail");
+      await axios.put(`/api/comic/${comicID}`, { update: {id: comicID, thumbnail: uploadUrl }});
 
       dispatch({
         type: "SERVER_RESPONSE_SUCCESS",

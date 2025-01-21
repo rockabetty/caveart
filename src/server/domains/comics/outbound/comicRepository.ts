@@ -481,15 +481,14 @@ export async function getGenres(): Promise<Genre[] | null> {
 }
 
 export async function editComic(
-  identifier: number | string,
+  id: number,
   update: Comic,
 ): Promise<QueryResult | null> {
   try {
-    let column = "subdomain";
-    if (typeof identifier === "number") {
-      column = "id";
-    }
-    return await editTable("comics", column, identifier, update);
+    console.log("Edit comic is called---------------------------")
+    console.log(id)
+    console.log(update)
+    return await editTable("comics", "id", id, update);
   } catch (error: any) {
     logger.error(error);
     throw error;

@@ -322,7 +322,7 @@ export async function updateComicProfile(id, fields) {
     if (profileKeys.length > 0) {
       await editComicTable(id, profile);
     }
-    
+
     if (fields["genres[]"] && isValidGenreSelection(fields["genres[]"])) {
       let currentGenres = await getComicGenres(id);
       if (currentGenres) {
@@ -332,7 +332,7 @@ export async function updateComicProfile(id, fields) {
     console.log("#############")
     console.log(fields)
     console.log("@@@@@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!")
-    console.log(fields["content_warnings"])
+    console.log(profile)
     if (fields["content_warnings"] && isValidContentWarningSelection(fields["content_warnings"])) {
       let currentContentWarnings = await getComicContentWarnings(id);
       await updateContentWarnings(id, currentContentWarnings, fields["content_warnings"])  

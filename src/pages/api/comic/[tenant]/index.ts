@@ -2,11 +2,13 @@ import {default as getRequestHandler} from "@domains/comics/inbound/comicProfile
 import {default as putRequestHandler} from "@domains/comics/inbound/updateComicProfileHandler";
 
 const handler: NextApiHandler = async (req, res): Promise<void> => {
-  if (req.method === 'GET') {
+  if (req.method == 'GET') {
   	getRequestHandler(req, res)
   }
-  if (req.method === 'PUT') {
+  else if (req.method == 'PUT') {
   	putRequestHandler(req, res)
+  } else {
+    res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 };
 
