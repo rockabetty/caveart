@@ -9,8 +9,8 @@ import { useComicPage } from "@features/comic/pages/hooks/useComicPage";
 
 const MAX_COMIC_PAGE_FILESIZE =  3 * 1024 * 1024;
 
-const NewComicPageForm: React.FC = ( tenant ) => {
-
+const NewComicPageForm: React.FC = ( {tenant} ) => {
+ 
   const { t } = useTranslation();
 
   const initialState: NewPageSubmission = {
@@ -84,8 +84,8 @@ const NewComicPageForm: React.FC = ( tenant ) => {
 
   const uploadAnother = () => {
     setPageFormSuccess(false);
-    updatePageField("newPageNumber", pageForm.newPageNumber + 1);
     resetPageForm();
+    updatePageField("newPageNumber", pageForm.newPageNumber + 1);
   };
 
   const handleSubmit = async () => {

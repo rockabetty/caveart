@@ -17,6 +17,8 @@ const ThumbnailGallery = (props) => {
         setImages(pages);
     }
 
+    console.log(images)
+
   
     useEffect(() =>{
       getImages()

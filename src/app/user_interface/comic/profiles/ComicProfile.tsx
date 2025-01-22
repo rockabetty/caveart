@@ -1,4 +1,4 @@
-import { ImageUpload, Link, Tag, Button, Modal, Form, TextInput, Tooltip } from '@components'
+import { Image, Link, Tag, Button, Modal, Form, TextInput, Tooltip } from '@components'
 import { useCallback, useState } from 'react';
 import { useComicProfile } from './hooks/useComicProfile'; 
 import { useTranslation } from 'react-i18next';
@@ -76,10 +76,7 @@ const ComicProfile: React.FC<ComicProfileProps> = ({
       <div className="flex Row">
         <div className="flex-section">
           <a className="comic-profile_cover flex-section" href={`/read/${profile?.subdomain}`}>
-            {profile?.thumbnail
-              ? <ImageUpload src={profile?.thumbnail} />
-              : <ImageUpload src='/img/brand/kraugak.png' />
-            }
+            <Image src={profile.thumbnail || '/img/brand/kraugak.png'} />
           </a>
         </div>
         <div className="flex-section Grow">

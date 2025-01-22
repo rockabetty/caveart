@@ -19,7 +19,7 @@ const Gallery: React.FC<GalleryProps> = ({
       {thumbnails?.map((thumbnail) => (
           <Thumbnail
             key={thumbnail.id}
-            imageUrl={thumbnail.imageUrl}
+            src={thumbnail.imageUrl}
             title={thumbnail.title}
             altText={thumbnail.altText}
             id={thumbnail.id}
