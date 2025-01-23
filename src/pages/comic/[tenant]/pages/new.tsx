@@ -42,11 +42,11 @@ function AddPage() {
     const getNextPage = async function () {
       if (tenant) {
         try {
-          const nextPageRequest = await axios.get(
-            `/api/comic/${tenant}/page/next`,
+          const lastPageNumberRequest = await axios.get(
+            `/api/comic/${tenant}/page/last`,
           );
-          const { newPageNumber } = nextPageRequest.data;
-          updatePageField("newPageNumber", newPageNumber);
+          let { number } = lastPageNumberRequest.data;
+          updatePageField("newPageNumber", number+1);
         } catch (error) {
           setPageFormError(t("comicPages.newPage.generalError"));
         }

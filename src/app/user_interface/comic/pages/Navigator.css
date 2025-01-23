@@ -1,0 +1,14 @@
+.comic-navigator {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+
+}
+
+.comic-navigator .Disabled .icon{
+    fill: var(--col-disabled);
+}
+
+.comic-navigator .link {
+    padding:  0.5rem;
+}

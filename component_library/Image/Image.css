@@ -1,10 +1,7 @@
 .image {
-  width: var(--grid-4);
   margin-bottom: var(--spacing-sm);
   margin-inline-end:  var(--spacing-sm);
   position: relative;
-  min-height: var(--grid-8);
-  max-height: calc(var(--grid-4) + var(--grid-8));
   overflow: hidden;
   display: flex;
   align-items: center;

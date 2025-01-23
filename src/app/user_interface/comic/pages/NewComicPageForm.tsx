@@ -40,10 +40,10 @@ const NewComicPageForm: React.FC = ( {tenant} ) => {
       if (tenant) {
         try {
           const nextPageRequest = await axios.get(
-            `/api/comic/${tenant}/page/next`,
+            `/api/comic/${tenant}/page/last`,
           );
-          const { newPageNumber } = nextPageRequest.data;
-          updatePageField("newPageNumber", newPageNumber);
+          const { number } = nextPageRequest.data;
+          updatePageField("newPageNumber", number+1);
         } catch (error) {
           setPageFormError(t("comicPages.newPage.generalError"));
         }

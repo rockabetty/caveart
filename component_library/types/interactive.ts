@@ -27,4 +27,8 @@ export interface InteractiveProps extends UniversalProps {
     * Determine behavior when the user focuses on the element
     */
     onFocus?: (...params: any) => any;
+    /**
+    * Provide a tab index
+    */
+    tabIndex?: number
 };

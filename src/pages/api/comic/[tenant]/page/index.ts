@@ -1,0 +1,1 @@
+export { getComicPageHandler as default } from "@domains/comicpages/inbound/getComicPageHandler";

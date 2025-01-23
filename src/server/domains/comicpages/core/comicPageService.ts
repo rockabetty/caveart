@@ -34,8 +34,6 @@ export async function getThumbnails (comicID, offset = 0, limit = 20, chapter, o
 
 export async function createComicPage (fields: ComicPagePostData) {
 
-  console.log(fields)
-
   if (!fields.comicID || !fields.newPageNumber || !fields.imageUrl) {
       return {
         success: false,
@@ -81,12 +79,12 @@ export async function createComicPage (fields: ComicPagePostData) {
   }
 }
 
-export async function getNextNewPageNumber (comicId: number,
+export async function getLastPageNumber (comicId: number,
   omniscientPOV = false
   ) {
   try {
     const latestPageRef = await getLastPageReference(comicId, omniscientPOV);
-    const number = latestPageRef?.page_number + 1;
+    const number = latestPageRef?.page_number
     return {
       success: true,
       number

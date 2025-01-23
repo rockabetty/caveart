@@ -6,8 +6,8 @@ export interface ImageProps {
   id?: string;
   alt?: string;
   src?: string;
-  width?: number;
-  height?: number;
+  width?: number | "100%";
+  height?: number | "100%";
   flexible?: boolean;
   }
 

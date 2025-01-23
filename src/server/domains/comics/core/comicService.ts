@@ -455,41 +455,6 @@ export async function getComicProfile(identifier: string | number) {
   };
 }
 
-// export async function updateThumbnail(comicID: number, uploadUrl: string) {
-//   if (uploadUrl) {
-//     try {
-//       const oldVersion = await getComicThumbnail(comicID);
-
-//       const update = await editComic(comicID, {
-//         thumbnail_image_url: uploadUrl,
-//       });
-
-//       if (oldVersion) {
-//         const deleteResult = await deleteFromS3(oldVersion);
-//         if (!deleteResult.success) {
-//           return {
-//             success: false,
-//             error: `Failed to delete old thumbnail: ${deleteResult.error}`,
-//           };
-//         }
-//       }
-
-//       return {
-//         success: true,
-//         data: { comicID, uploadUrl },
-//       };
-//     } catch (error: any) {
-//       return {
-//         success: false,
-//         error: error?.message || "Unknown error",
-//       };
-//     }
-//   }
-//   return {
-//     success: false,
-//     error: FileErrorKeys.IMAGE_MISSING,
-//   };
-// }
 
 export async function createComic(fields, userId: number) {
   let profile: Partial<Comic> = {};

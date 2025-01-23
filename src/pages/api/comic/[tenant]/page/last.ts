@@ -1,0 +1,1 @@
+export { lastPageNumberHandler as default } from "@domains/comicpages/inbound/lastPageNumberHandler";
