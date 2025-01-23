@@ -76,7 +76,17 @@ export async function getPage(
   comicId: number,
   pageNumber: number,
 ): Promise<ComicPage | null> {
-  const query = `SELECT * FROM comic_pages WHERE comic_id = $1 AND page_number = $2`;
+  const query = `SELECT 
+    title,
+    low_res_image_url,
+    high_res_image_url,
+    transcript,
+    author_comment,
+    enable_html_author_comment,
+    mouseover_text,
+    like_count,
+    view_count, 
+    FROM comic_pages WHERE comic_id = $1 AND page_number = $2`;
   const values = [comicId, pageNumber];
   try {
     const result = await queryDbConnection(query, values);

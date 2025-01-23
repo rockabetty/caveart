@@ -1,17 +1,17 @@
 export interface ComicPage {
   id?: number;
-  comicId?: number;
+  comic_id?: number;
   title?: string;
-  mouseoverText?: string;
-  imageUrl?: string;
+  meta_description?: string;
+  mouseover_text?: string;
+  high_res_image_url?: string;
+  low_res_image_url?: string;
   embedCode?: string;
   imageSource?: "upload" | "url" | "embed";
-  imageUrl?: string;
-  embedCode?: string;
-  authorComment: string;
-  enableHtmlAuthorComment?: boolean;
-  releaseOn: Date;
-  chapterId?: number;
+  author_comment: string;
+  enable_html_author_comment?: boolean;
+  release_on: Date;
+  chapter_id?: number;
   tags?: string[];
   transcript?: string;
   viewCount?: number;

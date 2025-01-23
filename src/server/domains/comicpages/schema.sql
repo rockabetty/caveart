@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS comic_pages (
     low_res_image_url TEXT,
     embed_code TEXT,
     transcript TEXT,
+    meta_description TEXT,
     CONSTRAINT unique_comic_chapter_pages UNIQUE (comic_id, chapter_id, page_number)
 );
 

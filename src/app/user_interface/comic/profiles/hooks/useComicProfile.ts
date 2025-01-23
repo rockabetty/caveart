@@ -107,7 +107,6 @@ export const useComicProfile = (tenant?: string) => {
     enableEditing,
     setField,
     setRating,
-    // setThumbnail,
     setSubmissionError,
     confirmCreation,
     confirmEdit,
