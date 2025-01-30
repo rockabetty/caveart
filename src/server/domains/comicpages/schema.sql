@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS comic_pages (
     embed_code TEXT,
     transcript TEXT,
     meta_description TEXT,
+    processed BOOLEAN DEFAULT FALSE, -- for tracking the creation of e.g. thumbnail version, low-res version
     CONSTRAINT unique_comic_chapter_pages UNIQUE (comic_id, chapter_id, page_number)
 );
 

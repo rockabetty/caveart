@@ -1,0 +1,5 @@
+celery
+redis
+pillow
+boto3
+python-dotenv
