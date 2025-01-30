@@ -17,7 +17,7 @@ export async function createPageData(
     (page_number, comic_id, chapter_id, high_res_image_url, author_comment)
     VALUES
     ($1, $2, $3, $4, $5)
-    RETURNING id
+    RETURNING id, page_number, comic_id, high_res_image_url
   `;
   const values = [page_number, comic_id, chapter_id, high_res_image_url, author_comment];
 
