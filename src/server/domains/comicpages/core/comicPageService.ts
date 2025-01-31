@@ -1,4 +1,3 @@
-import { Redis } from 'ioredis'
 import { getComicThumbnails, createPageData, getLastPageReference, getPage } from '../outbound/pageRepository'
 import { addComicImageToDatabase } from '@server-services/uploader'
 import { ErrorKeys } from '../errors.types';
@@ -7,9 +6,7 @@ import { ComicPage as ComicPagePostData } from '@features/comic/pages/types';
 import formidable from 'formidable';
 import logger from '@logger';
 import { requireEnvVar } from '@logger/envcheck';
-
-
-const REDIS_URL = requireEnvVar("REDIS_URL");
+import crypto from 'crypto'
    
 export async function validateComicPage (fields: formidable.Fields, files: formidable.Files) {
   if (!fields.newPageNumber || !fields.releaseDate || !files['image[]']) {
@@ -46,8 +43,6 @@ export async function createComicPage (fields: ComicPagePostData) {
       }
     }
 
-  const redis = new Redis(REDIS_URL)
-
   try {
     let data: ComicPage = {
       page_number: Number(fields.newPageNumber),
@@ -67,17 +62,6 @@ export async function createComicPage (fields: ComicPagePostData) {
 
   	const page = await createPageData(data)
   	if (page) {
-      await redis.lpush('celery', JSON.stringify({
-        task: 'processor.tasks.process_comic_image',
-        args: [
-          page.id,
-          page.high_res_image_url,
-          page.comic_id,
-          page.page_number
-        ],
-        kwargs: {},
-        retries: 0
-      }));
 
   		return {
   		  success: true,
@@ -94,8 +78,6 @@ export async function createComicPage (fields: ComicPagePostData) {
   		success: false,
   		error: error
   	}
-  } finally {
-    await redis.quit()
   }
 }
 

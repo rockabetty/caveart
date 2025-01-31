@@ -41,7 +41,11 @@ const newPageHandler: NextApiHandler = async (req, res) => {
     const newPage = await createComicPage(information);
   
     if (newPage.success) {
+       
+       // compression of images goes here
+
       return res.status(200).json(newPage); 
+
     } else {
       logger.error(newPage.error)
       return res.status(newPage.error === ErrorKeys.INVALID_REQUEST ? 400 : 500).json(newPage.error)

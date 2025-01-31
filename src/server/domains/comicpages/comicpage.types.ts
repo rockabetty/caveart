@@ -1,3 +1,10 @@
+export type ComicPageCompressionRequest = {
+  page_id: number;
+  original_url: string;
+  comic_id: number;
+  page_number: number;
+};
+
 export type ComicPage = {
 	page_number: number;
 	img: string;
