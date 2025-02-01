@@ -1,9 +1,22 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# Byte-compiled / optimized / DLL files
+*.py[cod]
+*$py.class
+**/__pycache__/
+
 # dependencies
 /node_modules
 /.pnp
 .pnp.js
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
 
 # testing
 /coverage

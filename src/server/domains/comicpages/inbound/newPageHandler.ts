@@ -1,18 +1,18 @@
 import { NextApiHandler } from 'next';
-import { canEditComic } from '@domains/comics/core/comicService';
 import { getComicIdFromSubdomain } from "@domains/comics/outbound/comicRepository";
 import { logger } from "@logger";
 import { ErrorKeys as UserErrorKeys } from '../../users/errors.types';
 import { ErrorKeys } from '../errors.types';
 import { createComicPage } from '../core/comicPageService';
 import { requireEnvVar } from '@logger/envcheck';
-const USER_AUTH_TOKEN_NAME = requireEnvVar("NEXT_PUBLIC_USER_AUTH_TOKEN_NAME");
-import { acceptPostOnly, requireButDoNotValidateToken } from "@domains/methodGatekeeper";
+import { acceptPostOnly } from "@domains/methodGatekeeper";
 import { withAuth } from "@domains/users/middleware/withAuth";
 import { isAuthor } from "@domains/comics/middleware/isAuthor";
+import { queueImageCompression } from "../outbound/comicPageCompressor";
 
-const newPageHandler: NextApiHandler = async (req, res) => {
-  
+const USER_AUTH_TOKEN_NAME = requireEnvVar("NEXT_PUBLIC_USER_AUTH_TOKEN_NAME");
+
+const newPageHandler: NextApiHandler = async (req, res) => {  
   acceptPostOnly(req,res);
   
   const { tenant } = req.query;
@@ -41,8 +41,19 @@ const newPageHandler: NextApiHandler = async (req, res) => {
     const newPage = await createComicPage(information);
   
     if (newPage.success) {
-       
-       // compression of images goes here
+      const {data} = newPage
+
+      try {
+        await queueImageCompression({
+        'page_id' : data.id,
+        'original_url': data.high_res_image_url,
+        'comic_id' : comicID,
+        'page_number' : data.page_number
+      })
+      } catch (compressionError) {
+        logger.error(compressionError);
+      }
+
 
       return res.status(200).json(newPage); 
 

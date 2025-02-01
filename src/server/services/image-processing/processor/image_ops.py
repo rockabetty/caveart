@@ -6,11 +6,11 @@ def create_variants(image_data: bytes) -> dict:
     
     variants = {}
     
-    thumbnail = resize_image(image, 300)
-    variants['thumbnail'] = image_to_bytes(thumbnail, quality=70)
+    thumbnail = resize_image(image, 250)
+    variants['thumbnail'] = image_to_bytes(thumbnail, quality=90)
     
-    lowres = resize_image(image, 1200)
-    variants['low-res'] = image_to_bytes(lowres, quality=80)
+    lowres = resize_image(image, 1000)
+    variants['low_res'] = image_to_bytes(lowres, quality=85)
     
     return variants
 

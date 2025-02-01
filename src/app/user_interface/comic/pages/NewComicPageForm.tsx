@@ -154,7 +154,8 @@ const NewComicPageForm: React.FC = ( {tenant} ) => {
                 onSubmit={handleSubmit}
                 submissionError={pageFormError}
               >
-                <div className="flex Row">
+                <div>
+                <h2>dwaggin lord</h2>
                   <div className="flex-section">
                     <ImageUpload
                       name="newPage"

@@ -20,7 +20,6 @@ export const presignedUploadUrlHandler: NextApiHandler = async (req, res) => {
     if (presignedUrl.success) {
       return res.status(200).send(presignedUrl.data);
     }
-    console.log(presignedUrl)
     return res.status(400).send(ErrorKeys.IMAGE_MISSING);
   } catch (error) {
     return res.status(500).send(ErrorKeys.GENERAL_SERVER_ERROR);

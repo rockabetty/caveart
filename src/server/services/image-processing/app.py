@@ -8,7 +8,7 @@ app = Flask(__name__)
 def create_processing_task():
     try:
         data = request.get_json()
-        
+
         required_fields = ['page_id', 'original_url', 'comic_id', 'page_number']
         for field in required_fields:
             if field not in data:

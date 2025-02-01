@@ -14,15 +14,13 @@ export const compressComicImageHandler: NextApiHandler = async (req, res) => {
             },
             body: JSON.stringify(req.body)
         });
-        const data = await response.json();
-        
+        const data = await response.json();    
         if (!response.ok) {
             throw new Error(data.error || 'Failed to create task');
         }
 
         res.status(200).json({ taskId: data.task_id });
     } catch (error) {
-        console.error('Error creating task:', error);
         res.status(500).json({ message: 'Error creating task' });
     }
 }
