@@ -2,7 +2,22 @@ from .celery_app import app
 from .image_ops import create_variants
 from .s3 import download_image, upload_processed_image
 import psycopg2
-from config import PG_USERNAME, PG_PASSWORD, PG_DATABASE, PG_HOST
+import urllib.parse
+from sqlalchemy import create_engine, URL
+from config import PG_USERNAME, PG_PASSWORD, PG_DATABASE, PG_HOST, PG_PORT, NODE_ENV
+
+
+url_object = URL.create(
+    "postgresql+psycopg2",
+    username=PG_USERNAME,
+    password=PG_PASSWORD,
+    host=PG_HOST,
+    port=PG_PORT,
+    database=PG_DATABASE
+    echo=True if NODE_ENV == "development" else False
+)
+
+engine = create_engine(url_object, echo=True)
 
 @app.task(bind=True, max_retries=3)
 def process_comic_image(self, page_id: int, original_url: str, comic_id: int, page_number: int):
