@@ -4,6 +4,7 @@ from .s3 import download_image, upload_processed_image
 import psycopg2
 import urllib.parse
 from sqlalchemy import create_engine, URL
+from sqlaalchemy.orm import Session
 from config import PG_USERNAME, PG_PASSWORD, PG_DATABASE, PG_HOST, PG_PORT, NODE_ENV
 
 
@@ -52,24 +53,17 @@ def process_comic_image(self, page_id: int, original_url: str, comic_id: int, pa
         self.retry(exc=exc, countdown=2 ** self.request.retries)
 
 def update_database(page_id: int, urls: dict):
-    connection_string = f"postgresql://{PG_USERNAME}:{PG_PASSWORD}@{PG_HOST}:5432/{PG_DATABASE}"
-    conn = psycopg2.connect(connection_string)
-    cur = conn.cursor()
+    query = text(("UPDATE comic_pages "
+                 "SET thumbnail_image_url = :thumbnail_url, "
+                 "    low_res_image_url = :low_res_url, "
+                 "    processed = TRUE "
+                 "WHERE id = :page_id;"))
     
-    try:
-        cur.execute("""
-            UPDATE comic_pages 
-            SET 
-                thumbnail_image_url = %(thumbnail_url)s,
-                low_res_image_url = %(low_res_url)s,
-                processed = TRUE
-            WHERE id = %(page_id)s
-        """, {
-            "thumbnail_url": urls["thumbnail_url"],
-            "low_res_url": urls["low_res_url"],
-            "page_id": page_id
-        })
-        conn.commit()
-    finally:
-        cur.close()
-        conn.close()
+    values = {
+        "thumbnail_url": urls["thumbnail_url"],
+        "low_res_url": urls["low_res_url"],
+        "page_id": page_id
+    }
+
+    with Session(engine) as session:
+        result = session.execute(query, values)
