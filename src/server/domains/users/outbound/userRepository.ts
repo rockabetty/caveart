@@ -18,17 +18,16 @@ import { GenericStringMap } from '../../../sql-helpers/queryFunctions'
 export async function createUser(
   username: string,
   email: string,
-  hashedEmail: string,
   password: string
 ): Promise<CreatedUserResult> {
   const query = `
     INSERT INTO users
-    (username, email, hashed_email, password)
+    (username, email, password)
     VALUES
-    ($1, $2, $3, $4)
+    ($1, $2, $3)
     RETURNING id
   `;
-  const values = [username, email, hashedEmail, password];
+  const values = [username, email, password];
   
   try {
     const result = await queryDbConnection(query, values);
@@ -44,7 +43,7 @@ export async function createUser(
       case 'users_username_key':
         errorMessage = ErrorKeys.USERNAME_TAKEN;
         break;
-      case 'users_hashed_email_key':
+      case 'users_email_key':
         errorMessage = ErrorKeys.EMAIL_TAKEN;
         break;
       default:
@@ -57,7 +56,7 @@ export async function createUser(
 };
 
 export async function getUserCredentials(
-  identificationFormat: 'hashed_email' | 'username',
+  identificationFormat: 'email' | 'username',
   identificationString: string
 ): Promise<UserCredentials | null> {
   const baseQuery = `SELECT
@@ -70,8 +69,8 @@ export async function getUserCredentials(
     verified,
     role
   FROM users WHERE `;
-  const condition = identificationFormat === 'hashed_email'
-    ? 'hashed_email = $1'
+  const condition = identificationFormat === 'email'
+    ? 'email = $1'
     : 'username = $1';
   const query = baseQuery + condition;
   const values = [identificationString]
@@ -84,15 +83,15 @@ export async function getUserCredentials(
 };
 
 export async function getPasswordResetCredentials(
-  identificationFormat: 'hashed_email' | 'username',
+  identificationFormat: 'email' | 'username',
   identificationString: string
 ): Promise<PasswordResetCredentials> {
   const baseQuery = `SELECT
     password_reset_token,
     password_reset_expiry,
     FROM users WHERE `;
-  const condition = identificationFormat === 'hashed_email'
-    ? 'hashed_email = $1'
+  const condition = identificationFormat === 'email'
+    ? 'email = $1'
     : 'username = $1';
   const query = baseQuery + condition;
   const values = [identificationString]

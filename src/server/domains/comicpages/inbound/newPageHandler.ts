@@ -1,16 +1,12 @@
 import { NextApiHandler } from 'next';
 import { getComicIdFromSubdomain } from "@domains/comics/outbound/comicRepository";
 import { logger } from "@logger";
-import { ErrorKeys as UserErrorKeys } from '../../users/errors.types';
 import { ErrorKeys } from '../errors.types';
 import { createComicPage } from '../core/comicPageService';
-import { requireEnvVar } from '@logger/envcheck';
 import { acceptPostOnly } from "@domains/methodGatekeeper";
 import { withAuth } from "@domains/users/middleware/withAuth";
 import { isAuthor } from "@domains/comics/middleware/isAuthor";
 import { queueImageCompression } from "../outbound/comicPageCompressor";
-
-const USER_AUTH_TOKEN_NAME = requireEnvVar("NEXT_PUBLIC_USER_AUTH_TOKEN_NAME");
 
 const newPageHandler: NextApiHandler = async (req, res) => {  
   acceptPostOnly(req,res);

@@ -227,10 +227,9 @@ export const offerPasswordReset = async (requestEmail:string) => {
 export const loginUser = async (email:string, password:string) => {
   const sanitizedEmail = email.replace(/[^a-zA-Z0-9@._-]/gi, "");
   const hashedEmail = hashEmail(sanitizedEmail);
-
   try {
     const userCredentials = await getUserCredentials(
-      "hashed_email",
+      "email",
       hashedEmail,
     );
     if (!userCredentials || !userCredentials.id) {
