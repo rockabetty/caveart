@@ -4,8 +4,6 @@ import { requireEnvVar } from '@logger/envcheck';
 const FLASK_URL = requireEnvVar('FLASK_URL')
 
 export async function queueImageCompression(data: ComicPageCompressionRequest) {
-  console.log("#################@@@@@@@@@@@@@@@@@@@@@@@@@@&&&&&&&&&&&&&&&&&")
-  console.log(data)
   const response = await fetch(`${FLASK_URL}/tasks/process-comic`, {
     method: 'POST',
     headers: {

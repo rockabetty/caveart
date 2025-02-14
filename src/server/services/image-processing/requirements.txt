@@ -3,5 +3,5 @@ redis
 pillow
 boto3
 python-dotenv
-psycopg2
 flask
+sqlalchemy
