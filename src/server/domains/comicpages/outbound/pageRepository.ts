@@ -41,7 +41,6 @@ export async function createPageData(
 export async function createChapter(
   chapterData: ComicChapter
   ) {
-
   const {
     comic_id,
     chapter_number,
@@ -68,7 +67,6 @@ export async function createChapter(
       return handleUnknownError();
     }
   }
-
 }
 
 export async function getPage(
@@ -116,7 +114,7 @@ export async function editPage(
   }
 }
 
-export async function getLastPublishedPageNumber(comicId: number): Promise<PageReference | null> {
+export async function getLastPublishedPageNumber(comicId: number): Promise<number | null> {
   try {
     const query = `
       WITH latest_page AS (
@@ -130,7 +128,7 @@ export async function getLastPublishedPageNumber(comicId: number): Promise<PageR
         COALESCE((SELECT page_number FROM latest_page), 0) AS page_number`;
     const values = [comicId];
     const result = await queryDbConnection(query, values);
-    return getOneRowResult(result);
+    return result.rows[0].page_number;
   }
   catch (error) {
     if (error instanceof Error) {
@@ -144,8 +142,7 @@ export async function getLastPublishedPageNumber(comicId: number): Promise<PageR
 
 export async function getLastPageNumber(
   comicId: number,
-  omniscientPOV = false,
-): Promise<PageReference | null> {
+): Promise<number | null> {
   try {
     const query = `
     WITH latest_page AS (
@@ -170,69 +167,29 @@ export async function getLastPageNumber(
   }
 }
 
-export async function getLastPageReference(
-  comicId: number,
-  omniscientPOV = false,
-): Promise<PageReference | null> {
-  try {
-    const query = `
-    WITH latest_page AS (
-    SELECT page_number
-    FROM comic_pages
-    ${
-      omniscientPOV
-        ? "WHERE comic_id = $1"
-        : "WHERE comic_id = $1 AND release_on <= NOW()"
-    }
-    ORDER BY page_number DESC
-    LIMIT 1
-    )
-    SELECT 
-      COALESCE((SELECT page_number FROM latest_page), 0) AS page_number`;
-    const values = [comicId];
-    const result = await queryDbConnection(query, values);
-    return getOneRowResult(result);
-  } catch (error) {
-    if (error instanceof Error) {
-      logger.error(error);
-      throw error;
-    } else {
-      return handleUnknownError();
-    }
-  }
-}
-
 export async function getComicThumbnails(
   comicId: number,
   offset: number = 0,
   limit: number = 20,
-  chapterId: number,
-  omniscientPOV = false,
-): Promise<PageReference | null> {
+): Promise<ComicPage[] | null> {
   try {
-    // TO DO: Change high res to thumbnail when thumbnails are working out
     const query = `
     SELECT 
       p.id,
       p.title,
       page_number as "pageNumber",
-      high_res_image_url as "imageUrl",
+      thumbnail_image_url as "imageUrl",
       release_on as "releaseOn",
       CONCAT('/comic/', c.subdomain, '/pages/', p.id) AS "link"
     FROM comic_pages p
     JOIN comics c ON c.id = p.comic_id
-    ${
-      omniscientPOV
-        ? "WHERE p.comic_id = $1"
-        : "WHERE p.comic_id = $1 AND p.release_on <= NOW()"
-    }
+    WHERE p.comic_id = $1
     ORDER BY page_number ASC
     LIMIT $2
     OFFSET $3
     `;
 
     const values = [comicId, limit, offset];
-
     const result = await queryDbConnection(query, values);
     return result.rows;
   } catch (error) {
