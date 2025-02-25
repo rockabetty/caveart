@@ -1,11 +1,12 @@
 import { NextApiHandler } from "next";
 import { ErrorKeys } from "../errors.types";
+import { ErrorKeys as CoreErrorKeys } from "../../errors.types";
 import { acceptPostOnly, rateLimit } from "@domains/methodGatekeeper";
 import { getComicIdFromSubdomain } from "@domains/comics/outbound/comicRepository";
 import { getPresignedUrl } from "@server-services/uploader";
 import { withAuth } from "@domains/users/middleware/withAuth";
 import { isAuthor } from "@domains/comics/middleware/isAuthor";
-import { sendErrorResponse } from '../../errors';
+import { sendErrorResponse } from "../../../errors";
 
 export const presignedUploadUrlHandler: NextApiHandler = async (req, res) => {
   acceptPostOnly(req, res);
@@ -23,7 +24,7 @@ export const presignedUploadUrlHandler: NextApiHandler = async (req, res) => {
     }
     return sendErrorResponse(ErrorKeys.IMAGE_MISSING);
   } catch (error) {
-    return sendErrorResponse(ErrorKeys.GENERAL_SERVER_ERROR);
+    return sendErrorResponse(CoreErrorKeys.GENERAL_SERVER_ERROR);
   }
 };
 

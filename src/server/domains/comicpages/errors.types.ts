@@ -1,7 +1,4 @@
-import { ErrorKeys as CoreErrorKeys } from '../../errors.types'
-
 export enum ErrorKeys {
-	...CoreErrorKeys,
 	IMAGE_MISSING = 'server.comicpages.errors.imageMissing',
 	COMIC_MISSING = 'server.comicpages.errors.comicMissing',
 	COMIC_PAGE_MISSING = 'server.comicpages.errors.comicPageMissing',

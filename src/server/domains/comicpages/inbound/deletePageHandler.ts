@@ -2,12 +2,13 @@ import { NextApiHandler } from "next";
 import { canEditComic } from "@domains/comics/core/comicService";
 import { getComicIdFromSubdomain } from "@domains/comics/outbound/comicRepository";
 import { logger } from "@logger";
-import { ErrorKeys as UserErrorKeys } from "../../users/errors.types";
+import { ErrorKeys as CoreErrorKeys } from "../../errors.types";
 import { ErrorKeys } from "../errors.types";
-import { sendErrorResponse } from '../../errors';
+import { sendErrorResponse } from "../../../errors";
 import { deleteComicPage } from "../core/comicPageService";
 import { requireEnvVar } from "@logger/envcheck";
 const USER_AUTH_TOKEN_NAME = requireEnvVar("NEXT_PUBLIC_USER_AUTH_TOKEN_NAME");
+
 import {
   acceptPostOnly,
   requireButDoNotValidateToken,
@@ -27,23 +28,20 @@ const deletePageHandler: NextApiHandler = async (req, res) => {
   }
 
   try {
-    const comicID = await getComicIdFromSubdomain(tenant);
-
     const deletionAttempt = await deleteComicPage(page_number, tenant);
-
     if (deletionAttempt.success) {
       return res.status(200).json(deletionAttempt);
     } else {
       logger.error(deletionAttempt.error);
-      if (deletionAttempt.error === ErrorKeys.INVALID_REQUEST) {
-        return sendErrorResponse(ErrorKeys.INVALID_REQUEST)
+      if (deletionAttempt.error === CoreErrorKeys.INVALID_REQUEST) {
+        return sendErrorResponse(CoreErrorKeys.INVALID_REQUEST)
       } else {
         return sendErrorResponse(deletionAttempt.error);
       }
     }
   } catch (error) {
     logger.error(error);
-    return sendErrorResponse(ErrorKeys.GENERAL_SERVER_ERROR);
+    return sendErrorResponse(CoreErrorKeys.GENERAL_SERVER_ERROR);
   }
 };
 

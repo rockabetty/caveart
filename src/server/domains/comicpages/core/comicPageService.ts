@@ -1,6 +1,6 @@
 import { getComicThumbnails, createPageData, getLastPageReference, getPage } from '../outbound/pageRepository'
 import { addComicImageToDatabase } from '@server-services/uploader'
-import { ErrorKeys } from '../errors.types';
+import { CoreErrorKeys } from '../../errors.types';
 import { ComicPage as ComicPageDatabaseEntry } from '../comicpage.types';
 import { ComicPage as ComicPagePostData } from '@features/comic/pages/types';
 import formidable from 'formidable';
@@ -12,7 +12,7 @@ export async function validateComicPage (fields: formidable.Fields, files: formi
   if (!fields.newPageNumber || !fields.releaseDate || !files['image[]']) {
     return {
       success: false,
-      error: ErrorKeys.INVALID_REQUEST
+      error: CoreErrorKeys.INVALID_REQUEST
     }
   }
 }
@@ -28,7 +28,7 @@ export async function getThumbnails (comicID, offset = 0, limit = 20, chapter, o
   } catch (error) {
     return {
       success: false,
-      error: ErrorKeys.GENERAL_SERVER_ERROR
+      error: CoreErrorKeys.GENERAL_SERVER_ERROR
     }
   }
 
@@ -39,7 +39,7 @@ export async function createComicPage (fields: ComicPagePostData) {
   if (!fields.comicID || !fields.newPageNumber || !fields.imageUrl) {
       return {
         success: false,
-        error: ErrorKeys.INVALID_REQUEST
+        error: CoreErrorKeys.INVALID_REQUEST
       }
     }
 
@@ -70,7 +70,7 @@ export async function createComicPage (fields: ComicPagePostData) {
   	} else {
   		return {
   			success: false,
-  			error: ErrorKeys.GENERAL_SERVER_ERROR
+  			error: CoreErrorKeys.GENERAL_SERVER_ERROR
   		}
   	}
   } catch (error: any) {
@@ -125,7 +125,7 @@ export async function getComicPageByPageNumber (
       }
       return {
         success: false,
-        error: ErrorKeys.ACCESS_DENIED
+        error: CoreErrorKeys.ACCESS_DENIED
       }
 		} catch (error:any) {
       logger.error(error)

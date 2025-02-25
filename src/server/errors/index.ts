@@ -1,5 +1,5 @@
 import { CORE_ERROR_MAP } from './errorMap';
-import { COMIC_PAGE_ERROR_MAP } from '../domains/comics/pages/errorMap';
+import { COMIC_PAGE_ERROR_MAP } from '../domains/comicspages/errorMap';
 import { ApplicationErrorKey, ApiErrorResponse } from '../apiResponse.types';
 import {t} from 'i18next';
 

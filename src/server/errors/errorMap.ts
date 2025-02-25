@@ -35,7 +35,15 @@ export const CORE_ERROR_MAP: Record<ErrorKeys, ErrorInfo> = {
     statusCode: 400
   },
   [ErrorKeys.AUTHENTICATION_FAILED]: {
-    message: "You don't have permission.  Are you sure you're authorized?",
+    message: "Please make sure you're properly logged in.",
     statusCode: 401
   },
+  [ErrorKeys.METHOD_NOT_ALLOWED]: {
+    message: "The HTTP method you're using is not allowed.",
+    statusCode: 405
+  },
+  [ErrorKeys.ACCESS_DENIED]: {
+    message: "You don't have permission.",
+    statusCode: 403
+  }
 }
