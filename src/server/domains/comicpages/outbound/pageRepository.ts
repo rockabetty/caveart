@@ -7,7 +7,7 @@ import { QueryResult } from "pg";
 import { ComicPage, PageReference, ComicChapter } from "../comicpage.types";
 import logger from "@logger";
 
-const handleUnknownError = function () {
+const handleUnknownError = function (): never {
   throw new Error("Uknown error occured")
 }
 
@@ -33,7 +33,7 @@ export async function createPageData(
       logger.error(error);
       throw error;
     } else {
-      handleUnknownError();
+      return handleUnknownError();
     }
   }
 }
@@ -65,7 +65,7 @@ export async function createChapter(
       logger.error(error);
       throw error;
     } else {
-      handleUnknownError();
+      return handleUnknownError();
     }
   }
 
@@ -95,7 +95,7 @@ export async function getPage(
       logger.error(error);
       throw error;
     } else {
-      handleUnknownError();
+      return handleUnknownError();
     }
   }
 }
@@ -111,12 +111,12 @@ export async function editPage(
       logger.error(error);
       throw error;
     } else {
-      handleUnknownError();
+      return handleUnknownError();
     }
   }
 }
 
-exort async function getLastPublishedPageNumber(comicId: number): Promise<PageReference|null> {
+export async function getLastPublishedPageNumber(comicId: number): Promise<PageReference | null> {
   try {
     const query = `
       WITH latest_page AS (
@@ -137,7 +137,7 @@ exort async function getLastPublishedPageNumber(comicId: number): Promise<PageRe
       logger.error(error);
       throw error;
     } else {
-      handleUnknownError();
+      return handleUnknownError();
     }
   }
 }
@@ -165,7 +165,7 @@ export async function getLastPageNumber(
       logger.error(error);
       throw error;
     } else {
-      handleUnknownError();
+      return handleUnknownError();
     }
   }
 }
@@ -197,7 +197,7 @@ export async function getLastPageReference(
       logger.error(error);
       throw error;
     } else {
-      handleUnknownError();
+      return handleUnknownError();
     }
   }
 }
@@ -240,7 +240,7 @@ export async function getComicThumbnails(
       logger.error(error);
       throw error;
     } else {
-      handleUnknownError();
+      return handleUnknownError();
     }
   }
 }
@@ -281,7 +281,7 @@ export async function getAdjacentPageReferences(
       logger.error(error);
       throw error;
     } else {
-      handleUnknownError();
+      return handleUnknownError();
     }
   }
 }
@@ -306,7 +306,7 @@ export async function getFirstPageReference(
       logger.error(error);
       throw error;
     } else {
-      handleUnknownError();
+      return handleUnknownError();
     }
   }
 }
@@ -322,7 +322,7 @@ export async function deletePage(pageId: number): Promise<QueryResult | null> {
       logger.error(error);
       throw error;
     } else {
-      handleUnknownError();
+      return handleUnknownError();
     }
   }
 }
