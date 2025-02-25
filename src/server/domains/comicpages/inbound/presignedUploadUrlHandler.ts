@@ -5,6 +5,7 @@ import { getComicIdFromSubdomain } from "@domains/comics/outbound/comicRepositor
 import { getPresignedUrl } from "@server-services/uploader";
 import { withAuth } from "@domains/users/middleware/withAuth";
 import { isAuthor } from "@domains/comics/middleware/isAuthor";
+import { sendErrorResponse } from '../../errors';
 
 export const presignedUploadUrlHandler: NextApiHandler = async (req, res) => {
   acceptPostOnly(req, res);
@@ -20,9 +21,9 @@ export const presignedUploadUrlHandler: NextApiHandler = async (req, res) => {
     if (presignedUrl.success) {
       return res.status(200).send(presignedUrl.data);
     }
-    return res.status(400).send(ErrorKeys.IMAGE_MISSING);
+    return sendErrorResponse(ErrorKeys.IMAGE_MISSING);
   } catch (error) {
-    return res.status(500).send(ErrorKeys.GENERAL_SERVER_ERROR);
+    return sendErrorResponse(ErrorKeys.GENERAL_SERVER_ERROR);
   }
 };
 

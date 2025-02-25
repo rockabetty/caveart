@@ -7,13 +7,14 @@ import { acceptPostOnly } from "@domains/methodGatekeeper";
 import { withAuth } from "@domains/users/middleware/withAuth";
 import { isAuthor } from "@domains/comics/middleware/isAuthor";
 import { queueImageCompression } from "../outbound/comicPageCompressor";
+import { sendErrorResponse } from '../../errors';
 
 const newPageHandler: NextApiHandler = async (req, res) => {  
   acceptPostOnly(req,res);
   
   const { tenant } = req.query;
   if (!tenant) {
-    return res.status(400).json(ErrorKeys.COMIC_MISSING);
+    return sendErrorResponse(ErrorKeys.COMIC_MISSING);
   }
 
   try {
@@ -55,12 +56,16 @@ const newPageHandler: NextApiHandler = async (req, res) => {
 
     } else {
       logger.error(newPage.error)
-      return res.status(newPage.error === ErrorKeys.INVALID_REQUEST ? 400 : 500).json(newPage.error)
+      if (newPage.error === ErrorKeys.INVALID_REQUEST) {
+        return sendErrorResponse(ErrorKeys.INVALID_REQUEST)
+      } else {
+        return sendErrorResponse(newPage.error)
+      }
     }
   
   } catch (error) {
     logger.error(error);
-    return res.status(500).json({ error: ErrorKeys.GENERAL_SERVER_ERROR });
+    return sendErrorResponse(ErrorKeys.GENERAL_SERVER_ERROR);
   }
 };
 

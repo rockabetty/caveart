@@ -3,6 +3,7 @@ import { ErrorKeys } from '../errors.types'
 import { getComicPage } from '../core/comicPageService';
 import { acceptGetOnly } from "@domains/methodGatekeeper";
 import { getComicIdFromSubdomain } from "@domains/comics/outbound/comicRepository";
+import { sendErrorResponse } from '../../errors';
 
 export const getComicPageHandler: NextApiHandler = async(
   req,
@@ -13,13 +14,13 @@ export const getComicPageHandler: NextApiHandler = async(
   const {number} = req.body;
   const comicID = await getComicPage(tenant)
   if (isNaN(comicID)) {
-    res.status(400).end(ErrorKeys.COMIC_INVALID)
+    return sendErrorResponse(ErrorKeys.COMIC_INVALID)
   }
   const result = await getComicPage(comicID)
   if (result.success) {
     return res.status(200).send({ number: result.number});
   }
-  return res.status(500).send(ErrorKeys.GENERAL_SERVER_ERROR);
+  return sendErrorResponse(ErrorKeys.GENERAL_SERVER_ERROR);
 }
 
 export default getComicPageHandler

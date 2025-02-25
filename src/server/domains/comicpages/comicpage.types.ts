@@ -21,10 +21,10 @@ export type ComicPage = {
 };
 
 export type ComicChapter = {
-	id: number;
+	id?: Readonly<number>;
+	name?: string;
 	comic_id: number;
 	chapter_number: number;
-	name?: string;
 	description?: string;
 	thumbnail_image_url?: string;
 };
@@ -35,14 +35,4 @@ export type PageReference = {
 };
 
 export type ComicPageField = keyof ComicPage;
-
-export type ComicChapter = {
-	id?: Readonly<number>;
-	name?: string;
-	index: number;
-	description?: string;
-	comic_id: Readonly<number>;
-	thumbnail: string;
-};
-
 export type ComicChapterField = keyof ComicChapter;
