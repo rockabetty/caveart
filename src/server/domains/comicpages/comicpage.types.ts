@@ -11,6 +11,9 @@ export type ComicPage = {
 	comic_id: Readonly<number>;
 	id?: Readonly<number>;
 	chapter_id?: number;
+	high_res_image_url?: string;
+	low_res_image_url?: string;
+	thumbnail_image_url?: string;
 	author_comment?: string;
 	created_at?: Readonly<Date> | string;
 	release_on?: Readonly<Date> | string;
