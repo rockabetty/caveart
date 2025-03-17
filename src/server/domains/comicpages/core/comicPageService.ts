@@ -1,4 +1,4 @@
-import { getComicThumbnails, createPageData, getLastPageReference, getPage } from '../outbound/pageRepository'
+import { getComicThumbnails, createPageData, getLastPageNumber, getLastPublishedPageNumber, getPage } from '../outbound/pageRepository'
 import { addComicImageToDatabase } from '@server-services/uploader'
 import { ErrorKeys } from '../errors.types';
 import { ComicPage as ComicPageDatabaseEntry } from '../comicpage.types';
@@ -82,21 +82,27 @@ export async function createComicPage (fields: ComicPagePostData) {
   }
 }
 
-export async function getLastPageNumber (comicId: number,
-  omniscientPOV = false
-  ) {
+export async function getLatestPageNumber(comicId: number, omniscientPOV=false
+ ) {
   try {
-    const latestPageRef = await getLastPageReference(comicId, omniscientPOV);
-    const number = latestPageRef?.page_number
+
+    const latestPageNumber = omniscientPOV 
+    ? await getLastPageNumber(comicId)
+    : await getLastPublishedPageNumber(comicId)
+  
     return {
       success: true,
-      number
+      number: latestPageNumber
     }
-  } catch (error: any) {
-    logger.error(error)
-    return {
-      success: false,
-      error
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(error)
+      return {
+        success: false,
+        error
+      }
+    } else {
+      return { sucess: false, error:errorKeys.GENERAL_SERVER_ERROR }
     }
   }
 }

@@ -1,7 +1,7 @@
 import { NextApiHandler } from "next";
 import { ErrorKeys } from "../errors.types";
 import { ErrorKeys as CoreErrorKeys } from "../../../errors.types";
-import { getLastPageNumber } from "../core/comicPageService";
+import { getLatestPageNumber } from "../core/comicPageService";
 import { acceptGetOnly } from "@domains/methodGatekeeper";
 import { getComicIdFromSubdomain } from "@domains/comics/outbound/comicRepository";
 import { sendErrorResponse } from "../../../errors";
@@ -14,10 +14,11 @@ export const lastPageNumberHandler: NextApiHandler = async (req, res) => {
     return sendErrorResponse(res, ErrorKeys.COMIC_INVALID);
   }
 
-  const result = await getLastPageNumber(comicID);
-  if (result.success) {
-    return res.status(200).send({ number: result.number });
+  const pageNumber = await getLatestPageNumber(comicID);
+  if (pageNumber.success) {
+    return res.status(200).send({ number: pageNumber.number });
   }
+  console.log(pageNumber)
   return sendErrorResponse(res, CoreErrorKeys.GENERAL_SERVER_ERROR);
 };
 
