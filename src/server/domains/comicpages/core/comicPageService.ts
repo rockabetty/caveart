@@ -107,38 +107,66 @@ export async function getLatestPageNumber(comicId: number, omniscientPOV=false
   }
 }
 
-export async function getComicPageByPageNumber (
+export async function getPublishedComicPageByPageNumber (
   comicId: number,
-  pageNumber:number,
-  omniscientPOV = false
+  pageNumber:number
 ) {
   try {
-		const page = await getPage(comicId, pageNumber);
-      if (omniscientPOV) {
+    const page = await getPage(comicId, pageNumber);
+    if (page?.release_on) {
+      const releaseDate = new Date(page.release_on).getTime();
+      const now = new Date().getTime();
+      if (now >= releaseDate) {
         return {
           success: true,
           data: page
         }
       }
-      if (page?.release_on) {
-        const releaseDate = new Date(page.release_on).getTime();
-        const now = new Date().getTime();
-        if (now >= releaseDate) {
-          return {
-            success: true,
-            data: page
-          }
-        }
-      }
-      return {
-        success: false,
-        error: ErrorKeys.ACCESS_DENIED
-      }
-		} catch (error:any) {
+    }
+    return {
+      success: false,
+      error: ErrorKeys.ACCESS_DENIED
+    }
+  } catch (error) {
+    if (error instanceof Error) {
       logger.error(error)
       return {
         success: false,
         error: error
       }
+    } else {
+      logger.error(new Error("Unknown error accessing published comic page"))
+      return {
+        success: false,
+        error: ErrorKeys.GENERAL_SERVER_ERROR
+      }
     }
   }
+};
+
+export async function getComicPageByPageNumber (
+  comicId: number,
+  pageNumber:number,
+) {
+  try {
+		const page = await getPage(comicId, pageNumber);
+    return {
+      success: true,
+      data: page
+    }
+	} catch (error) {
+    if (error instanceof Error) {
+      logger.error(error)
+      return {
+        success: false,
+        error: error
+      }
+    } else {
+      logger.error(new Error("Unknown error accessing published comic page"))
+      return {
+        success: false,
+        error: ErrorKeys.GENERAL_SERVER_ERROR
+      }
+    }
+  }
+};

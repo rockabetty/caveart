@@ -29,7 +29,7 @@ function ReaderPage() {
     const getLast = async () => {
       if (tenant) {
         try {
-          const lastPageNumberRequest = await axios.get(`/api/comic/${tenant}/page/last`);
+          const lastPageNumberRequest = await axios.get(`/api/comic/${tenant}/pages/last`);
           const { number } = lastPageNumberRequest.data;
           setPageNumbers((pageNumbers) => {
             return { ...pageNumbers, last: number}

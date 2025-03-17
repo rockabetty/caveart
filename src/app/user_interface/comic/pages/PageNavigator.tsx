@@ -2,7 +2,7 @@ import { Link, Icon, DropdownSelect} from '@components'
 import classNames from 'classnames'
 import './Navigator.css'
 const PageNavigator = ({last, current, options}) => {
-
+  
   let previous = Math.max(1,current -1);
   let next = Math.min(last,current +1);
 

@@ -29,7 +29,7 @@ class S3UploadError extends Error {
 const getPresignEndpoint = (tenant: string, type: UploadType): string => {
   console.log("TENANT: " + tenant)
   const endpoints = {
-    "comic page": `/api/comic/${tenant}/page/presign`,
+    "comic page": `/api/comic/${tenant}/pages/presign`,
     "thumbnail": `/api/comic/${tenant}/presign-thumbnail`
   };
   return endpoints[type];

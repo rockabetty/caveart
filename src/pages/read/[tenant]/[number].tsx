@@ -9,14 +9,30 @@ function ReaderPage() {
 
   const router = useRouter()
   const {tenant, number} = router.query
+  const currentPage = Number(number)
  
   const [lastPageNumber, setLastPageNumber] = useState(0)
+  const [pageData, setPageData] = useState()
 
   useEffect(() => {
-    const getLast = async () => {
-      if (tenant && number) {
+    const getPage = async () => {
+      if (currentPage) {
         try {
-          const lastPageNumberRequest = await axios.get(`/api/comic/${tenant}/page/last`);
+          const comicPageRequest = await axios.get(`/api/comic/${tenant}/pages/read/${currentPage}`)
+          setPageData(comicPageRequest.data)
+        } catch (error) {
+          console.error("comicPages.readPage.generalError")
+        }
+      }
+    }
+    getPage()
+  },[currentPage]);
+
+ useEffect(() => {
+    const getLast = async () => {
+      if (tenant) {
+        try {
+          const lastPageNumberRequest = await axios.get(`/api/comic/${tenant}/pages/last`);
           const lastPage = lastPageNumberRequest.data.number;
           setLastPageNumber(lastPage);
         } catch (error) {
@@ -25,7 +41,7 @@ function ReaderPage() {
       }
     }
     getLast()
-  },[tenant, number]);
+  },[tenant]);
  
   return (
     <CaveartLayout>
@@ -36,7 +52,7 @@ function ReaderPage() {
         </figcaption>
       </figure>
 
-      <PageNavigator current={number} last={lastPageNumber}/>
+      <PageNavigator current={currentPage} last={lastPageNumber}/>
 
     </CaveartLayout>
   )

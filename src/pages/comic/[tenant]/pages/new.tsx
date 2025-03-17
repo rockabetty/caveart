@@ -43,7 +43,7 @@ function AddPage() {
       if (tenant) {
         try {
           const lastPageNumberRequest = await axios.get(
-            `/api/comic/${tenant}/page/last`,
+            `/api/comic/${tenant}/pages/last`,
           );
           let { number } = lastPageNumberRequest.data;
           updatePageField("newPageNumber", number+1);

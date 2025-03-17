@@ -105,7 +105,7 @@ const NewComicPageForm: React.FC = ( {tenant} ) => {
     try {
       const imageUrl = await uploadComicPage(tenant);
 
-      const newPage = await axios.post(`/api/comic/${tenant}/page/new`, {
+      const newPage = await axios.post(`/api/comic/${tenant}/pages/new`, {
         ...pageForm,
         imageUrl
       });
