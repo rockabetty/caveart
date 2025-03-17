@@ -51,14 +51,14 @@ const newPageHandler: NextApiHandler = async (req, res) => {
     } else {
       logger.error(newPage.error);
       if (newPage.error === CoreErrorKeys.INVALID_REQUEST) {
-        return sendErrorResponse(CoreErrorKeys.INVALID_REQUEST);
+        return sendErrorResponse(res, CoreErrorKeys.INVALID_REQUEST);
       } else {
-        return sendErrorResponse(newPage.error);
+        return sendErrorResponse(res, newPage.error);
       }
     }
   } catch (error) {
     logger.error(error);
-    return sendErrorResponse(CoreErrorKeys.GENERAL_SERVER_ERROR);
+    return sendErrorResponse(res, CoreErrorKeys.GENERAL_SERVER_ERROR);
   }
 };
 

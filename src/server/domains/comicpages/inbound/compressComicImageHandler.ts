@@ -23,7 +23,7 @@ export const compressComicImageHandler: NextApiHandler = async (req, res) => {
 
         res.status(200).json({ taskId: data.task_id });
     } catch (error) {
-        return sendErrorResponse(ErrorKeys.ERROR_CREATING_COMPRESSION_TASK);
+        return sendErrorResponse(res, ErrorKeys.ERROR_CREATING_COMPRESSION_TASK);
     }
 };
 

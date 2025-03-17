@@ -1,5 +1,5 @@
 import { CORE_ERROR_MAP } from './errorMap';
-import { COMIC_PAGE_ERROR_MAP } from '../domains/comicspages/errorMap';
+import { COMIC_PAGE_ERROR_MAP } from '../domains/comicpages/errorMap';
 import { ApplicationErrorKey, ApiErrorResponse } from '../apiResponse.types';
 import {t} from 'i18next';
 
@@ -15,7 +15,7 @@ export function getErrorInfo(errorKey: ApplicationErrorKey) {
   };
 }
 
-export function sendErrorResponse(res, errorKey, details?: any) {
+export function sendErrorResponse(res: NextApiResponse, errorKey, details?: any) {
   const errorInfo = getErrorInfo(errorKey);
   return res.status(errorInfo.statusCode).json(errorResponse(errorKey, details));
 }

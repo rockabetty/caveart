@@ -1,7 +1,7 @@
 import { NextApiHandler } from "next";
-import { ErrorKeys as CoreErrorKeys } from "../../errors.types";
+import { ErrorKeys as CoreErrorKeys } from "../../../errors.types";
 import { ErrorKeys } from "../errors.types";
-import { sendErrorResponse } from "../../errors";
+import { sendErrorResponse } from "../../../errors";
 import { getThumbnails } from "../core/comicPageService";
 import { canEditComic } from "@domains/comics/core/comicService";
 import { acceptGetOnly, getUnvalidatedToken } from "@domains/methodGatekeeper";
@@ -23,20 +23,21 @@ export const getComicPagesHandler: NextApiHandler = async (req, res) => {
   }
 
   if (isNaN(comicID)) {
-    return sendErrorResponse(ErrorKeys.COMIC_INVALID);
+    return sendErrorResponse(res, ErrorKeys.COMIC_INVALID);
   }
 
-  const result = await getThumbnails(
+  const thumbnails = await getThumbnails(
     comicID,
     offset,
     limit,
     chapter,
     omniscient,
   );
-  if (result.success) {
-    return res.status(200).send({ pages: result.data });
+  if (thumbnails.success) {
+    return res.status(200).json({ pages: thumbnails.data });
   }
-  return sendErrorResponse(CoreErrorKeys.GENERAL_SERVER_ERROR);
+  console.log(thumbnails)
+  return sendErrorResponse(res, CoreErrorKeys.GENERAL_SERVER_ERROR);
 };
 
 export default getComicPagesHandler;

@@ -21,10 +21,10 @@ const deletePageHandler: NextApiHandler = async (req, res) => {
 
   const { tenant, page_number } = req.query;
   if (!tenant) {
-    return sendErrorResponse(ErrorKeys.COMIC_MISSING);
+    return sendErrorResponse(res, ErrorKeys.COMIC_MISSING);
   }
   if (!page_number) {
-    return sendErrorResponse(ErrorKeys.COMIC_PAGE_MISSING);
+    return sendErrorResponse(res, ErrorKeys.COMIC_PAGE_MISSING);
   }
 
   try {
@@ -34,14 +34,14 @@ const deletePageHandler: NextApiHandler = async (req, res) => {
     } else {
       logger.error(deletionAttempt.error);
       if (deletionAttempt.error === CoreErrorKeys.INVALID_REQUEST) {
-        return sendErrorResponse(CoreErrorKeys.INVALID_REQUEST)
+        return sendErrorResponse(res, CoreErrorKeys.INVALID_REQUEST)
       } else {
-        return sendErrorResponse(deletionAttempt.error);
+        return sendErrorResponse(res, deletionAttempt.error);
       }
     }
   } catch (error) {
     logger.error(error);
-    return sendErrorResponse(CoreErrorKeys.GENERAL_SERVER_ERROR);
+    return sendErrorResponse(res, CoreErrorKeys.GENERAL_SERVER_ERROR);
   }
 };
 

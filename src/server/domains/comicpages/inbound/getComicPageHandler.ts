@@ -12,13 +12,13 @@ export const getComicPageHandler: NextApiHandler = async (req, res) => {
   const { number } = req.body;
   const comicID = await getComicPage(tenant);
   if (isNaN(comicID)) {
-    return sendErrorResponse(ErrorKeys.COMIC_INVALID);
+    return sendErrorResponse(res, ErrorKeys.COMIC_INVALID);
   }
   const result = await getComicPage(comicID);
   if (result.success) {
     return res.status(200).send({ number: result.number });
   }
-  return sendErrorResponse(CoreErrorKeys.GENERAL_SERVER_ERROR);
+  return sendErrorResponse(res, CoreErrorKeys.GENERAL_SERVER_ERROR);
 };
 
 export default getComicPageHandler;

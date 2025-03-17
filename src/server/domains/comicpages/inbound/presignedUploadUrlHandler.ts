@@ -22,9 +22,9 @@ export const presignedUploadUrlHandler: NextApiHandler = async (req, res) => {
     if (presignedUrl.success) {
       return res.status(200).send(presignedUrl.data);
     }
-    return sendErrorResponse(ErrorKeys.IMAGE_MISSING);
+    return sendErrorResponse(res, ErrorKeys.IMAGE_MISSING);
   } catch (error) {
-    return sendErrorResponse(CoreErrorKeys.GENERAL_SERVER_ERROR);
+    return sendErrorResponse(res, CoreErrorKeys.GENERAL_SERVER_ERROR);
   }
 };
 

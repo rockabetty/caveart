@@ -178,7 +178,7 @@ export async function getComicThumbnails(
       p.id,
       p.title,
       page_number as "pageNumber",
-      thumbnail_image_url as "imageUrl",
+      p.thumbnail_image_url as "imageUrl",
       release_on as "releaseOn",
       CONCAT('/comic/', c.subdomain, '/pages/', p.id) AS "link"
     FROM comic_pages p
