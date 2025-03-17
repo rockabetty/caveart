@@ -2,6 +2,7 @@ import { PoolClient, QueryResult, QueryResultRow } from 'pg';
 import PoolConnection from './connection';
 import {GenericStringMap} from './types';
 import {ErrorKeys} from '../errors.types';
+import { logger } from '@logger';
 
 export type QueryFunction = (client: PoolClient) => Promise<QueryResult>;
 
@@ -49,6 +50,36 @@ export async function queryDbConnection(queryString: string, values: any[] = [])
     client.release();
   }
 };
+
+export async function executeTransaction(operations: Function[]): Promise<any[]> {
+  const pool = PoolConnection.get();
+  const client = await pool.connect();
+  
+  try {
+    await client.query('BEGIN');
+    
+    const results = [];
+    for (const operation of operations) {
+      const result = await operation(client, results);
+      results.push(result);
+    }
+    
+    await client.query('COMMIT');
+    return results;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    logger.error("Transaction failed:", error);
+    throw new QueryExecutionError(
+      'Transaction failed: ' + error.message,
+      'Multiple queries',
+      [],
+      ErrorKeys.GENERAL_SERVER_ERROR
+    );
+  } finally {
+    client.release();
+  }
+}
+
 
 export function writeUpdateString(columnsToUpdate: string[]): string {
   const setClauses = [];
