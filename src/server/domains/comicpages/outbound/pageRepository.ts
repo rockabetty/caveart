@@ -6,7 +6,7 @@ import {
 import { QueryResult } from "pg";
 import { ComicPage, PageReference, ComicChapter } from "../comicpage.types";
 import logger from "@logger";
-import { handleUnknownError } from "@errors"
+import { handleDatabaseError } from "@errors"
 
 export async function createPageData(
   pageData: ComicPage,
@@ -26,12 +26,7 @@ export async function createPageData(
     const result = await queryDbConnection(query, values);
     return getOneRowResult(result);
   } catch (error) {
-    if (error instanceof Error) {
-      logger.error(error);
-      throw error;
-    } else {
-      return handleUnknownError();
-    }
+    handleDatabaseError(error)
   }
 }
 
@@ -57,12 +52,7 @@ export async function createChapter(
     const result = await queryDbConnection(query, values);
     return getOneRowResult(result)
   } catch (error) {
-    if (error instanceof Error) {
-      logger.error(error);
-      throw error;
-    } else {
-      return handleUnknownError();
-    }
+    handleDatabaseError(error)
   }
 }
 
@@ -87,12 +77,7 @@ export async function getPage(
     const result = await queryDbConnection(query, values);
     return getOneRowResult(result);
   } catch (error) {
-    if (error instanceof Error) {
-      logger.error(error);
-      throw error;
-    } else {
-      return handleUnknownError();
-    }
+    handleDatabaseError(error)
   }
 }
 
@@ -103,12 +88,7 @@ export async function editPage(
   try {
     return await editTable("pages", "id", pageId, update);
   } catch (error) {
-    if (error instanceof Error) {
-      logger.error(error);
-      throw error;
-    } else {
-      return handleUnknownError();
-    }
+    handleDatabaseError(error)
   }
 }
 
@@ -129,12 +109,7 @@ export async function getLastPublishedPageNumber(comicId: number): Promise<numbe
     return result.rows[0].page_number;
   }
   catch (error) {
-    if (error instanceof Error) {
-      logger.error(error);
-      throw error;
-    } else {
-      return handleUnknownError();
-    }
+    handleDatabaseError(error)
   }
 }
 
@@ -156,12 +131,7 @@ export async function getLastPageNumber(
     const result = await queryDbConnection(query, values);
     return getOneRowResult(result);
   } catch (error) {
-    if (error instanceof Error) {
-      logger.error(error);
-      throw error;
-    } else {
-      return handleUnknownError();
-    }
+    handleDatabaseError(error)
   }
 }
 
@@ -192,12 +162,7 @@ export async function getComicThumbnails(
     const result = await queryDbConnection(query, values);
     return result.rows;
   } catch (error) {
-    if (error instanceof Error) {
-      logger.error(error);
-      throw error;
-    } else {
-      return handleUnknownError();
-    }
+    handleDatabaseError(error)
   }
 }
 
@@ -233,12 +198,7 @@ export async function getAdjacentPageReferences(
     });
     return navigation;
   } catch (error) {
-    if (error instanceof Error) {
-      logger.error(error);
-      throw error;
-    } else {
-      return handleUnknownError();
-    }
+    handleDatabaseError(error)
   }
 }
 
@@ -258,12 +218,7 @@ export async function getFirstPageReference(
     const result = await queryDbConnection(query, values);
     return getOneRowResult(result);
   } catch (error) {
-    if (error instanceof Error) {
-      logger.error(error);
-      throw error;
-    } else {
-      return handleUnknownError();
-    }
+    handleDatabaseError(error)
   }
 }
 
@@ -274,11 +229,6 @@ export async function deletePage(pageId: number): Promise<QueryResult | null> {
     const result = await queryDbConnection(query, values);
     return result;
   } catch (error) {
-    if (error instanceof Error) {
-      logger.error(error);
-      throw error;
-    } else {
-      return handleUnknownError();
-    }
+    handleDatabaseError(error)
   }
 }

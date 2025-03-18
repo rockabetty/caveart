@@ -11,6 +11,7 @@ import {
 } from "../comic.types";
 import { logger } from "@logger";
 import { QueryResult } from "pg";
+import { handleDatabaseError } from "@errors";
 import { ErrorKeys } from "../errors.types";
 
 export async function addComic(comic: Comic): Promise<number | null> {
@@ -46,9 +47,8 @@ export async function addComic(comic: Comic): Promise<number | null> {
   try {
     const result = await queryDbConnection(query, values);
     return result.rows[0].id;
-  } catch (error: any) {
-    logger.error(error);
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -78,9 +78,8 @@ export async function addGenresToComic(
   try {
     const results: QueryResult[] = await Promise.all(insertPromises);
     return results;
-  } catch (error: any) {
-    logger.error(error);
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -101,9 +100,8 @@ export async function addContentWarningsToComic(
   try {
     const results: QueryResult[] = await Promise.all(insertPromises);
     return results;
-  } catch (error: any) {
-    logger.error(error);
-    return error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -138,8 +136,8 @@ export async function isAuthor(
   try {
     const result = await queryDbConnection(query, values);
     return !!result.rows[0]?.isauthor;
-  } catch (error: any) {
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -206,8 +204,8 @@ export async function selectComicProfile(
       return result.rows[0];
     }
     return null;
-  } catch (error: any) {
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -243,9 +241,8 @@ export async function getComicsByAuthor(
       return result.rows;
     }
     return null;
-  } catch (error: any) {
-    logger.error(error);
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -258,9 +255,8 @@ export async function getComicThumbnail(comicID) {
       return result.rows[0].thumbnail_image_url;
     }
     return null;
-  } catch (error: any) {
-    logger.error(error);
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -279,9 +275,8 @@ export async function listContentWarnings() {
       return result.rows[0].comics_json;
     }
     return null;
-  } catch (error: any) {
-    logger.error(error);
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -323,9 +318,8 @@ export async function getNestedContentWarnings() {
       return result.rows;
     }
     return null;
-  } catch (error: any) {
-    logger.error(error);
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -344,9 +338,8 @@ export async function getComicGenres(comicId: number): Promise<number[] | null> 
       return result.rows
     }
     return null;
-  } catch (error: any) {
-    logger.error(error);
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -367,9 +360,8 @@ export async function getComicContentWarnings(
       return result.rows;
     }
     return null;
-  } catch (error: any) {
-    logger.error(error);
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -380,9 +372,8 @@ export async function getAllGenres() {
       return result.rows;
     }
     return null;
-  } catch (error: any) {
-    logger.error(error);
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -424,9 +415,8 @@ export async function getAllContentWarnings() {
       return result.rows;
     }
     return null;
-  } catch (error: any) {
-    logger.error(error);
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -445,9 +435,8 @@ export async function getRatingDefs(
       return result.rows[0].comics_json;
     }
     return null;
-  } catch (error: any) {
-    logger.error(error);
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -461,9 +450,8 @@ export async function getRatingId(name: string): Promise<number | null> {
       return result.rows[0].id;
     }
     return null;
-  } catch (error: any) {
-    logger.error(error);
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -474,9 +462,8 @@ export async function getGenres(): Promise<Genre[] | null> {
       return result.rows;
     }
     return null;
-  } catch (error: any) {
-    logger.error(error);
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -486,9 +473,8 @@ export async function editComic(
 ): Promise<QueryResult | null> {
   try {
     return await editTable("comics", "id", id, update);
-  } catch (error: any) {
-    logger.error(error);
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -509,9 +495,8 @@ export async function deleteComic(comicID: number): Promise<boolean | null> {
       console.log("No row count");
       return false;
     }
-  } catch (error: any) {
-    logger.error(error);
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -525,9 +510,8 @@ export async function removeAllGenresFromComic(comicID: number) {
     } else {
       return false;
     }
-  } catch (error: any) {
-    logger.error(error);
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -555,9 +539,8 @@ export async function removeAllContentWarningsFromComic(comicID: number) {
       console.log("Nothing was deleted.");
       return false;
     }
-  } catch (error: any) {
-    logger.error(error);
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -575,9 +558,8 @@ export async function removeGenresFromComic(
       genreList,
     );
     return !!operation;
-  } catch (error: any) {
-    logger.error(error);
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -595,9 +577,8 @@ export async function removeContentWarningsFromComic(
       contentList,
     );
     return !!operation;
-  } catch (error: any) {
-    logger.error(error);
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -615,9 +596,8 @@ export async function removeAuthorsFromComic(
       userList,
     );
     return !!operation;
-  } catch (error: any) {
-    logger.error(error);
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
 
@@ -634,8 +614,7 @@ export async function getAuthorsOfComic(
     const values = [comic];
     const selection = await queryDbConnection(query, values);
     return selection.rows;
-  } catch (error: any) {
-    logger.error(error);
-    throw error;
+  } catch (error) {
+    handleDatabaseError(error)
   }
 }
