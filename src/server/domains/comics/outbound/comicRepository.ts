@@ -99,6 +99,7 @@ export async function addContentWarningsToComic(
   contentIDs: number[],
   client?: PoolClient
 ): Promise<QueryResult[] | null> {
+  console.log("Add CW to comic running")
 
   if (contentIDs.length === 0) {
     return null
@@ -115,6 +116,8 @@ export async function addContentWarningsToComic(
     insertPromises.push(queryDbConnection(query, values, client));
   });
   try {
+    console.log("inserting cws")
+    console.log(contentIDs)
     const results: QueryResult[] = await Promise.all(insertPromises);
     return results;
   } catch (error) {
@@ -363,7 +366,6 @@ export async function getComicGenres(comicId: number): Promise<number[] | null> 
 }
 
 export async function getComicContentWarnings(
-  // to do - make this just return an array of IDs no more jsonb_agg build object tomfoolery
   comicId: number,
 ): Promise<QueryResult[] | null> {
   const query = `SELECT

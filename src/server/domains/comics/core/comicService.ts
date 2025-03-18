@@ -243,8 +243,8 @@ const prepareComicProfile = async function (fields): Partial<Comic> {
       profile.genres = fields.genres
     }
 
-    if (fields.content && isValidContentWarningSelection(fields.content)) {
-      profile.content = fields.content
+    if (fields.content_warnings && isValidContentWarningSelection(fields.content_warnings)) {
+      profile.content_warnings = fields.content_warnings
     }
     return profile;
   } catch {
@@ -318,9 +318,11 @@ export async function updateComicProfile(id, fields) {
     let profile: ComicUpdate = await prepareComicProfile(fields);
     let nonRelationKeys = { ... profile }
     delete nonRelationKeys.genres;
-    delete nonRelationKeys.content;
+    delete nonRelationKeys.content_warnings;
+    console.log(profile)
 
-    let {content, genres} = profile 
+
+    let {content_warnings, genres} = profile
     
     let oldThumbnail = ""
     if (fields.thumbnail) {
@@ -338,8 +340,9 @@ export async function updateComicProfile(id, fields) {
       await updateGenres(id, genres)  
     }
 
-    if (content) {
-      await updateContentWarnings(id, content)
+    if (content_warnings) {
+      console.log("Updating content warnings")
+      await updateContentWarnings(id, content_warnings)
     }
 
     return {
@@ -408,47 +411,49 @@ export async function listContentWarningOptions() {
   }
 }
 
-export async function updateContentWarnings(
-  tenantID: number,
-  update
-) {
-  try {
+export async function updateContentWarnings(tenantID: number, update: number[]) {
+  console.log("Updating content awrnigns running-------------------------------------")
+  console.log(update)
+  try { 
+    const existingContentWarnings = await getComicContentWarnings(tenantID);
+    const existingContentWarningSet = new Set(existingContentWarnings);
+    const newContentWarningSet = new Set(update);
 
-    const old = getComicContentWarnings(tenantID)
-    
-    let deleteIDs: number[] = [];
-    let addIDs: number[] = [];
-
-    if (!old && update.length > 0) {
-      addIDs = update;
-    } else {
-      for (let id of old) {
-        if (!update.includes(id)) {
-          deleteIDs.push(id);
-        }
-      }
-       for (let id of update) {
-        if (!old.includes(id)) {
-          addIDs.push(id);
-        }
+    const contentWarningsToAdd: number[] = [];
+    for (const id of newContentWarningSet) {
+      if (!existingContentWarningSet.has(id)) {
+        contentWarningsToAdd.push(id);
       }
     }
 
-    if (addIDs.length > 0) {
-      await addContentWarningsToComic(tenantID, addIDs);
+    const contentWarningsToRemove: number[] = [];
+    for (const id of existingContentWarningSet) {
+      if (!newContentWarningSet.has(id)) {
+        contentWarningsToRemove.push(id);
+      }
     }
-    if (deleteIDs.length > 0) {
-      await removeContentWarningsFromComic(tenantID, deleteIDs);
+        console.log(contentWarningsToAdd)
+        console.log(contentWarningsToRemove)
+
+
+    if (contentWarningsToRemove.length > 0) {
+      console.log("Calling remove content warnings")
+      await removeContentWarningsFromComic(tenantID, contentWarningsToRemove);
+    } 
+
+    if (contentWarningsToAdd.length > 0) {
+      console.log("calling add")
+      await addContentWarningsToComic(tenantID, contentWarningsToAdd);
     }
 
     return {
       success: true,
       data: update,
-    };
+    }
   } catch (error) {
     return {
       success: false,
-      data: ErrorKeys.GENERAL_SERVER_ERROR,
+      error: error,
     };
   }
 }
@@ -481,8 +486,6 @@ export async function createComic(fields, userId: number) {
     }
 
     profile = await prepareComicProfile(fields);
-
-    
     const newComicID = await createComicWithRelations(profile, userId);
     return {
       success: true,
