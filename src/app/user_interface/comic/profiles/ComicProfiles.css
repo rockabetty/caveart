@@ -32,3 +32,8 @@
   display: flex;
   justify-content: space-between;
 }
+
+.comic-profile_cover {
+  display: block;
+  width:  var(--grid-4);
+}

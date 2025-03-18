@@ -58,8 +58,6 @@ const NewComicForm: React.FC = () => {
       return setSubmissionError("comicProfile.errors.subdomainMissing");
     }
 
-    console.log(submission);
-
     try {
       submission.genres = Object.keys(update.genres);
       for (const value of Object.values(update.content_warnings)) {
@@ -75,12 +73,8 @@ const NewComicForm: React.FC = () => {
       if (!id) {
         throw new Error("No comic ID.");
       }
-
-      console.log("time to uploadThumbnail");
-
       await uploadThumbnail(submission.thumbnail, id);
-
-      // confirmCreation(creation.data);
+      confirmCreation(creation.data);
     } catch (error) {
       const message = error.response.data.error;
       setSubmissionError(message);

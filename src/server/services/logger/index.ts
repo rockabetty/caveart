@@ -8,8 +8,9 @@ export const logger = {
     warn: (message: string ) => {
       console.log(message)
     },
-    error: (error: Error) => {
+    error: (error: Error, details) => {
       console.log(error)
+      console.log(details)
     }
 }
 

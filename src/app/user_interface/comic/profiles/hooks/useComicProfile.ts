@@ -87,7 +87,7 @@ export const useComicProfile = (tenant?: string) => {
 
   const confirmCreation = (data: ComicData) => {
     handleSubmissionSuccess()(dispatch);
-    router.push(`/comic/${data.id}`);
+    router.push(`/comic/${data.id}/overview`);
   };
 
   const confirmEdit = () => {

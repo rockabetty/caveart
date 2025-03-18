@@ -263,37 +263,38 @@ const isValidContentWarningSelection = function (selectedContentWarnings) {
   return isValidIDList(selectedContentWarnings)
 }
 
-export async function updateGenres(tenantID: number, old, update) {
-  if (typeof old !== "object" || typeof update !== "object") {
-    return invalidRequest;
-  }
-  try {
-    let deleteIDs: number[] = [];
-    let addIDs: number[] = [];
+export async function updateGenres(tenantID: number, update) {
+  try { 
+    const existingGenres = await getComicGenres(tenantID);
+    const existingGenreSet = new Set(existingGenres);
+    const newGenreSet = new Set(update);
 
-    for (let key in old) {
-      if (!update[key]) {
-        deleteIDs.push(Number(key));
-      }
-    }
-    for (let key in update) {
-      if (!old[key]) {
-        addIDs.push(Number(key));
+    const genresToAdd: number[] = [];
+    for (const id of newGenreSet) {
+      if (!existingGenreSet.has(id)) {
+        genresToAdd.push(id);
       }
     }
 
-    if (deleteIDs.length > 0) {
-      await removeGenresFromComic(tenantID, deleteIDs);
+    const genresToRemove: number[] = [];
+    for (const id of existingGenreSet) {
+      if (!newGenreSet.has(id)) {
+        genresToRemove.push(id);
+      }
     }
 
-    if (addIDs.length > 0) {
-      await addGenresToComic(tenantID, addIDs);
+    if (genresToRemove.length > 0) {
+      await removeGenresFromComic(tenantID, genresToRemove);
+    } 
+
+    if (genresToAdd.length > 0) {
+      await addGenresToComic(tenantID, genresToAdd);
     }
 
     return {
       success: true,
       data: update,
-    };
+    }
   } catch (error) {
     return {
       success: false,
@@ -302,40 +303,43 @@ export async function updateGenres(tenantID: number, old, update) {
   }
 }
 
+async function deleteOldThumbnail(s3ImageUrl) {
+  const deleteResult = await deleteFromS3(s3ImageUrl);
+  if (!deleteResult.success) {
+    return {
+      success: false,
+      error: `Failed to delete old thumbnail: ${deleteResult.error}`,
+    };
+  }
+}
+
 export async function updateComicProfile(id, fields) {
   try {
     let profile: ComicUpdate = await prepareComicProfile(fields);
-    const profileKeys = Object.getOwnPropertyNames(profile);
-    let oldThumbnail = ""
+    let nonRelationKeys = { ... profile }
+    delete nonRelationKeys.genres;
+    delete nonRelationKeys.content;
 
+    let {content, genres} = profile 
+    
+    let oldThumbnail = ""
     if (fields.thumbnail) {
       oldThumbnail = await getComicThumbnail(id);
-    }
-
-     if (profileKeys.length > 0) {
-      await editComicTable(id, profile);
-    }
-
-    if (!!oldThumbnail) {
-      const deleteResult = await deleteFromS3(oldThumbnail);
-        if (!deleteResult.success) {
-          return {
-            success: false,
-            error: `Failed to delete old thumbnail: ${deleteResult.error}`,
-          };
-        }
-    }
-
-    if (fields["genres[]"] && isValidGenreSelection(fields["genres[]"])) {
-      let currentGenres = await getComicGenres(id);
-      if (currentGenres) {
-        await updateGenres(id, currentGenres, fields["genres[]"])  
+      if (!!oldThumbnail) {
+        deleteOldThumbnail(s3ImageUrl)
       }
     }
-    
-    if (fields["content_warnings"] && isValidContentWarningSelection(fields["content_warnings"])) {
-      let currentContentWarnings = await getComicContentWarnings(id);
-      await updateContentWarnings(id, currentContentWarnings, fields["content_warnings"])  
+
+    if (Object.getOwnPropertyNames(nonRelationKeys).length > 0) {
+      await editComicTable(id, nonRelationKeys);
+    }
+
+    if (genres) {
+      await updateGenres(id, genres)  
+    }
+
+    if (content) {
+      await updateContentWarnings(id, content)
     }
 
     return {
@@ -406,10 +410,11 @@ export async function listContentWarningOptions() {
 
 export async function updateContentWarnings(
   tenantID: number,
-  old,
   update
 ) {
   try {
+
+    const old = getComicContentWarnings(tenantID)
     
     let deleteIDs: number[] = [];
     let addIDs: number[] = [];

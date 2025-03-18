@@ -1,7 +1,7 @@
 import { NextApiHandler } from "next";
 import { withAuth } from "@domains/users/middleware/withAuth";
 import { isAuthor } from "../middleware/isAuthor";
-import { logger } from "@logger";
+import { logger } from "@server-services/logger";
 import { updateComicProfile } from "../core/comicService";
 import { ErrorKeys } from "../../../errors.types";
 import { acceptPutOnly } from "@domains/methodGatekeeper";
@@ -9,9 +9,10 @@ import { acceptPutOnly } from "@domains/methodGatekeeper";
 const handler: NextApiHandler = async (req, res): Promise<void> => {
   acceptPutOnly(req, res);
   try {
+    console.log("Here's the update:")
     const {update} = req.body;
-    console.log("-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
     console.log(update)
+    console.log("Here's the ID")
     const {id} = update;
 
     const updateAttempt = await updateComicProfile(id, update);

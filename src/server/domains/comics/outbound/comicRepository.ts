@@ -344,7 +344,7 @@ export async function getNestedContentWarnings() {
 
 export async function getComicGenres(comicId: number): Promise<number[] | null> {
   const query = `
-  SELECT array_agg(g.id)
+  SELECT array_agg(g.id) as genrelist
   FROM genres g
   JOIN comics_to_genres cg
   ON cg.genre_id = g.id
@@ -354,7 +354,7 @@ export async function getComicGenres(comicId: number): Promise<number[] | null> 
     const values = [comicId];
     const result = await queryDbConnection(query, values);
     if (result.rows && result.rows.length > 0) {
-      return result.rows
+      return result.rows[0].genrelist
     }
     return null;
   } catch (error) {
@@ -367,7 +367,7 @@ export async function getComicContentWarnings(
   comicId: number,
 ): Promise<QueryResult[] | null> {
   const query = `SELECT
-    array_agg(content_warning_id::int)
+    array_agg(content_warning_id::int) as contentlist
     FROM comics_to_content_warnings ccw
     WHERE ccw.comic_id = $1
    `;
@@ -376,7 +376,7 @@ export async function getComicContentWarnings(
     const values = [comicId];
     const result = await queryDbConnection(query, values);
     if (result.rows && result.rows.length > 0) {
-      return result.rows;
+      return result.rows[0].contentlist;
     }
     return null;
   } catch (error) {
@@ -637,22 +637,14 @@ export async function getAuthorsOfComic(
 }
 
 export async function createComicWithRelations(profile, authorID) {
-  console.log("CCWR is running.")
   const result = withTransaction(async (client) => {
-    console.log("Inside transaction callback");
-    console.log("Adding comic, here's the profile.");
-    console.log(profile)
     const comicID = await addComic(profile, client);
-    console.log("Adding relations");
     await Promise.all([
       addGenresToComic(comicID, profile.genres, client),
       addContentWarningsToComic(comicID, profile.content, client),
       addAuthorToComic(comicID, authorID, client)
-    ]);
-    console.log("Relations added");
-    
+    ]);    
     return comicID;
   });
-  console.log("CCWR passed with result:", result);
   return result;
 }
