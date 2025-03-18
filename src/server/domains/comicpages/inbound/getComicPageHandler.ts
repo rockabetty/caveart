@@ -11,7 +11,6 @@ import { extractUserIdFromToken } from '@domains/users/utils/extractUserIdFromTo
 
 export const getComicPageHandler: NextApiHandler = async (req, res) => {
   acceptGetOnly(req, res);
-  console.log("##################################################")
   const { tenant, number } = req.query;
   const comicID = await getComicIdFromSubdomain(tenant);
   if (isNaN(comicID)) {
@@ -22,15 +21,12 @@ export const getComicPageHandler: NextApiHandler = async (req, res) => {
   if (!token) {
     return res.status(400).json({error: ErrorKeys.INVALID_REQUEST });
   }
-  console.log(token)
   const userID = await extractUserIdFromToken(token, false);  
   const editPermissions =  await canEditComic(userID, tenant);
 
   const comicPage = editPermissions.edit
    ? await getPublishedComicPageByPageNumber(comicID, number)
    : await getComicPageByPageNumber(comicID, number);
-
-  console.log(comicPage)
 
   if (comicPage.success) {
     return res.status(200).send(comicPage.data);

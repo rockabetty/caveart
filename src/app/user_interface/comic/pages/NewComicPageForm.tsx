@@ -40,7 +40,7 @@ const NewComicPageForm: React.FC = ( {tenant} ) => {
       if (tenant) {
         try {
           const nextPageRequest = await axios.get(
-            `/api/comic/${tenant}/page/last`,
+            `/api/comic/${tenant}/pages/last`,
           );
           const { number } = nextPageRequest.data;
           updatePageField("newPageNumber", number+1);
@@ -105,7 +105,7 @@ const NewComicPageForm: React.FC = ( {tenant} ) => {
     try {
       const imageUrl = await uploadComicPage(tenant);
 
-      const newPage = await axios.post(`/api/comic/${tenant}/pages/new`, {
+      const newPage = await axios.post(`/api/comics/${tenant}/pages/new`, {
         ...pageForm,
         imageUrl
       });
