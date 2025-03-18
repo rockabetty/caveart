@@ -11,8 +11,8 @@
   background: var(--theme-interface-00);
   color: var(--col-interactive-01);
   border: var(--size-border-width) solid var(--col-interactive-border);
-  padding: var(--spacing-sm) var(--spacing-md);
-  margin: var(--spacing-sm);
+  padding: var(--spacing-xs);
+  margin: var(--spacing-xs);
   border-radius: var(--border-radius);
   cursor: pointer;
     transition: 0.25s ease-in-out background-color,

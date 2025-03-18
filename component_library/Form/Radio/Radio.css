@@ -51,7 +51,8 @@
   position: relative;
   cursor: pointer;
   display: flex;
-  padding: var(--spacing-xs) var(--spacing-sm) var(--spacing-xs) var(--spacing-sm);
+  padding: var(--spacing-3xs);
+  padding-top: 0;
   margin-inline-start: var(--spacing-md);
   align-items: center;
   font-family: var(--font-stack-display);
