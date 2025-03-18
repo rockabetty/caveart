@@ -20,6 +20,8 @@
       "@components": ["../component_library"],
       "@components/*": ["../component_library/*"],
       "@data/*": ["./data/*"],
+      "@errors": ["./server/errors"],
+      "@errors/*": ["./server/errors/*"],
       "@logger": ["./server/services/logger"],
       "@logger/*": ["./server/services/logger/*"],
       "@domains/*": ["./server/domains/*"],

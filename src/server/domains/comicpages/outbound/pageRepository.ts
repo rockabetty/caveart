@@ -6,10 +6,7 @@ import {
 import { QueryResult } from "pg";
 import { ComicPage, PageReference, ComicChapter } from "../comicpage.types";
 import logger from "@logger";
-
-const handleUnknownError = function (): never {
-  throw new Error("Uknown error occured")
-}
+import { handleUnknownError } from "@errors"
 
 export async function createPageData(
   pageData: ComicPage,
