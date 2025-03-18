@@ -42,12 +42,13 @@ function ReaderPage() {
     }
     getLast()
   },[tenant]);
+
  
   return (
     <CaveartLayout>
       <h1>{tenant} {number}</h1> 
       <figure>
-        <Image width={"100%"} />
+        <Image width={"100%"} src={pageData?.high_res_image_url}  />
         <figcaption>
         </figcaption>
       </figure>

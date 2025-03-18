@@ -82,7 +82,8 @@ export async function getPage(
     enable_html_author_comment,
     mouseover_text,
     like_count,
-    view_count
+    view_count,
+    release_on
     FROM comic_pages WHERE comic_id = $1 AND page_number = $2`;
   const values = [comicId, pageNumber];
   try {

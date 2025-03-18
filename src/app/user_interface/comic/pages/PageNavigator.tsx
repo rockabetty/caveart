@@ -1,12 +1,32 @@
 import { Link, Icon, DropdownSelect} from '@components'
+import { useCallback, useEffect } from 'react'
+import { useRouter } from 'next/router'
 import classNames from 'classnames'
 import './Navigator.css'
+
 const PageNavigator = ({last, current, options}) => {
-  
   let previous = Math.max(1,current -1);
   let next = Math.min(last,current +1);
+  const router = useRouter();
+  const { tenant } = router.query
+  console.log(tenant)
 
-  console.log(current)
+  const handleKeyPress = useCallback((event) => {
+    const {key} = event;
+    if (key === 'ArrowLeft' ){
+       router.push(`/read/${tenant}/${previous}`)
+    }
+    if (key === 'ArrowRight') {
+      router.push(`/read/${tenant}/${next}`)
+    }
+  }, [tenant,next,previous]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress);
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleKeyPress]);
 
   return (
     <div className="comic-navigator tile">
