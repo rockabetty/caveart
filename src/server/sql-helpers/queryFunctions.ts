@@ -34,22 +34,78 @@ class ValidationError extends Error {
   }
 }
 
-export async function queryDbConnection(queryString: string, values: any[] = []): Promise<QueryResult> {
+const handleUnknownError = function () {
+  const unknownError = new Error('Unknown error.')
+  logger.error('Unknown error when querying database', { unknownError })
+  throw unknownError;
+}
+
+export async function withTransaction<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
   const pool = PoolConnection.get();
   const client = await pool.connect();
   try {
-    return await client.query(queryString, values);
-  } catch (err) {
-    throw new QueryExecutionError(
-      'Failed to execute database query',
-      queryString,
-      values,
-      ErrorKeys.GENERAL_SERVER_ERROR 
-    );
+    await client.query('BEGIN');
+    const result = await callback(client);
+    await client.query('COMMIT');
+    return result;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    if (error instanceof Error) {
+      logger.error('Transaction failed', { error });
+      throw error;
+    } else {
+      return handleUnknownError()
+    }
   } finally {
     client.release();
   }
-};
+}
+
+export async function queryDbConnection(
+  queryString: string, 
+  values: any[] = [],
+  client?: PoolClient
+): Promise<QueryResult> {
+
+  if (client) {
+    try {
+      return await client.query(queryString, values);
+    } catch (error) {
+      if (error instanceof Error) {
+        logger.error('Query failed', { query: queryString, error });
+        throw new QueryExecutionError(
+          'Failed to execute database query',
+          queryString,
+          values,
+          ErrorKeys.GENERAL_SERVER_ERROR 
+        );
+      } else {
+        return handleUnknownError();
+      }
+    }
+  } else {
+    const pool = PoolConnection.get();
+    const newClient = await pool.connect();
+    try {
+      return await newClient.query(queryString, values);
+    } catch (error) {
+      if (error instanceof Error) {
+        logger.error('Query failed', { query: queryString, error });
+        throw new QueryExecutionError(
+          'Failed to execute database query',
+          queryString,
+          values,
+          ErrorKeys.GENERAL_SERVER_ERROR 
+        );
+      } else {
+        return handleUnknownError();
+      }
+    } finally {
+      newClient.release();
+    }
+  }
+}
+
 
 export async function executeTransaction(operations: Function[]): Promise<any[]> {
   const pool = PoolConnection.get();
@@ -57,13 +113,11 @@ export async function executeTransaction(operations: Function[]): Promise<any[]>
   
   try {
     await client.query('BEGIN');
-    
     const results = [];
     for (const operation of operations) {
       const result = await operation(client, results);
       results.push(result);
     }
-    
     await client.query('COMMIT');
     return results;
   } catch (error) {
@@ -79,7 +133,6 @@ export async function executeTransaction(operations: Function[]): Promise<any[]>
     client.release();
   }
 }
-
 
 export function writeUpdateString(columnsToUpdate: string[]): string {
   const setClauses = [];
