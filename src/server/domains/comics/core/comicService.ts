@@ -16,6 +16,7 @@ import {
   getAllContentWarnings,
   getComicIdFromSubdomain,
   addComic,
+  createComicWithRelations,
   editComic as editComicTable,
   getComicThumbnail,
   selectComicProfile,
@@ -200,7 +201,7 @@ const isValidIDList = function (list: number[]) {
 
 const prepareComicProfile = async function (fields): Partial<Comic> {
   let profile: ComicUpdate = {};
-   try {
+  try {
     if (fields.title) {
       profile.title = prepareTitle(fields.title);
     }
@@ -237,8 +238,15 @@ const prepareComicProfile = async function (fields): Partial<Comic> {
     if (fields.thumbnail) {
       profile.thumbnail_image_url = fields.thumbnail;
     }
-    return profile;
 
+    if (fields.genres && isValidGenreSelection(fields.genres)) {
+      profile.genres = fields.genres
+    }
+
+    if (fields.content && isValidContentWarningSelection(fields.content)) {
+      profile.content = fields.content
+    }
+    return profile;
   } catch {
     return {
       success: false,
@@ -309,7 +317,6 @@ export async function updateComicProfile(id, fields) {
     }
 
     if (!!oldThumbnail) {
-      console.log("I want to delete from S3 " + oldThumbnail)
       const deleteResult = await deleteFromS3(oldThumbnail);
         if (!deleteResult.success) {
           return {
@@ -460,7 +467,6 @@ export async function createComic(fields, userId: number) {
   let profile: Partial<Comic> = {};
   let genres = [];
   let contentWarnings = [];
-
   try {
     const requiredFields = ["rating", "title", "subdomain"];
     for (let field of requiredFields) {
@@ -470,42 +476,14 @@ export async function createComic(fields, userId: number) {
     }
 
     profile = await prepareComicProfile(fields);
+
     
-    const genresValid = isValidIDList(fields["genres[]"]);
-    if (genresValid) {
-      genres = fields["genres[]"];
-    } else {
-      throw new Error(GeneralErrorKeys.INVALID_REQUEST)
-    }
+    const newComicID = await createComicWithRelations(profile, userId);
+    return {
+      success: true,
+      data: { newComicID },
+    };
 
-    const contentWarningsValid = isValidIDList(fields["content[]"]);
-    if (contentWarningsValid) {
-      contentWarnings = fields["content[]"];
-    } else {
-      throw new Error(GeneralErrorKeys.INVALID_REQUEST);
-    }
-
-    const id = await addComic(profile);
-    if (id) {
-      await addAuthorToComic(id, userId);
-
-      if (profile.genres?.length > 0) {
-        await addGenresToComic(id, profile.genres);
-      }
-
-      if (profile.content?.length > 0) {
-        await addContentWarningsToComic(id, profile.content);
-      }
-      return {
-        success: true,
-        data: { id },
-      };
-    } else {
-      return {
-        success: false,
-        error: ErrorKeys.GENERAL_SERVER_ERROR,
-      };
-    }
   } catch (error: any) {
     if (error.code === "23505") {
       const errorKey =
@@ -516,13 +494,6 @@ export async function createComic(fields, userId: number) {
         success: false,
         error: errorKey,
       };
-    }
-    if (id) {
-      try {
-        await deleteComic(Number(id));
-      } catch (cleanupError) {
-        logger.error(cleanupError);
-      }
     }
     return {
       success: false,

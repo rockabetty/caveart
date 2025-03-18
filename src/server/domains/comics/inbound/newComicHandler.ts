@@ -39,12 +39,18 @@ const handler: NextApiHandler = async (req, res): Promise<SubmissionResult> => {
       visibility,
       likes
     }
+
+    console.log("Handler is running createComic.")
     const newComic = await createComic(fields, userID);
+    console.log("newComic was ran.")
 
     console.log(newComic)
     if (newComic.success) {
+      console.log("New comic was successful.")
       return res.status(200).json(newComic.data)
     } else {
+      console.log("not successful at all")
+      console.log(newComic)
       const statusCode = newComic.error === ErrorKeys.INVALID_REQUEST ? 400 : 500
       return res.status(statusCode).json({ error: newComic.error });
     }

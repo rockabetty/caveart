@@ -41,6 +41,7 @@ const handleUnknownError = function () {
 }
 
 export async function withTransaction<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
+  console.log("With Transaction is running.")
   const pool = PoolConnection.get();
   const client = await pool.connect();
   try {

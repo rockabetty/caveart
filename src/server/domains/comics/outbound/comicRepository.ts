@@ -2,6 +2,7 @@ import {
   queryDbConnection,
   removeOneToManyAssociations,
   editTable,
+  withTransaction
 } from "../../../../server/sql-helpers/queryFunctions";
 import {
   Comic,
@@ -14,7 +15,9 @@ import { QueryResult } from "pg";
 import { handleDatabaseError } from "@errors";
 import { ErrorKeys } from "../errors.types";
 
-export async function addComic(comic: Comic): Promise<number | null> {
+export async function addComic(comic: Comic, client?: PoolClient): Promise<number | null> {
+  console.log("Add comic is running")
+  console.log(comic)
   const query = `
       INSERT INTO comics (
         title,
@@ -43,9 +46,11 @@ export async function addComic(comic: Comic): Promise<number | null> {
     comic.likes,
     comic.rating,
   ];
+  console.log("11111111111111111111111111111111111111111111111111")
+  console.log(comic)
 
   try {
-    const result = await queryDbConnection(query, values);
+    const result = await queryDbConnection(query, values, client);
     return result.rows[0].id;
   } catch (error) {
     handleDatabaseError(error)
@@ -64,7 +69,13 @@ export async function getComicIdFromSubdomain(subdomain: string) {
 export async function addGenresToComic(
   comicID: number,
   genreIDs: number[],
+  client?: PoolClient
 ): Promise<QueryResult[] | null> {
+
+  if (genreIDs.length === 0) {
+    return null
+  }
+ 
   const insertPromises: Promise<QueryResult>[] = [];
   genreIDs.forEach((genreID) => {
     const query = `
@@ -73,7 +84,7 @@ export async function addGenresToComic(
           RETURNING id
       `;
     const values = [comicID, genreID];
-    insertPromises.push(queryDbConnection(query, values));
+    insertPromises.push(queryDbConnection(query, values, client));
   });
   try {
     const results: QueryResult[] = await Promise.all(insertPromises);
@@ -86,7 +97,13 @@ export async function addGenresToComic(
 export async function addContentWarningsToComic(
   comicID: number,
   contentIDs: number[],
-): Promise<QueryResult[]> {
+  client?: PoolClient
+): Promise<QueryResult[] | null> {
+
+  if (contentIDs.length === 0) {
+    return null
+  }
+
   const insertPromises: Promise<QueryResult>[] = [];
   contentIDs.forEach((contentID) => {
     const query = `
@@ -95,7 +112,7 @@ export async function addContentWarningsToComic(
           RETURNING id
       `;
     const values = [comicID, contentID];
-    insertPromises.push(queryDbConnection(query, values));
+    insertPromises.push(queryDbConnection(query, values, client));
   });
   try {
     const results: QueryResult[] = await Promise.all(insertPromises);
@@ -108,14 +125,16 @@ export async function addContentWarningsToComic(
 export async function addAuthorToComic(
   comicID: number,
   authorID: number,
+  client?: PoolClient
 ): Promise<QueryResult | Error> {
+  console.log("Add author")
   const query = `
       INSERT INTO comics_to_authors (comic_id, user_id)
       VALUES ($1, $2)
       RETURNING id
     `;
   const values = [comicID, authorID];
-  const result = await queryDbConnection(query, values);
+  const result = await queryDbConnection(query, values, client);
   return result.rows[0];
 }
 
@@ -447,7 +466,7 @@ export async function getRatingId(name: string): Promise<number | null> {
       [name],
     );
     if (result.rows && result.rows.length > 0) {
-      return result.rows[0].id;
+      return result.rows[0]?.id;
     }
     return null;
   } catch (error) {
@@ -519,8 +538,6 @@ export async function removeAllContentWarningsFromComic(comicID: number) {
   const values = [comicID];
   const checkQuery = `SELECT COUNT(id) FROM comics_to_content_warnings WHERE comic_id = $1`;
   const deleteQuery = `DELETE FROM comics_to_content_warnings WHERE comic_id = $1`;
-
-  console.log("Deleting content warnings from comic iD " + comicID);
 
   try {
     const checkResult = await queryDbConnection(checkQuery, values);
@@ -617,4 +634,25 @@ export async function getAuthorsOfComic(
   } catch (error) {
     handleDatabaseError(error)
   }
+}
+
+export async function createComicWithRelations(profile, authorID) {
+  console.log("CCWR is running.")
+  const result = withTransaction(async (client) => {
+    console.log("Inside transaction callback");
+    console.log("Adding comic, here's the profile.");
+    console.log(profile)
+    const comicID = await addComic(profile, client);
+    console.log("Adding relations");
+    await Promise.all([
+      addGenresToComic(comicID, profile.genres, client),
+      addContentWarningsToComic(comicID, profile.content, client),
+      addAuthorToComic(comicID, authorID, client)
+    ]);
+    console.log("Relations added");
+    
+    return comicID;
+  });
+  console.log("CCWR passed with result:", result);
+  return result;
 }
