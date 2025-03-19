@@ -37,7 +37,7 @@ export function useComicPage(initialState: NewPageSubmission) {
     return true;
   };
 
-   const uploadComicPage = async (tenant: string) => {
+   const uploadComicPageToS3 = async (tenant: string) => {
     if (!pageForm.image) return setPageFormError("No image to upload.");
     try {
       return await uploadToS3(pageForm.image, tenant, "comic page");
@@ -70,6 +70,6 @@ export function useComicPage(initialState: NewPageSubmission) {
     setPageFormSuccess,
     pageFormLoading,
     setPageFormLoading,
-    uploadComicPage
+    uploadComicPageToS3
   };
 }

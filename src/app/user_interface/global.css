@@ -61,6 +61,13 @@
   width: 100%;
 }
 
+.Half {
+  width: 50%;
+}
+.Third {
+  width:  33%;
+}
+
 .tabgroup_tab {
   background-image: url('/img/brand/tilingstone.jpg');
   background-blend-mode: multiply;

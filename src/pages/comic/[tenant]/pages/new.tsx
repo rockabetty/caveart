@@ -26,7 +26,7 @@ function AddPage() {
   };
 
   const {
-    uploadComicPage,
+    uploadComicPageToS3,
     pageForm,
     updatePageField,
     resetPageForm,
@@ -106,7 +106,7 @@ function AddPage() {
     const data = JSON.stringify({ name, type });
 
     try {
-      const imageUrl = await uploadComicPage(
+      const imageUrl = await uploadComicPageToS3(
         pageForm.image,
         tenant,
         "comic page",

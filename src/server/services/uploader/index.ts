@@ -49,7 +49,7 @@ export const getPresignedUrl = async (
   expiresIn: number = 60,
 ): Promise<PresignedUrlResponse> => {
   const client = getS3Client();
-
+ 
   try {
     if (!fileName || !fileType) {
       return {

@@ -49,7 +49,7 @@ const ImageUpload = ({
   const displayImage = previewUrl || (typeof src === 'string' ? src : '');
 
   return (
-    <div>
+    <>
       <div id={id} className={classNames({
         "image": true,
         "Editable": editable,
@@ -82,7 +82,7 @@ const ImageUpload = ({
       <span className={`form-field_helpertext ${fileError ? 'Error' : ''}`.trim()}>
         {fileError || errorText || helperText}
       </span>
-    </div>
+    </>
   )
 }
 

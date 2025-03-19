@@ -27,6 +27,12 @@
   font-weight: 700;
   font-size: var(--size-font-lg);
 }
+.tabgroup_tab:first-of-type {
+  margin-inline-start: 0;
+}
+.tabgroup_tab:last-of-type {
+  margin-inline-end: 0;
+}
 
 .tabgroup_tab:hover {
   border-color: var(--col-button-hover);

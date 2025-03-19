@@ -328,7 +328,7 @@ export async function updateComicProfile(id, fields) {
     if (fields.thumbnail) {
       oldThumbnail = await getComicThumbnail(id);
       if (!!oldThumbnail) {
-        deleteOldThumbnail(s3ImageUrl)
+        deleteOldThumbnail(oldThumbnail)
       }
     }
 

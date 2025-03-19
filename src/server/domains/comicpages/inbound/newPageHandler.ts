@@ -2,7 +2,7 @@ import { NextApiHandler } from "next";
 import { getComicIdFromSubdomain } from "@domains/comics/outbound/comicRepository";
 import { logger } from "@logger";
 import { ErrorKeys } from "../errors.types";
-import { ErrorKeys as CoreErrorKeys } from "../../errors.types";
+import { ErrorKeys as CoreErrorKeys } from "../../../errors.types";
 import { createComicPage } from "../core/comicPageService";
 import { acceptPostOnly } from "@domains/methodGatekeeper";
 import { withAuth } from "@domains/users/middleware/withAuth";
@@ -15,14 +15,16 @@ const newPageHandler: NextApiHandler = async (req, res) => {
 
   const { tenant } = req.query;
   if (!tenant) {
+    console.log('no tenant')
     return sendErrorResponse(ErrorKeys.COMIC_MISSING);
   }
 
   try {
+    console.log("Getting comic id")
     const comicID = await getComicIdFromSubdomain(tenant);
 
     const { imageUrl, authorComment, releaseOn, newPageNumber } = req.body;
-
+    console.log("Getting stff from reqbody")
     const information = {
       imageUrl,
       authorComment,
@@ -30,8 +32,10 @@ const newPageHandler: NextApiHandler = async (req, res) => {
       newPageNumber,
       comicID,
     };
+    console.log(information)
 
     const newPage = await createComicPage(information);
+    console.log("Create comic page attempt")
 
     if (newPage.success) {
       const { data } = newPage;

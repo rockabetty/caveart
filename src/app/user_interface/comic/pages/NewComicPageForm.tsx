@@ -23,7 +23,7 @@ const NewComicPageForm: React.FC = ( {tenant} ) => {
   };
 
   const {
-    uploadComicPage,
+    uploadComicPageToS3,
     pageForm,
     updatePageField,
     resetPageForm,
@@ -103,9 +103,9 @@ const NewComicPageForm: React.FC = ( {tenant} ) => {
     const data = JSON.stringify({ name, type });
 
     try {
-      const imageUrl = await uploadComicPage(tenant);
+      const imageUrl = await uploadComicPageToS3(tenant);
 
-      const newPage = await axios.post(`/api/comics/${tenant}/pages/new`, {
+      const newPage = await axios.post(`/api/comic/${tenant}/pages/new`, {
         ...pageForm,
         imageUrl
       });
@@ -154,20 +154,23 @@ const NewComicPageForm: React.FC = ( {tenant} ) => {
                 onSubmit={handleSubmit}
                 submissionError={pageFormError}
               >
-                <div>
-                <h2>dwaggin lord</h2>
-                  <div className="flex-section">
-                    <ImageUpload
+               <div className="flex Row">
+                  <div className="flex-section Third">
+                   <ImageUpload
+                      editable
+                      helperText={t("comicPages.newPage.helperText")}
+                      id="new"
+                      src={pageForm?.image ? pageForm?.image : "/img/brand/kraugak.png"}
+                      alt={t("comicPages.newPage.uploadAltText")}
+                      maxSize={MAX_COMIC_PAGE_FILESIZE}
+                      labelText={t("comicPages.newPage.uploadYourImage")}
+                      value={pageForm.image}
+                      onChange={handleImageChange}
                       name="newPage"
                       required
-                      id="new"
-                      labelText={t("comicPages.newPage.uploadYourImage")}
-                      editable
-                      value={pageForm.image}
-                      maxSize={MAX_COMIC_PAGE_FILESIZE}
-                      onChange={handleImageChange}
                     />
                   </div>
+
                   <div className="flex-section Grow">
                     <h1>{t("comicPages.add")}</h1>
                     <p>
@@ -196,10 +199,12 @@ const NewComicPageForm: React.FC = ( {tenant} ) => {
                       type="text"
                       labelText={t("comicPages.newPage.tags.label")}
                       helperText={t("comicPages.newPage.tags.helperText")}
-                      />
-
+                    />
                   </div>
                 </div>
+             
+                 
+          
               </Form>
             </>
           )}
